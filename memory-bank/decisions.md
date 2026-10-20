@@ -4982,3 +4982,11 @@ ilerleme çubuğu, anahtar ve DURUM çerçevesinde (ödül hazır amber · Usta 
 seçili sekme afiş moru (`--afis-2`) dolgu, seçili çip/dil mor 3 px çerçeve. SIRADA = kilit ikonlu, yarı saydam kart rengi, koşul
 yazısı yok (oyunda koşul yok). Bekçi `mor-dil` 4: izin listesine `--lila-golge` (2 mutasyonla doğrulandı). Oyun içi HUD değişmedi.
 Kare: `docs/tasarim/sprint-C/revize-uygulandi.png`.
+
+## D-169 · Sürüm 1.0.3 iki platformda: Android ikon/açılış düzeltmesi + iOS 1.0.1 parçaları (2026-10-20)
+
+**Sorun (kullanıcı, "çok ciddi"):** Android başlatıcı ikonu ve açılış görseli Ağustos'tan beri Capacitor varsayılanıydı (Play 1.0.x
+dahil); iOS'a gerçek ikon girmiş, Android'e hiç girmemişti. **Çözüm:** `tools/android-ikon.py` iOS asıllarından (ikon-1024 +
+Splash.imageset) üretir: uyarlanır ön katman 108dp tuvalde resim 82dp (kendi altın çerçevesi maskenin dışında kalır), zemin rengi
+kenar sarısı; API<26 için yuvarlak/köşeli hazır PNG; açılış iOS karesinden orana kesilir; Android 12+ açılış zemini `#1C1647`.
+iOS 1.0.0 yayına girince `ios-1.0.1` dalı main'e birleşti, App ID'ye iCloud yeteneği ASC API'den açıldı. İki platform 1.0.3 (10003).

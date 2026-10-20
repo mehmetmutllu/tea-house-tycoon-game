@@ -2,29 +2,26 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-10-14 — Sprint C tur 2 kapandı · D-166 · D-167 · D-168)
+## ŞU AN (2026-10-20 — iOS 1.0.0 YAYINDA · 1.0.3 iki platform · D-169)
 
-**Kural:** Play Console'u Claude KULLANMAZ. iOS'a inceleme bitmeden build GİTMEZ. Play kapalı teste güncelleme serbest.
-**Çalışma düzeni:** kullanıcı önce SEÇENEK ister ("direkt değiştirme, seçenek sun"); görsel kararlar ekran görüntüsüyle gösterilir.
+**Kural:** Play Console'u Claude KULLANMAZ (kullanıcı/arkadaş yükler). iOS gönderimi ASC API ile (anahtar özel senkron deposunda,
+kalıp: scratchpad `asc.mjs`/`gonder.mjs` — Git Bash'te `MSYS_NO_PATHCONV=1` şart, yoksa `/v1/...` yolu bozulur).
+**Çalışma düzeni:** kullanıcı önce SEÇENEK ister; görsel kararlar ekran görüntüsüyle gösterilir.
 
-**Tur 2 bitti:** 32 bitmap ikon (D-166) · Ametist zemin + koyu mor sandıklı Başlangıç afişi (sandık sağ orta, alınmış hâl soluk
-renk) + Ayarlar zemin metni 4,8:1 + kart sayıları koyu ton ≥ 4,5:1 (D-167) · ChatGPT revizesi: kontursuz kart + `--lila-golge`,
-beyaz yuvarlak geri, mor seçili sekme, kilitli SIRADA (D-168; kullanıcı: "çok daha iyi"). Kareler: `docs/tasarim/sprint-C/`
-(`ametist-afis.png` · `ametist-sayilar-s2.png` · `revize-uygulandi.png`).
+**Bu tur:** Android ikon + açılış görseli Capacitor varsayılanıydı → gerçek ikon (`tools/android-ikon.py`, D-169). `ios-1.0.1` dalı
+main'e birleşti; App ID'ye iCloud (ASC API). Sürüm 1.0.3 (10003). Codemagic iOS derlemesi yeşil → TestFlight → incelemeye gönderim
+(releaseType AFTER_APPROVAL, sürüm notu TR+EN). Play: `Desktop/TeaHouseTycoon-1.0.3.aab` + `…-GooglePlay-1.0.3.zip`, sürüm notu
+`docs/play/metin/*.txt` (notlar ChatGPT'ye danışılmadı — kullanıcı onayladı mı bak).
 
 ## ⏭️ SIRADAKİ ADIM
-1. **Test APK kullanıcıda** (debug, 20,9 MiB, 2026-10-14): `android/app/build/outputs/apk/debug/app-debug.apk` + masaüstü
-   `TeaHouse-test-2026-10-14.apk`. Kullanıcının telefon geri bildirimini al: sandık dar ekranda başlığa çarpıyor mu · sayılar
-   okunuyor mu · kontursuz kartlar zeminden ayrışıyor mu · mor sekme/beyaz geri net mi · Ametist boğucu mu. Düzeltmeleri yap.
-2. ✅ **Play 1.0.2 hazır** (2026-10-14, versionCode 10002, imzalı AAB 15,8 MiB gerçek reklam kipi): `dist-play/TeaHouseTycoon-GooglePlay.zip`
-   + masaüstü kopyaları (`…-1.0.2.zip`, `TeaHouseTycoon-1.0.2.aab`). Kullanıcı arkadaşına iletir. Telefon turunda düzeltme çıkarsa 1.0.3.
-3. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç (semaver, Restoran ≈ Krem fayans, Klasik Parke).
-   Duman erken akışı ara sıra düşüyor (hep "q_coin": para toplanmıyor); 2026-10-13/14 birkaç kez, ikinci koşuda geçiyor — kök sebep bulunmadı.
+1. iOS 1.0.3 inceleme sonucunu izle (ASC). Onayda otomatik yayın.
+2. Kullanıcı Play 1.0.3'ü yükledi mi; telefonda ikon doğru mu (test APK: `Desktop/TeaHouse-test-1.0.3.apk`).
+3. iOS'ta iCloud kayıt (sil-kur → ilerleme döner) gerçek cihazda denenmedi.
+4. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç (semaver, Restoran ≈ Krem fayans, Klasik Parke).
+   Duman erken akışı ara sıra düşüyor ("q_coin") — kök sebep bulunmadı.
 
 ## AÇIK KALEMLER
-- iOS inceleme: Apple cevap verdi (2026-10-14, vaka 102987045833): 8 Eki'den beri "Waiting for Review", sorun yok; geri çekip yeniden göndermek sırayı baştan başlatıyor → BEKLE, gönderime dokunma, geri çekme, hızlandırılmış inceleme isteme. Bitince e-posta gelir.
-- Play: 1.0.1 zip arkadaşa (mikrometin değişti → yeni zip gerekirse `npm run play:paket`); servis hesabı JSON'u → RevenueCat; RC'de Android baslangic/reklamsiz = Non-consumable.
-- Cihaz turu (Android 1.0.1): `sprint-A-defter.md` "Nasıl kontrol edersin" 5 adımı.
+- Play: servis hesabı JSON'u → RevenueCat; RC'de Android baslangic/reklamsiz = Non-consumable.
 - Deyimix 1.0.1 "Pending Developer Release" — kullanıcı Release diyecek.
 - AdMob "ABD eyalet yönetmelikleri" mesajı bakılmadı · ana görev ödülüne "video izle 2×" sorusu açık (varyant kapısı).
-- Duman erken akışı ara sıra düşüyor (DUMAN_PORT=4250) · `i18n/baslat` Preferences'tan önce okuyor (küçük).
+- `i18n/baslat` Preferences'tan önce okuyor (küçük).

@@ -36,4 +36,4 @@ PLAY AT YOUR PACE
 Fancy another glass of tea? Your tea house is waiting.
 
 === RELEASE NOTES (max 500) ===
-Tea House Tycoon is open! Three halls, twenty tables, a kitchen with toast, Master tables, daily tasks and décor for your hall. We would love your feedback!
+A fresh look for the shop and menus, new icons, and the right app icon on your home screen. Purchases now retry if your connection drops, and your progress is saved more safely. Plus performance improvements and bug fixes.
