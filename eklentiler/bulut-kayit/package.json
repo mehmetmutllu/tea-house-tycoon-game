@@ -1,0 +1,19 @@
+{
+  "name": "bulut-kayit",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Tea House Tycoon — iCloud Key-Value Storage kayit koprusu (yalniz iOS, Capacitor 8, SPM).",
+  "license": "UNLICENSED",
+  "files": [
+    "ios/Sources",
+    "Package.swift"
+  ],
+  "capacitor": {
+    "ios": {
+      "src": "ios"
+    }
+  },
+  "peerDependencies": {
+    "@capacitor/core": ">=8.0.0"
+  }
+}

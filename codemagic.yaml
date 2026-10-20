@@ -45,6 +45,15 @@ workflows:
           grep -q "test:!1,birim" dist/assets/*.js || { echo "HATA: reklam test kipinde kaldi (VITE_REKLAM?)" >&2; exit 1; }
           echo "reklam: gercek birimler"
 
+      - name: iCloud entitlement projede
+        # Sprint A: bulut kaydı iCloud KVS'te (`eklentiler/bulut-kayit`). Entitlement dosyası ya da
+        # pbxproj bağı kaybolursa derleme SESSİZCE iCloud'suz çıkar (oyuncu kaydı cihazlar arası gitmez).
+        script: |
+          grep -q "com.apple.developer.ubiquity-kvstore-identifier" ios/App/App/App.entitlements || { echo "HATA: App.entitlements'ta iCloud KVS yok" >&2; exit 1; }
+          [ "$(grep -c 'CODE_SIGN_ENTITLEMENTS = App/App.entitlements;' ios/App/App.xcodeproj/project.pbxproj)" = "2" ] || { echo "HATA: pbxproj CODE_SIGN_ENTITLEMENTS (Debug+Release) eksik" >&2; exit 1; }
+          grep -q "BulutKayit" ios/App/CapApp-SPM/Package.swift || { echo "HATA: BulutKayit eklentisi SPM'de yok (package.json file: bagimliligi + cap sync)" >&2; exit 1; }
+          echo "icloud: entitlement + eklenti tamam"
+
       - name: Derleme numarası
         # TestFlight aynı numarayı ikinci kez kabul etmez → Codemagic'in artan sayacı. Sürüm adı
         # (MARKETING_VERSION) package.json'dan gelir; her App Store gönderiminde package.json artırılır.
@@ -63,6 +72,14 @@ workflows:
             --create
           keychain add-certificates
           xcode-project use-profiles
+          # App ID'de iCloud kutusu açık değilse profil entitlement'ı taşımaz ve imza düşer — erken,
+          # anlaşılır mesajla düşsün (çözüm: developer.apple.com → Identifiers → App ID → iCloud
+          # (CloudKit'siz) → kaydet; eski profil geçersiz olur, `--create` yenisini üretir).
+          for p in "$HOME/Library/MobileDevice/Provisioning Profiles/"*.mobileprovision "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles/"*.mobileprovision; do
+            security cms -D -i "$p" 2>/dev/null | grep -q "ubiquity-kvstore-identifier" && { echo "profil: iCloud KVS var"; exit 0; }
+          done
+          echo "HATA: imza profilinde iCloud KVS yok — Apple portalinda App ID'ye iCloud kutusu acilmali" >&2
+          exit 1
 
       - name: Derle ve imzala
         script: |
