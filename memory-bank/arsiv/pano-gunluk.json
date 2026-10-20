@@ -2,8 +2,20 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "14.10.2026",
- "kart": 86,
+ "kart": 87,
  "gunluk": [
+  {
+   "tarih": "25.09.2026",
+   "etiket": "F4c-3 — tabela (D-156)",
+   "baslik": "Tabelada <b>kafenin adı</b>",
+   "govde": "Bir bot bütün görev hattını üç kez 6 saat oynadı; cephe dikey telefonda oyunun %4,6'sında ekranda (3. Salon'da %0,7), eski tabelanın yarısı lento ve kordonun arkasındaydı. Yedi yazı yeri gerçek oyun kamerasından çekilip karşılaştırıldı.<br><br>Kullanıcı alınlığı dolduran büyük tabelayı seçti ve üstüne oyuncunun kendi kafe adını istedi: ad girişte bir kez soruluyor, Ayarlar'dan değişiyor. Yükleniyor ekranında artık \"Tea House Tycoon\".",
+   "maddeler": [
+    "cephe ekranda <b>%4,6</b> · geç oyunda <b>%0,7</b> → 💎 cephe yok",
+    "harf 7,7 px → <b>12,2 px</b> · örtü kalktı",
+    "ad ≤ 20 harf · eski kayda bir kez sorulur · Türkçe büyük harf",
+    "bekçi 19 test · mutasyon <b>4/11</b> (bellek yüzünden yarıda)"
+   ]
+  },
   {
    "tarih": "24.09.2026",
    "etiket": "F4c-1 — 💎 vitrini (D-154)",

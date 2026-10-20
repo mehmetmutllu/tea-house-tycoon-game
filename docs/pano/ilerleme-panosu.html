@@ -194,7 +194,7 @@ h2{font-size:21px;font-weight:800}
      ══════════════════════════════════════════════════════════════════════ -->
 <script type="application/json" id="durum">
 {
- "guncelleme": "14.10.2026",
+ "guncelleme": "20.10.2026",
  "yapilan": 124,
  "toplam": 127,
  "kilometre": [
@@ -216,14 +216,14 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "ozet": {
-  "etiket": "Bu oturum — Sprint C tur 2 sonu (13–14 Ekim)",
-  "baslik": "Ekranlar <b>Ametist</b> ve <b>kontursuz</b>",
-  "aciklama": "Seçilen Ametist zemin ve koyu mor sandıklı Başlangıç afişi koda girdi; kart sayıları koyu tonla okunur oldu. ChatGPT'nin revize tasarımı uygulandı: kontursuz kartlar, beyaz geri düğmesi, mor seçili sekme, kilitli Sırada satırları. Test APK kullanıcıya verildi."
+  "etiket": "Bu oturum — yayın sonrası (20 Ekim)",
+  "baslik": "iOS <b>yayında</b>, 1.0.3 iki mağazaya",
+  "aciklama": "Oyun App Store'da yayına girdi. Android'de ikon ve açılış görseli hâlâ Capacitor'ın varsayılanıydı; gerçek ikonla değiştirildi. Bekleyen iOS parçaları (iCloud kayıt) birleşti, 1.0.3 iOS'ta incelemeye gönderildi, Play AAB'si hazır."
  },
  "siradaki": {
-  "etiket": "Sırada — telefon turu",
-  "baslik": "Test APK'sı <b>telefonda</b>",
-  "aciklama": "Kullanıcı yeni ekranları telefonda dener, çıkan düzeltmeler yapılır. Play 1.0.2 paketi hazır, arkadaş yükler. iOS: Apple inceleme sırasında, beklenir."
+  "etiket": "Sırada — iki mağazada 1.0.3",
+  "baslik": "Apple onayı + <b>Play yüklemesi</b>",
+  "aciklama": "iOS 1.0.3 onaylanınca kendiliğinden yayına çıkar. Kullanıcı Play'e 1.0.3 AAB'sini yükler, telefonda ikon kontrol edilir. iCloud kaydı gerçek iPhone'da denenmedi."
  },
  "donemler": [
   {
@@ -396,6 +396,18 @@ h2{font-size:21px;font-weight:800}
  ],
  "gunluk": [
   {
+   "tarih": "20.10.2026",
+   "etiket": "Yayın sonrası — 1.0.3 (D-169)",
+   "baslik": "Oyun <b>kendi ikonuyla</b> açılıyor",
+   "govde": "iOS 1.0.0 App Store'da yayına girdi. Kullanıcı Android'de ikonun Capacitor logosu olduğunu fark etti: ikon ve açılış görseli hiç değiştirilmemişti. iOS asıllarından yeniden üretildi.<br><br>Bekleyen iOS dalı birleşti, iCloud yeteneği API'den açıldı, Codemagic derlemesi ilk seferde geçti ve 1.0.3 incelemeye gönderildi. Play için 1.0.3 AAB ve sürüm notları hazır.",
+   "maddeler": [
+    "test <b>1862</b>",
+    "duman <b>74/74</b>",
+    "sürüm <b>1.0.3</b>",
+    "iOS <b>incelemede</b>"
+   ]
+  },
+  {
    "tarih": "14.10.2026",
    "etiket": "Sprint C tur 2 sonu — Ametist + revize (D-167 · D-168)",
    "baslik": "Ekranlar <b>yeni kılığına</b> girdi",
@@ -475,18 +487,6 @@ h2{font-size:21px;font-weight:800}
     "mesafe kullanıcıyla ayarlandı: %30 → <b>%25</b>",
     "teklif T3 · \"Bir kez alınabilir\" · Paketler notu artık kesilmiyor",
     "bekçi 24 test · mutasyon <b>12/12</b> · duman <b>67/67</b>"
-   ]
-  },
-  {
-   "tarih": "25.09.2026",
-   "etiket": "F4c-3 — tabela (D-156)",
-   "baslik": "Tabelada <b>kafenin adı</b>",
-   "govde": "Bir bot bütün görev hattını üç kez 6 saat oynadı; cephe dikey telefonda oyunun %4,6'sında ekranda (3. Salon'da %0,7), eski tabelanın yarısı lento ve kordonun arkasındaydı. Yedi yazı yeri gerçek oyun kamerasından çekilip karşılaştırıldı.<br><br>Kullanıcı alınlığı dolduran büyük tabelayı seçti ve üstüne oyuncunun kendi kafe adını istedi: ad girişte bir kez soruluyor, Ayarlar'dan değişiyor. Yükleniyor ekranında artık \"Tea House Tycoon\".",
-   "maddeler": [
-    "cephe ekranda <b>%4,6</b> · geç oyunda <b>%0,7</b> → 💎 cephe yok",
-    "harf 7,7 px → <b>12,2 px</b> · örtü kalktı",
-    "ad ≤ 20 harf · eski kayda bir kez sorulur · Türkçe büyük harf",
-    "bekçi 19 test · mutasyon <b>4/11</b> (bellek yüzünden yarıda)"
    ]
   }
  ],
@@ -742,9 +742,9 @@ h2{font-size:21px;font-weight:800}
   }
  ],
  "gunlukArsiv": {
-  "kart": 86,
+  "kart": 87,
   "ilk": "05.06 – 17.06.2026",
-  "son": "24.09.2026",
+  "son": "25.09.2026",
   "yer": "memory-bank/arsiv/pano-gunluk.json"
  }
 }
