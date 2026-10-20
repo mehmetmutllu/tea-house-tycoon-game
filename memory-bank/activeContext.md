@@ -15,7 +15,8 @@ main'e birleşti; App ID'ye iCloud (ASC API). Sürüm 1.0.3 (10003). Codemagic i
 
 ## ⏭️ SIRADAKİ ADIM
 1. iOS 1.0.3 inceleme sonucunu izle (ASC). Onayda otomatik yayın.
-2. Kullanıcı Play 1.0.3'ü yükledi mi; telefonda ikon doğru mu (test APK: `Desktop/TeaHouse-test-1.0.3.apk`).
+2. Play ÜRETİM ERİŞİMİ ALINDI (2026-10-20). Üretim sürümü: 1.0.3 AAB (kapalı testte varsa Add from library), sürüm notu TR+EN
+   `4-metinler/*.txt`, ülkeler üretimde ayrıca seçilir (rehber 9B). Arkadaş yükleyecek → yayına girince AdMob'u mağazaya bağla.
 3. iOS'ta iCloud kayıt (sil-kur → ilerleme döner) gerçek cihazda denenmedi.
 4. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç (semaver, Restoran ≈ Krem fayans, Klasik Parke).
    Duman erken akışı ara sıra düşüyor ("q_coin") — kök sebep bulunmadı.
