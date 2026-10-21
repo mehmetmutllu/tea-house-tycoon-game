@@ -45,3 +45,17 @@ Araç: `tools/magaza-video.mjs` + sahne dosyaları `magaza-video-header.mjs` · 
   Oyuncu yumuşatılmış joystick girdisiyle (`__girdi`) yürür. Sahneleme: başlangıç paketi teklifi gösterilmiş
   sayılır, servis masalarında müşteri çay bekler. Kesmeler sert, döngü de kesme → harman yok.
 - Çıktı (git dışı): `docs/magaza-video/` + Masaüstü `TeaHouseTycoon-AppStore-Video/`.
+
+## Araştırma — header nasıl olmalı (2026-10-21, kullanıcı tur 2'den memnun değil)
+- **Güvenli alan küçük ve ortada:** Apple'ın şablonunda header "ART SAFE AREA" 3840×1646 tuvalin ortasında **1646×661**
+  (genişliğin ~%43'ü, yüksekliğin ~%40'ı, alanın %17'si) — blakecrosley.com, Sketch şablonundan ölçülmüş. Telefon dikeyde
+  kenarlar kırpılabilir: odak bu dikdörtgenin içinde kalmalı. Tur 2'nin drone turu ilgi noktasını kenarlarda gezdiriyordu.
+- **Tek fikir, ilk kez gelen için:** Apple: "Focus on a single, clear idea"; oyunlar için "oynanış ya da ilginç karakterler".
+  Kolaj/çok sahne, temsil etmeyen sinematik kaçınılır; "readable motion loop" önerilir.
+- **Hareket:** güçlü başla · hızlı kesme ve hızlı hareket yok · dikişsiz döngü · poster karesi tek başına anlatmalı · sessiz çalışmalı.
+- **Search ile tutarlılık:** Apple header ile search'te aynı görsel dili (universal varlık) öneriyor.
+- **Kesin kırpma ancak ASC Preview'da görülür** (iPhone/iPad, dikey/yatay) ve PPO ile A/B denenebilir. Ölçülmüş dönüşüm verisi yok.
+**Sonraki tur için yönler (karar kullanıcının):** A) ortada tek kahraman an: çaycı tepsiyle dolu salonda, kamera yavaş
+yaklaşıp uzaklaşır (döngü) · B) diorama: tüm kıraathane ortada, minyatür gibi çok yavaş yörünge · C) hareketsiz ana görsel
+(universal PNG) + search videosu. Önce Apple şablonu indirilip güvenli alan kareye bindirilerek denenmeli.
+Kaynak: https://blakecrosley.com/blog/app-store-product-page-marketing-2026 · https://www.applaunchflow.com/blog/app-store-header-examples · https://developer.apple.com/videos/play/wwdc2026/205/
