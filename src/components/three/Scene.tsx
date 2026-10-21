@@ -288,8 +288,9 @@ function AdaptiveResolution() {
     let dpr = Math.min(window.devicePixelRatio || 1, 2, Math.max(1, budgetDpr));
     // DEV — F2 ölçüm kolu piksel tavanını AŞAĞI çekebilir (yukarı asla: bütçe kuralı kalır).
     if (import.meta.env.DEV) {
-      const tavan = devPerfKol()?.dprTavan;
-      if (tavan) dpr = Math.min(dpr, tavan);
+      const kol = devPerfKol();
+      if (kol?.dprTavan) dpr = Math.min(dpr, kol.dprTavan);
+      if (kol?.kayitDpr) dpr = kol.kayitDpr; // mağaza videosu (D-170): bütçe bilerek aşılır
     }
     setDpr(dpr);
   }, [width, height, setDpr]);
@@ -336,6 +337,19 @@ function CameraRig() {
         look.set(0, 0, 0);
         camera.lookAt(look);
         st.current.ready = false; // plandan çıkınca takip kamerası sıçramadan yeniden yerleşir
+        return;
+      }
+    }
+    if (import.meta.env.DEV) {
+      const sn = useSandbox.getState().sinema;
+      if (sn) {
+        setFov(camera as PerspectiveCamera, sn.fov);
+        camera.position.set(...sn.pos);
+        look.set(...sn.bak);
+        camera.lookAt(look);
+        st.current.ready = false;
+        camera.updateMatrixWorld();
+        cameraViewYaz(camera.projectionMatrix.elements, camera.matrixWorldInverse.elements);
         return;
       }
     }
@@ -1386,7 +1400,7 @@ export function Scene() {
       frameloop="never"
       camera={{ position: [0, 9, 11], fov: CAMERA_FOV }}
       gl={{ antialias: true, toneMappingExposure: LIGHTING.exposure }}
-      dpr={olcumKolu?.dprTavan ? [1, olcumKolu.dprTavan] : [1, 2]}
+      dpr={olcumKolu?.kayitDpr ? [1, olcumKolu.kayitDpr] : olcumKolu?.dprTavan ? [1, olcumKolu.dprTavan] : [1, 2]}
     >
       {/* IŞIK (G0) — renkler palette.ts LIGHTING'te, gerekçe orada yazılı.
           NOT: tone mapping ZATEN ACESFilmic (r3f varsayılanı, `flat` verilmedi) — bu yüzden

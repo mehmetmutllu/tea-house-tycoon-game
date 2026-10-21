@@ -91,3 +91,6 @@ docs/magaza-kareleri/maskot/
 /dist-play/
 /*.jpeg
 /*.jpg
+
+# App Store tanıtım videoları (tools/magaza-video.mjs üretir; header > 100 MB, git'e girmez)
+/docs/magaza-video/

@@ -31,6 +31,8 @@ interface SandboxState {
    */
   camFov: number;
   camDistMul: number;
+  /** Mağaza videosu (D-170): kamera oyuncuyu bırakır, kayıt aracının verdiği yoldan geçer. */
+  sinema: { pos: [number, number, number]; bak: [number, number, number]; fov: number } | null;
   /**
    * MUTFAK ZEMİNİ KARŞILAŞTIRMA KOLU (S4). Karo boyu × renk çifti. Kullanıcı ekranda seçiyor;
    * seçim kesinleşince kaybeden kol koddan silinir.
@@ -52,6 +54,7 @@ export const useSandbox = create<SandboxState>((set) => ({
   fayansRenk: 'siyahbeyaz',
   camFov: 0,
   camDistMul: 0,
+  sinema: null,
   set: (patch) => set(patch),
 }));
 

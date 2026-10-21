@@ -41,6 +41,9 @@ declare global {
     __addMoney?: (amount: number) => Record<string, unknown>;
     __upgradeStation?: () => boolean;
     __teleport?: (x: number, z: number) => Record<string, unknown>;
+    /** Mağaza videosu (D-170): joystick girdisi + hafif konum okuma (`__game` her karede ağır). */
+    __girdi?: (x: number, z: number) => [number, number];
+    __sinema?: (k: { pos: [number, number, number]; bak: [number, number, number]; fov: number } | null) => void;
     /** Quest hattında belirli göreve atla (id ile; smoke testleri sıralı sayaç görevlerini beklemesin). */
     __setQuest?: (id: string) => Record<string, unknown>;
     /** Kalıcı sayaç ver (ör. waiterServed=20 → arka-plan reveal şartını test et). */
@@ -355,6 +358,14 @@ export function installDevHooks(): void {
     useGame.setState({ player: [x, 0.6, z] as Vec3 });
     return window.__game!();
   };
+
+  window.__girdi = (x: number, z: number) => {
+    useGame.getState().setKeyboardInput(x, z);
+    const p = useGame.getState().player;
+    return [p[0], p[2]];
+  };
+
+  window.__sinema = (k) => useSandbox.getState().set({ sinema: k });
 
   window.__park = () => {
     const s = useGame.getState();

@@ -16,6 +16,7 @@
  *        ?f2fps=0        kare-hızı tavanı KAPALI (K-A öncesi davranış — tavanın kazancı ölçülsün)
  *        ?f2fps=30       kare-hızı tavanı 30 (varsayılan: KARE_TAVANI_FPS)
  *        ?f2ad=G0        ham çıktıya yazılacak kol adı (ölçüm aracının damgası)
+ *        ?kayitdpr=3     mağaza videosu (D-170): dpr bütçesiz ve tavanı aşarak bu değere çıkar
  * İkisi birlikte verilebilir: `?f2golge=0&f2dpr=1`.
  */
 
@@ -28,6 +29,8 @@ export interface PerfKol {
   dprTavan: number;
   /** Kare-hızı tavanı (fps); `-1` = dokunma (üretim tavanı), `0` = tavan yok. */
   fpsTavan: number;
+  /** Mağaza videosu kaydı: dpr bu değere sabitlenir (bütçe ve 2 tavanı yok sayılır); 0 = dokunma. */
+  kayitDpr: number;
   /** Kol adı — ham çıktı damgası. */
   ad: string;
 }
@@ -41,7 +44,8 @@ function oku(): PerfKol | null {
   const golgeHam = q.get('f2golge');
   const dprHam = q.get('f2dpr');
   const fpsHam = q.get('f2fps');
-  if (golgeHam === null && dprHam === null && fpsHam === null) return null;
+  const kayitHam = q.get('kayitdpr');
+  if (golgeHam === null && dprHam === null && fpsHam === null && kayitHam === null) return null;
 
   const golgeSayi = golgeHam === null ? -1 : Number(golgeHam);
   const dprSayi = dprHam === null ? 0 : Number(dprHam);
@@ -54,6 +58,7 @@ function oku(): PerfKol | null {
     dprTavan: Number.isFinite(dprSayi) && dprSayi > 0 ? dprSayi : 0,
     // `f2fps=0` → tavan yok (ölçüm kolu). Verilmediyse/geçersizse -1: üretim tavanı kalır.
     fpsTavan: Number.isFinite(fpsSayi) && fpsSayi >= 0 ? fpsSayi : -1,
+    kayitDpr: Number(kayitHam) > 0 ? Number(kayitHam) : 0,
     ad: q.get('f2ad') || 'kol',
   };
 }

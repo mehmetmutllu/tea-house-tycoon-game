@@ -29,3 +29,17 @@ gönderilebilir (son sürüme göre incelenir). Product Page Optimization ile A/
 - https://developer.apple.com/news/?id=ljpl7kyn
 - https://developer.apple.com/app-store/asset-best-practices/
 - https://developer.apple.com/help/app-store-connect/manage-app-information/manage-your-app-store-assets
+
+## Üretim (D-170, 2026-10-21)
+Araç: `tools/magaza-video.mjs` + sahne dosyaları `magaza-video-header.mjs` · `magaza-video-search.mjs`.
+`VIDEO=header node tools/magaza-video.mjs` · `VIDEO=search DIL=tr|en node tools/magaza-video.mjs` (her biri ~4 dk, RTX 3060).
+- **Sanal saat:** rAF + performance.now + Date.now sayfa açılmadan sarılır, her kare tam 1/60 sn; CSS animasyonları
+  `Animation.setPlaybackRate(0,08)` + kare başı 208 ms gerçek süre ile aynı hıza bağlanır → takılma yok.
+- **Süper örnekleme:** 5760 px çizilir (`?kayitdpr=` dev kolu, PIXEL_BUDGET'i aşar), lanczos ile 3840'a iner; gölge 4096.
+- **Döngü:** SURE+XF çekilir, sonun XF'i başa erir (xfade/acrossfade). Header kamerası SURE periyotlu sinüs → dikiş
+  ölçüldü: son→ilk kare SSIM 0,880 = ardışık kare 0,884.
+- **Header** 20 sn: geç oyun (üç salon dolu, Usta masalar, ceviz parke + bordo), yazısız, salon müziği −18 LUFS.
+- **Search** 14 sn: oyuncu joystick girdisiyle (`__girdi`) ocaktan 5 çay → 3 masaya servis → "4. Masayı aç" (250) →
+  masa belirir → mıknatıs parayı toplar → ocağa döner. Sahneleme: başta müşteriler çay bekler, garson tepsisi boş.
+  Pad'ler görev sırasına bağlı: kart dikişte değişir, harman 0,6 sn.
+- Çıktı (git dışı): `docs/magaza-video/` + Masaüstü `TeaHouseTycoon-AppStore-Video/`.
