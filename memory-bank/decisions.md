@@ -4990,3 +4990,12 @@ dahil); iOS'a gerçek ikon girmiş, Android'e hiç girmemişti. **Çözüm:** `t
 Splash.imageset) üretir: uyarlanır ön katman 108dp tuvalde resim 82dp (kendi altın çerçevesi maskenin dışında kalır), zemin rengi
 kenar sarısı; API<26 için yuvarlak/köşeli hazır PNG; açılış iOS karesinden orana kesilir; Android 12+ açılış zemini `#1C1647`.
 iOS 1.0.0 yayına girince `ios-1.0.1` dalı main'e birleşti, App ID'ye iCloud yeteneği ASC API'den açıldı. İki platform 1.0.3 (10003).
+
+## D-170 · App Store tanıtım videoları: Search = oynanış, Header = sinematik tur, yazısız (2026-10-21)
+
+**Bağlam:** Apple 2026-10-05'te ürün sayfası Header'ı (21:9) ve arama kartı (3:2) için video/görsel açtı (iOS 27+). Ölçüler ve
+kurallar: `docs/magaza-tanitim-video-raporu.md`. **Karar (kullanıcı):** iki ayrı video. **Search 3:2 ~15 sn:** gerçek oynanış, HUD
+görünür. **Header 21:9 ~20 sn:** HUD'suz sinematik kamera turu. İkisi de **yazısız**: tek dosya tüm dillere geçer, kırpılma riski
+yok. **Üretim yolu:** oyun tarayıcıda hedef oranın kendi penceresinde (yatay destekli, kırpma yok), sabit zaman adımıyla kare kare
+4K ekran görüntüsü → ffmpeg 30 fps H.264. Döngü dikişsiz olacak: aynı kadrajda başlayıp bitecek. Yükleme Asset Library'den, yeni
+sürüm gerekmeden yapılacak.

@@ -14,6 +14,8 @@ main'e birleşti; App ID'ye iCloud (ASC API). Sürüm 1.0.3 (10003). Codemagic i
 `docs/play/metin/*.txt` (notlar ChatGPT'ye danışılmadı — kullanıcı onayladı mı bak).
 
 ## ⏭️ SIRADAKİ ADIM
+0. **App Store tanıtım videoları (D-170):** kayıt aracı (`tools/`) + Search 3:2 oynanış + Header 21:9 sinematik, yazısız;
+   taslakları yan yana göster → seçim → Asset Library'den yükle. Ölçüler: `docs/magaza-tanitim-video-raporu.md`.
 1. iOS 1.0.3 inceleme sonucunu izle (ASC). Onayda otomatik yayın.
 2. Play ÜRETİM ERİŞİMİ ALINDI (2026-10-20). Üretim sürümü: 1.0.3 AAB (kapalı testte varsa Add from library), sürüm notu TR+EN
    `4-metinler/*.txt`, ülkeler üretimde ayrıca seçilir (rehber 9B). Arkadaş yükleyecek → yayına girince AdMob'u mağazaya bağla.
