@@ -98,23 +98,46 @@ async function bekleyenler(s, masalar) {
   }, masalar);
 }
 
-/** Yolun üstüne sarmal para istifi (her biri `deger`). */
-async function paraIstifi(s, [x0, z0], adet, deger) {
-  await s.evaluate(([x0, z0, k, v]) => {
+/** Yolun üstüne sarmal para istifleri: [[x, z], …], her istifte `adet` sikke (her biri `deger`). */
+async function paraIstifi(s, merkezler, adet, deger) {
+  await s.evaluate(([merkezler, k, v]) => {
     const coins = [];
-    for (let i = 0; i < k; i++) {
-      const a = i * 2.39996;
-      const r = 0.2 + Math.sqrt(i) * 0.16;
-      coins.push({ id: 900000 + i, pos: [x0 + Math.cos(a) * r, 0.05, z0 + Math.sin(a) * r], value: v, age: 0 });
+    for (const [x0, z0] of merkezler) {
+      for (let i = 0; i < k; i++) {
+        const a = i * 2.39996;
+        const r = 0.2 + Math.sqrt(i) * 0.16;
+        coins.push({ id: 900000 + coins.length, pos: [x0 + Math.cos(a) * r, 0.05, z0 + Math.sin(a) * r], value: v, age: 0 });
+      }
     }
     window.__setState({ coins });
-  }, [x0, z0, adet, deger]);
+  }, [merkezler, adet, deger]);
+}
+
+/** Çekim kısa: yükseltme noktası / pad bu oranda ödenmiş başlar, dolumun yalnız son kısmı görünür. */
+async function onDolum(s, { masa, pad }) {
+  return s.evaluate(async ([masa, pad]) => {
+    const { useGame } = await import('/src/game/store.ts');
+    const { tableUpgradeCost } = await import('/src/config/economy.config.ts');
+    const { areaOfTable } = await import('/src/game/world.ts');
+    const st = useGame.getState();
+    if (masa) {
+      const f = [...st.tableUpgradeFills];
+      f[masa[0]] = tableUpgradeCost(st.tableLevels[masa[0]], areaOfTable(masa[0])) * masa[1];
+      useGame.setState({ tableUpgradeFills: f });
+    }
+    if (pad) {
+      const g = window.__game();
+      useGame.setState({ padFills: { ...st.padFills, [g.currentPad]: g.padCost * pad } });
+      return g.currentPad;
+    }
+    return null;
+  }, [masa, pad]);
 }
 
 /** Çekimler: `hazirla` sahneyi kurar ve o çekimin kare başı yürütücüsünü döndürür. */
 export const CEKIMLER = [
   {
-    ad: 'çay al', sure: 2.6,
+    ad: 'çay al', sure: 3,
     // Tezgâh arka bantta (−13, −10,3), alma noktası gövdeye 0,5. Arka koridordan (z −8,8) gelir.
     hazirla: async (s) => {
       await yerles(s, [-6.5, -8.7], { durum: { tray: 0, trayFood: 0, coins: [], ready: { tea: 4, tost: 2 } } });
@@ -122,36 +145,39 @@ export const CEKIMLER = [
     },
   },
   {
-    ad: 'servis', sure: 4.4,
+    ad: 'servis', sure: 3.6,
     hazirla: async (s) => {
-      await yerles(s, [-14.2, 8.5], { durum: { tray: 5, trayFood: 1, coins: [] } });
+      await yerles(s, [-12.6, 8.5], { durum: { tray: 5, trayFood: 1, coins: [] } });
       await bekleyenler(s, [0, 1, 2, 3]);
-      return yurut([[-10.25, 8.5, null], [-10.25, 6.1, 0.3], [-10.25, 10.9, 0.3], [-6.75, 10.9, 0.3], [-6.75, 8.3, null], [-3.5, 8.3, 9]]);
+      return yurut([[-10.25, 8.5, null], [-10.25, 6.1, 0.3], [-10.25, 10.9, 0.3], [-6.75, 10.9, 0.3], [-6.75, 8.3, 9]]);
     },
   },
   {
-    ad: 'para', sure: 3,
-    // 2. salonun koridoru (z 8,5); istif yolun ortasında, mıknatıs (r 5) onu oyuncuya çeker.
+    ad: 'para', sure: 3.6,
+    // 2. salonun koridoru (z 8,5); dört büyük istif yol boyunca. Mıknatıs bu çekimde 2. kademe (r 3,4): istifler
+    // kadraja girip sırayla akar, hepsi ilk anda emilmez — sayaç adım adım fırlar.
     hazirla: async (s) => {
-      await yerles(s, [1.5, 8.5], { durum: { tray: 0, trayFood: 0 } });
-      await paraIstifi(s, [8.2, 8.5], 70, 35);
+      await yerles(s, [-5, 8.5], { durum: { tray: 0, trayFood: 0, charUpgrades: { tray: 4, magnet: 1, speed: 3 } } });
+      await paraIstifi(s, [[2.5, 7.8], [5, 9.2], [7.5, 7.8], [10, 9.2]], 100, 35);
       return yurut([[13.5, 8.5, 9]]);
     },
   },
   {
-    ad: 'yükselt', sure: 5.8,
-    // Masa 3'ün yükseltme noktası (−3,1, 3,1): Sv 3 → 4 örtü gelir. Dolum ~3,5 sn; sonrasında ~1 sn yeni hâl.
+    ad: 'yükselt', sure: 3.8,
+    // Masa 3'ün yükseltme noktası (−3,1, 3,1): Sv 3 → 4 örtü gelir. Nokta %55 ödenmiş: dolum ~1,6 sn, sonra yeni hâl.
     hazirla: async (s) => {
-      await yerles(s, [0.3, 5.6], { durum: { coins: [] } });
+      await yerles(s, [0.3, 5.6], { durum: { coins: [], charUpgrades: { tray: 4, magnet: 3, speed: 3 } } });
+      await onDolum(s, { masa: [YUKSELEN, 0.55] });
       return yurut([[-3.1, 3.1, 9]]);
     },
   },
   {
-    ad: 'yeni masa', sure: 6.2,
-    // 3. salonun sıradaki masası (−11,7, −1,8): pad dolar, masa belirir, oyuncu masadan kayarak çıkar.
+    ad: 'yeni masa', sure: 4.2,
+    // 3. salonun sıradaki masası (−11,7, −1,8): pad yarı ödenmiş, dolar, masa belirir, oyuncu masadan kayarak çıkar.
     hazirla: async (s) => {
-      await yerles(s, [-5.6, 0.5]);
-      return yurut([[-10.2, 0.3, null], [-11.7, -1.8, 4.6], [-9.4, 0.4, 9]]);
+      await yerles(s, [-7.4, 0.4]);
+      console.log('pad', await onDolum(s, { pad: 0.5 }));
+      return yurut([[-10.2, 0.3, null], [-11.7, -1.8, 2.4], [-9.4, 0.4, 9]]);
     },
   },
   {

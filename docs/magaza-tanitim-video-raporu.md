@@ -59,3 +59,12 @@ Araç: `tools/magaza-video.mjs` + sahne dosyaları `magaza-video-header.mjs` · 
 yaklaşıp uzaklaşır (döngü) · B) diorama: tüm kıraathane ortada, minyatür gibi çok yavaş yörünge · C) hareketsiz ana görsel
 (universal PNG) + search videosu. Önce Apple şablonu indirilip güvenli alan kareye bindirilerek denenmeli.
 Kaynak: https://blakecrosley.com/blog/app-store-product-page-marketing-2026 · https://www.applaunchflow.com/blog/app-store-header-examples · https://developer.apple.com/videos/play/wwdc2026/205/
+
+## Tur 3 (2026-10-21, kullanıcının tarifi)
+- **Header 15 sn:** çaycı tezgâhtan dolu tepsiyle çıkar, drone ÖNÜNDEN takip eder ve yürüdükçe geri/yukarı açılır
+  (ön 4,8 → 7,6 br, yükseklik 2,8 → 5,0) · masaya köşeden yanaşır (müşterinin içine girmez) · varıştan sonra genel
+  plana yükselir · döngü 1,2 sn harman. Garsonlar sağ yarıda dolu tepsiyle başlar (boş tepsiyle tezgâha yürüyen garson
+  takip kadrajını kapatıyordu).
+- **Search 21,4 sn, 6 çekim 3-4 sn:** çay al 3 · servis 3,6 · para 3,6 (4×100 sikke, mıknatıs bu çekimde r 3,4 →
+  istifler sırayla akar, sayaç ~14,9 bin → ~28,9 bin) · yükselt 3,8 (nokta %55 ödenmiş başlar) · yeni masa 4,2 (pad
+  %50) · geniş plan 3,2. Geciken kare 0.
