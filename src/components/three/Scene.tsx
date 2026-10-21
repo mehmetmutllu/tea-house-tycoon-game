@@ -1,6 +1,6 @@
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
+import { Color, Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, gateOf, tableNextCost, openServices, doorX as doorAt, entranceAt, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
@@ -313,7 +313,7 @@ function setFov(cam: PerspectiveCamera, fov: number) {
 }
 
 function CameraRig() {
-  const { camera, size } = useThree();
+  const { camera, size, scene } = useThree();
   const desired = useMemo(() => new Vector3(), []);
   const look = useMemo(() => new Vector3(), []); // pürüzsüzleştirilmiş lookAt hedefi (oyuncuyla aynı damping)
   const tmp = useMemo(() => new Vector3(), []);
@@ -344,6 +344,11 @@ function CameraRig() {
       const sn = useSandbox.getState().sinema;
       if (sn) {
         setFov(camera as PerspectiveCamera, sn.fov);
+        // Alçak kamerada duvarın üstü görünür; oyunda hiç görünmeyen koyu boşluk yerine gök.
+        if (sn.gok) {
+          if (scene.background instanceof Color) scene.background.set(sn.gok);
+          scene.fog?.color.set(sn.gok);
+        }
         camera.position.set(...sn.pos);
         look.set(...sn.bak);
         camera.lookAt(look);

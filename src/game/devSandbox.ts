@@ -32,7 +32,7 @@ interface SandboxState {
   camFov: number;
   camDistMul: number;
   /** Mağaza videosu (D-170): kamera oyuncuyu bırakır, kayıt aracının verdiği yoldan geçer. */
-  sinema: { pos: [number, number, number]; bak: [number, number, number]; fov: number } | null;
+  sinema: { pos: [number, number, number]; bak: [number, number, number]; fov: number; gok?: string } | null;
   /**
    * MUTFAK ZEMİNİ KARŞILAŞTIRMA KOLU (S4). Karo boyu × renk çifti. Kullanıcı ekranda seçiyor;
    * seçim kesinleşince kaybeden kol koddan silinir.

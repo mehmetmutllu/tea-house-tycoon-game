@@ -4999,3 +4999,11 @@ görünür. **Header 21:9 ~20 sn:** HUD'suz sinematik kamera turu. İkisi de **y
 yok. **Üretim yolu:** oyun tarayıcıda hedef oranın kendi penceresinde (yatay destekli, kırpma yok), sabit zaman adımıyla kare kare
 4K ekran görüntüsü → ffmpeg 30 fps H.264. Döngü dikişsiz olacak: aynı kadrajda başlayıp bitecek. Yükleme Asset Library'den, yeni
 sürüm gerekmeden yapılacak.
+
+## D-171 · Masa açılışında oyuncu ışınlanmaz, kayar (2026-10-21)
+
+**Sorun (kullanıcı, mağaza videosunda gördü):** masa pad'i oyuncunun durduğu yerde açılır; `tick.ts` onu tek karede
+~1,4 br masanın dışına koyar → ekranda ışınlanma. **Çözüm (yalnız görüntü):** `actorTransform.ts` mantık konumunda
+0,8–3 br'lik tek kare sıçramayı (yürüyüş ≤ ~0,5 br/kare; ışınlanma/doğum > 3) 0,25 sn ease-out ile kaydırır, kayarken
+yön değiştirmez. Mantık, çarpışma ve testler aynı. Mağaza videoları (D-170) tur 2: header drone turu, search 6 çekimli
+kesmeli senaryo, zemin Klasik Parke (kullanıcı fayansı reddetti).

@@ -2,7 +2,7 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "14.10.2026",
- "kart": 87,
+ "kart": 88,
  "gunluk": [
   {
    "tarih": "25.09.2026",
@@ -1270,6 +1270,18 @@
     "<b>Bekçi:</b> <code>tests/erisim-h1.test.ts</code> 16 denetim · <b>16 mutasyon, kaçan 0</b> · vitest <b>1170</b> ✓ · duman 45/45 ✓"
    ],
    "not": "<b>Yolda yıllardır yeşil yanan üç sahte test bulundu.</b> Bardak döngüsünün üç fikstürü oyuncuyu salonun ortasındaki <code>[1, 1]</code> noktasına koyup kaba <code>tableIndex: 0</code> etiketi veriyordu — ikisi birbirini tutmuyordu ve eski nokta-tetiği bunu göremediği için sorun çıkmamıştı. Gövde tetiği ilk günde yakaladı.<br><br><b>Kaçan mutasyon yine bir SINIR öğretti.</b> <code>hedefEkranda</code>'nın derinlik denetimi bugünkü kamera ankrajında <b>zemin</b> hedefleri için ölü (160 × 160 br tarandı, 0 nokta) — o yüzden silinince hiçbir test kırılmadı. Ama fonksiyon yükseklik alıyor: y yükselince taban kipte <b>3.773</b>, portrede 862 nokta kameranın <b>arkasındayken</b> “ekranda” sanılıyor. <b>Kat 3 çatı terası</b> geldiğinde kapı sessizce ters çalışırdı."
+  },
+  {
+   "tarih": "25.09.2026",
+   "etiket": "F4c-4 — 💎 vitrini cilası (D-157)",
+   "baslik": "Dekor <b>salondaki yerinde</b>, alım artık sessiz değil",
+   "govde": "F4c-3 kapandı: tabela bekçisi 11 mutasyonun hepsini yakaladı, final ölçümde K0 = K2. Kullanıcı mağazanın son hâlini 22 karede inceledi ve iki şey istedi: dekor oyunda nasıl duracaksa öyle görünsün, satın alma yazıları \"boğuk\" olmasın.<br><br>Oyunun kamerası yan duvardaki eşyayı yandan görüyordu (tablo hiç görünmüyordu). Önizleme artık ana sahnenin ayrı bir kamerayla çekilmiş karesi: çapraz açı, eşya ortada, kutunun dörtte biri boyunda. Teklif kartı ışıklı T3 oldu, 14 metin yenilendi, alımda bildirim + ses + ödül kartı var.",
+   "maddeler": [
+    "oyun açısı yan duvarda <b>tablo 0 px</b> → çapraz açı <b>9/9</b> eşya okunuyor",
+    "mesafe kullanıcıyla ayarlandı: %30 → <b>%25</b>",
+    "teklif T3 · \"Bir kez alınabilir\" · Paketler notu artık kesilmiyor",
+    "bekçi 24 test · mutasyon <b>12/12</b> · duman <b>67/67</b>"
+   ]
   }
  ]
 }

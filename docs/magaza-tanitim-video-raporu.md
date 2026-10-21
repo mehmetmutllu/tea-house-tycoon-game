@@ -36,10 +36,12 @@ Araç: `tools/magaza-video.mjs` + sahne dosyaları `magaza-video-header.mjs` · 
 - **Sanal saat:** rAF + performance.now + Date.now sayfa açılmadan sarılır, her kare tam 1/60 sn; CSS animasyonları
   `Animation.setPlaybackRate(0,08)` + kare başı 208 ms gerçek süre ile aynı hıza bağlanır → takılma yok.
 - **Süper örnekleme:** 5760 px çizilir (`?kayitdpr=` dev kolu, PIXEL_BUDGET'i aşar), lanczos ile 3840'a iner; gölge 4096.
-- **Döngü:** SURE+XF çekilir, sonun XF'i başa erir (xfade/acrossfade). Header kamerası SURE periyotlu sinüs → dikiş
-  ölçüldü: son→ilk kare SSIM 0,880 = ardışık kare 0,884.
-- **Header** 20 sn: geç oyun (üç salon dolu, Usta masalar, ceviz parke + bordo), yazısız, salon müziği −18 LUFS.
-- **Search** 14 sn: oyuncu joystick girdisiyle (`__girdi`) ocaktan 5 çay → 3 masaya servis → "4. Masayı aç" (250) →
-  masa belirir → mıknatıs parayı toplar → ocağa döner. Sahneleme: başta müşteriler çay bekler, garson tepsisi boş.
-  Pad'ler görev sırasına bağlı: kart dikişte değişir, harman 0,6 sn.
+- **Header** 24 sn (tur 2): drone turu — kapalı Catmull-Rom yol (6 anahtar kare), alçak uçuşta duvar üstü
+  koyu boşluk yerine gök rengi (`__sinema({ gok })`, yalnız kayıt). Geç oyun, Klasik Parke zemin (kullanıcı:
+  "başlangıç zemini"; krem fayans reddedildi), çay yeşili duvar, bordo masa. Döngü: SURE+1 sn çekilir, son 1 sn
+  başa erir; dikiş ölçüldü (son→ilk SSIM ≈ ardışık kare). Salon müziği −18 LUFS, acrossfade ile döner.
+- **Search** 24 sn (tur 2, kesmeli — kullanıcı: "sahne kese kese, full senaryo"): tek geç-oyun dünyasında 6 çekim
+  (çay al · servis · mıknatısla para · masa yükselt · yeni masa · geniş plan); dünya çekimden çekime sürer.
+  Oyuncu yumuşatılmış joystick girdisiyle (`__girdi`) yürür. Sahneleme: başlangıç paketi teklifi gösterilmiş
+  sayılır, servis masalarında müşteri çay bekler. Kesmeler sert, döngü de kesme → harman yok.
 - Çıktı (git dışı): `docs/magaza-video/` + Masaüstü `TeaHouseTycoon-AppStore-Video/`.

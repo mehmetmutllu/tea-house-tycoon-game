@@ -43,7 +43,7 @@ declare global {
     __teleport?: (x: number, z: number) => Record<string, unknown>;
     /** Mağaza videosu (D-170): joystick girdisi + hafif konum okuma (`__game` her karede ağır). */
     __girdi?: (x: number, z: number) => [number, number];
-    __sinema?: (k: { pos: [number, number, number]; bak: [number, number, number]; fov: number } | null) => void;
+    __sinema?: (k: { pos: [number, number, number]; bak: [number, number, number]; fov: number; gok?: string } | null) => void;
     /** Quest hattında belirli göreve atla (id ile; smoke testleri sıralı sayaç görevlerini beklemesin). */
     __setQuest?: (id: string) => Record<string, unknown>;
     /** Kalıcı sayaç ver (ör. waiterServed=20 → arka-plan reveal şartını test et). */

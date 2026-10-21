@@ -130,7 +130,38 @@ try {
   const kareSayisi = Math.round(sahne.SURE * FPS);
   const adim = 1000 / FPS;
 
-  if (KIP === 'deneme') {
+  if (sahne.CEKIMLER) {
+    // KESMELİ VİDEO: her çekim kendi sahnelemesini kurar, kayıtsız ön sarmayla yerleşir (kamera, NPC),
+    // sonra çekilir. Kesmeler sert; döngü de bir kesme olduğundan harman yok. Deneme: çekim başına 3 kare.
+    const [w, h] = AYAR.cikti;
+    const son = path.join(OUT, `${VIDEO}-${DIL}.mp4`);
+    const ff = KIP === 'deneme' ? null : spawn('ffmpeg', ['-y', '-hide_banner', '-loglevel', 'error', '-f', 'image2pipe', '-framerate', String(FPS), '-c:v', 'png', '-i', '-',
+      '-vf', `scale=${w}:${h}:flags=lanczos,format=yuv420p`, '-c:v', 'libx264', '-preset', 'slow', '-crf', '14', '-profile:v', 'high', '-level', '5.2',
+      '-movflags', '+faststart', son], { stdio: ['pipe', 'inherit', 'inherit'] });
+    const basla = Date.now();
+    for (const [ci, c] of sahne.CEKIMLER.entries()) {
+      const kare = await c.hazirla(s);
+      for (let k = 0; k < Math.round((c.on ?? 0.6) * FPS); k++) await s.evaluate((m) => window.__sanalKare(m), adim);
+      tempo = Date.now();
+      const n = Math.round(c.sure * FPS);
+      const anlar = new Set([0, Math.floor(n / 2), n - 1]);
+      for (let k = 0; k < n; k++) {
+        await kare(s, k / FPS);
+        await s.evaluate((m) => window.__sanalKare(m), adim);
+        await bekleKare();
+        if (ff) {
+          const png = await cek();
+          if (!ff.stdin.write(png)) await new Promise((r) => ff.stdin.once('drain', r));
+        } else if (anlar.has(k)) writeFileSync(path.join(OUT, 'deneme', `${VIDEO}-c${ci + 1}-${k}.png`), await cek());
+      }
+      console.log(`çekim ${ci + 1} ${c.ad}  ${((Date.now() - basla) / 1000).toFixed(0)} sn`);
+    }
+    if (ff) {
+      ff.stdin.end();
+      await new Promise((r) => ff.on('close', r));
+      console.log('bitti', son, 'geciken kare', gecikme);
+    }
+  } else if (KIP === 'deneme') {
     const anlar = (process.env.ANLAR ?? '0,0.25,0.5,0.75').split(',').map(Number);
     let k = 0;
     for (const an of anlar) {
