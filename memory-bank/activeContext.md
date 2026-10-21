@@ -18,7 +18,10 @@ video yüklendi ve TR/EN sayfalara header + search olarak yerleşti. Codemagic d
 0. **1.0.4 incelemede** (2026-10-22, build 4, gönderim `0029aae2…`, Yenilikler "Arayüzde iyileştirmeler…"). Onayda otomatik yayın.
 1. 1.0.4 yayına girince sellerUrl kök olur → AdMob'da "Güncellemeleri kontrol edin" (≈24 sa). Lookup:
    `curl -s "https://itunes.apple.com/lookup?id=6816790079"` → sellerUrl.
-2. Play üretim 1.0.3/1.0.4 (arkadaş yükler) → yayına girince AdMob'u mağazaya bağla. Android'de de geliştirici sitesi kök olmalı.
+2. **Play'e 1.0.4 gönderilecek (kullanıcı: "sonra göndericez")** — 1.0.3 henüz yüklenmediyse atlanır, doğrudan 1.0.4
+   (versionCode 10004; görev bandı düzeltmesi Android tablet/yatayda da geçerli). Sırası gelince `npm run play` → AAB + teslim
+   zip'i masaüstüne; Yenilikler "Arayüzde iyileştirmeler ve küçük düzeltmeler yapıldı." / EN aynısı. Arkadaş Play kaydında web
+   sitesini KÖK `https://mehmetmutllu.github.io` yapmalı (AdMob Android doğrulaması, D-172). Yayından sonra AdMob'u bağla.
 3. iOS'ta iCloud kayıt gerçek cihazda denenmedi.
 4. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · duman "q_coin" ara sıra · lint `src/game/ads.ts` 2 hata.
 

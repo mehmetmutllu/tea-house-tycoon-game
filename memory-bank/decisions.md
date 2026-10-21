@@ -5007,3 +5007,13 @@ sürüm gerekmeden yapılacak.
 0,8–3 br'lik tek kare sıçramayı (yürüyüş ≤ ~0,5 br/kare; ışınlanma/doğum > 3) 0,25 sn ease-out ile kaydırır, kayarken
 yön değiştirmez. Mantık, çarpışma ve testler aynı. Mağaza videoları (D-170) tur 2: header drone turu, search 6 çekimli
 kesmeli senaryo, zemin Klasik Parke (kullanıcı fayansı reddetti).
+
+## D-172 · Header = önden takip + açılış · geliştirici sitesi KÖK adres · iOS 1.0.4 (2026-10-22)
+
+**Karar (kullanıcı):** Header tek fikir: çaycıyı drone önden takip eder, yürüdükçe geri/yukarı açılır, masaya varınca
+salona yükselir, fade ile döner (15 sn). Search 6 çekim, eylem bitince kesilir (18 sn), oyuncunun gördüğü kadraj.
+Mağaza "geliştirici sitesi" (Marketing URL) **yolsuz kök** `https://mehmetmutllu.github.io` olur: alt dizinli sellerUrl
+AdMob app-ads.txt doğrulamasını düşürdü (dosya kökte doğruydu; Wordmaster'da da kök adresle çözülmüştü). Play kaydı da
+aynı kurala uyar. Header/Search yalnız düzenlenebilir sürüme yerleşir (ASC API 4.5.1 Asset Library: video → placement
+`PRODUCT_PAGE_HEADER_ASSET` / `APP_STORE_SEARCH_RESULTS_ASSET`, grup `DEFAULT_PROFILE`) → 1.0.4 bunun için açıldı ve
+görev bandı ortalama düzeltmesini de taşır. Rapor: `docs/magaza-tanitim-video-raporu.md` §Tur 3.

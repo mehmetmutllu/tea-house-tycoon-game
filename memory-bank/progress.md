@@ -133,7 +133,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-10-14: ChatGPT revizesi tam ekranlara girdi — kontursuz kart + yumuşak gölge, beyaz geri, mor seçili sekme, kilitli SIRADA · D-168 · vitest 1862 · duman 74/74 · test APK kullanıcıda · Apple: bekle (geri çekme sırayı sıfırlar) · Play 1.0.2 (10002) AAB + TAM zip hazır
   · 2026-10-20: **iOS 1.0.0 yayında** → 1.0.3 (10003) iki platform: Android ikon + açılış Capacitor varsayılanından gerçeğe (D-169) · `ios-1.0.1` birleşti, iCloud yeteneği açıldı · Codemagic derlemesi yeşil (iCloud eklentisi ilk derlemede geçti) · Play AAB + zip masaüstünde · vitest 1862 · duman 74/74
   · 2026-10-21: App Store Header/Search tanıtım videoları — kare kare kayıt aracı (`tools/magaza-video.mjs`), header drone turu ✅, search 6 çekimli kesmeli (TR/EN işlenecek) · masa açılışında oyuncu kayar (D-171) · D-170 · `docs/magaza-tanitim-video-raporu.md` · vitest 1862 · duman 74/74 (ilk koşu q_coin kararsızlığıyla 16/23) · kullanıcı sonuçtan tam memnun değil → önce header araştırması
-  · 2026-10-21 (2.): videolar tur 3 — header önden takip + açılan kamera · search 18 sn, beklemesiz, oyun kadrajı · geniş ekranda görev bandı sağa kayma hatası düzeldi (translate) + nav arası 8 px · vitest 1864 · duman 74/74
+  · 2026-10-21 (2.): videolar tur 3 — header önden takip + açılan kamera · search 18 sn, beklemesiz, oyun kadrajı · geniş ekranda görev bandı sağa kayma hatası düzeldi (translate) + nav arası 8 px · vitest 1864 · duman 74/74 · **iOS 1.0.4 incelemede** (videolar + kök geliştirici adresi) · D-172
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅
