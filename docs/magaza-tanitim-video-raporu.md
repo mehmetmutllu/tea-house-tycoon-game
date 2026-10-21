@@ -68,3 +68,9 @@ Kaynak: https://blakecrosley.com/blog/app-store-product-page-marketing-2026 · h
 - **Search 21,4 sn, 6 çekim 3-4 sn:** çay al 3 · servis 3,6 · para 3,6 (4×100 sikke, mıknatıs bu çekimde r 3,4 →
   istifler sırayla akar, sayaç ~14,9 bin → ~28,9 bin) · yükselt 3,8 (nokta %55 ödenmiş başlar) · yeni masa 4,2 (pad
   %50) · geniş plan 3,2. Geciken kare 0.
+- **Tur 3b (kullanıcı: "aralarda bekleme var", "görev çubuğu çok sağda"):** çekimler eylem bitince kesilir (yürütücü
+  `true` döner; `sure` artık üst sınır) → çay al 2,1 · servis 3,0 · para 3,4 · yükselt 2,8 · yeni masa 3,5 · geniş 3,2
+  = **18,0 sn**. Kamera oyunun kendi kadrajı (uzaklık çarpanı 1). **Oyun hatası bulundu:** geniş ekranda bant
+  `transform: translateX(-50%)` ile ortalanıyordu, `bandDone` animasyonu transform'u ezip bandı yarı eni kadar sağa
+  kaydırıyordu → `translate: -50% 0` + bekçi `tests/bant-ortalama.test.ts` (2 mutasyon yakalandı). Bant ile nav arası
+  8 px açıldı (78 → 86; üstündeki yığın/bildirim/ipuçları da +8).

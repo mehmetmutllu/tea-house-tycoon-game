@@ -6,8 +6,8 @@
  * Masa çarpışma kutusu gövde + oyuncu yarıçapı (dörtlü ±1,34): yollar koridorlardan geçer.
  */
 
-/** Arama kartı telefonda küçük: kamera oyunun yatay kadrajından biraz yakın (karakterler okunsun). */
-const KAM_YAKIN = 0.8;
+/** Kamera oyuncunun gördüğü kadraj: oyunun kendi takip kamerası, uzaklık çarpanı 1 (tur 3: kullanıcı). */
+const KAM_YAKIN = 1;
 
 const PADS = 'table2 table3 waiter table4 waiter2 zone2 z2table2 z2table3 dishwasher z2table4 zone3 z3table2 z3table3 z3table4 waiter3 lavabo z3table5 z3table6 z3table7 z3table8'.split(' ');
 const DEKOR = ['radyo', 'koltuk', 'lamba', 'tablo', 'semaver', 'gramofon', 'kanarya', 'saat'];
@@ -51,11 +51,18 @@ async function yerles(s, [x, z], { yakin = KAM_YAKIN, uzak = false, durum = {} }
 /**
  * Yürüyüş: [x, z, bekle] noktaları. bekle = null → durmadan geçilir (köşe 0,7 br önce dönülür);
  * sayı → noktaya yavaşlayarak varılır ve o kadar sn durulur. Girdi yumuşatılır (joystick'e parmakla
- * dokunur gibi; ani 90° dönüş yok).
+ * dokunur gibi; ani 90° dönüş yok). Son nokta da bitince `true` döner: çekim orada kesilir (tur 3:
+ * "çayı alıyor, bekliyor" — boşta bekleme kalmasın). `bitti` verilirse o sayfa koşulu da beklenir.
  */
-function yurut(yol) {
-  const d = { i: 0, bekle: 0, son: 0, gx: 0, gz: 0 };
+function yurut(yol, bitti, kuyruk = 0.3) {
+  const d = { i: 0, bekle: 0, son: 0, gx: 0, gz: 0, kosul: false, bittiT: null };
   return async (s, t) => {
+    if (bitti && !d.kosul) d.kosul = await s.evaluate(bitti);
+    if (d.i >= yol.length && (!bitti || d.kosul)) {
+      // Eylemin sonucu bir an görünsün (yeni örtü, dolan tepsi), sonra kes.
+      d.bittiT ??= t;
+      if (t - d.bittiT >= kuyruk) return true;
+    }
     const dt = t - d.son;
     d.son = t;
     const p = await s.evaluate(() => window.__girdi(0, 0));
@@ -66,7 +73,15 @@ function yurut(yol) {
       const dx = x - p[0];
       const dz = z - p[1];
       const uz = Math.hypot(dx, dz);
-      if (bekle == null) {
+      if (typeof bekle === 'function') {
+        // Sayfa koşulu (ör. pad doldu): noktada durulur, koşul gelince sıradakine geçilir.
+        if (await s.evaluate(bekle)) d.i++;
+        else if (uz >= 0.1) {
+          const m = Math.min(1, uz / 0.9) / uz;
+          hx = dx * m;
+          hz = dz * m;
+        }
+      } else if (bekle == null) {
         if (uz < 0.7) d.i++;
         hx = dx / uz;
         hz = dz / uz;
@@ -83,6 +98,7 @@ function yurut(yol) {
     d.gx += (hx - d.gx) * a;
     d.gz += (hz - d.gz) * a;
     await s.evaluate(([a, b]) => window.__girdi(a, b), [d.gx, d.gz]);
+    return false;
   };
 }
 
@@ -140,8 +156,8 @@ export const CEKIMLER = [
     ad: 'çay al', sure: 3,
     // Tezgâh arka bantta (−13, −10,3), alma noktası gövdeye 0,5. Arka koridordan (z −8,8) gelir.
     hazirla: async (s) => {
-      await yerles(s, [-6.5, -8.7], { durum: { tray: 0, trayFood: 0, coins: [], ready: { tea: 4, tost: 2 } } });
-      return yurut([[-10.5, -9.0, null], [-12.6, -9.3, 9]]);
+      await yerles(s, [-2, -8.7], { durum: { tray: 0, trayFood: 0, coins: [], ready: { tea: 4, tost: 2 } } });
+      return yurut([[-10.5, -9.0, null], [-12.6, -9.3, 0]], () => window.__game().tray >= 4);
     },
   },
   {
@@ -149,7 +165,7 @@ export const CEKIMLER = [
     hazirla: async (s) => {
       await yerles(s, [-12.6, 8.5], { durum: { tray: 5, trayFood: 1, coins: [] } });
       await bekleyenler(s, [0, 1, 2, 3]);
-      return yurut([[-10.25, 8.5, null], [-10.25, 6.1, 0.3], [-10.25, 10.9, 0.3], [-6.75, 10.9, 0.3], [-6.75, 8.3, 9]]);
+      return yurut([[-10.25, 8.5, null], [-10.25, 6.1, null], [-10.25, 10.9, null], [-6.75, 10.9, null], [-6.75, 8.3, 0.25]]);
     },
   },
   {
@@ -159,7 +175,7 @@ export const CEKIMLER = [
     hazirla: async (s) => {
       await yerles(s, [-5, 8.5], { durum: { tray: 0, trayFood: 0, charUpgrades: { tray: 4, magnet: 1, speed: 3 } } });
       await paraIstifi(s, [[2.5, 7.8], [5, 9.2], [7.5, 7.8], [10, 9.2]], 100, 35);
-      return yurut([[13.5, 8.5, 9]]);
+      return yurut([[13.5, 8.5, 0]], () => window.__game().coins === 0);
     },
   },
   {
@@ -168,7 +184,7 @@ export const CEKIMLER = [
     hazirla: async (s) => {
       await yerles(s, [0.3, 5.6], { durum: { coins: [], charUpgrades: { tray: 4, magnet: 3, speed: 3 } } });
       await onDolum(s, { masa: [YUKSELEN, 0.55] });
-      return yurut([[-3.1, 3.1, 9]]);
+      return yurut([[-3.1, 3.1, 0]], async () => (await import('/src/game/store.ts')).useGame.getState().tableLevels[3] >= 4);
     },
   },
   {
@@ -177,14 +193,15 @@ export const CEKIMLER = [
     hazirla: async (s) => {
       await yerles(s, [-7.4, 0.4]);
       console.log('pad', await onDolum(s, { pad: 0.5 }));
-      return yurut([[-10.2, 0.3, null], [-11.7, -1.8, 2.4], [-9.4, 0.4, 9]]);
+      // Pad dolunca masa oyuncunun durduğu yerde belirir ve oyun onu dışarı kaydırır: çekim o kaymayla biter.
+      return yurut([[-10.2, 0.3, null], [-11.7, -1.8, 0]], () => window.__game().currentPad !== 'z3table9', 0.7);
     },
   },
   {
     ad: 'geniş plan', sure: 3.2, on: 1.2,
     hazirla: async (s) => {
-      await yerles(s, [0, 9.5], { yakin: 1.15, uzak: true, durum: { tray: 5, trayFood: 1 } });
-      return yurut([[0, 3.5, null], [-2.5, -0.2, 9]]);
+      await yerles(s, [0, 9.5], { uzak: true, durum: { tray: 5, trayFood: 1 } });
+      return yurut([[0, 3.5, null], [-1.5, -3, null], [-1.5, -7.5, 0]]);
     },
   },
 ];

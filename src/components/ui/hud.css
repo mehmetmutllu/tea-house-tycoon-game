@@ -215,7 +215,7 @@
 .side-stack {
   position: absolute;
   right: calc(var(--sar) + 10px);
-  bottom: calc(var(--sab) + 148px);
+  bottom: calc(var(--sab) + 156px);
   z-index: 12;
   display: flex;
   flex-direction: column;
@@ -253,7 +253,7 @@
 .tray-tip {
   position: absolute;
   right: calc(var(--sar) + 62px);
-  bottom: calc(var(--sab) + 190px);
+  bottom: calc(var(--sab) + 198px);
   z-index: 36;
   max-width: 220px;
   padding: 9px 12px;
@@ -371,8 +371,8 @@
   /* GÖREV BANDININ ÜSTÜNDE. İlk kurulum 74px'teydi ve bandın TAM ÜSTÜNE biniyordu (kare:
      `docs/gorsel/ss/t2b-3-karakter-yonlendirme.png` ilk hâli) — üstelik bandın yazdığı şey
      kartın tekrar ettiği hedefin ta kendisiydi, yani ekran aynı cümleyi iki kez söyleyip
-     birini kesiyordu. 78 (bandın alt kenarı) + 58 (bandın taban yüksekliği) + 14 pay = 150. */
-  bottom: calc(var(--sab) + 160px);
+     birini kesiyordu. 86 (bandın alt kenarı; nav ile arası 2026-10-21 tur 3 videosunda 8 px açıldı, üstteki her şey de 8 px kalktı) + 58 (bandın taban yüksekliği) + 14 pay = 158. */
+  bottom: calc(var(--sab) + 168px);
   z-index: 36;
   max-width: 236px;
   padding: 10px 13px;
@@ -469,7 +469,7 @@
   position: absolute;
   left: calc(var(--sal) + 10px);
   right: calc(var(--sar) + 10px);
-  bottom: calc(var(--sab) + 78px);
+  bottom: calc(var(--sab) + 86px);
   z-index: 12;
   display: flex;
   align-items: center;
@@ -1502,7 +1502,7 @@
 
 /* Alt nav + bant geldiği için eski toast konumu yukarı taşınır. */
 .notice {
-  bottom: calc(var(--sab) + 148px);
+  bottom: calc(var(--sab) + 156px);
   /* B9 (T9d): bildirim sağ kenar yığınıyla (44 px düğme + 10 px kenar) AYNI yükseklikte duruyor.
      Ortalı kutu iki yandan o şerit kadar daralır → düğmeye binmez; sığmayan metin kesilmez, iki
      satıra kırılır ("Bekleyen paralar otomatik topla…" yarım kalıyordu). */
@@ -1743,7 +1743,10 @@
     left: 50%;
     right: auto;
     width: min(430px, calc(100% - var(--sal) - var(--sar) - 20px));
-    transform: translateX(-50%);
+    /* `transform` DEĞİL: `bandIn`/`bandDone` transform'u canlandırır ve `both` dolgusuyla son
+       karesini (translateY(0)) tutar — ortalama ezilir, bant yarı eni kadar sağa kayardı
+       (görev bitince; mağaza videosunda görüldü). Ayrı `translate` özelliği animasyonla birleşir. */
+    translate: -50% 0;
   }
   .botnav {
     left: 50%;

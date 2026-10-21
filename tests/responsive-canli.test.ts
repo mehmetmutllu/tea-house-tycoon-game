@@ -125,7 +125,8 @@ describe('③ D-131 kolları CSS\'te duruyor', () => {
     const blok = medyaBloklari(hud).find((b) => /min-width:\s*560px/.test(b.sorgu));
     expect(blok, 'min-width: 560px dalı yok').toBeDefined();
     expect(blok!.govde).toMatch(/\.band\s*\{[^}]*left:\s*50%/);
-    expect(blok!.govde).toMatch(/\.band\s*\{[^}]*translateX\(-50%\)/);
+    // Bant ortalaması `translate` ile (bant-ortalama.test.ts: transform animasyonu ortalamayı eziyordu).
+    expect(blok!.govde).toMatch(/\.band\s*\{[^}]*translate:\s*-50%/);
     expect(blok!.govde).toMatch(/\.botnav\s*\{[^}]*left:\s*50%/);
     expect(blok!.govde).toMatch(/\.botnav\s*\{[^}]*translateX\(-50%\)/);
   });

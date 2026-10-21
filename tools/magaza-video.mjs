@@ -146,7 +146,8 @@ try {
       const n = Math.round(c.sure * FPS);
       const anlar = new Set([0, Math.floor(n / 2), n - 1]);
       for (let k = 0; k < n; k++) {
-        await kare(s, k / FPS);
+        // Yürütücü `true` dönerse eylem bitmiştir: çekim orada kesilir (oyuncu boşta beklemez). `sure` üst sınır.
+        if (await kare(s, k / FPS)) { console.log(`  ${c.ad} ${(k / FPS).toFixed(2)} sn'de bitti`); break; }
         await s.evaluate((m) => window.__sanalKare(m), adim);
         await bekleKare();
         if (ff) {
