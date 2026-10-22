@@ -5017,3 +5017,11 @@ AdMob app-ads.txt doğrulamasını düşürdü (dosya kökte doğruydu; Wordmast
 aynı kurala uyar. Header/Search yalnız düzenlenebilir sürüme yerleşir (ASC API 4.5.1 Asset Library: video → placement
 `PRODUCT_PAGE_HEADER_ASSET` / `APP_STORE_SEARCH_RESULTS_ASSET`, grup `DEFAULT_PROFILE`) → 1.0.4 bunun için açıldı ve
 görev bandı ortalama düzeltmesini de taşır. Rapor: `docs/magaza-tanitim-video-raporu.md` §Tur 3.
+
+## D-173 · AdMob mediation: Liftoff + Unity bidding, iki platform · 1.0.5 (2026-10-22)
+
+**Karar (kullanıcı):** CPM artışı için Liftoff Monetize ve Unity Ads AdMob bidding'e eklendi (iOS + Android, geçişli +
+ödüllü, 4 AdMob grubu). Banner yok (D-151 dışı değil, oyun banner kullanmıyor). Her ağda AdMob Engelleme Kontrolleri
+AÇIK (kullanıcının içerik engeli ağlara da uygulansın). Unity ek veri paylaşımı şartı kabul edilmedi. Adaptör sürümleri
+play-services-ads 25.4.0 / GMA 13.6.0'a sabit; Unity Android SDK ayrıca eklenir (adaptör getirmiyor, yalnız release
+düşüyordu). Etki 1.0.5 yayınıyla başlar. Rapor: `docs/reklam-mediation-raporu.md`.

@@ -2,31 +2,33 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-10-21 gece — mağaza videoları tur 3 bitti · 1.0.4 hazırlanıyor)
+## ŞU AN (2026-10-22 — reklam mediation kuruldu · 1.0.5 hazır, gönderilmedi)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
-`dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`).
+`dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
+token `dev-ortam/gizli/wordmaster/codemagic-api.md`). AdMob'u Chrome'da `?authuser=mutlubadem.dev@gmail.com` ile aç.
 
-**Bu tur:** header 15 sn (çaycıyı önden takip → açılan kamera → genel plan) + search 18 sn TR/EN (beklemesiz, oyun kadrajı)
-kullanıcı onayladı. Oyun hatası: geniş ekranda görev bandı `bandDone` animasyonuyla sağa kayıyordu → `translate` (bekçi
-`tests/bant-ortalama.test.ts`) + nav arası 8 px. **iOS 1.0.3 YAYINDA.**
-**1.0.4 (10004):** ASC sürüm kaydı açıldı (`3402024e…`), pazarlama adresi kökte `https://mehmetmutllu.github.io`
-(AdMob app-ads.txt: alt dizinli sellerUrl doğrulamayı düşürüyor — Wordmaster'da da kök adresle çözüldü), Asset Library'ye 3
-video yüklendi ve TR/EN sayfalara header + search olarak yerleşti. Codemagic derlemesi `6ad92685d91cc581d464e106`.
+**Bu tur (D-173, `docs/reklam-mediation-raporu.md`):** Liftoff + Unity AdMob bidding'e bağlandı (iOS+Android, 4 grup,
+engelleme açık, app-ads.txt'ye Unity satırları). Adaptörler + SKAdNetwork 161 koda girdi. Sürüm **1.0.5 (10005)**:
+iOS Codemagic derlemesi `6ada2671f0d579dfde534097` YEŞİL → ASC'ye yüklendi (TestFlight). Play zip masaüstünde:
+`TeaHouseTycoon-1.0.5-vc10005-GooglePlay.zip` (kullanıcı arkadaşına atacak; web sitesi KÖK adres rehberde düzeltildi).
 
-## ⏭️ SIRADAKİ ADIM
-0. **1.0.4 incelemede** (2026-10-22, build 4, gönderim `0029aae2…`, Yenilikler "Arayüzde iyileştirmeler…"). Onayda otomatik yayın.
-1. 1.0.4 yayına girince sellerUrl kök olur → AdMob'da "Güncellemeleri kontrol edin" (≈24 sa). Lookup:
-   `curl -s "https://itunes.apple.com/lookup?id=6816790079"` → sellerUrl.
-2. **Play'e 1.0.4 gönderilecek (kullanıcı: "sonra göndericez")** — 1.0.3 henüz yüklenmediyse atlanır, doğrudan 1.0.4
-   (versionCode 10004; görev bandı düzeltmesi Android tablet/yatayda da geçerli). Sırası gelince `npm run play` → AAB + teslim
-   zip'i masaüstüne; Yenilikler "Arayüzde iyileştirmeler ve küçük düzeltmeler yapıldı." / EN aynısı. Arkadaş Play kaydında web
-   sitesini KÖK `https://mehmetmutllu.github.io` yapmalı (AdMob Android doğrulaması, D-172). Yayından sonra AdMob'u bağla.
-3. iOS'ta iCloud kayıt gerçek cihazda denenmedi.
-4. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · duman "q_coin" ara sıra · lint `src/game/ads.ts` 2 hata.
+## ⏭️ SIRADAKİ ADIM — KULLANICIYA HATIRLAT
+0. **iOS 1.0.5'i incelemeye GÖNDER** (kullanıcı istedi: "bir sonraki oturumda hatırlat"). Önce 1.0.4 durumu:
+   `curl -s "https://itunes.apple.com/lookup?id=6816790079"` → version. 1.0.4 onaylandıysa ASC'de 1.0.5 sürüm kaydı aç,
+   build 10005'i bağla, Yenilikler "Arayüzde iyileştirmeler ve küçük düzeltmeler yapıldı." / EN "UI improvements and
+   small fixes.", incelemeye gönder. 1.0.4 hâlâ incelemedeyse GERİ ÇEKME (sıra sıfırlanır) — bekle.
+1. Kullanıcının iki ayarı (hesap ayarı, sınıflandırıcı Claude'u engelledi) yapıldı mı sor:
+   a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman reklam iş ortağı
+   olarak ekle" ✓ · b) Unity → Monetization → Settings → Developer website = `https://mehmetmutllu.github.io`.
+2. Play'de yayına girince: Liftoff + Unity Android uygulamalarına Play mağaza bağlantısını ekle; AdMob Android'i bağla.
+3. 1.0.4 yayına girince AdMob iOS "Güncellemeleri kontrol edin" (sellerUrl kök olur).
+4. 1.0.5 yayından birkaç gün sonra: AdMob raporunda Liftoff/Unity dolum oranı (gerçek doğrulama).
+5. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · duman "q_coin" ara sıra · lint `src/game/ads.ts` 2 hata.
 
 ## AÇIK KALEMLER
+- Wordmaster oturumu Kaktus'a Unity'yi S17 sonrası kendi kuracak (talimat + Android SDK tuzağı iletildi).
 - Play: servis hesabı JSON'u → RevenueCat; RC'de Android baslangic/reklamsiz = Non-consumable.
-- Deyimix 1.0.1 "Pending Developer Release" — kullanıcı Release diyecek.
-- AdMob "ABD eyalet yönetmelikleri" mesajı bakılmadı · ana görev ödülüne "video izle 2×" sorusu açık (varyant kapısı).
+- iOS'ta iCloud kayıt gerçek cihazda denenmedi.
+- AdMob "ABD eyalet yönetmelikleri" bakılmadı · ana görev ödülüne "video izle 2×" sorusu açık (varyant kapısı).
 - `i18n/baslat` Preferences'tan önce okuyor (küçük).
