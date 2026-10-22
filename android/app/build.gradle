@@ -103,6 +103,8 @@ dependencies {
     // Sürüm SABİT ve play-services-ads 25.4.0'a eşli (vungle 7.7.9+ / unity 4.21+ 25.5.0 ister).
     implementation "com.google.ads.mediation:vungle:7.7.8.1"
     implementation "com.google.ads.mediation:unity:4.20.1.0"
+    // Unity adaptörü SDK'yı kendisi getirmez (POM'unda yok); eksikse yalnız R8'li release derlemesi düşer.
+    implementation "com.unity3d.ads:unity-ads:4.20.1"
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"

@@ -295,6 +295,7 @@ describe('Xcode projesi', () => {
     const gradle = oku('android/app/build.gradle');
     expect(gradle).toMatch(/implementation "com\.google\.ads\.mediation:vungle:[\d.]+"/);
     expect(gradle).toMatch(/implementation "com\.google\.ads\.mediation:unity:[\d.]+"/);
+    expect(gradle).toMatch(/implementation "com\.unity3d\.ads:unity-ads:[\d.]+"/);
     expect(plist.match(/<key>SKAdNetworkIdentifier<\/key>/g)?.length ?? 0).toBeGreaterThanOrEqual(150);
     expect(plist).toContain('<string>gta9lk7p23.skadnetwork</string>'); // Liftoff
     expect(plist).toContain('<string>4dzt52r2t5.skadnetwork</string>'); // Unity

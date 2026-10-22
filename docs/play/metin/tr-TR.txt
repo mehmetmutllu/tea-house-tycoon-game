@@ -36,4 +36,4 @@ RAHAT OYNA
 Bir çay daha? Mekânın seni bekliyor.
 
 === SÜRÜM NOTU (en fazla 500) ===
-Mağaza ve menüler yenilendi, yeni ikonlar geldi, ana ekranda artık oyunun kendi simgesi var. Bağlantı koparsa satın alma yeniden denenir, ilerlemen daha güvenli kaydedilir. Ayrıca performans iyileştirmeleri ve hata düzeltmeleri.
+Arayüzde iyileştirmeler ve küçük düzeltmeler yapıldı.
