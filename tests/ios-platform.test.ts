@@ -286,6 +286,19 @@ describe('Xcode projesi', () => {
     expect(plist).toContain('<string>cstr6suwn9.skadnetwork</string>');
     expect(plist).not.toContain('<key>GADIsAdManagerApp</key>');
   });
+  it('mediation adaptörleri (Liftoff + Unity) iki platformda bağlı, SKAdNetwork listeleri birleşik', () => {
+    // Adaptör projeden düşerse derleme yine geçer ama ağ hiç teklif vermez — sessiz gelir kaybı.
+    for (const urun of ['LiftoffMonetizeAdapterTarget', 'UnityAdapterTarget']) {
+      expect(pbx).toContain(`${urun} in Frameworks */,`);
+      expect(pbx).toContain(`productName = ${urun};`);
+    }
+    const gradle = oku('android/app/build.gradle');
+    expect(gradle).toMatch(/implementation "com\.google\.ads\.mediation:vungle:[\d.]+"/);
+    expect(gradle).toMatch(/implementation "com\.google\.ads\.mediation:unity:[\d.]+"/);
+    expect(plist.match(/<key>SKAdNetworkIdentifier<\/key>/g)?.length ?? 0).toBeGreaterThanOrEqual(150);
+    expect(plist).toContain('<string>gta9lk7p23.skadnetwork</string>'); // Liftoff
+    expect(plist).toContain('<string>4dzt52r2t5.skadnetwork</string>'); // Unity
+  });
   it('ATT metni ve ad Türkçe + İngilizce, projeye bağlı', () => {
     expect(oku('ios/App/App/tr.lproj/InfoPlist.strings')).toMatch(/"CFBundleDisplayName" = "Tea House Tycoon";/);
     expect(oku('ios/App/App/tr.lproj/InfoPlist.strings')).toContain('"NSUserTrackingUsageDescription"');
