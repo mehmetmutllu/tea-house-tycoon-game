@@ -26,6 +26,19 @@ iOS Codemagic derlemesi `6ada2671f0d579dfde534097` YEŞİL → ASC'ye yüklendi 
 4. 1.0.5 yayından birkaç gün sonra: AdMob raporunda Liftoff/Unity dolum oranı (gerçek doğrulama).
 5. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · duman "q_coin" ara sıra · lint `src/game/ads.ts` 2 hata.
 
+## 🆕 SONRAKİ ÖZELLİK — Puanla + geri bildirim (kullanıcı istedi 2026-10-22, 1.0.4 + Play yayına girince)
+Kaynak kalıp: Wordmaster `js/puan.js` (+ `@capacitor-community/in-app-review` ~8.0.0). Oradaki kurallar:
+- Sistem penceresi (iOS requestReview / Play In-App Review) yalnız GÜZEL ANDA otomatik (bizde: bölge/görev
+  tamamlama, prestij yok). Şart: kurulumdan ≥1 gün, birkaç anlamlı ilerleme, son denemeden ≥21 gün, aynı anda başka
+  pencere/reklam/teklif yok, ~1,5 sn gecikme. Apple yılda 3 kez gösterir, sonuç bize DÖNMEZ.
+- Önce "beğendin mi?" diye sormak YASAK (Play politikası, Apple 5.6.1) → filtreli 5-yıldız akışı yok.
+- Ayarlar'da kalıcı "Uygulamayı puanla" satırı → mağaza yorum sayfası (iOS `apps.apple.com/app/id6816790079?action=
+  write-review`, Play `details?id=com.mutlubadem.teahouse&showAllReviews=true`); düğmeye sistem penceresi BAĞLANMAZ.
+- Ek istek: Ayarlar'da "Geri bildirim gönder / gelişmemize yardım et" satırı. **Sorulacak:** hedef ne — e-posta
+  (mailto, cihaz/sürüm bilgisiyle) mi, form mu? Wordmaster'da "Hata var" düğmesi hedefsiz kalmıştı.
+- TR+EN metin (ChatGPT mikrometin), Wordmaster deneyimi: 3 haftada 0 oy → şartları çok sıkı tutma.
+- TestFlight'ta Apple pencereyi göstermez; doğrulama yayında.
+
 ## AÇIK KALEMLER
 - Wordmaster oturumu Kaktus'a Unity'yi S17 sonrası kendi kuracak (talimat + Android SDK tuzağı iletildi).
 - Play: servis hesabı JSON'u → RevenueCat; RC'de Android baslangic/reklamsiz = Non-consumable.
