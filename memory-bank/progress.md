@@ -135,6 +135,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-10-21: App Store Header/Search tanıtım videoları — kare kare kayıt aracı (`tools/magaza-video.mjs`), header drone turu ✅, search 6 çekimli kesmeli (TR/EN işlenecek) · masa açılışında oyuncu kayar (D-171) · D-170 · `docs/magaza-tanitim-video-raporu.md` · vitest 1862 · duman 74/74 (ilk koşu q_coin kararsızlığıyla 16/23) · kullanıcı sonuçtan tam memnun değil → önce header araştırması
   · 2026-10-21 (2.): videolar tur 3 — header önden takip + açılan kamera · search 18 sn, beklemesiz, oyun kadrajı · geniş ekranda görev bandı sağa kayma hatası düzeldi (translate) + nav arası 8 px · vitest 1864 · duman 74/74 · **iOS 1.0.4 incelemede** (videolar + kök geliştirici adresi) · D-172
   · 2026-10-22: Liftoff + Unity AdMob bidding (iOS+Android, 4 grup, engelleme açık) · adaptörler + SKAdNetwork 161 · iOS 1.0.5 derlendi (incelemeye gönderilmedi) · Play 1.0.5 zip masaüstünde · D-173 · `docs/reklam-mediation-raporu.md` · vitest 1865
+  · 2026-10-28: Play kapalı test (14 gün) aktiflik için 1.0.6 (10006) — kod değişikliği yok, yalnız sürüm; zip masaüstünde `TeaHouseTycoon-1.0.6-vc10006-GooglePlay.zip`
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅

@@ -13,6 +13,9 @@ engelleme açık, app-ads.txt'ye Unity satırları). Adaptörler + SKAdNetwork 1
 iOS Codemagic derlemesi `6ada2671f0d579dfde534097` YEŞİL → ASC'ye yüklendi (TestFlight). Play zip masaüstünde:
 `TeaHouseTycoon-1.0.5-vc10005-GooglePlay.zip` (kullanıcı arkadaşına atacak; web sitesi KÖK adres rehberde düzeltildi).
 
+**2026-10-28:** Play kapalı testi 14 gün daha sürecek; "aktif" sayılması için **1.0.6 (10006)** üretildi (kod değişikliği yok).
+Zip masaüstünde `TeaHouseTycoon-1.0.6-vc10006-GooglePlay.zip` → arkadaş KAPALI TEST kanalına yükleyecek. Sonraki iOS derlemesi 1.0.6 olur.
+
 ## ⏭️ SIRADAKİ ADIM — KULLANICIYA HATIRLAT
 0. **iOS 1.0.5'i incelemeye GÖNDER** (kullanıcı istedi: "bir sonraki oturumda hatırlat"). Önce 1.0.4 durumu:
    `curl -s "https://itunes.apple.com/lookup?id=6816790079"` → version. 1.0.4 onaylandıysa ASC'de 1.0.5 sürüm kaydı aç,
