@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-10-22 — reklam mediation kuruldu · 1.0.5 hazır, gönderilmedi)
+## ŞU AN (2026-10-28 — Play kapalı test sürüyor (14 gün); aktiflik için 1.0.6 (10006) Play zip masaüstünde · iOS 1.0.5 gönderilmedi)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
