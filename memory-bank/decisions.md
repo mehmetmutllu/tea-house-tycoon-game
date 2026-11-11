@@ -5034,3 +5034,5 @@ Sıra: önce 1.0.7 = arayüz düzeltmesi (tam ekran menüler · yerdeki pad/yük
 varyasyon gösterilir) + puanla (yalnız SİSTEM penceresi + Ayarlar satırı; "5 yıldız ver" özel penceresi Apple 5.6.1 /
 Play politikası gereği YOK) + basit analitik. 1.0.7 incelemedeyken K2-1 Kat 2 maketi. Plan: `docs/kat2-plan.md`.
 Aynı tur: 2. masa 20→15₺ · oyuncunun masa çarpışma kutusu çizilen tabla boyunda (seviyeye bağlı).
+**Varyant kapısı istisnası (`npm run sira` uyardı):** 15₺ kullanıcının doğrudan verdiği sayı; ölçüm raporu yazılmadı,
+iki-commit sırası uygulanmadı. Etki öğretici adımında 5₺, tempoya etkisi ihmal edilebilir kabul edildi.
