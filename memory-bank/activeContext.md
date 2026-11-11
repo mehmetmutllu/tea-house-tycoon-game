@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-10-28 — Play kapalı test sürüyor (14 gün); aktiflik için 1.0.6 (10006) Play zip masaüstünde · iOS 1.0.5 gönderilmedi)
+## ŞU AN (2026-11-11 — Play kapalı test bitti, üretim erişimi formu arkadaşta · iOS 1.0.5 gönderilmedi)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -16,7 +16,12 @@ iOS Codemagic derlemesi `6ada2671f0d579dfde534097` YEŞİL → ASC'ye yüklendi 
 **2026-10-28:** Play kapalı testi 14 gün daha sürecek; "aktif" sayılması için **1.0.6 (10006)** üretildi (kod değişikliği yok).
 Zip masaüstünde `TeaHouseTycoon-1.0.6-vc10006-GooglePlay.zip` → arkadaş KAPALI TEST kanalına yükleyecek. Sonraki iOS derlemesi 1.0.6 olur.
 
+**2026-11-11:** Kapalı test 2. tur BİTTİ. Üretim erişimi formu cevapları masaüstünde `TeaHouse-Uretim-Erisimi-Formu.txt`
+(8 soru, EN metin + TR açıklama) → arkadaş girecek. Not: 10-20'de "erişim alındı" yazılmıştı ama test uzatıldı → ilk başvuru
+muhtemelen reddedildi; ret gerekçesi gelirse cevaplar ona göre güçlendirilir. Onayda: Production → Add from library 1.0.6 (rehber 9B).
+
 ## ⏭️ SIRADAKİ ADIM — KULLANICIYA HATIRLAT
+-1. Play üretim erişimi başvurusu sonucu ne oldu? (onay → 9B ile 1.0.6 üretime; ret → e-postayı iste)
 0. **iOS 1.0.5'i incelemeye GÖNDER** (kullanıcı istedi: "bir sonraki oturumda hatırlat"). Önce 1.0.4 durumu:
    `curl -s "https://itunes.apple.com/lookup?id=6816790079"` → version. 1.0.4 onaylandıysa ASC'de 1.0.5 sürüm kaydı aç,
    build 10005'i bağla, Yenilikler "Arayüzde iyileştirmeler ve küçük düzeltmeler yapıldı." / EN "UI improvements and
