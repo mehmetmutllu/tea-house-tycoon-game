@@ -741,7 +741,7 @@ function playerMoveSystem(c: TickCtx): void {
     // MOBİLYA = KATI engel: yeni bir engele GİRİŞ bloklanır (eksen-başı kayma; kafa kafaya gelince durur).
     // AMA oyuncu zaten bir engelin İÇİNDEyse (ör. üstünde masa açıldı) kilitlenmesin → çıkışına izin ver
     // (aktör collision'ındaki desenin aynısı). Böylece "zorlasan da giremezsin" korunur ama hapsolmazsın.
-    const furn = oyuncuKatilari(tables, areasOpen);
+    const furn = oyuncuKatilari(tables, areasOpen, s.tableLevels);
     const stuckInFurn = hitsSolid(oldX, oldZ, furn, pr);
     if (dxIn !== 0 && hitsSolid(nx, oldZ, furn, pr) && !stuckInFurn) nx = oldX;
     if (dzIn !== 0 && hitsSolid(nx, nz, furn, pr) && !stuckInFurn) nz = oldZ;

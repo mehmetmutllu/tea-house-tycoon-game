@@ -663,7 +663,8 @@ export const economyConfig = {
     // dâhil) Faz C'de yeniden yazılacak; burada yalnız tek servisin gerektirdiği asgari cerrahi var.
 
     // --- BÖLÜM 1 · 1. Alan (öğretici) ---
-    { id: 'table2', label: '2. Masa', cost: 20, fillRate: 13, optional: false, area: 0, // ~1.5sn
+    { id: 'table2', label: '2. Masa', cost: 15, fillRate: 10, // 20→15 kullanıcı 2026-11-12
+      optional: false, area: 0, // ~1.5sn
       requires: { minLifetime: 20 }, effect: { type: 'addTable' } },
     { id: 'table3', label: '3. Masa', cost: 115, fillRate: 46, optional: false, area: 0, // ~2.5sn
       requires: { prev: ['table2'] }, effect: { type: 'addTable' } },

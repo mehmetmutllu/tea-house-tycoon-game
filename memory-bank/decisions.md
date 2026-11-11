@@ -5025,3 +5025,12 @@ görev bandı ortalama düzeltmesini de taşır. Rapor: `docs/magaza-tanitim-vid
 AÇIK (kullanıcının içerik engeli ağlara da uygulansın). Unity ek veri paylaşımı şartı kabul edilmedi. Adaptör sürümleri
 play-services-ads 25.4.0 / GMA 13.6.0'a sabit; Unity Android SDK ayrıca eklenir (adaptör getirmiyor, yalnız release
 düşüyordu). Etki 1.0.5 yayınıyla başlar. Rapor: `docs/reklam-mediation-raporu.md`.
+
+## D-174 · Kat 2 = Oyun Katı (okey + tavla) · Kat 1 kasada birikir · sıra: 1.0.7 arayüz+puanla+analitik, sonra Kat 2 (2026-11-12)
+
+**Karar (kullanıcı):** Kat 2 teması okey + tavla (4 kişi uzun oturum, ara sipariş Türk kahvesi, kalkışta masa ücreti; kumar
+çağrışımı yok, nargile v1.1'de yok). Oyuncu Kat 2'deyken Kat 1 çalışır, para Kat 1 kasasında birikir, kasa dolunca durur.
+Sıra: önce 1.0.7 = arayüz düzeltmesi (tam ekran menüler · yerdeki pad/yükseltme noktaları · görev kartı; her biri için
+varyasyon gösterilir) + puanla (yalnız SİSTEM penceresi + Ayarlar satırı; "5 yıldız ver" özel penceresi Apple 5.6.1 /
+Play politikası gereği YOK) + basit analitik. 1.0.7 incelemedeyken K2-1 Kat 2 maketi. Plan: `docs/kat2-plan.md`.
+Aynı tur: 2. masa 20→15₺ · oyuncunun masa çarpışma kutusu çizilen tabla boyunda (seviyeye bağlı).

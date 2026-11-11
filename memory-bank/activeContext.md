@@ -20,6 +20,12 @@ Zip masaüstünde `TeaHouseTycoon-1.0.6-vc10006-GooglePlay.zip` → arkadaş KAP
 (8 soru, EN metin + TR açıklama) → arkadaş girecek. Not: 10-20'de "erişim alındı" yazılmıştı ama test uzatıldı → ilk başvuru
 muhtemelen reddedildi; ret gerekçesi gelirse cevaplar ona göre güçlendirilir. Onayda: Production → Add from library 1.0.6 (rehber 9B).
 
+## 🆕 2026-11-12 — YÖN KARARI (D-174, `docs/kat2-plan.md`)
+Yapıldı: 2. masa 20→15₺ · oyuncunun masa çarpışma kutusu çizilen tabla boyunda (bekçi `tests/masa-govde-k1112.test.ts`).
+**Sıradaki iş = 1.0.7:** ① arayüz varyasyonları — tam ekran menüler, yerdeki pad/yükseltme noktaları, görev kartı;
+her biri için 6-12 aday AYNI kadrajda göster, kullanıcı eleyerek seçer (diğer ekranlara da bak) ② puanla (sistem
+penceresi + Ayarlar satırı; geri bildirim hedefi e-posta mı form mu SORULACAK) ③ basit analitik. Sonra K2-1 Kat 2 maketi.
+
 ## ⏭️ SIRADAKİ ADIM — KULLANICIYA HATIRLAT
 -1. Play üretim erişimi başvurusu sonucu ne oldu? (onay → 9B ile 1.0.6 üretime; ret → e-postayı iste)
 0. **iOS 1.0.5'i incelemeye GÖNDER** (kullanıcı istedi: "bir sonraki oturumda hatırlat"). Önce 1.0.4 durumu:

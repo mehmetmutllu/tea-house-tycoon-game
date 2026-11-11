@@ -9,6 +9,7 @@ import type { Vec3 } from './types';
 import { MAX_AREAS, MAX_SERVICES, MAX_WAITERS, THE_SERVICE, areaTableSlots, areaTableStart, tableKindOfArea } from './world';
 import { SEATS_OF_KIND, areaOfTableIndex } from '../config/economy.config';
 import { ACTOR_RADIUS, PLAYER_RADIUS } from '../config/actor';
+import { tableWidth } from '../components/three/tableLook';
 import { buildNavGrid, findNavPath, type NavGrid, type NavSolid } from './nav';
 
 export type RVec3 = readonly [number, number, number];
@@ -851,10 +852,17 @@ export function lockedAreaSolids(areasOpen: number): Solid[] {
 export const tableHalfFor = (i: number): readonly [number, number] =>
   LAYOUT.tables[i].kind === 'deuce' ? LAYOUT.deuceHalf : LAYOUT.tableHalf;
 
+/** Masanın O SEVİYEDE ÇİZİLEN tablasının yarı-boyu (kullanıcı 2026-11-12: "köşelerden dışarıda kalan
+ *  alana çarpıyorum"). Dörtlü masa Sv1-3'te 1,05 çizilir ama `tableHalfFor` Sv4'ün 1,68'ini verir. */
+export const drawnTableHalf = (i: number, level: number): readonly [number, number] => {
+  const h = tableWidth(LAYOUT.tables[i].kind, level) / 2;
+  return [h, h];
+};
+
 /** O an SAHNEDE var olan SABİT katı engeller (açık servislerin ocak+bulaşığı; açık masalar +
  *  sandalyeler). Yatay bölme duvarı YOK (D-023). Kapalı alanın mobilyası ÇİZİLMEZ → collision da
  *  eklenmez (oyuncu zaten açık alanların birleşimine kelepçeli). */
-export function activeSolids(tables: number, areasOpen: number): Solid[] {
+export function activeSolids(tables: number, areasOpen: number, tableLevels?: readonly number[]): Solid[] {
   const solids: Solid[] = [];
   if (openServices(areasOpen).length > 0) {
     const sp = servicePlace(areasOpen);
@@ -864,7 +872,8 @@ export function activeSolids(tables: number, areasOpen: number): Solid[] {
   if (waiterStationOpen(areasOpen)) solids.push({ c: WAITER_STATION.pos, h: WAITER_STATION.half });
   for (const b of banketIslands(tables)) solids.push({ c: b.center, h: b.half });
   for (let i = 0; i < tables; i++) {
-    solids.push({ c: LAYOUT.tables[i].table, h: tableHalfFor(i) });
+    const h = tableLevels ? drawnTableHalf(i, tableLevels[i] ?? 0) : tableHalfFor(i);
+    solids.push({ c: LAYOUT.tables[i].table, h });
     solids.push({ c: LAYOUT.tables[i].seat, h: LAYOUT.chairHalf }); // sandalye (içine girilemez)
   }
   return solids;
@@ -874,8 +883,8 @@ export function activeSolids(tables: number, areasOpen: number): Solid[] {
  * OYUNCUNUN katıları = `activeSolids` + sol duvar döneminde tezgâhın ARKA ŞERİDİ (D-143). Şerit
  * personelin çalışma yeri; `activeSolids`e girseydi personel noktaları "katının içinde" sayılırdı.
  */
-export function oyuncuKatilari(tables: number, areasOpen: number): Solid[] {
-  const solids = activeSolids(tables, areasOpen);
+export function oyuncuKatilari(tables: number, areasOpen: number, tableLevels?: readonly number[]): Solid[] {
+  const solids = activeSolids(tables, areasOpen, tableLevels);
   if (openServices(areasOpen).length > 0 && !serviceMoved(areasOpen)) solids.push(arkaSeritKatisi(servicePlace(areasOpen)));
   return solids;
 }

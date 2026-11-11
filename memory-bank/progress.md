@@ -33,6 +33,8 @@ Bu tablo **kaynaktır**; pano JSON'u buradan **türetilir**: `npm run pano` (ell
 
 Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlatısı: `memory-bank/arsiv/progress-tamamlanan.md`.
 
+**Sonraki program (D-174, 2026-11-12):** 1.0.7 arayüz + puanla + analitik → Kat 2 (K2-0…K2-6, ~11-15 oturum) · `docs/kat2-plan.md`
+
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
 
