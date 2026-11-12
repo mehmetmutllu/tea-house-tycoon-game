@@ -84,6 +84,9 @@ kamera — hepsi tek kat. Kat 2 için:
 
 **Toplam: ~11-15 oturum.**
 
+**2026-11-13 güncelleme:** tavla + okey salonu/tavla köşesi açılışı + Kat 2 garsonu hiçbir aşamaya yazılmamıştı → **K2-3c**.
+Kalan iş sprint düzenine geçti (S1 inşa+ölçüm · S2 uygulama+zincir · S3 cila+1.1): `docs/sprintler/kat2-S1-plan.md`.
+
 ## 7. Sıradaki diğer işler (Kat 2'den önce veya arada)
 
 ### 7a. Arayüz düzeltmesi

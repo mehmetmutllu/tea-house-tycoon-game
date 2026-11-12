@@ -63,6 +63,41 @@ export const KAT2_ALANLAR: readonly Dik[] = [
 /** K2-2'de açık alan sayısı. Açılış zinciri K2-3/K2-5'te gelir (pad + ölçülmüş fiyat). */
 export const KAT2_ACIK_ALAN = 1;
 
+// ---- SPRINT K2-S1 SÖZLEŞMESİ (orkestratör yazar; ajanlar DEĞİŞTİRMEZ, ihtiyacı rapora yazar) ----
+
+/** Ön salonları açan pad'ler: [okey salonu (alan 1), tavla köşesi (alan 2)] — D-179 açılış sırası. */
+export const KAT2_SALON_PAD: readonly string[] = ['k2salon2', 'k2salon3'];
+
+/** Açık alan sayısı padsDone'dan TÜRER (feedback tek kaynak): 1 + açılmış salon pad'i (sıralı). */
+export function kat2AcikAlan(padsDone: readonly string[]): number {
+  let n = 1;
+  for (const id of KAT2_SALON_PAD) {
+    if (!padsDone.includes(id)) break;
+    n += 1;
+  }
+  return n;
+}
+
+/**
+ * Bölme duvarları + kemerli geçitler (maket B `bolmeler`, D-180 tam bölme 2,2). `kapilar` duvar
+ * boyunca [a, b] aralıkları (x'e ya da z'ye göre); `alanlar` duvarın ayırdığı iki alan.
+ */
+export const KAT2_BOLMELER: readonly { x1: number; z1: number; x2: number; z2: number; kapilar: readonly (readonly [number, number])[]; alanlar: readonly [number, number] }[] = [
+  { x1: -FLOOR_HALF, z1: 0, x2: 0, z2: 0, kapilar: [[-10.5, -7.2], [-1.8, 0]], alanlar: [0, 1] },
+  { x1: 0, z1: 0, x2: FLOOR_HALF, z2: 0, kapilar: [[0, 1.8], [7.2, 10.5]], alanlar: [0, 2] },
+  { x1: 0, z1: 0, x2: 0, z2: FLOOR_HALF, kapilar: [[7.2, 10.2]], alanlar: [1, 2] },
+];
+
+export type MasaTuru = 'okey' | 'tavla';
+export interface Kat2MasaYeri {
+  id: string;
+  tur: MasaTuru;
+  /** Bulunduğu alan (0 merdiven salonu · 1 okey salonu · 2 tavla köşesi). */
+  alan: number;
+  x: number;
+  z: number;
+}
+
 const PR = LAYOUT.playerRadius;
 
 /** İç duvar gövdesinin yarısı (maket duvarı 0,18). */
@@ -221,3 +256,13 @@ export const PARA_DUSME_DZ = OKEY_YARI + 0.35;
  * `CayOcagi` −7,4). Oyuncu salondan, ocağın önündeki noktadan kahve alır.
  */
 export const OCAK = { id: 'k2cezve', x: -7.4, z: BAND.front - 0.55, al: [-7.4, BAND.front + 0.6] as [number, number], erisim: 0.9 } as const;
+
+/**
+ * Kat 2'nin BÜTÜN masa yerleri (maket B): merdiven salonu 4 okey (yukarıdaki `OKEY_YER`, sıra korunur)
+ * · okey salonu 6 okey · tavla köşesi 12 tavla (2 kişilik, oturaklar ±x). Kimlik = pad kimliği.
+ */
+export const KAT2_MASALAR: readonly Kat2MasaYeri[] = [
+  ...OKEY_YER.map((o) => ({ ...o, tur: 'okey' as const, alan: 0 })),
+  ...[-12.5, -5].flatMap((x, i) => [4.5, 9.5, 14.5].map((z, j) => ({ id: `k2s2okey${i * 3 + j + 1}`, tur: 'okey' as const, alan: 1, x, z }))),
+  ...[4, 8.5, 13].flatMap((x, i) => [3.8, 7.4, 11, 14.6].map((z, j) => ({ id: `k2tavla${i * 4 + j + 1}`, tur: 'tavla' as const, alan: 2, x, z }))),
+];
