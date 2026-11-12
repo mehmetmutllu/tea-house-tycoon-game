@@ -112,4 +112,8 @@ Teorik tavan (§A2): bütün tavla kolları 27 ₺/dk/masa, kişi başına 13,5 
 
 ## §Karar
 
-*(BOŞ — karar paketi S1 sonunda.)*
+**D-186 (2026-11-13) — kullanıcı önerileri seçti:**
+- Tavla **T120U**: 2 dk oyun, parası masa ücretinden (ücret 51 ₺ · kahve 3 ₺). Okey "kahve taşıma", tavla "yığın toplama".
+- **İkinci cezve ocağı** okey salonunda (6. masadan önce) + **Kat 2 garsonu** (tavla köşesi açılınca).
+- Zincir sırası: okey1 → ocak → okey2-4 → okey salonu → 2 masa → 2. ocak → 4 masa → tavla köşesi → garson → 12 tavla.
+  Fiyatlar K2-5 (S2 zincir ölçümü). Uygulama S2; final tam koşu o turda.

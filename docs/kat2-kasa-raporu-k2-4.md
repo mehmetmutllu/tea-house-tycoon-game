@@ -151,3 +151,10 @@ bekliyor. Oyuncu Kat 2'ye dönünce yığınları topluyor (koşu sonunda yerde 
 
 ## §Karar
 
+**D-185 (2026-11-13) — kullanıcı önerileri seçti:**
+- Kasa sınırı **Kat 1'in ölçülen gelirinin 20 dakikası** (bugünkü dükkânla ~1.500 ₺; oran `incomeRate` DEĞİL, ölçülen ~75 ₺/dk
+  kaynağından). Kasa dolunca **Kat 1 durur** (müşteri doğmaz, para yanmaz).
+- Kasa **servis tezgâhının ucunda** (−10,8; −9,3), oyuncu yanına yürüyünce cüzdana boşalır (hareket temelli).
+- **Kat 1'deyken Kat 2 de işler** (masalar oynar, yığınlar masa önünde bekler).
+- **Çevrimdışında iki kat da kazandırır**; Kat 1 bitmişse tavan referansı sıradaki **Kat 2 pad'i** (bugünkü 12/15 ihlal kapanır).
+Uygulama S2 (tick/store/save/offline + HUD sayacı); final tam koşu o turda.

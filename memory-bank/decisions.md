@@ -5138,3 +5138,22 @@ tek yığın. Bulgu: kahve sabrı hiçbir kolda bağlamadı (servis %100); kahve
 yürütmek (4 masada meşgul %41, ilk kademede %54). Mantık saf modül `game/kat2Dongu.ts`; store'da Kat 2'deyken
 koşar, cüzdan ortak, kazanç `lifetime`a girer. Kat 1'deyken Kat 2 DONUK (K2-4'te ele alınacak). Açık masa katıdır
 (`kat2Engeller`). Pad zinciri okey1 → cezve → okey2-4, fiyatlar TASLAK (K2-5). Görsel (masa/NPC/balon/ocak/pad) K2-3b.
+
+## D-185 · Kat 1 kasası 20 dk · dolunca Kat 1 durur · Kat 2 arkada işler · çevrimdışı iki kat (K2-S1, 2026-11-13)
+Kullanıcı karar paketinde önerileri seçti. Ölçüm: Kat 2'deyken Kat 1 gerçekte ~75 ₺/dk getiriyor (çevrimdışının `incomeRate`i
+aynı dükkânı ~1.040 sayıyor, ~14×) → kasa sınırı ölçülen orana bağlanır. 10 dk sınır 20 dk'lık Kat 2 turunda Kat 1 parasının
+~%40'ını kaybettiriyordu. Çevrimdışı açığı: Kat 1 bitince tavan 11.442 ₺, Kat 2 zinciri 9.300 → 1 sa kapanış Kat 2'yi
+bitiriyordu (12/15); tavan sıradaki Kat 2 pad'ine bağlanınca 0. Kasa tezgâh ucunda, yürüyünce boşalır. Uygulama S2.
+Rapor `docs/kat2-kasa-raporu-k2-4.md`.
+
+## D-186 · Tavla 2 dk ücret ağır · 2. cezve ocağı · Kat 2 garsonu · zincir sırası (K2-S1, 2026-11-13)
+Ölçüm: tek ocak 15 fincan/dk, 4 okey 14,4 istiyor → 6. masada servis %97, 8.'de %79; oyuncu 10 masada dolu, 22 masada servis
+%37, gelir ~450 ₺/dk'da tavan. Tavla kişi başı okeyle eşit tavan (masa 27 ₺/dk); yük altında ücret ağır kol +~100 ₺/dk.
+Seçilen: T120U (ücret 51 · kahve 3) · okey salonuna 2. ocak · tavla köşesiyle Kat 2 garsonu · zincir okey1 → ocak → okey2-4 →
+okey salonu → 2 masa → 2. ocak → 4 masa → tavla köşesi → garson → 12 tavla. Fiyatlar K2-5. Rapor `docs/kat2-tavla-raporu-k2-3c.md`.
+
+## D-187 · Kat 2 görselleri: kahve balonu A · arka duvar üstü A bahçe · para yığını (bekliyor) (K2-S1, 2026-11-13)
+Kareler oyunun kadrajından (`docs/sprintler/kat2-S1/kareler/`, sayfa https://claude.ai/artifact/9NwbyL23GQUfsT1UvkvsyK).
+Arka duvar: kullanıcı A (aşağıda bahçe). Balon: kullanıcı "idealini yap" → A fincan + sayı (Kat 1 sipariş balonu dili;
+sabır halkası D elendi: sabır çoğu durumda bağlamıyor). Para yığını: kullanıcı görmek istedi, seçim bekliyor.
+
