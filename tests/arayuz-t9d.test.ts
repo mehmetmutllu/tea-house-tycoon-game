@@ -75,8 +75,8 @@ describe('B8 — bant zeminle aynı tutarı yazar', () => {
   it('pad görevinde bant KALANI (maliyet − dolum) gösterir', () => {
     expect(HUD).toMatch(/function gorevTutari/);
     expect(HUD).toMatch(/q\.cost - \(padFills\[q\.target\.id\] \?\? 0\)/);
-    // İki çağrı yeri: üst bant (Sprint A perf #7: seçicide biçimli metin) + Görevler paneli.
-    expect(HUD).toMatch(/fmt\(gorevTutari\(s\.quest, s\.padFills\) \?\? 0\)/);
+    // D-175: alt bant artık tutar yazmıyor (sağda ödül); tek çağrı yeri Görevler paneli.
+    expect(HUD).not.toMatch(/fmt\(gorevTutari\(s\.quest, s\.padFills\) \?\? 0\)/);
     expect(HUD).toMatch(/fmt\(gorevTutari\(quest, padFills\) \?\? 0\)/);
   });
 });

@@ -101,7 +101,7 @@ describe('G1/2 · bant içeriğine uyar (G-42)', () => {
   it('bandın yüksekliği SABİT değil, TABAN', () => {
     const blok = css().slice(css().indexOf('\n.band {'), css().indexOf('@keyframes bandIn'));
     expect(blok, 'sabit yükseklik içerik büyüyünce keser').not.toMatch(/^\s*height:\s*\d/m);
-    expect(blok).toMatch(/min-height:\s*58px/);
+    expect(blok).toMatch(/min-height:\s*48px/); // D-175: tek satırlık hap
   });
 
   it('bandın üst/alt iç boşluğu sıfır değil (yazı kenara yapışmaz)', () => {

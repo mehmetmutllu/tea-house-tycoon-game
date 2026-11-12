@@ -167,7 +167,6 @@ export function HUD() {
     return () => clearTimeout(t);
   }, [questBitti]);
   const focusQuest = useGame((s) => s.focusQuest);
-  const gorevTutarMetni = useGame((s) => (s.quest ? fmt(gorevTutari(s.quest, s.padFills) ?? 0) : ''));
   const hardReset = useGame((s) => s.hardReset);
   const charPanelSeen = useGame((s) => s.charPanelSeen);
   const markCharPanelSeen = useGame((s) => s.markCharPanelSeen);
@@ -469,9 +468,9 @@ export function HUD() {
             {quest.done ? <CheckBadge size={26} /> : <QuestPhoto target={quest.target} size={38} />}
           </span>
           <span className="band-body">
-            {/* G-05: üstte kısa LAKAP (bu hedefin hangi bölüm olduğu), altında NET hedef.
-                Eskiden yalnız hedef vardı ve oyuncu "neredeyim"i okuyamıyordu. */}
-            <span className="band-kicker">{t(quest.kicker)}</span>
+            {/* D-175 (1.0.7, kullanıcı B'yi seçti): tek satırlık HAP. Lakap ("SALON 2") kalktı —
+                başlık zaten yeri söylüyor ("Salon 2: 4. Masayı aç"), iki kez yazılıyordu. Fiyat da
+                kalktı: sağda yalnız ÖDÜL durur. Lakap Görevler ekranında (qbig) yaşamaya devam eder. */}
             <span className="band-title">{t(quest.title)}</span>
             {/* G-04: tamamlanma bandın KENDİ hâlidir — ayrı bir toast yok. */}
             {quest.done ? (
@@ -485,14 +484,7 @@ export function HUD() {
                   {quest.cur}/{quest.total}
                 </span>
               </span>
-            ) : quest.cost != null ? (
-              <span className="band-sub" data-testid="quest-cost">
-                <CoinIcon size={15} />
-                {gorevTutarMetni}
-              </span>
-            ) : (
-              <span className="band-sub dim">{charQuestActive ? t('Çaycı panelinden al') : t('Hedefe git')}</span>
-            )}
+            ) : null}
           </span>
           {quest.reward != null && (
             <span className="band-reward" data-testid="quest-reward">
@@ -785,7 +777,6 @@ function GunlukBant({ onClick }: { onClick: () => void }) {
           <CheckBadge size={26} />
         </span>
         <span className="band-body">
-          <span className="band-kicker">{t('BUGÜN')}</span>
           <span className="band-title">{t('Bugünkü görevleri tamamladın — yenileri yarın')}</span>
         </span>
       </button>
@@ -796,7 +787,6 @@ function GunlukBant({ onClick }: { onClick: () => void }) {
     <button className={`band${hazir ? ' done' : ''}`} data-testid="daily-band" data-state={g.state} onClick={onClick}>
       <span className="band-photo">{hazir ? <CheckBadge size={26} /> : <QuestListIcon size={30} />}</span>
       <span className="band-body">
-        <span className="band-kicker">{t('GÜNLÜK GÖREV')}</span>
         <span className="band-title">{g.label}</span>
         {hazir ? (
           <span className="band-sub done-sub">{t('Ödülünü al')}</span>

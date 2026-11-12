@@ -5036,3 +5036,12 @@ Play politikası gereği YOK) + basit analitik. 1.0.7 incelemedeyken K2-1 Kat 2 
 Aynı tur: 2. masa 20→15₺ · oyuncunun masa çarpışma kutusu çizilen tabla boyunda (seviyeye bağlı).
 **Varyant kapısı istisnası (`npm run sira` uyardı):** 15₺ kullanıcının doğrudan verdiği sayı; ölçüm raporu yazılmadı,
 iki-commit sırası uygulanmadı. Etki öğretici adımında 5₺, tempoya etkisi ihmal edilebilir kabul edildi.
+
+## D-175 · Alt görev kartı = tek satırlık hap; sağda fiyat değil ÖDÜL (2026-11-12)
+
+**Karar (kullanıcı, 10 adaydan B):** gerçek oyundan aynı kadrajda çekilen on biçim (`tools/aday-gorev-karti.mjs`,
+artifact XnL87c8bqBwVnfBXVYaLC8) arasından **B · ince hap**. Kart: resim · başlık ("Salon 2: 4. Masayı aç") · (ilerleme
+görevinde 64 px çubuk) · **ödül** (+200) · ok. Üstteki küçük lakap ("SALON 2") başlıkla aynı bilgiyi tekrarladığı için kalktı
+(lakap Görevler ekranında duruyor); masanın fiyatı karttan kalktı — kullanıcı: "ya ödül ya ücret olsun, bence ödül".
+Dokununca kamera göreve gider (değişmedi). Günlük bant da aynı biçime girdi. C (taşan ikon) ikinci tercihti.
+Bekçi: `ekran-kabugu` 6 · `gorev-seridi-g1` (48 px taban) · `arayuz-t9d` B8; 2 mutasyon yakalandı.

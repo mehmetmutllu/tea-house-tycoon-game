@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1.0.7 · Görev kartı adayları</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  body{margin:0;background:#efeaf8;color:#2a1f4d;font-family:'Baloo 2',system-ui,sans-serif}
+  header{max-width:1200px;margin:0 auto;padding:28px 20px 8px}
+  h1{margin:0;font-size:28px}
+  p{margin:6px 0;max-width:760px;line-height:1.45}
+  .izgara{max-width:1200px;margin:0 auto;padding:12px 20px 40px;display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
+  figure{margin:0;background:#fff;border-radius:16px;padding:8px;box-shadow:0 4px 14px rgba(40,20,90,.12)}
+  figure img{width:100%;display:block;border-radius:10px;cursor:zoom-in}
+  figcaption{padding:8px 4px 2px;font-weight:800;font-size:18px}
+  figcaption small{display:block;font-weight:600;font-size:13.5px;color:#6a5c95;line-height:1.35}
+  .harf{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#4b3aa8;color:#fff;margin-right:6px;font-size:15px}
+  #buyuk{position:fixed;inset:0;background:rgba(20,10,40,.85);display:none;place-items:center;cursor:zoom-out}
+  #buyuk img{max-height:96vh;max-width:96vw;border-radius:12px}
+</style>
+</head>
+<body>
+<header>
+  <h1>Görev kartı · 10 aday</h1>
+  <p>Hepsi oyunun kendisinden, aynı anda ve aynı kadrajda çekildi. Yalnız alttaki görev kartının <b>biçimi</b> değişiyor (yeri, şekli, bilgilerin dizilişi); renkler bugünkü gibi. Büyütmek için resme dokun.</p>
+  <p>Beğenmediklerini ele, kalanları sohbette yaz (ör. "C ve G kalsın"). İki adayın parçası da birleştirilebilir (ör. "G'nin sekmesi + C'nin ikonu").</p>
+</header>
+<div class="izgara">
+  <figure><img src="A.jpg" alt="A"><figcaption><span class="harf">A</span>Bugünkü<small>Şu an oyunda olan, karşılaştırma için.</small></figcaption></figure>
+  <figure><img src="B.jpg" alt="B"><figcaption><span class="harf">B</span>İnce hap<small>Tek satır, yuvarlak uçlu. Üst başlık ve ödül gizli; ekran daha açık kalır.</small></figcaption></figure>
+  <figure><img src="C.jpg" alt="C"><figcaption><span class="harf">C</span>Taşan ikon<small>Görevin resmi büyük ve kartın dışına taşıyor, ödül kartın üstünde rozet, büyük "git" düğmesi.</small></figcaption></figure>
+  <figure><img src="D.jpg" alt="D"><figcaption><span class="harf">D</span>Üstte bayrak<small>Kart ekranın üstüne, paranın altına taşındı; alt kısım tamamen oyuna kalır.</small></figcaption></figure>
+  <figure><img src="E.jpg" alt="E"><figcaption><span class="harf">E</span>Sol kenar kartı<small>Dikey küçük kart sol kenarda (birçok idle oyunundaki gibi).</small></figcaption></figure>
+  <figure><img src="F.jpg" alt="F"><figcaption><span class="harf">F</span>Çaycı söylüyor<small>Görevi çaycı maskotu konuşma balonuyla veriyor.</small></figcaption></figure>
+  <figure><img src="G.jpg" alt="G"><figcaption><span class="harf">G</span>Sekmeli + GİT<small>Bölüm adı kartın üstünde sekme gibi; ok yerine yazılı "GİT" düğmesi.</small></figcaption></figure>
+  <figure><img src="H.jpg" alt="H"><figcaption><span class="harf">H</span>Navla birleşik<small>Kart alttaki menü çubuğuna yapışık, ekranın tam genişliğinde.</small></figcaption></figure>
+  <figure><img src="I.jpg" alt="I"><figcaption><span class="harf">I</span>İki katlı kart<small>Üstte görev, altında tam genişlik fiyat/ilerleme çubuğu.</small></figcaption></figure>
+  <figure><img src="J.jpg" alt="J"><figcaption><span class="harf">J</span>Kontursuz<small>Tam ekran menülerin diliyle aynı: beyaz, çizgisiz, yumuşak gölgeli.</small></figcaption></figure>
+</div>
+<div id="buyuk"><img alt=""></div>
+<script>
+  const b = document.getElementById('buyuk'), bi = b.querySelector('img');
+  document.querySelectorAll('figure img').forEach(i => i.onclick = () => { bi.src = i.src; b.style.display = 'grid'; });
+  b.onclick = () => { b.style.display = 'none'; };
+</script>
+</body>
+</html>

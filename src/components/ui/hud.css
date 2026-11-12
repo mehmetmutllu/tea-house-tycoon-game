@@ -481,9 +481,15 @@
      Sabit yükseklik yerine TABAN yükseklik: bant hiç küçülmez ama içerik büyürse (cihazın yazı
      boyutu ayarı) taşmak yerine uzar — ölçemediğimiz durumu da kapatan hâl.
      Ölçüm: docs/serit-raporu-g1.md §Bulgular 3. */
-  min-height: 58px;
-  padding: 6px 10px 6px 8px;
-  border-radius: var(--r2);
+  min-height: 48px;
+  padding: 4px 6px 4px 4px;
+  /* D-175 (1.0.7): TEK SATIRLIK HAP — kullanıcı on aday arasından B'yi seçti (gerçek oyundan
+     çekilen adaylar: `tools/aday-gorev-karti.mjs`). Lakap ve fiyat kalktı; resim · başlık ·
+     (ilerleme) · ödül · ok. Kenarlardan içeri çekik — ekranın daha çoğu oyuna kalır. */
+  left: calc(var(--sal) + 30px);
+  right: calc(var(--sar) + 30px);
+  gap: 8px;
+  border-radius: var(--rr);
   border: 3px solid var(--ot);
   background: linear-gradient(180deg, var(--kart), var(--kart2));
   box-shadow: var(--k3duz);
@@ -530,8 +536,8 @@
   content: '';
   position: absolute;
   inset: 0;
-  /* Yarıçap merdivenden (mor-dil bekçisi `inherit`i reddediyor): bant `--r2` kullanıyor. */
-  border-radius: var(--r2);
+  /* Yarıçap merdivenden (mor-dil bekçisi `inherit`i reddediyor): bant `--rr` (hap) kullanıyor. */
+  border-radius: var(--rr);
   pointer-events: none;
   background: linear-gradient(105deg, transparent 38%, color-mix(in srgb, var(--ok) 42%, transparent) 50%, transparent 62%);
   transform: translateX(-120%);
@@ -581,20 +587,6 @@
 .band.done .band-title {
   color: var(--tx);
 }
-/* G-05 lakabı: bandın ÜST satırı ("İLK ÇAY"), altındaki satır net hedefi yazar.
-   Kart zemininde (`--kart`) duruyor — `--tx2` orada 4,57, gövde gradyanında 3,84 olurdu (T2). */
-.band-kicker {
-  display: block;
-  font-size: var(--p1);
-  font-weight: 800;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--tx2);
-  line-height: 1.15;
-}
-.band.done .band-kicker {
-  color: var(--ok);
-}
 .band-sub.done-sub {
   font-weight: 800;
   letter-spacing: 0.06em;
@@ -604,11 +596,11 @@
 }
 .band-photo {
   flex: none;
-  width: 44px;
-  height: 44px;
+  width: 36px;
+  height: 36px;
   display: grid;
   place-items: center;
-  border-radius: var(--r2);
+  border-radius: 50%;
   background: var(--oyuk);
   border: 2.5px solid var(--ot);
 }
@@ -616,10 +608,15 @@
   flex: 1;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 3px;
+  align-items: center;
+  gap: 8px;
+}
+.band-photo > * {
+  transform: scale(0.85);
 }
 .band-title {
+  flex: 1;
+  min-width: 0;
   font-size: var(--p3);
   font-weight: 800;
   line-height: 1.15;
@@ -636,14 +633,10 @@
   font-size: var(--p2);
   color: var(--ac);
 }
-.band-sub.dim {
-  font-family: var(--font-game);
-  font-size: var(--p1);
-  font-weight: 700;
-  color: var(--tx2);
-}
 .band-track {
   display: block;
+  flex: none;
+  width: 64px;
   position: relative;
   height: 13px;
   border-radius: var(--rr);
@@ -652,6 +645,7 @@
   overflow: hidden;
 }
 .band-track.big {
+  width: auto;
   height: 18px;
   margin-top: 4px;
 }
@@ -693,8 +687,8 @@
   flex: none;
   display: grid;
   place-items: center;
-  width: 26px;
-  height: 26px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: linear-gradient(180deg, var(--ac), var(--ac2));
   border: 2px solid var(--ot);
@@ -1716,8 +1710,7 @@
     font-size: var(--p2);
   }
   .band {
-    min-height: 52px;
-    padding: 5px 8px 5px 6px;
+    min-height: 46px;
   }
   .band-title {
     font-size: var(--p2);
@@ -1796,7 +1789,7 @@
     font-size: var(--p2);
   }
   .band {
-    min-height: 52px;
+    min-height: 46px;
   }
 
   /* Kabuk yan yana: RAY | GÖVDE */

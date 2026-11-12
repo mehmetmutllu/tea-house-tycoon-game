@@ -173,8 +173,12 @@ describe('ekran kabuğu — K3 (D-106)', () => {
       expect(q.title.length, `${q.id} hedefi çok uzun`).toBeGreaterThan(4);
     }
     const kod = yorumsuz(oku(HUD));
-    expect(kod).toContain('className="band-kicker">{t(quest.kicker)}');
+    // D-175: alt bant tek satırlık hap — lakap orada YOK (başlık yeri zaten söylüyor), sağda fiyat
+    // değil ÖDÜL durur. Lakap Görevler ekranında yaşar.
+    expect(kod).not.toContain('className="band-kicker"');
+    expect(kod).not.toContain('data-testid="quest-cost"');
     expect(kod).toContain('className="band-title">{t(quest.title)}');
+    expect(kod).toContain('data-testid="quest-reward"');
     // Görevler ekranındaki lakap da görevin kendisinden gelir (sabit "ŞU AN" değil).
     expect(kod).toContain('className="qbig-kicker">{t(quest.kicker)}');
   });
