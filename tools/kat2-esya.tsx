@@ -27,7 +27,7 @@ const q = new URLSearchParams(location.search);
 type Tur = 'okey' | 'tavla' | 'cezve' | 'merdiven';
 const ESYA = (q.get('esya') ?? 'okey') as Tur;
 const NO = Number(q.get('no') ?? 1);
-const YOL = q.get('yol') as 'A' | 'B' | 'C' | 'D' | 'E' | null;
+const YOL = q.get('yol') as 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | null;
 
 const ZEMIN = FLOOR_THEMES.parke; // D-180
 const TEMA = WALL_THEMES.krem;
@@ -57,7 +57,7 @@ const UST = 0.75; // tabla üstü (Kat 1 ile aynı, D-073)
 const YESIL = '#2e7d4f';
 const BORDO = '#8e2f2a';
 const MAVI = '#5a93cf'; // Kat 1'in örtü mavisi (PALETTE.tableclothByLevel)
-const OKEY_YOL: Record<'A' | 'B' | 'C' | 'D' | 'E', OkeyAday[]> = {
+const OKEY_YOL: Record<'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G', OkeyAday[]> = {
   // Kullanıcı (tur 2b): "seviye yükseldikçe sandalye olsun; sandalyeler ya da masa Kat 1'deki gibi mavileşsin".
   D: [ // tabure → ahşap sandalye → MAVİ sandalye → masa büyür → MASA mavileşir (Kat 1 Sv5 örtüsü)
     { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
@@ -65,6 +65,21 @@ const OKEY_YOL: Record<'A' | 'B' | 'C' | 'D' | 'E', OkeyAday[]> = {
     { masa: 'kat1', cuha: YESIL, oturak: 'chair_A' },
     { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A', boy: 1.15 },
     { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A', boy: 1.15, ortu: MAVI, cay: true },
+  ],
+  // Kullanıcı (D/E sonrası): "sandalye D gibi, masa E gibi; en son seviyede yaslanma yeri de mavi".
+  F: [ // tabure → ahşap sandalye → mavi minder → masa büyür → ARKALIK da mavi + pirinç kenar + çay
+    { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'chair_A_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'chair_A' },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A', boy: 1.15 },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_B', boy: 1.15, pirinc: true, cay: true },
+  ],
+  G: [ // F'nin son basamağı chair_C ile (arkalık seçeneği)
+    { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'chair_A_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'chair_A' },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A', boy: 1.15 },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_C', boy: 1.15, pirinc: true, cay: true },
   ],
   E: [ // tabure → MAVİ tabure → ahşap sandalye → masa büyür + MAVİ sandalye → pirinç + çay
     { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
@@ -208,7 +223,7 @@ function CayBardaklari({ ust }: { ust: number }) {
 
 // ================================ TAVLA ================================
 type TavlaAday = { masa: 'kayKucuk' | 'kat1' | 'yuvarlak'; tahta: 'kutu' | 'kakma' | 'cuha'; oturak: Oturak; cay?: boolean; boy?: number; pirinc?: boolean };
-const TAVLA_YOL: Partial<Record<'A' | 'B' | 'C' | 'D' | 'E', TavlaAday[]>> = {
+const TAVLA_YOL: Partial<Record<'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G', TavlaAday[]>> = {
   A: [ // Kat 1'in yolu: kakma kutu → minder → masa büyür → pirinç + çay/zar
     { masa: 'kat1', tahta: 'kutu', oturak: 'stool_wood' },
     { masa: 'kat1', tahta: 'kakma', oturak: 'stool_wood' },
