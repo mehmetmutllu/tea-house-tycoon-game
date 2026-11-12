@@ -1,9 +1,44 @@
 {
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
- "tasindi": "22.10.2026",
- "kart": 89,
+ "tasindi": "12.11.2026",
+ "kart": 92,
  "gunluk": [
+  {
+   "tarih": "13.10.2026",
+   "etiket": "Sprint C tur 1 — seçenekle ilerleme (D-165)",
+   "baslik": "Mağaza <b>baştan düzenlendi</b>, ChatGPT ikonları onaylandı",
+   "govde": "Telefonda ana ekrana dönünce müzik artık susuyor. Mağazada sekmeler tek satır kayıyor, eşyalar kendi resmiyle seçiliyor, paketler afiş + elmas ızgarası + reklamsız şeridi oldu. Askılı tepsi tek elde taşınıyor, dekor önizlemesinde arka plan kıpırdamıyor, Kurucu yeleği etek gibi sarkmıyor.<br><br>Ekranlar açık zemine geçti; ChatGPT'ye yerleşim kilitli bir cila turu çizdirildi ve 32 oyun tarzı ikon beğenildi. Sırada mor ara ton ve ikonların bağlanması.",
+   "maddeler": [
+    "test <b>1861</b>",
+    "duman <b>74/74</b>",
+    "ChatGPT ikon <b>2 × 16</b>"
+   ]
+  },
+  {
+   "tarih": "10.10.2026",
+   "etiket": "Sprint B kısmi — 3 ajan + ChatGPT (D-164)",
+   "baslik": "Mağaza eşyaları artık <b>kendi resmiyle</b> hazır; tasarım turu durdu",
+   "govde": "38 kozmetiğin gerçek küçük resmi oyunun kendi modelleriyle çekildi (çapraz iki renk pulların yerine geçecek; bağlama Sprint C'de). Yeni metinler ChatGPT'den geçti, öğreticinin İngilizce satırları telefonda artık kesilmiyor.<br><br>ChatGPT'den baştan arayüz yönü iki turda reddedildi; doğru soru 'imzayı bozmadan mağazayı güzelleştir' çıktı, sonra tur durduruldu. Mor dil (D-107) geçerli.",
+   "maddeler": [
+    "test <b>1861</b>",
+    "küçük resim <b>38</b> · toplam <b>143 KB</b>",
+    "mikrometin <b>16</b> metin değişti",
+    "ekran envanteri <b>22</b> ekran"
+   ]
+  },
+  {
+   "tarih": "10.10.2026",
+   "etiket": "Sprint A — 4 ajan (D-163)",
+   "baslik": "Para ve ilerleme <b>kaybolmuyor</b>, telefon daha serin",
+   "govde": "Dört ajan paralel çalıştı: mağaza bağlantısı kendini yeniliyor ve her sonucu söylüyor, telefon değiştiren oyuncunun alımları kalıcı kimlikle dönüyor; reklam rızası/izin sırası düzeldi, takılan reklam 3 dakikada çözülüyor; kayıt yedekli ve bozulursa sessizce sıfırlanmıyor; görev hattının çift ödemesi kapandı.<br><br>Başlangıç Paketi geri yüklemesi: kıyafet + 100 elmas, kayıt başına bir kez (karar A).",
+   "maddeler": [
+    "test <b>1856</b> · duman <b>74/74</b> + EN <b>4/4</b>",
+    "kare işi <b>−%36</b> · mağaza açıkken <b>−%81</b>",
+    "Android <b>1.0.1</b> zip hazır",
+    "iOS iCloud kaydı <b>ios-1.0.1</b> dalında bekliyor"
+   ]
+  },
   {
    "tarih": "09.10.2026",
    "etiket": "Genel tarama — 9 ajan (D-162)",
