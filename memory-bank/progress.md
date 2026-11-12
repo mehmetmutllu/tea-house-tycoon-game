@@ -140,6 +140,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-10-28: Play kapalı test (14 gün) aktiflik için 1.0.6 (10006) — kod değişikliği yok, yalnız sürüm; zip masaüstünde `TeaHouseTycoon-1.0.6-vc10006-GooglePlay.zip`
   · 2026-11-11: Play kapalı test 2. tur bitti → üretim erişimi başvuru formu cevapları (TR açıklamalı, EN metin) masaüstünde `TeaHouse-Uretim-Erisimi-Formu.txt`, arkadaş girecek
   · 2026-11-12: 1.0.7 arayüz turu — görev kartı ince hap (D-175) · zemin işareti beyaz kenarlık (D-176) · menülerde alt menü açık (D-177); adaylar canlı oyundan aynı kadrajda · vitest 1872 · duman 74/74 (q_coin kararsızlığı sık) · sıradaki: Firebase geri bildirim + analitik
+  · 2026-11-12 (2.): duman q_coin kararsızlığı çözüldü (test yarışı: 2. müşteri geç servis + denetim lifetime'a bakıyordu → coinsCollected) · 18/18 yeşil · 2 mutasyon · vitest 1872 · duman 74/74
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅

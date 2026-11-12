@@ -138,10 +138,20 @@ try {
 
   if (seat) {
     await page.evaluate((p) => window.__teleport(p[0], p[2]), seat);
-    const served = await page.evaluate(() => window.__advanceTime(8));
-    if (served.lifetime > 0)
-      pass(`Manuel servis → ödeme → toplama çalışıyor (lifetime=${Math.floor(served.lifetime)})`);
-    else fail(`Servis sonrası para gelmedi (lifetime=${served.lifetime}, tray=${served.tray})`);
+    // Para toplanana kadar saniye saniye sar (en çok 20 sn). Sabit 8 sn kararsızdı: duman beklerken
+    // gerçek oyun döngüsü de akıyor; ilk müşterinin sabrı bazen biter, yerine oturan İKİNCİ müşteri
+    // pencerenin sonunda servis edilir ve 4 sn'lik içme bitmeden oyuncu başka yere ışınlanırdı —
+    // para yerde kalır, q_coin takılırdı. Ölçü `lifetime` değil `coinsCollected`: lifetime görev
+    // ödülüyle (q_pickup/q_serve1) zaten doluyor, toplamayı kanıtlamıyordu.
+    const served = await page.evaluate(() => {
+      let g = window.__advanceTime(8);
+      for (let i = 0; i < 20 && g.stats.coinsCollected === 0; i++) g = window.__advanceTime(1);
+      // Toplama son karede olduysa q_coin kutlama penceresinde (QUEST_COMPLETE_DUR 0,5 sn) — kapanmasını bekle.
+      return window.__advanceTime(1);
+    });
+    if (served.stats.coinsCollected > 0)
+      pass(`Manuel servis → ödeme → toplama çalışıyor (toplanan para=${served.stats.coinsCollected})`);
+    else fail(`Servis sonrası para toplanmadı (coinsCollected=${served.stats.coinsCollected}, yerde=${served.coins}, tray=${served.tray})`);
   } else {
     fail('Bekleyen müşteri koltuğu bulunamadı (firstWaitingSeat null)');
   }

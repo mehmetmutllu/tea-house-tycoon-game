@@ -30,9 +30,10 @@ Firestore (yalnız yazılır kural, sürüm/cihaz ekli) + Firebase Analytics (ot
 `mutlubadem.dev` hesabıyla Firebase projesi, iOS plist + Android json, ASC gizlilik beyanı (Play'i arkadaş).
 **Puanla (5 yıldız / sistem penceresi) BEKLİYOR** — kullanıcı: "uygulama daha güzelken ekleyelim".
 Sonra 1.0.7 derlemesi (iOS + Play zip) → K2-1 Kat 2 maketi.
-⚠️ Duman "q_coin" kararsızlığı bu tur SIK düştü (5 koşudan 3'ü 16/23): servis sonrası yerde para yok, cüzdan 6,
-`coinsCollected` 0 — para mıknatısla toplanmadan kaybolmuş gibi. Arayüz değişikliğinden bağımsız (aynı kodla 74/74 da
-geçti). Kök sebep bulunmadı; sonraki oturumda ilk iş.
+✅ 2026-11-12 (2.): Duman "q_coin" kararsızlığı ÇÖZÜLDÜ — ürün hatası değil, test yarışı. Duman beklerken gerçek döngü
+akıyor; ilk müşterinin sabrı bitince yerine oturan 2. müşteri 8 sn penceresinin sonunda servis ediliyor, 4 sn içme bitmeden
+oyuncu ışınlanıyor → para yerde. Eski denetim `lifetime`'a bakıyordu (görev ödülü dolduruyor, toplamayı kanıtlamıyordu).
+`tools/smoke.mjs`: coinsCollected>0 olana dek saniye saniye sar (≤20 sn) + kutlama için 1 sn. 18/18 yeşil · 2 mutasyon yakalandı.
 
 ## ⏭️ SIRADAKİ ADIM — KULLANICIYA HATIRLAT
 -1. Play üretim erişimi başvurusu sonucu ne oldu? (onay → 9B ile 1.0.6 üretime; ret → e-postayı iste)
