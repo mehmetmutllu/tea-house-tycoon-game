@@ -621,9 +621,13 @@
   font-weight: 800;
   line-height: 1.15;
   color: var(--tx);
+  /* D-175: hapta uzun başlık ("2 masayı Seviye 3'e çıkar" + ilerleme + ödül) tek satıra sığmıyor ve
+     kesiliyordu — iki satıra sarar, hap boyu içerikle uzar (`min-height` taban). Üçüncü satır yok. */
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 .band-sub {
   display: inline-flex;

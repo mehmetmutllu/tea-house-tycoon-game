@@ -15,6 +15,7 @@ import {
   markerFrame,
 } from '../../game/markerFrame';
 import type { Vec3 } from '../../game/types';
+import { PadAday, usePadAday } from './padAday';
 
 /** Oyun fontu (Baloo 2, OFL) — YEREL bundle; troika'nın CDN default fontu kullanılmaz
  * (D-018 dersi + offline APK'da zemin yazıları her zaman çalışsın). */
@@ -189,6 +190,7 @@ export function GroundMarker({
    *  (Usta noktaları. Biçim ayrı değil — kullanıcı 2026-09-09: "yuvarlak yapma, yükseltme gibi olsun".) */
   dwellId?: string;
 }) {
+  const padStil = usePadAday((s) => s.v);
   const p = Math.max(0, Math.min(1, progress));
   const r = radius;
   const punto = r * ETIKET_PUNTO;
@@ -261,6 +263,9 @@ export function GroundMarker({
     }
   }, [p, fillH]);
 
+  if (import.meta.env.DEV && padStil !== 'A') {
+    return <PadAday v={padStil} pos={pos} label={label} sub={sub} tint={tint} progress={p} afford={afford} r={r} arrow={arrow} />;
+  }
   return (
     <group position={[pos[0], 0, pos[2]]} name={`isaret:${label}`} userData={{ olcum: { label, r, hw, hh, arrow } }}>
       <group ref={scaleRef} name="isaret-olcek">
