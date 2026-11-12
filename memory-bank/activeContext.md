@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-12 — Kat 2 programı: K2-2a bitti · iOS 1.0.7 incelemede)
+## ŞU AN (2026-11-12 — Kat 2 programı: K2-2 bitti · iOS 1.0.7 incelemede)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -14,24 +14,20 @@ Play üretim erişimi formu (`TeaHouse-Uretim-Erisimi-Formu.txt`) gönderildi, c
 Add from library) · ret → e-postayı iste, cevaplar güçlendirilir. Mediation (D-173): Liftoff + Unity bidding'de.
 Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `geribildirim/deneme-…` elle silinecek.
 
-## 🆕 K2-2a — KAT ALTYAPISI (D-182) ✅ — kod girdi, sürüme ÇIKMADI (üretimde kapı kapalı)
-- `src/game/kat.ts`: Kat 2 geometrisi (3 alan D-179 · kova · merdiven ağzı `AGIZ` · `KUYU` katısı), `kat2Adim` yürüyüş,
-  `merdivenTetik` (ağızda merdivene doğru it), `VARIS`, `GECIS_SN` 0,7, `kat2Etkin()` (dev/test açık, üretimde `VITE_KAT2=1`).
-- Kayıt: `kat` + `kat2 {acik, padsDone}` additive (sürüm 34 kaldı). Store: `kat` · `kat2` · `katGecis`, `katDegistir` · `kat2Ac`.
-- Kat 2'deyken Kat 1 işler; oyuncu Kat 1'e `KAT1_DISI`nda görünür (`tick.playerMoveSystem` tek kapı); kamera panı düşer.
-- Sahne: `Kat1Gorunur` (gizli ama takılı) · `components/three/Kat2.tsx` boş merdiven salonu (parke, kaba inşaat ön salonlar,
-  merdiven 2 korkuluğu, bandın iki yanı tadilat perdesi) · `ui/KatPerdesi.tsx` karartma · kamera katta anında oturur ·
-  görev oku Kat 2'de çizilmez. Dev: `__kat2()` (aç) · `__kat2(2)` (geç) · `__game().kat`.
-- Bekçi `tests/kat2-altyapi.test.ts` 16 test · mutasyon 5/5 · vitest 1901 · duman 76/76 + 4/4.
-- Göz kontrolü aracı: `node tools/_kat2-bak.mjs <klasör>` (Kat 1 bitir → çık → kareler → in).
+## 🆕 K2-2 — KAT ALTYAPISI ✅ (D-182 · D-183) — kod girdi, sürüme ÇIKMADI (üretimde kapı kapalı)
+- K2-2a: `src/game/kat.ts` (geometri · `kat2Adim` · `merdivenTetik` · `kat2Etkin()`), kayıt `kat` + `kat2` additive (sürüm 34),
+  Kat 2'deyken Kat 1 işler (`KAT1_DISI`), `Kat2.tsx` boş merdiven salonu, `KatPerdesi`. Dev: `__kat2()` aç · `__kat2(2)` geç.
+- K2-2b: Kat 1'de `MerdivenTamir` (kırmızı yolluklu — kullanıcı görünce istemezse kalkar) · Kat 2'de kat bandı
+  (`data-testid="kat-bandi"`) + Kat 1 ipuçları susar · `__devPlan` sis düzeltmesi. `__game().merdivenTamirli`.
+- Bekçi `tests/kat2-altyapi.test.ts` 19 test · duman 77/77 + 4/4 · vitest 1904.
+- Göz aracı: `node tools/_kat-kare.mjs <klasör> x '[["kat2"],["gec"],["tp",x,z],["js","..."],["kare","ad",ms]]'`.
+- Kat 2 metni EN dahil yayından önce ChatGPT mikrometin turuna girer.
 
-## ⏭️ SIRADAKİ ADIM — K2-2b (görsel/arayüz, mantık değil)
-1. Kat 1'de merdiven açıkken **tamir edilmiş merdiven** (bugün yıkık + dubalar duruyor; oyuncu içinden çıkıyor). Görünüş
-   seçimi gerekirse adaylarla göster (feedback_show_dont_ask).
-2. Kat 2'de HUD: Kat 1 görev kartı ("Ocaktan çay al") Kat 2'de anlamsız → gizle ya da "Kat 2" kartı · kat göstergesi?
-   Kat 1 kasa sayacı K2-4'ün işi.
-3. Dev üstten plan (`__devPlan`) Kat 2'de boş çıkıyor (sis/kadraj) — dev aracı, küçük.
-4. Sonra K2-3: okey masası döngüsü + Türk kahvesi + cezve ocağı (D-181 görünüşleriyle). Merdiven tamir pad'i + fiyatı K2-5.
+## ⏭️ SIRADAKİ ADIM — K2-3: okey masası döngüsü + Türk kahvesi + cezve ocağı
+- D-181 görünüşleriyle (okey yol G · cezve 7 KayKit restoran). Denge sayıları varyant kapısından (ölç → sor → uygula).
+- Kat 2 görev hattı → kat bandının yerini alır. Merdiven tamir pad'i + fiyatı K2-5.
+- Gözlem: Kat 2 varış kadrajında arka duvarın üstü koyu boşluk (Kat 1'de bahçe/sokak görünüyor) → dış manzara/çatı?
+  K2-3'te göz kontrolüyle bak.
 
 ## KULLANICIYA HATIRLAT
 - Play üretim erişimi sonucu ne oldu?

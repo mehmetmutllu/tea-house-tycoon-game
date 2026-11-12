@@ -1,7 +1,8 @@
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Kat2Sahne } from './Kat2';
+import { Kat2Sahne, MerdivenTamir } from './Kat2';
+import { merdivenTamirli } from '../../game/kat';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Color, Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
+import { Color, Fog, Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, gateOf, tableNextCost, openServices, doorX as doorAt, entranceAt, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
@@ -319,7 +320,7 @@ function CameraRig() {
   const desired = useMemo(() => new Vector3(), []);
   const look = useMemo(() => new Vector3(), []); // pürüzsüzleştirilmiş lookAt hedefi (oyuncuyla aynı damping)
   const tmp = useMemo(() => new Vector3(), []);
-  const st = useRef({ d: 0, w: 0, h: 0, ready: false, kat: 1 });
+  const st = useRef({ d: 0, w: 0, h: 0, ready: false, kat: 1, planSisi: false });
   useFrame((_, rawDt) => {
     const dt = Math.min(Math.max(rawDt, 0), 0.05); // clamp: kare atlamasında kamera sıçramasın
     const g = useGame.getState();
@@ -334,6 +335,11 @@ function CameraRig() {
     // portrede de landscape'te de 34 × 34'ün TAMAMI kadraja sığar. Üretimde bu dal ölü kod.
     if (import.meta.env.DEV) {
       const td = devTopDown();
+      if (!td && st.current.planSisi && scene.fog instanceof Fog) {
+        scene.fog.near = LIGHTING.fogNear;
+        scene.fog.far = LIGHTING.fogFar;
+        st.current.planSisi = false;
+      }
       if (td) {
         const cam = camera as PerspectiveCamera;
         const aspect = size.width / Math.max(1, size.height);
@@ -341,6 +347,12 @@ function CameraRig() {
         const pad = 1.04; // kenarda ince pay: duvarın dış yüzü de görünsün
         const h = (pad * Math.max(FLOOR_HALF / vt, FLOOR_HALF / (vt * aspect))) / td.zoom;
         camera.position.set(0, h, 0.001); // z'de kıl payı: tam dikeyde lookAt yönü belirsiz kalır
+        // Dar portrede h sisin uzak ucunu (72) aşıyor → bütün kat sise gömülüp boş çıkıyordu (K2-2b).
+        if (scene.fog instanceof Fog) {
+          scene.fog.near = h + LIGHTING.fogNear;
+          scene.fog.far = h + LIGHTING.fogFar;
+          st.current.planSisi = true;
+        }
         look.set(0, 0, 0);
         camera.lookAt(look);
         st.current.ready = false; // plandan çıkınca takip kamerası sıçramadan yeniden yerleşir
@@ -1063,6 +1075,8 @@ function Walls() {
  */
 function BackBand({ areasOpen }: { areasOpen: number }) {
   const lavaboOpen = useGame((s) => s.padsDone.includes('lavabo'));
+  // Kat 2 açıkken merdiven tamir edilmiş durur (K2-2b); kapı kapalı derlemede hep yıkık.
+  const merdivenAcik = useGame((s) => merdivenTamirli(s.kat2));
   const kabuk = useGame((s) => s.kabuk);
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const floorThemeByArea = useGame((s) => s.floorThemeByArea);
@@ -1134,11 +1148,17 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
       {/* MERDİVEN KOVASI — yıkık merdiven + uyarı şeridi + dubalar (hepsi bandın İÇİNDE:
           oyuncu z = −9,8'de duruyor, salona taşan hiçbir parça olmasın diye maketin
           salon tarafındaki dubaları kovanın içine alındı). */}
-      <MaketMerdivenHarap pos={[0, 0, stairZ]} />
-      <MaketUyariSeridi x1={-4.2} x2={4.2} z={zf - 0.1} />
-      {[-3.6, 0, 3.6].map((x) => (
-        <MaketDuba key={x} pos={[x, 0, zf - 0.25]} />
-      ))}
+      {merdivenAcik ? (
+        <MerdivenTamir pos={[0, 0, stairZ]} />
+      ) : (
+        <>
+          <MaketMerdivenHarap pos={[0, 0, stairZ]} />
+          <MaketUyariSeridi x1={-4.2} x2={4.2} z={zf - 0.1} />
+          {[-3.6, 0, 3.6].map((x) => (
+            <MaketDuba key={x} pos={[x, 0, zf - 0.25]} />
+          ))}
+        </>
+      )}
 
       {/* LAVABO — açıkken oda, kapalıyken TADİLAT (kilitli obje çizilmez değil, yıkık durur) */}
       {lavaboOpen ? (

@@ -247,7 +247,7 @@ describe('E5 · sunum: ekranı kesmez, dünyaya yapışık, tek kaynaktan', () =
   it('HUD öğreticiyi kanaldan çizer; Scene iz ve kenar okunu aynı hedeften besler', () => {
     const hud = oku('src/components/ui/HUD.tsx');
     expect(hud).toMatch(/kanal === 'ogretici' && ogreticiAdim/);
-    expect(hud).toMatch(/ogreticiHazir: ogreticiAdim != null/);
+    expect(hud).toMatch(/ogreticiHazir: (!kat2de && )?ogreticiAdim != null/);
     const scene = oku('src/components/three/Scene.tsx');
     expect(scene).toMatch(/ogretici \?\? questFocusPos\(/);
     expect(scene).toMatch(/<OgreticiIz \/>/);

@@ -32,6 +32,7 @@ export const en: Record<string, string> = {
   "Çaycı panelinden al": "Get from Tea Maker Panel",
   "Hedefe git": "Go to Goal",
   "Görev hattı tamamlandı — mekân senin.": "Task line complete — the place is yours.",
+  "Kat 2 — oyun salonu hazırlanıyor": "Floor 2 — the game hall is getting ready",
   "Görevler": "Tasks",
   "Hedefler": "Goals",
   "Mağaza": "Shop",

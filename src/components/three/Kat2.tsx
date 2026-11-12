@@ -13,6 +13,7 @@ import { WALL_H } from './wallOlcu';
 import { MaketIskele, MaketMoloz, MaketPlant, MaketTadilatPerde, MaketWall } from './maketParts';
 import { FLOOR_THEMES, PALETTE, WALL_THEMES, type FloorTheme } from '../../config/palette';
 import { BAND, FLOOR_HALF } from '../../game/layout';
+import { STEP_D, STEP_H, STEP_N } from './wallLook';
 import { AGIZ, KAT2_ACIK_ALAN, KAT2_ALANLAR, KOVA, type Dik } from '../../game/kat';
 
 const H = FLOOR_HALF;
@@ -241,6 +242,66 @@ function MerdivenAgzi() {
       <Korkuluk x1={x} z1={yan} x2={x} z2={AGIZ.on} />
       {[[-x, AGIZ.on], [x, AGIZ.on], [-x, yan], [x, yan]].map(([bx, bz], i) => (
         <Baba key={i} x={bx} z={bz} />
+      ))}
+    </group>
+  );
+}
+
+/**
+ * KAT 1'İN TAMİR EDİLMİŞ MERDİVENİ (K2-2b) — Kat 2 açılınca yıkık merdiven + dubalar yerine bu durur.
+ * Dil Kat 2'deki ağızla aynı (D-181 merdiven 2): ahşap basamak · kalın küpeşte · topuzlu babalar ·
+ * üstüne yolluk ("çıkılır" okunsun). Ölçü yıkık merdivenle birebir (`STEP_*`, sahanlık −L−0,3):
+ * oyuncunun girdiği ağız (`merdivenTetik`) aynı yer.
+ */
+export function MerdivenTamir({ pos }: { pos: [number, number, number] }) {
+  const w = 2 * AGIZ.x;
+  const L = STEP_N * STEP_D;
+  const yx = w / 2 - 0.12;
+  const egim = Math.atan2(STEP_N * STEP_H, L);
+  const kupL = Math.hypot(L, STEP_N * STEP_H);
+  return (
+    <group position={pos}>
+      {Array.from({ length: STEP_N }, (_, i) => {
+        const z = -STEP_D / 2 - i * STEP_D;
+        return (
+          <group key={i}>
+            <mesh position={[0, ((i + 1) * STEP_H) / 2, z]} castShadow receiveShadow>
+              <boxGeometry args={[w, (i + 1) * STEP_H, STEP_D]} />
+              <meshStandardMaterial color={KOYU} />
+            </mesh>
+            {/* basamak tahtası: öne 4 cm taşar (burun) */}
+            <mesh position={[0, (i + 1) * STEP_H + 0.02, z + 0.02]} castShadow receiveShadow>
+              <boxGeometry args={[w + 0.06, 0.04, STEP_D + 0.04]} />
+              <meshStandardMaterial color={i % 2 ? '#8a6a4f' : '#94735a'} />
+            </mesh>
+            <mesh position={[0, (i + 1) * STEP_H + 0.045, z + 0.02]} receiveShadow>
+              <boxGeometry args={[w * 0.56, 0.012, STEP_D + 0.045]} />
+              <meshStandardMaterial color="#8e2f2a" />
+            </mesh>
+          </group>
+        );
+      })}
+      {/* sahanlık */}
+      <mesh position={[0, (STEP_N * STEP_H) / 2, -L - 0.3]} castShadow receiveShadow>
+        <boxGeometry args={[w, STEP_N * STEP_H, 0.6]} />
+        <meshStandardMaterial color={KOYU} />
+      </mesh>
+      <mesh position={[0, STEP_N * STEP_H + 0.02, -L - 0.3]} receiveShadow>
+        <boxGeometry args={[w + 0.06, 0.04, 0.6]} />
+        <meshStandardMaterial color="#94735a" />
+      </mesh>
+      {/* iki yanda küpeşte: her basamakta bir dikme, eğimli kalın tırabzan, dipte topuzlu baba */}
+      {[-1, 1].map((s) => (
+        <group key={s}>
+          {Array.from({ length: STEP_N }, (_, i) => (
+            <Silindir key={i} r={0.035} h={0.86} renk="#7a5236" pos={[s * yx, (i + 1) * STEP_H + 0.43, -STEP_D / 2 - i * STEP_D]} />
+          ))}
+          <mesh position={[s * yx, (STEP_N * STEP_H) / 2 + 0.98, -L / 2 - 0.1]} rotation={[egim, 0, 0]} castShadow>
+            <boxGeometry args={[0.1, 0.16, kupL]} />
+            <meshStandardMaterial color={PALETTE.doorWood} />
+          </mesh>
+          <Baba x={s * yx} z={0.05} />
+        </group>
       ))}
     </group>
   );

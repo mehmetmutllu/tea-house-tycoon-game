@@ -110,7 +110,7 @@ describe('B2 — tepsi ipucu doğru anda', () => {
     expect(tepsiIpucuZamani({ tray: 0, trayFood: 0, teasServed: 3, npcs: [] })).toBe(false);
   });
   it('HUD kanalı bu fonksiyondan besleniyor', () => {
-    expect(HUD).toMatch(/tepsiIpucuHazir: tepsiAni && !trayTipSeen/);
+    expect(HUD).toMatch(/tepsiIpucuHazir: (!kat2de && )?tepsiAni && !trayTipSeen/);
   });
 });
 

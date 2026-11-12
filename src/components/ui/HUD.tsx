@@ -158,6 +158,8 @@ export function HUD() {
    * değil. Süre dolunca bant kalkar ve alt nav yukarı toplanır.
    */
   const quest = useGame((s) => s.quest);
+  // K2-2b: Kat 2'deyken Kat 1'in görev bandı ve Kat 1'e bağlı ipuçları susar (Kat 2'nin görevleri K2-3'te).
+  const kat2de = useGame((s) => s.kat === 2);
   const [bitisGorunur, setBitisGorunur] = useState(true);
   const questBitti = quest == null;
   // Hat yeniden uzarsa (yeni görev eklenirse) bant tekrar hak eder — render sırasında düzeltilir.
@@ -254,12 +256,12 @@ export function HUD() {
     panelAcik: sheet != null,
     bildirimVar: toastCizilir(notice),
     gecisPenceresi,
-    bulasikOgretmeHazir: quest?.target.type === 'washDish' && !washTipSeen,
-    karakterIpucuHazir: !!charQuestActive && !charPanelSeen,
-    tepsiIpucuHazir: tepsiAni && !trayTipSeen,
+    bulasikOgretmeHazir: !kat2de && quest?.target.type === 'washDish' && !washTipSeen,
+    karakterIpucuHazir: !kat2de && !!charQuestActive && !charPanelSeen,
+    tepsiIpucuHazir: !kat2de && tepsiAni && !trayTipSeen,
     seviyeVar: levelUp != null,
     baslangicTeklifHazir: teklifHazir,
-    ogreticiHazir: ogreticiAdim != null,
+    ogreticiHazir: !kat2de && ogreticiAdim != null,
   });
   const teklif = kanal === 'teklif-baslangic';
   const showOffline = kanal === 'cevrimdisi';
@@ -472,7 +474,13 @@ export function HUD() {
       )}
 
       {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
-      {quest ? (
+      {kat2de ? (
+        <div className="band idle" data-testid="kat-bandi">
+          <span className="band-body">
+            <span className="band-title">{t('Kat 2 — oyun salonu hazırlanıyor')}</span>
+          </span>
+        </div>
+      ) : quest ? (
         <button
           className={`band${quest.done ? ' done' : ''}`}
           data-testid="quest"

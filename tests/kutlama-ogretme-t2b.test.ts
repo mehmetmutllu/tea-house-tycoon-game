@@ -151,7 +151,7 @@ describe('G-63 · bulaşık döngüsü ÖĞRETİLİR, görevle birlikte dayatıl
 
   it('kart bulaşık GÖREVİNE bağlı ve bir kez görülür', () => {
     const k = hud();
-    expect(k).toMatch(/bulasikOgretmeHazir: quest\?\.target\.type === 'washDish' && !washTipSeen/);
+    expect(k).toMatch(/bulasikOgretmeHazir: (!kat2de && )?quest\?\.target\.type === 'washDish' && !washTipSeen/);
     expect(k).toMatch(/onClose=\{markWashTipSeen\}/);
   });
 

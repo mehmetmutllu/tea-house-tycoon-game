@@ -14,6 +14,7 @@ import { dailyViews } from './dailyQuests';
 import { D } from './decimal';
 import { izdusur } from './cameraView';
 import { gorunenDekor } from './vitrin';
+import { merdivenTamirli } from './kat';
 import { reklamDurumu, reklamSaatiKaydir } from './ads';
 import { economyConfig, levelProgress, charLevel, lavaboVisitChance, lavaboFee, lavaboIncomePerCustomer, type CharStat } from '../config/economy.config';
 import type { SaveStats } from './save';
@@ -152,6 +153,7 @@ export function installDevHooks(): void {
       npcCount: s.npcCount,
       kat: s.kat,
       kat2Acik: s.kat2.acik,
+      merdivenTamirli: merdivenTamirli(s.kat2),
       katGecis: s.katGecis ? { ...s.katGecis } : null,
       // Servis durumu (D-011): hazır ÇAY (geri-uyum adı; tost ayrı — service.readyTost).
       readyCups: s.ready.tea,

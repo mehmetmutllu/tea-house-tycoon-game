@@ -24,6 +24,15 @@ export function kat2Etkin(): boolean {
   return ENV?.DEV === true || ENV?.VITE_KAT2 === '1' || ENV === undefined;
 }
 
+/**
+ * Kat 1'in merdiveni tamirli mi (K2-2b)? Kat 2 açıksa yıkık merdiven + dubalar yerine tamir edilmiş
+ * merdiven çizilir. Kapı kapalı derlemede kayıt "açık" dese bile yıkık durur: çıkılamayan merdiven
+ * çıkılır gibi görünmesin.
+ */
+export function merdivenTamirli(kat2: { acik: boolean }, etkin = kat2Etkin()): boolean {
+  return kat2.acik && etkin;
+}
+
 // ============================== GEOMETRİ ==============================
 
 export interface Dik {

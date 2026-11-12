@@ -801,6 +801,21 @@ try {
     else fail(`Reklamları Kaldır tutmadı (reklamsız ${r1.reklamsiz}, geçişli ${r0.gecisli}→${r1.gecisli})`);
   }
 
+  // K2-2b: Kat 2 açılınca Kat 1 merdiveni tamirli; Kat 2'de Kat 1'in görev bandı yerine kat bandı, dönünce geri.
+  {
+    await seviyeKapat();
+    const once = (await page.evaluate(() => window.__game())).merdivenTamirli;
+    await page.evaluate(() => window.__kat2());
+    const sonra = (await page.evaluate(() => window.__game())).merdivenTamirli;
+    await page.evaluate(() => window.__kat2(2));
+    await page.waitForSelector('[data-testid="kat-bandi"]', { timeout: 5000 });
+    const gorevKat2de = await page.$('[data-testid="quest"]');
+    await page.evaluate(() => window.__kat2(1));
+    await page.waitForSelector('[data-testid="kat-bandi"]', { state: 'detached', timeout: 5000 });
+    if (once === false && sonra === true && !gorevKat2de) pass("Kat 2: merdiven tamir edildi · Kat 2'de kat bandı, Kat 1 görevi yok · dönünce kalktı");
+    else fail(`Kat 2 görünüşü bozuk (merdiven ${once}→${sonra}, Kat 2'de görev bandı ${!!gorevKat2de})`);
+  }
+
   if (consoleErrors.length === 0) pass('Konsol hatası yok');
   else fail(`Konsol hataları: ${consoleErrors.slice(0, 5).join(' | ')}`);
 } catch (e) {

@@ -19,6 +19,7 @@ import {
   gecisKarartma,
   kat2Adim,
   merdivenTetik,
+  merdivenTamirli,
 } from '../src/game/kat';
 import { BAND, LAYOUT, hitsSolid } from '../src/game/layout';
 import type { Vec3 } from '../src/game/types';
@@ -257,5 +258,24 @@ describe('Kat 2\'de yürüyüş', () => {
     expect(kat2Adim(vx, vz, 0, 0)).toEqual([vx, vz]);
     expect(merdivenTetik(2, vx, vz, [0, 1])).toBe(false);
     expect(merdivenTetik(1, VARIS[1][0], VARIS[1][2], [0, -1])).toBe(false);
+  });
+});
+
+describe('K2-2b — Kat 1 merdiveninin görünüşü', () => {
+  it('Kat 2 kapalıyken yıkık, açılınca tamirli', () => {
+    expect(merdivenTamirli({ acik: false })).toBe(false);
+    expect(merdivenTamirli({ acik: true })).toBe(true);
+  });
+
+  it('üretim kapısı kapalıyken kayıt "açık" dese de yıkık durur', () => {
+    expect(merdivenTamirli({ acik: true }, false)).toBe(false);
+    expect(merdivenTamirli({ acik: false }, true)).toBe(false);
+  });
+
+  it('dükkân akışı: kat2Ac merdiveni tamir eder (anlık görüntü aynı kaynaktan)', () => {
+    bitmisKat1(false);
+    expect(merdivenTamirli(useGame.getState().kat2)).toBe(false);
+    useGame.getState().kat2Ac();
+    expect(merdivenTamirli(useGame.getState().kat2)).toBe(true);
   });
 });
