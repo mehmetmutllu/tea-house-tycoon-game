@@ -1,0 +1,19 @@
+TEA HOUSE TYCOON · 1.0.7 (sürüm kodu 10007)
+
+1) ÖNCE — bir kerelik Data safety güncellemesi (rehber PDF, Adım 10 → "1.0.7 için bir kerelik" kutusu):
+   App content → Data safety → Manage
+   - "Do you provide a way for users to request that their data is deleted?" → Yes
+   - App activity → Other user-generated content: Collected ✔, Shared ✘, ephemeral No, Optional,
+     amaçlar: App functionality + Analytics
+   - Diğer satırlara dokunma → Save
+
+2) SONRA — Production → Create new release → 2-paket/app-release.aab yükle → aşağıdaki notları gir → Send for review
+
+Release notes (sürüm notları):
+
+<en-US>
+You can now send us feedback right from Settings. Plus UI improvements and small fixes.
+</en-US>
+<tr-TR>
+Artık Ayarlar'dan bize doğrudan geri bildirim gönderebilirsin. Ayrıca arayüzde iyileştirmeler ve küçük düzeltmeler yapıldı.
+</tr-TR>

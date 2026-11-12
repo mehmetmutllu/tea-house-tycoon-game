@@ -29,6 +29,13 @@ fs.rmSync(CIKTI, { recursive: true, force: true });
 for (const k of ['2-paket', '3-gorseller', '4-metinler']) fs.mkdirSync(path.join(CIKTI, k), { recursive: true });
 
 if (aabGercek) fs.copyFileSync(AAB, path.join(CIKTI, '2-paket/app-release.aab'));
+// Bu sürüme özel: Play'e girilecek sürüm notu + bir kerelik adımlar (sürüm başına üzerine yazılır).
+const buSurum = yol('docs/play/bu-surum.txt');
+if (fs.existsSync(buSurum)) {
+  const metin = fs.readFileSync(buSurum, 'utf8');
+  if (!metin.includes(`${paket.version} (sürüm kodu ${KOD})`)) throw new Error(`docs/play/bu-surum.txt ${paket.version} için değil — güncelle`);
+  fs.writeFileSync(path.join(CIKTI, '0-BU-SURUM.txt'), metin);
+}
 else fs.writeFileSync(path.join(CIKTI, '2-paket/OKU.txt'), 'Oyun paketi (app-release.aab) henüz eklenmedi: reklam ve satın alma kimlikleri girildikten sonra Mehmet son paketi gönderecek.\nBu arada Adım 1-5 yapılabilir.\n');
 
 const O = yol('docs/magaza-kareleri/tasarim/O');
