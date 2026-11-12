@@ -1,10 +1,15 @@
 // `defineConfig` VITEST'ten alınır: `vite`inki `test` alanını tanımıyor (TS2769).
 import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
+import { readFileSync } from 'node:fs'
+
+// Sürüm adı tek kaynaktan (package.json) — geri bildirim kaydı hangi sürümden geldiğini taşır.
+const SURUM = JSON.parse(readFileSync(new URL('./package.json', import.meta.url), 'utf8')).version as string
 
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  define: { __SURUM__: JSON.stringify(SURUM) },
   server: {
     watch: {
       // Gradle, APK derlerken android/ altını yeniden yazar; vite watcher'ı bu sırada scandir

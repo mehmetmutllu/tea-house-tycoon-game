@@ -60,6 +60,7 @@ import { baslangicTeklifiGoster, dekorAcik, dekorSalonu, vitrinSahip, vitrinUrun
 import { kiyafetPulu } from '../../config/kozmetik';
 import './hud.css';
 import { KafeAdiKutusu } from './KafeAdiKutusu';
+import { GeriBildirimKutusu } from './GeriBildirimKutusu';
 
 /* ── 3D ÖNİZLEMELER AYRI PARÇADA (Faz F kod-bölme) ──────────────────────────────────────────
    Karakter paneli ve mağaza önizlemeleri kendi <Canvas>ını kurar → r3f + three'yi çeker. Arayüz
@@ -196,6 +197,7 @@ export function HUD() {
   const kafeAdi = useGame((s) => s.kafeAdi);
   const kafeAdiKoy = useGame((s) => s.kafeAdiKoy);
   const [adDuzenle, setAdDuzenle] = useState(false);
+  const [geriBildirimAcik, setGeriBildirimAcik] = useState(false);
   const [adTaslak, setAdTaslak] = useState(kafeAdi ?? KAFE_ADI_VARSAYILAN);
   // F3b (D-150) · G-57: video hakkı kartı. Düğme seviye ₺'si ile AYNI kapıdan açılır (Sv 5): ödül
   // "son dakikanın kazancı" olduğundan ona bağlansaydı oyuncu durunca düğme kaybolup geri gelirdi.
@@ -276,6 +278,7 @@ export function HUD() {
   useEffect(() => {
     geri.current = () => {
       if (adDuzenle) return setAdDuzenle(false);
+      if (geriBildirimAcik) return setGeriBildirimAcik(false);
       if (sifirlaSor) return setSifirlaSor(false);
       if (videoAcik) return setVideoAcik(false);
       const eylem = geriTusu(kanal, sheet != null);
@@ -672,6 +675,15 @@ export function HUD() {
               onChange={(v) => setSetting('golge', v ? 'acik' : 'kapali')}
               testid="set-golge"
             />
+            <div className="setting-row">
+              <span className="setting-label">
+                {t('Geri bildirim')}
+                <small>{t('Hata ya da fikir? Bize yaz')}</small>
+              </span>
+              <button className="kafe-adi-degistir" data-testid="set-geri-bildirim" onClick={() => setGeriBildirimAcik(true)}>
+                {t('Yaz')}
+              </button>
+            </div>
             {/* E3 (S23 · D-120): ekranın altındaki 525 px'lik ölü alan İÇERİKLE kapanıyor.
                 Ölçüm: içerik 782 px'lik gövdenin yalnız %31'ini dolduruyordu — beş ekranın
                 en boşu buydu. Seçilmeyen kol E2 idi (satırlar ekrana yayılsın): doluluk
@@ -737,6 +749,8 @@ export function HUD() {
       {teklif && <BaslangicTeklifi onClose={baslangicTeklifKapat} />}
 
       {videoAcik && <VideoKarti onClose={() => setVideoAcik(false)} />}
+
+      {geriBildirimAcik && <GeriBildirimKutusu onKapat={() => setGeriBildirimAcik(false)} />}
 
       {(kanal === 'kafe-adi' || adDuzenle) && (
         <KafeAdiKutusu

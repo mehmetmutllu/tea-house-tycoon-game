@@ -1,0 +1,13 @@
+rules_version = '2';
+// Geri bildirim: oyuncu yalnız YENİ belge yazar; okuma/güncelleme/silme kapalı (yalnız konsol okur).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /geribildirim/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['metin', 'surum', 'platform', 'dil', 'cihaz', 'ilerleme', 'zaman'])
+        && request.resource.data.metin is string
+        && request.resource.data.metin.size() > 0
+        && request.resource.data.metin.size() <= 1000
+        && request.resource.data.zaman == request.time;
+    }
+  }
+}

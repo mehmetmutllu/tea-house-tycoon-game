@@ -26,10 +26,13 @@ export function iosSurumu(surum) {
   return { pazar: surum, derleme: Number(m[1]) * 10000 + Number(m[2]) * 100 + Number(m[3]) };
 }
 
-/** `path: "…node_modules…"` → `path: "../../../node_modules/…"` (düz bölü). */
+/** `path: "…node_modules…"` → `path: "../../../node_modules/…"` (düz bölü). Yerel eklentiler
+ *  (`file:` bağımlılığı, ör. `eklentiler/bulut-kayit`) de Windows'ta ters bölüyle yazılır → düz bölü. */
 export function spmYollari(metin) {
-  return metin.replace(/path: "([^"]*?)node_modules[\\/]([^"]+)"/g,
-    (_t, _on, geri) => `path: "../../../node_modules/${geri.replace(/\\/g, '/')}"`);
+  return metin
+    .replace(/path: "([^"]*?)node_modules[\\/]([^"]+)"/g,
+      (_t, _on, geri) => `path: "../../../node_modules/${geri.replace(/\\/g, '/')}"`)
+    .replace(/path: "([^"]*\\[^"]*)"/g, (_t, yol) => `path: "${yol.replace(/\\/g, '/')}"`);
 }
 
 const guncelle = (dosya, donustur) => {

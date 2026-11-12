@@ -11,3 +11,6 @@ capacitor-cordova-ios-plugins
 # Generated Config files
 App/App/capacitor.config.json
 App/App/config.xml
+
+# Firebase istemci ayarı (1.0.7) — depo herkese açık; dev-ortam'da durur, Codemagic'e gizli değişkenle gelir
+App/App/GoogleService-Info.plist

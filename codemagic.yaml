@@ -20,6 +20,9 @@ workflows:
     environment:
       groups:
         - appstore_kimlik
+        # firebase_ios (1.0.7): GOOGLE_SERVICE_INFO_PLIST_B64 = Firebase konsolundan indirilen
+        # GoogleService-Info.plist'in base64'u (tek satır, güvenli). Dosya git'e girmez.
+        - firebase_ios
       vars:
         BUNDLE_ID: "com.mutlubadem.teahouse"
         # ads.config.ts `test` bayrağını kapatır: yalnız bu derleme gerçek AdMob birimlerini ister.
@@ -33,6 +36,20 @@ workflows:
     scripts:
       - name: Bağımlılıklar
         script: npm ci --no-audit --no-fund
+
+      - name: Firebase yapılandırması (GoogleService-Info.plist)
+        # Analitik (1.0.7). Xcode projesi dosyaya Copy Bundle Resources'ta referans veriyor; dosya
+        # gizli değişkenden yazılır ve doğrulanır — eksik/bozuk plist ile derleme "başarılı" görünür
+        # ama analitik cihazda sessizce çalışmazdı.
+        script: |
+          : "${GOOGLE_SERVICE_INFO_PLIST_B64:?HATA: GOOGLE_SERVICE_INFO_PLIST_B64 tanimli degil (Codemagic > Environment variables > firebase_ios)}"
+          GSI=ios/App/App/GoogleService-Info.plist
+          printf '%s' "$GOOGLE_SERVICE_INFO_PLIST_B64" | base64 --decode > "$GSI"
+          plutil -lint "$GSI" || { echo "HATA: GoogleService-Info.plist bozuk (base64 tek satir mi?)" >&2; exit 1; }
+          GSI_BUNDLE=$(/usr/libexec/PlistBuddy -c "Print :BUNDLE_ID" "$GSI")
+          [ "$GSI_BUNDLE" = "$BUNDLE_ID" ] || { echo "HATA: plist baska uygulamanin (BUNDLE_ID='$GSI_BUNDLE')" >&2; exit 1; }
+          grep -q "GoogleService-Info.plist in Resources" ios/App/App.xcodeproj/project.pbxproj || { echo "HATA: plist Xcode projesine bagli degil" >&2; exit 1; }
+          echo "GoogleService-Info.plist: PROJECT_ID=$(/usr/libexec/PlistBuddy -c 'Print :PROJECT_ID' "$GSI")"
 
       - name: Web derlemesi + iOS eşitleme
         # ios:sync = vite build → cap sync ios → tools/ios-duzelt.mjs (sürüm package.json'dan).

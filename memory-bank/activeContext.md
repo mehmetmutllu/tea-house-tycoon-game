@@ -25,9 +25,14 @@ Yöntem: adaylar canlı oyuna enjekte edilip aynı kadrajda çekiliyor (`tools/a
 `aday-ekran.mjs`), artifact'ta gösterilip kullanıcı eliyor. Seçilenler: görev kartı **B ince hap** (sağda ödül, lakap/fiyat
 yok, uzun başlık 2 satır) · zemin işareti **B kesintisiz beyaz kenarlık** (pul artık solmuyor) · menüler **F alt menü açık**
 (sol üstte ✕, açık sekme de kapatır; Ayarlar'da geri oku). Kalan arayüz: istenirse başka ekranlar (Usta, ödül/teklif pencereleri).
-**Sıradaki iş:** ② geri bildirim + ③ analitik = **Firebase** (kullanıcı önerdi): Ayarlar'da "Geri bildirim gönder" →
-Firestore (yalnız yazılır kural, sürüm/cihaz ekli) + Firebase Analytics (oturum süresi, bırakılan adım). Gerekenler:
-`mutlubadem.dev` hesabıyla Firebase projesi, iOS plist + Android json, ASC gizlilik beyanı (Play'i arkadaş).
+✅ **Firebase (D-178) koda girdi:** proje `tea-house-tycoon` (Firebase hesabı mutlubadem4456 · `u/1`), Ayarlar → Geri
+bildirim kutusu (Firestore'a yalnız ekleme; mesajlar konsol → Firestore → `geribildirim`), yerel analitik (`gorev_tamam` ile
+bırakılan adım). Android debug APK Firebase'le derlendi; iOS Codemagic'te `firebase_ios` değişkeni + plist adımı hazır (derlenmedi).
+Konsolda silinecek: `geribildirim/deneme-…` (kurulum deneme belgesi).
+**Sıradaki — 1.0.7 YAYIN ÖNCESİ (kullanıcıya SOR, dışa dönük):** ① gizlilik politikası (`mehmetmutllu/tea-house-tycoon`
+`privacy.html` "kendi analitiğimiz yok / sunucumuz yok" diyor → Firebase Analytics + geri bildirim bölümü, TR+EN) ② ASC App
+Privacy: Ürün etkileşimi + Diğer kullanıcı içeriği + Cihaz kimliği (izlemede değil, kimliğe bağlı değil) ③ Play Veri
+güvenliği rehberi arkadaşa ④ package.json 1.0.7 → Codemagic iOS + `npm run play` zip.
 **Puanla (5 yıldız / sistem penceresi) BEKLİYOR** — kullanıcı: "uygulama daha güzelken ekleyelim".
 Sonra 1.0.7 derlemesi (iOS + Play zip) → K2-1 Kat 2 maketi.
 ✅ 2026-11-12 (2.): Duman "q_coin" kararsızlığı ÇÖZÜLDÜ — ürün hatası değil, test yarışı. Duman beklerken gerçek döngü

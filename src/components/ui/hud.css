@@ -2045,6 +2045,19 @@
 .kafe-adi-girdi:focus-visible {
   border-color: var(--ac);
 }
+/* 1.0.7 geri bildirim: ad kutusunun girdisi, çok satırlı metne göre */
+.geri-bildirim-girdi {
+  width: min(100%, 340px);
+  min-height: 120px;
+  resize: none;
+  text-align: left;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.geri-bildirim-hata {
+  color: var(--uyari);
+  font-weight: 800;
+}
 .kafe-adi-sayac {
   margin: 4px 0 2px;
   font-size: var(--p1);
@@ -2068,7 +2081,7 @@
 }
 
 /* Dil (i18n): üç seçenek yan yana; seçili olan kafe adı düğmesinin çerçevesiyle, vurgu renginde. */
-.dil-satir .setting-label small {
+.setting-label small {
   display: block;
   margin-top: 2px;
   font-size: var(--p1);
@@ -2321,7 +2334,7 @@
    Kart içindeki tx2 açık zeminde zaten okunuyor, ona dokunulmaz. */
 .modal-card.screen .setting-slider .setting-label,
 .modal-card.screen .setting-val,
-.modal-card.screen .dil-satir .setting-label small,
+.modal-card.screen .setting-label small,
 .modal-card.screen .yasal-satir a,
 .modal-card.screen .yasal-satir button {
   color: var(--lila-ot);

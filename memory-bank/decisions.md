@@ -5065,3 +5065,17 @@ görünmesin), menü `.ekranda` ile z 21; ekrandan açılan pencereler z 22. Gö
 ResizeObserver; ölçüm 79 · 78 · 110 px, `tools/olcum-navda.mjs`). Bekçi `ekran-kabugu` 2b (2 mutasyon). Duman kapanışları
 sekmeden yapılıyor.
 **Ek (aynı gün, kullanıcı):** "kapatma işareti de ekle" → sekme ekranlarında geri oku yerine ✕ (`sheet-kapat`).
+
+## D-178 · Firebase: geri bildirim REST ile Firestore'a, analitik yerel eklentiyle (2026-11-12)
+
+**Karar (kullanıcı: "Firebase'de aç, ücretsiz plan"; teknik kol Claude):** proje `tea-house-tycoon` (Wordmaster'ın hesabı,
+Spark, Firestore `eur3`). **Geri bildirim** Ayarlar → "Geri bildirim · Yaz" kutusu → Firestore REST `documents:commit`
+(yerel SDK yok, web anahtarı herkese açık olabilir): kural (`firestore.rules`) yalnız `geribildirim`e biçimli belge EKLER
+(7 alan, metin 1-1000, `zaman == request.time` → sunucu saati); okuma/güncelleme/silme kapalı; curl ile 3 yol doğrulandı.
+Kişisel veri yok (sürüm · platform · dil · ekran boyu · görev/seviye özeti). **Analitik** `@capacitor-firebase/analytics`
+8.6.0, `registerPlugin` ile doğrudan yerel köprü (paketin web kodu `firebase` JS'i çekerdi; web/dev'de sessiz). Olaylar
+store FARKINDAN (`analitik.ts`, `tick.ts`e dokunulmadı): `gorev_tamam` · `nokta_acildi` · `level_up` · `ogretici_atla`;
+oturum süresi Firebase'in otomatik olaylarından; toplu sıçrama (yükleme/bulut) olay doğurmaz. Yapılandırma dosyaları depoya
+girmez (depo açık): dev-ortam `gizli/kiraathane/firebase/`, iOS Codemagic `firebase_ios` grubu (base64). Bekçi 11 test ·
+4 mutasyon (biri kaçtı → test güçlendi) · duman +2 (Firestore yakalanır, gerçek DB'ye yazmaz).
+**Yayından önce:** gizlilik politikası ("kendi analitiğimiz yok" diyor) + ASC App Privacy + Play Veri güvenliği güncellenmeli.

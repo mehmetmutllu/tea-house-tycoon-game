@@ -21,8 +21,13 @@ const browser = await chromium.launch({
 const page = await browser.newPage({ viewport: { width: 900, height: 600 }, locale: 'tr-TR' }); // dil 'oto' → Türkçe (i18n: denetimler Türkçe metin okur)
 
 const consoleErrors = [];
+// Geri bildirim denetiminin KASITLI ret adımı (403) tarayıcıya "Failed to load resource" yazdırır;
+// yalnız o adımda ve yalnız Firestore adresinden gelen kaynak hatası sayılmaz.
+let beklenenFirestoreReddi = false;
 page.on('console', (m) => {
-  if (m.type() === 'error') consoleErrors.push(m.text());
+  if (m.type() !== 'error') return;
+  if (beklenenFirestoreReddi && (m.location()?.url ?? '').startsWith('https://firestore.googleapis.com/')) return;
+  consoleErrors.push(m.text());
 });
 page.on('pageerror', (e) => consoleErrors.push('pageerror: ' + e.message));
 
@@ -507,6 +512,39 @@ try {
   if (vazgecAd === 'Çınar Kahvesi' && yeniAd === 'Köprübaşı Çay Evi' && satirAd === 'Köprübaşı Çay Evi')
     pass('Ayarlar: kafe adı değişti, Vazgeç eskisini bıraktı');
   else fail(`Ayarlar kafe adı: vazgeç=${vazgecAd} yeni=${yeniAd} satır=${satirAd}`);
+
+  // 1.0.7 GERİ BİLDİRİM: Ayarlar → Yaz → Gönder. Firestore isteği YAKALANIR (gerçek veritabanına
+  // duman kaydı yazılmaz): önce ret (403) → hata satırı ve metin korunur, sonra kabul → teşekkür.
+  let fbIstek = null;
+  let fbCevap = 403;
+  await page.route('https://firestore.googleapis.com/**', async (r) => {
+    fbIstek = r.request().postDataJSON();
+    await r.fulfill({ status: fbCevap, contentType: 'application/json', body: '{}' });
+  });
+  await tikla('[data-testid="set-geri-bildirim"]');
+  await page.waitForSelector('[data-testid="geri-bildirim"]', { timeout: 3000 });
+  const bosKapali = await page.$eval('[data-testid="geri-bildirim-gonder"]', (el) => el.disabled);
+  await page.fill('[data-testid="geri-bildirim-girdi"]', 'Duman: masa 3 açılmıyor');
+  beklenenFirestoreReddi = true;
+  await page.click('[data-testid="geri-bildirim-gonder"]');
+  const hataGorundu = await page.waitForSelector('[data-testid="geri-bildirim-hata"]', { timeout: 5000 }).catch(() => null);
+  await page.waitForTimeout(100);
+  beklenenFirestoreReddi = false;
+  const metinDurdu = await page.$eval('[data-testid="geri-bildirim-girdi"]', (el) => el.value);
+  fbCevap = 200;
+  await page.click('[data-testid="geri-bildirim-gonder"]');
+  const tamam = await page.waitForSelector('[data-testid="geri-bildirim-tamam"]', { timeout: 5000 }).catch(() => null);
+  const alanlar = fbIstek ? Object.keys(fbIstek.writes[0].update.fields).sort().join(',') : null;
+  if (bosKapali && hataGorundu && metinDurdu === 'Duman: masa 3 açılmıyor' && tamam && alanlar === 'cihaz,dil,ilerleme,metin,platform,surum')
+    pass('Geri bildirim: boşken kapalı, ret → hata (metin korunur), kabul → teşekkür');
+  else fail(`Geri bildirim: boşKapalı=${bosKapali} hata=${!!hataGorundu} metin=${metinDurdu} tamam=${!!tamam} alanlar=${alanlar}`);
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(150);
+  if (!(await page.$('[data-testid="geri-bildirim"]')) && (await page.$('[data-testid="menu"]')))
+    pass('Geri (Escape) geri bildirim kutusunu kapattı, Ayarlar açık kaldı');
+  else fail('Geri bildirim kutusu Escape ile kapanmadı ya da Ayarlar da kapandı');
+  await page.unroute('https://firestore.googleapis.com/**');
+
   const sesKaydirici = await page.$('[data-testid="set-sound-vol"]');
   const muzikKaydirici = await page.$('[data-testid="set-music-vol"]');
   if (sesKaydirici && muzikKaydirici) pass('Ayarlarda ses ve müzik SEVİYE kaydırıcıları var');

@@ -38,6 +38,12 @@ if (!fs.existsSync(path.join(KOK, 'android/keystore.properties'))) {
   console.error('PLAY HAZIR DEĞİL: android/keystore.properties yok (imzasız AAB Play’e yüklenemez)');
   process.exit(1);
 }
+// 1.0.7: dosya yoksa google-services eklentisi SESSİZCE atlanır ve AAB analitiksiz çıkar.
+const gsj = path.join(KOK, 'android/app/google-services.json');
+if (!fs.existsSync(gsj) || !fs.readFileSync(gsj, 'utf8').includes('"package_name": "com.mutlubadem.teahouse"')) {
+  console.error('PLAY HAZIR DEĞİL: android/app/google-services.json yok ya da başka uygulamanın (dev-ortam → kur.ps1)');
+  process.exit(1);
+}
 
 const kos = (k, cwd = KOK) => execSync(k, { cwd, stdio: 'inherit', env: { ...process.env, VITE_REKLAM: 'gercek' } });
 kos('npm run build');

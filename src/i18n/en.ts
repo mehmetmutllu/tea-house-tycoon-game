@@ -423,4 +423,17 @@ export const en: Record<string, string> = {
   "TOST": "TOAST",
   "LAVABO": "RESTROOM",
   "3 tost servis et": "Serve 3 toasts",
+  // 1.0.7 geri bildirim
+  "Geri bildirim": "Feedback",
+  "Hata ya da fikir? Bize yaz": "Found a bug or have an idea? Tell us",
+  "Yaz": "Write",
+  "Geri bildirim gönder": "Send feedback",
+  "Bir hata mı buldun, bir fikrin mi var? Yaz, oyunu birlikte geliştirelim.": "Found a bug or have an idea? Write to us and let's make the game better together.",
+  "Mesajını yaz…": "Type your message…",
+  "Gönderilemedi. İnternet bağlantını kontrol edip tekrar dene.": "Couldn't send. Check your connection and try again.",
+  "Gönderiliyor…": "Sending…",
+  "Biraz sonra tekrar gönderebilirsin": "You can send again in a moment",
+  "Gönder": "Send",
+  "Teşekkürler!": "Thank you!",
+  "Mesajın bize ulaştı. Her birini okuyoruz.": "Your message reached us. We read every one.",
 };

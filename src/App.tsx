@@ -6,6 +6,7 @@ import { Joystick } from './components/ui/Joystick';
 import { SplashScreen } from './components/ui/SplashScreen';
 import { kayitVerisi, useGame } from './game/store';
 import { sesiBagla } from './game/audioBridge';
+import { analitigiBagla } from './game/analitik';
 import { reklamAbone, reklamBaslat, reklamEkranda, reklamYenidenKur } from './game/ads';
 import { sesDuraklat } from './game/audioWeb';
 import { HataSiniri, SahneKurtarici } from './components/ui/HataSiniri';
@@ -113,6 +114,8 @@ export default function App() {
     // bağlanır — ilk kesit kıyas noktasıdır ve hiçbir ses çalmaz, yoksa açılışta yüklenen
     // kaydın bütün geçmişi bir anda çalardı.
     const sesiCoz = sesiBagla();
+    // Analitik (1.0.7): aynı desen — ilk kesit kıyas noktası, yalnız yerel uygulamada gönderir.
+    const analitigiCoz = analitigiBagla();
 
     window.addEventListener('keydown', down);
     window.addEventListener('keyup', up);
@@ -162,6 +165,7 @@ export default function App() {
       document.removeEventListener('visibilitychange', onVisibility);
       void durumDinleyici?.then((d) => d.remove());
       sesiCoz();
+      analitigiCoz();
       bulutCoz();
       reklamSesCoz();
       uzlasmaCoz();
