@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Kat 2 — plan adayları</title>
+<title>Kat 2 — tasarım turları</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
 <style>
@@ -38,17 +38,87 @@
   .artieksi b { display:block; margin-bottom:2px; }
   ul { margin:4px 0 0; padding-left: 18px; }
   @media (max-width: 820px) { .izgara { grid-template-columns: 1fr; } .oyun { max-width: 300px; } .artieksi { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+
+  .tur { border:2px solid var(--mor); }
+  .tur h2 .no { color:var(--mor); }
+  .kartlar { display:grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap:16px; margin-top:14px; }
+  .kartc { background:var(--zemin); border:1px solid var(--cizgi); border-radius:14px; padding:12px; }
+  .kartc .ust { display:flex; gap:10px; align-items:center; margin-bottom:8px; }
+  .kartc .k { font-family:'Luckiest Guy', cursive; font-size:24px; color:#fff; background:var(--mor); min-width:40px; height:40px; border-radius:10px; display:grid; place-items:center; padding:4px 6px 0; }
+  .kartc h3 { margin:0; font-size:19px; }
+  .kartc .ikili { display:grid; grid-template-columns: 1fr 92px; gap:8px; }
+  .kartc img { width:100%; border-radius:10px; display:block; background:#1f2733; cursor:zoom-in; }
+  .kartc p { margin:8px 0 0; font-size:14px; }
+  .kartc .ae { font-size:13.5px; margin-top:6px; }
+  .kartc .ae b { color:var(--yesil); } .kartc .ae i { font-style:normal; color:#a2412a; font-weight:700; }
+  .eski { opacity:.95; }
+  .ayrac { font-family:'Luckiest Guy', cursive; color:var(--mor); font-size:26px; margin:40px 0 0; font-weight:400; }
 </style>
 </head>
 <body>
 <main>
-  <h1>Kat 2 — plan adayları</h1>
-  <p class="alt">Oyun Katı (okey + tavla). Kareler oyunun kendi ışığı, zemini, duvarı, mobilyası ve müşterileriyle çizildi. Bu turda yalnız <b>katın nasıl bölündüğü ve hangi sırayla açıldığı</b> seçiliyor. Okey ve tavla masasının, cezve ocağının, merdivenin görünüşü bir sonraki turda ayrıca seçilecek. O yüzden dört adayda bu eşyalar birebir aynı.</p>
+  <h1>Kat 2 — tasarım turları</h1>
+  <p class="alt">Oyun Katı (okey + tavla). Kareler oyunun kendi ışığı, zemini, duvarı, mobilyası ve müşterileriyle çizildi. Tur 1’de <b>katın planı</b> seçildi (B). Tur 2a’da salonların arası ve zeminleri seçiliyor. Okey ve tavla masasının, cezve ocağının ve merdivenin görünüşü Tur 2b’de seçilecek, o yüzden şimdilik hepsi aynı.</p>
+
+  <nav><a href="#tur2a-bolme">2a · Ayrım</a><a href="#tur2a-zemin">2a · Zemin</a><a href="#aday-a">A · Kat 1'in aynası</a><a href="#aday-b">B · Bölmeli salonlar</a><a href="#aday-c">C · Ortadan kanatlanan</a><a href="#aday-d">D · Balkonlu</a></nav>
+  <section class="tur" id="tur2a-bolme">
+    <div class="bas"><h2><span class="no">Tur 2a ·</span> Salonlar nasıl ayrılsın?</h2></div>
+    <p class="ozet">Plan B'de (Tur 1'de seçildi) kalıyoruz. Yalnız salonların arası değişiyor; zemin, eşya ve müşteriler beş adayda birebir aynı. Her kartta solda katın tamamı, sağda telefonda oyuncunun gördüğü kadraj var. Resme dokununca büyür.</p>
+    <div class="kartlar">
+      <div class="kartc"><div class="ust"><div class="k">T</div><h3>Tam bölme</h3></div>
+        <div class="ikili"><a href="B-3-genel-bolme-tam.png"><img src="B-3-genel-bolme-tam.png" alt="Tam bölme genel"></a><a href="B-3-oyun-bolme-tam.png"><img src="B-3-oyun-bolme-tam.png" alt="Tam bölme oyun kadrajı"></a></div>
+        <p>Tur 1'deki hâl. 2,2 m duvar, ahşap kemerli geçitler. Her salon ayrı bir oda.</p><div class="ae"><b>İyi:</b> Odalar net ayrılır, yeni salona girmek "yeni yer" hissi verir.<br><i>Bedeli:</i> Duvar arkasındaki salon görünmez. Yollar geçitlerden dolanır.</div></div>
+      <div class="kartc"><div class="ust"><div class="k">Y</div><h3>Yarım duvar</h3></div>
+        <div class="ikili"><a href="B-3-genel-bolme-alcak.png"><img src="B-3-genel-bolme-alcak.png" alt="Yarım duvar genel"></a><a href="B-3-oyun-bolme-alcak.png"><img src="B-3-oyun-bolme-alcak.png" alt="Yarım duvar oyun kadrajı"></a></div>
+        <p>Lambri boyunda (≈ 1 m) ahşap duvar + küpeşte. Kemerler yerinde.</p><div class="ae"><b>İyi:</b> Göz salonlar arasında serbest dolaşır, ayrım yine hissedilir.<br><i>Bedeli:</i> Yollar hâlâ geçitlerden dolanır (duvar alçak ama geçilmez).</div></div>
+      <div class="kartc"><div class="ust"><div class="k">P</div><h3>Ahşap parmaklık</h3></div>
+        <div class="ikili"><a href="B-3-genel-bolme-parmak.png"><img src="B-3-genel-bolme-parmak.png" alt="Ahşap parmaklık genel"></a><a href="B-3-oyun-bolme-parmak.png"><img src="B-3-oyun-bolme-parmak.png" alt="Ahşap parmaklık oyun kadrajı"></a></div>
+        <p>Sık dikmeli ahşap korkuluk + kemerli geçitler. Eski kahvehane ahşap işi.</p><div class="ae"><b>İyi:</b> En "kıraathane" duranı; içerisi tamamen görünür, ayrım süslü.<br><i>Bedeli:</i> Çok çizgi: uzaktan biraz kalabalık okunabilir.</div></div>
+      <div class="kartc"><div class="ust"><div class="k">S</div><h3>Sütun ve kiriş</h3></div>
+        <div class="ikili"><a href="B-3-genel-bolme-sutun.png"><img src="B-3-genel-bolme-sutun.png" alt="Sütun ve kiriş genel"></a><a href="B-3-oyun-bolme-sutun.png"><img src="B-3-oyun-bolme-sutun.png" alt="Sütun ve kiriş oyun kadrajı"></a></div>
+        <p>Duvar yok. Ahşap direkler ve tepede kiriş salonların sınırını çizer.</p><div class="ae"><b>İyi:</b> Tek büyük salon gibi açık, yine de sınır okunur. Yol uzamaz.<br><i>Bedeli:</i> Ayrımı en çok zemin taşır; zemin aynıysa salonlar karışır.</div></div>
+      <div class="kartc"><div class="ust"><div class="k">A</div><h3>Hiç bölme yok</h3></div>
+        <div class="ikili"><a href="B-3-genel-bolme-yok.png"><img src="B-3-genel-bolme-yok.png" alt="Hiç bölme yok genel"></a><a href="B-3-oyun-bolme-yok.png"><img src="B-3-oyun-bolme-yok.png" alt="Hiç bölme yok oyun kadrajı"></a></div>
+        <p>Salonları yalnız zemin rengi ayırır (Tur 1'deki A'ya B'nin zeminleri).</p><div class="ae"><b>İyi:</b> En açık, en kolay yürünür. Kalabalık kat tek bakışta görünür.<br><i>Bedeli:</i> Sınır yalnız renk; "ayrı salon" hissi en zayıf.</div></div>
+    </div>
+  </section>
+
+  <section class="tur" id="tur2a-zemin">
+    <div class="bas"><h2><span class="no">Tur 2a ·</span> Zemin takımları</h2></div>
+    <p class="ozet">Burada bölme sabit (tam bölme) ve yalnız üç salonun zemini değişiyor. Ayrım hangisi seçilirse seçilsin, zemin takımı ona uyar. Ayrımı az olan seçenekte (sütun ya da bölmesiz) salonları zemin farkı ayırır; o durumda tek ahşap (Z2) zayıf kalır.</p>
+    <div class="kartlar">
+      <div class="kartc"><div class="ust"><div class="k">Z1</div><h3>Şimdiki</h3></div>
+        <div class="ikili"><a href="B-3-genel-zemin-Z1.png"><img src="B-3-genel-zemin-Z1.png" alt="Şimdiki genel"></a><a href="B-3-oyun-zemin-Z1.png"><img src="B-3-oyun-zemin-Z1.png" alt="Şimdiki oyun kadrajı"></a></div>
+        <p>Merdiven: düz ahşap · Okey: koyu ceviz tahta · Tavla: kahve-krem dama</p></div>
+      <div class="kartc"><div class="ust"><div class="k">Z2</div><h3>Tek ahşap</h3></div>
+        <div class="ikili"><a href="B-3-genel-zemin-Z2.png"><img src="B-3-genel-zemin-Z2.png" alt="Tek ahşap genel"></a><a href="B-3-oyun-zemin-Z2.png"><img src="B-3-oyun-zemin-Z2.png" alt="Tek ahşap oyun kadrajı"></a></div>
+        <p>Üç salon da Kat 1'in düz ahşabı. Ayrımı yalnız bölme taşır.</p></div>
+      <div class="kartc"><div class="ust"><div class="k">Z3</div><h3>Ahşap tonları</h3></div>
+        <div class="ikili"><a href="B-3-genel-zemin-Z3.png"><img src="B-3-genel-zemin-Z3.png" alt="Ahşap tonları genel"></a><a href="B-3-oyun-zemin-Z3.png"><img src="B-3-oyun-zemin-Z3.png" alt="Ahşap tonları oyun kadrajı"></a></div>
+        <p>Okey: bal rengi tahta · Tavla: açık meşe tahta. Hepsi ahşap, ton farkıyla ayrılır.</p></div>
+      <div class="kartc"><div class="ust"><div class="k">Z4</div><h3>Eski karo</h3></div>
+        <div class="ikili"><a href="B-3-genel-zemin-Z4.png"><img src="B-3-genel-zemin-Z4.png" alt="Eski karo genel"></a><a href="B-3-oyun-zemin-Z4.png"><img src="B-3-oyun-zemin-Z4.png" alt="Eski karo oyun kadrajı"></a></div>
+        <p>Okey: kiremit rengi karo · Tavla: krem fayans. Eski kahvehane karosu.</p></div>
+      <div class="kartc"><div class="ust"><div class="k">Z5</div><h3>Ahşap + kilim</h3></div>
+        <div class="ikili"><a href="B-3-genel-zemin-Z5.png"><img src="B-3-genel-zemin-Z5.png" alt="Ahşap + kilim genel"></a><a href="B-3-oyun-zemin-Z5.png"><img src="B-3-oyun-zemin-Z5.png" alt="Ahşap + kilim oyun kadrajı"></a></div>
+        <p>Zemin hep düz ahşap; okeyde bordo, tavlada lacivert büyük halı.</p></div>
+      <div class="kartc"><div class="ust"><div class="k">Z6</div><h3>Yumuşak dama</h3></div>
+        <div class="ikili"><a href="B-3-genel-zemin-Z6.png"><img src="B-3-genel-zemin-Z6.png" alt="Yumuşak dama genel"></a><a href="B-3-oyun-zemin-Z6.png"><img src="B-3-oyun-zemin-Z6.png" alt="Yumuşak dama oyun kadrajı"></a></div>
+        <p>Okey: koyu ceviz tahta · Tavla: dama ama düşük kontrast (krem + açık kahve).</p></div>
+      <div class="kartc"><div class="ust"><div class="k">Z7</div><h3>Çini + toprak</h3></div>
+        <div class="ikili"><a href="B-3-genel-zemin-Z7.png"><img src="B-3-genel-zemin-Z7.png" alt="Çini + toprak genel"></a><a href="B-3-oyun-zemin-Z7.png"><img src="B-3-oyun-zemin-Z7.png" alt="Çini + toprak oyun kadrajı"></a></div>
+        <p>Okey: çini yeşili karo · Tavla: toprak rengi iri karo.</p></div>
+      <div class="kartc"><div class="ust"><div class="k">Z8</div><h3>Koyu giriş</h3></div>
+        <div class="ikili"><a href="B-3-genel-zemin-Z8.png"><img src="B-3-genel-zemin-Z8.png" alt="Koyu giriş genel"></a><a href="B-3-oyun-zemin-Z8.png"><img src="B-3-oyun-zemin-Z8.png" alt="Koyu giriş oyun kadrajı"></a></div>
+        <p>Merdiven salonu koyu ceviz; okey Kat 1 ahşabı; tavla açık krem iri karo.</p></div>
+    </div>
+  </section>
+
+  <h2 class="ayrac">Tur 1 · Plan adayları (seçilen: B)</h2>
   <div class="sabit">
     <b>Dört adayda ortak olanlar:</b> Kat 2, Kat 1'le aynı binanın üst katı; ölçü 34 × 34. Merdiven arkanın ortasından çıkar: boşluk korkuluklu, Kat 1'in merdiveni aşağı iner. Solunda <b>çay ocağı</b> (cezve ve çay burada; çaycı tezgâhın arkasında), sağında ileride açılacak bir oda (şimdilik tahta perde) var. Açılmamış alan kaba inşaat hâlinde durur: şap, iskele ve moloz. Kat 1'deki çim, üst katta olmaz.<br>
     <b>Sayılar yalnız maketin kapasitesidir.</b> Masaların fiyatı, kazancı ve açılma süresi ölçülmeden yazılmaz. Kat 1'de bugün 20 masa var.
   </div>
-  <nav><a href="#aday-a">A · Kat 1'in aynası</a><a href="#aday-b">B · Bölmeli salonlar</a><a href="#aday-c">C · Ortadan kanatlanan</a><a href="#aday-d">D · Balkonlu</a></nav>
 
   <section id="aday-a">
     <div class="bas"><div class="harf">A</div><h2>Kat 1'in aynası</h2></div>

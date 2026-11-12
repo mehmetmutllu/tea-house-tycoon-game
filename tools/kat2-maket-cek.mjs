@@ -21,6 +21,9 @@ const ADAYLAR = (process.env.ADAY ?? 'A,B,C,D').split(',');
 const ADIMLAR = (process.env.ADIM ?? '1,2,3').split(',').map(Number);
 const KADRAJLAR = (process.env.KADRAJ ?? 'genel,oyun').split(',');
 const KISI = process.env.KISI ?? '1';
+// Tur 2a: EK='bolme=tam;bolme=alcak' gibi ek sorgu dizisi; her biri ayrı kare (dosya adına eklenir).
+const EKLER = (process.env.EK ?? '').split(';').filter(Boolean);
+if (!EKLER.length) EKLER.push('');
 
 const { dosya, argv } = sunucuKomutu(PORT, 'dev', KOK);
 const sunucu = spawn(dosya, argv, { cwd: KOK, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -42,16 +45,16 @@ for (const kadraj of KADRAJLAR) {
   const ctx = await browser.newContext(
     oyun ? { viewport: { width: 390, height: 844 }, deviceScaleFactor: 2 } : { viewport: { width: 1400, height: 900 }, deviceScaleFactor: 1.5 },
   );
-  for (const v of ADAYLAR) {
+  for (const v of ADAYLAR) for (const ek of EKLER) {
     // Oyun kadrajı yalnız bitmiş hâlde çekilir (yürüyen oyuncunun gördüğü salon).
     for (const adim of oyun ? [3] : ADIMLAR) {
       const page = await ctx.newPage();
       page.on('pageerror', (e) => { hata++; console.error('pageerror', e.message.slice(0, 200)); });
       page.on('console', (m) => { if (m.type() === 'error') console.error('konsol', m.text().slice(0, 200)); });
-      await page.goto(`${KOKURL}/tools/kat2-maket.html?v=${v}&adim=${adim}&kadraj=${kadraj}&kisi=${KISI}`, { waitUntil: 'load', timeout: 90000 });
+      await page.goto(`${KOKURL}/tools/kat2-maket.html?v=${v}&adim=${adim}&kadraj=${kadraj}&kisi=${KISI}${ek ? `&${ek}` : ""}`, { waitUntil: 'load', timeout: 90000 });
       await page.waitForFunction(() => window.MAKET_HAZIR === true, null, { timeout: 180000 });
       await page.waitForTimeout(400);
-      const dosyaAdi = path.join(CIKTI, `${v}-${adim}-${kadraj}.png`);
+      const dosyaAdi = path.join(CIKTI, `${v}-${adim}-${kadraj}${ek ? `-${ek.replace(/[=&]/g, "-")}` : ""}.png`);
       await page.screenshot({ path: dosyaAdi });
       console.log('çekildi', path.relative(KOK, dosyaAdi));
       await page.close();

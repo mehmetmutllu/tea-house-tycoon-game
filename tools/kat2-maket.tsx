@@ -8,6 +8,9 @@
  *
  * Adres: /tools/kat2-maket.html?v=A&adim=3&kadraj=genel|oyun&kisi=1
  * Çekim: node tools/kat2-maket-cek.mjs
+ *
+ * Tur 2a (B seçildikten sonra): `&bolme=tam|alcak|parmak|sutun|yok` salonların NASIL ayrıldığı,
+ * `&zemin=Z1…Z8` salon zemin takımı. İki eksen ayrı çekilir (biri sabitken öbürü değişir).
  */
 import { createRoot } from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
@@ -40,6 +43,9 @@ const VAR = (q.get('v') ?? 'A') as Harf;
 const ADIM = Number(q.get('adim') ?? 3);
 const KADRAJ = q.get('kadraj') ?? 'genel';
 const KISI = q.get('kisi') !== '0';
+type BolmeTip = 'tam' | 'alcak' | 'parmak' | 'sutun' | 'yok';
+const BOLME = (q.get('bolme') ?? 'tam') as BolmeTip;
+const ZEMIN_TAKIM = q.get('zemin');
 
 // ---- Kat 1'den miras ölçüler (layout.ts) — Kat 2 aynı binanın üst katı, ayak izi aynı ----
 const H = 17; // kat yarı-boyu (34 × 34)
@@ -128,7 +134,35 @@ const ADAYLAR: Record<Harf, Aday> = {
   },
 };
 
+// ---- Tur 2a: zemin takımları [merdiven salonu + bant, okey salonu, tavla köşesi] ----
+const ft = (kind: FloorTheme['kind'], base: string, alt: string, grout?: string, cell?: number): FloorTheme => ({ kind, base, alt, grout, cell });
+const Z: Record<string, FloorTheme> = {
+  bal: ft('plank', '#c08f5a', '#b3824e', '#8e6239'),
+  mese: ft('plank', '#d4b384', '#c9a676', '#a8865b'),
+  cevizDuz: ft('flat', '#8f5f3f', '#7c4f33'),
+  terrakota: ft('tile', '#b8653f', '#ad5b37', '#7f4229', 0.62),
+  yumusakDama: ft('checker', '#e8dcc4', '#c49a6c'),
+  cini: ft('tile', '#7fa38a', '#76997f', '#e6dcc6', 0.55),
+  toprakKaro: ft('tile', '#d7b48a', '#cfab80', '#a98458', 0.9),
+};
+type Hali = { renk: string; kenar: string; desen: string };
+const HALI_BORDO: Hali = { renk: '#8e2f2a', kenar: '#d9b56a', desen: '#3b2a4a' };
+const HALI_LACI: Hali = { renk: '#2f4a6e', kenar: '#d9b56a', desen: '#8e2f2a' };
+const ZEMIN_TAKIMLARI: Record<string, { zemin: [string, string, string]; hali?: [Hali | null, Hali | null, Hali | null] }> = {
+  Z1: { zemin: ['parke', 'ceviz', 'dama'] }, // tur 1'deki hâl (referans)
+  Z2: { zemin: ['parke', 'parke', 'parke'] }, // Kat 1 gibi tek düz ahşap
+  Z3: { zemin: ['parke', 'bal', 'mese'] }, // ahşap tonları
+  Z4: { zemin: ['parke', 'terrakota', 'fayans'] }, // eski kıraathane karosu
+  Z5: { zemin: ['parke', 'parke', 'parke'], hali: [null, HALI_BORDO, HALI_LACI] }, // ahşap + kilim
+  Z6: { zemin: ['parke', 'ceviz', 'yumusakDama'] }, // dama ama yumuşak
+  Z7: { zemin: ['parke', 'cini', 'toprakKaro'] }, // çini yeşili + toprak karo
+  Z8: { zemin: ['cevizDuz', 'parke', 'yemek'] }, // koyu merdiven salonu, açık oyun salonları
+};
+const takim = ZEMIN_TAKIMLARI[ZEMIN_TAKIM ?? ''];
+const tema = (id: string) => Z[id] ?? FLOOR_THEMES[id];
+
 const aday = ADAYLAR[VAR];
+if (takim) aday.zemin = [...takim.zemin];
 const acik = (a: number) => a < ADIM;
 
 // ---- Duvar: açık dikdörtgenlerin BİRLEŞİMİNİN çevresi (layout.wallSpans'in genel hâli) ----
@@ -223,9 +257,10 @@ function Duvarlar() {
       {/* bandın ara duvarları (Kat 1 ile aynı hat, 2,2) */}
       <MaketWall x1={-MERDIVEN_X} z1={BANT.arka} x2={-MERDIVEN_X} z2={BANT.on} h={2.2} />
       <MaketWall x1={MERDIVEN_X} z1={BANT.arka} x2={MERDIVEN_X} z2={BANT.on} h={2.2} />
-      {aday.bolmeler
-        ?.filter((b) => acik(b.alanlar[0]) && acik(b.alanlar[1]))
-        .map((b, i) => <Bolmeler key={i} b={b} />)}
+      {BOLME !== 'yok' &&
+        aday.bolmeler
+          ?.filter((b) => acik(b.alanlar[0]) && acik(b.alanlar[1]))
+          .map((b, i) => <Bolmeler key={i} b={b} />)}
     </group>
   );
 }
@@ -243,11 +278,14 @@ function Bolmeler({ b }: { b: Bolme }) {
   }
   parca.push([s, a1]);
   const P = (u: number) => (yatay ? ([u, b.z1] as const) : ([b.x1, u] as const));
+  if (BOLME === 'sutun') return <SutunKiris a0={a0} a1={a1} P={P} kapilar={b.kapilar} />;
   return (
     <group>
       {parca.filter(([p, r]) => r - p > 0.05).map(([p, r], i) => {
         const [x1, z1] = P(p);
         const [x2, z2] = P(r);
+        if (BOLME === 'alcak') return <AlcakDuvar key={i} x1={x1} z1={z1} x2={x2} z2={z2} />;
+        if (BOLME === 'parmak') return <Korkuluk key={i} x1={x1} z1={z1} x2={x2} z2={z2} h={1.05} aralik={0.32} kalin />;
         return <MaketWall key={i} x1={x1} z1={z1} x2={x2} z2={z2} h={2.2} />;
       })}
       {b.kapilar.map(([ka, kb], i) => {
@@ -272,21 +310,113 @@ function Bolmeler({ b }: { b: Bolme }) {
   );
 }
 
+/** Yarım duvar: lambri yüksekliğinde (0,95) dolu gövde + üstünde ahşap küpeşte; göz üstünden geçer. */
+function AlcakDuvar({ x1, z1, x2, z2 }: { x1: number; z1: number; x2: number; z2: number }) {
+  const dx = x2 - x1;
+  const dz = z2 - z1;
+  const len = Math.hypot(dx, dz);
+  return (
+    <group position={[(x1 + x2) / 2, 0, (z1 + z2) / 2]} rotation={[0, Math.atan2(dx, dz), 0]}>
+      <mesh position={[0, 0.475, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.22, 0.95, len]} />
+        <meshStandardMaterial color={PALETTE.doorWood} />
+      </mesh>
+      <mesh position={[0, 0.99, 0]} castShadow>
+        <boxGeometry args={[0.32, 0.08, len + 0.06]} />
+        <meshStandardMaterial color="#8a5a3b" />
+      </mesh>
+    </group>
+  );
+}
+
+/** Ahşap parmaklık: küpeşte + alt kayıt + sık dikmeler (balkon korkuluğunun kalın hâli). */
+function Korkuluk({ x1, z1, x2, z2, h = 1.0, aralik = 0.5, kalin = false }: { x1: number; z1: number; x2: number; z2: number; h?: number; aralik?: number; kalin?: boolean }) {
+  const L = Math.hypot(x2 - x1, z2 - z1);
+  const n = Math.max(1, Math.round(L / aralik));
+  const yatay = z1 === z2;
+  const t = kalin ? 0.16 : 0.12;
+  return (
+    <group>
+      <mesh position={[(x1 + x2) / 2, h, (z1 + z2) / 2]} castShadow>
+        <boxGeometry args={yatay ? [L, 0.08, t] : [t, 0.08, L]} />
+        <meshStandardMaterial color={PALETTE.doorWood} />
+      </mesh>
+      {kalin && (
+        <mesh position={[(x1 + x2) / 2, 0.06, (z1 + z2) / 2]}>
+          <boxGeometry args={yatay ? [L, 0.12, t] : [t, 0.12, L]} />
+          <meshStandardMaterial color={PALETTE.doorWood} />
+        </mesh>
+      )}
+      {Array.from({ length: n + 1 }, (_, i) => {
+        const k = i / n;
+        return (
+          <mesh key={i} position={[x1 + (x2 - x1) * k, h / 2, z1 + (z2 - z1) * k]} castShadow>
+            <boxGeometry args={kalin ? [0.08, h, 0.08] : [0.06, h, 0.06]} />
+            <meshStandardMaterial color={kalin ? '#6b4f3a' : '#3e2f28'} />
+          </mesh>
+        );
+      })}
+    </group>
+  );
+}
+
+/** Sütun + kiriş: hat boyunca ≤ 4,4 aralıklı ahşap direkler, tepede kesintisiz kiriş; arası açık. */
+function SutunKiris({ a0, a1, P, kapilar }: { a0: number; a1: number; P: (u: number) => readonly [number, number]; kapilar: [number, number][] }) {
+  const n = Math.ceil((a1 - a0) / 4.4);
+  const direk = Array.from({ length: n + 1 }, (_, i) => a0 + ((a1 - a0) * i) / n).filter(
+    (u) => !kapilar.some(([ka, kb]) => u > ka - 0.4 && u < kb + 0.4),
+  );
+  const [bx1, bz1] = P(a0);
+  const [bx2, bz2] = P(a1);
+  const yatay = bz1 === bz2;
+  const L = a1 - a0;
+  return (
+    <group>
+      {direk.map((u, i) => {
+        const [x, z] = P(u);
+        return (
+          <group key={i} position={[x, 0, z]}>
+            <mesh position={[0, 1.2, 0]} castShadow>
+              <boxGeometry args={[0.3, 2.4, 0.3]} />
+              <meshStandardMaterial color={PALETTE.doorWood} />
+            </mesh>
+            <mesh position={[0, 0.1, 0]}>
+              <boxGeometry args={[0.42, 0.2, 0.42]} />
+              <meshStandardMaterial color="#5a3f30" />
+            </mesh>
+          </group>
+        );
+      })}
+      <mesh position={[(bx1 + bx2) / 2, 2.42, (bz1 + bz2) / 2]} castShadow>
+        <boxGeometry args={yatay ? [L, 0.26, 0.32] : [0.32, 0.26, L]} />
+        <meshStandardMaterial color={PALETTE.doorWood} />
+      </mesh>
+    </group>
+  );
+}
+
 // ---- Zemin ----
 const SAP = '#bdb7ad';
 function Zemin() {
   return (
     <group>
       {aday.alanlar.map((r, i) =>
-        acik(i) ? <ZeminParca key={i} r={r} tema={FLOOR_THEMES[aday.zemin[i]]} /> : <KabaInsaat key={i} r={r} />,
+        acik(i) ? (
+          <group key={i}>
+            <ZeminParca r={r} tema={tema(aday.zemin[i])} />
+            {takim?.hali?.[i] && <HaliCiz r={r} h={takim.hali[i]!} />}
+          </group>
+        ) : (
+          <KabaInsaat key={i} r={r} />
+        ),
       )}
       {/* bant: servis köşesi fayans · merdiven kovası (boşluk hariç) · sağ blok */}
       <ZeminParca r={{ x0: -H, x1: -MERDIVEN_X, z0: BANT.arka, z1: BANT.on }} tema={FLOOR_THEMES.fayans} />
-      <ZeminParca r={{ x0: -MERDIVEN_X, x1: -BOSLUK.x, z0: BANT.arka, z1: BANT.on }} tema={FLOOR_THEMES.parke} />
-      <ZeminParca r={{ x0: BOSLUK.x, x1: MERDIVEN_X, z0: BANT.arka, z1: BANT.on }} tema={FLOOR_THEMES.parke} />
-      <ZeminParca r={{ x0: -BOSLUK.x, x1: BOSLUK.x, z0: BANT.arka, z1: BOSLUK.arka }} tema={FLOOR_THEMES.parke} />
-      <ZeminParca r={{ x0: -BOSLUK.x, x1: BOSLUK.x, z0: BOSLUK.on, z1: BANT.on }} tema={FLOOR_THEMES.parke} />
-      <ZeminParca r={{ x0: MERDIVEN_X, x1: H, z0: BANT.arka, z1: BANT.on }} tema={FLOOR_THEMES.parke} />
+      <ZeminParca r={{ x0: -MERDIVEN_X, x1: -BOSLUK.x, z0: BANT.arka, z1: BANT.on }} tema={tema(aday.zemin[0])} />
+      <ZeminParca r={{ x0: BOSLUK.x, x1: MERDIVEN_X, z0: BANT.arka, z1: BANT.on }} tema={tema(aday.zemin[0])} />
+      <ZeminParca r={{ x0: -BOSLUK.x, x1: BOSLUK.x, z0: BANT.arka, z1: BOSLUK.arka }} tema={tema(aday.zemin[0])} />
+      <ZeminParca r={{ x0: -BOSLUK.x, x1: BOSLUK.x, z0: BOSLUK.on, z1: BANT.on }} tema={tema(aday.zemin[0])} />
+      <ZeminParca r={{ x0: MERDIVEN_X, x1: H, z0: BANT.arka, z1: BANT.on }} tema={tema(aday.zemin[0])} />
       {aday.balkon && acik(aday.balkon.alan) && <Balkon d={aday.balkon.dik} />}
     </group>
   );
@@ -300,6 +430,33 @@ function ZeminParca({ r, tema }: { r: Dik; tema: FloorTheme }) {
         <meshStandardMaterial color={tema.grout ?? tema.base} />
       </mesh>
       <FloorPattern theme={tema} x0={r.x0} x1={r.x1} z0={r.z0} z1={r.z1} />
+    </group>
+  );
+}
+
+/** Kilim: salonun ortasında kenar şeritli büyük halı; masalar üstünde durur. */
+function HaliCiz({ r, h }: { r: Dik; h: Hali }) {
+  const cx = (r.x0 + r.x1) / 2;
+  const cz = (r.z0 + r.z1) / 2 + 0.6;
+  const w = r.x1 - r.x0 - 3.4;
+  const d = r.z1 - r.z0 - 4.2;
+  const kat = (y: number, ww: number, dd: number, c: string) => (
+    <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[cx, y, cz]}>
+      <planeGeometry args={[ww, dd]} />
+      <meshStandardMaterial color={c} />
+    </mesh>
+  );
+  return (
+    <group>
+      {kat(0.01, w, d, h.kenar)}
+      {kat(0.012, w - 0.5, d - 0.5, h.desen)}
+      {kat(0.014, w - 0.9, d - 0.9, h.renk)}
+      {[-1, 0, 1].map((k) => (
+        <mesh key={k} receiveShadow rotation={[-Math.PI / 2, 0, Math.PI / 4]} position={[cx + k * (w / 3.4), 0.016, cz]}>
+          <planeGeometry args={[1.3, 1.3]} />
+          <meshStandardMaterial color={h.kenar} />
+        </mesh>
+      ))}
     </group>
   );
 }
