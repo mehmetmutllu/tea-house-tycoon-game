@@ -103,18 +103,79 @@ const PR = LAYOUT.playerRadius;
 /** İç duvar gövdesinin yarısı (maket duvarı 0,18). */
 const DUVAR_YARI = 0.09;
 
+type Kenar = 'x0' | 'x1' | 'z0' | 'z1';
+
+/** Bölme, alanın hangi kenarında? (yatay bölme z'de, dikey bölme x'te durur) */
+function bolmeKenari(b: (typeof KAT2_BOLMELER)[number], d: Dik): Kenar | null {
+  if (b.z1 === b.z2) return b.z1 === d.z0 ? 'z0' : b.z1 === d.z1 ? 'z1' : null;
+  return b.x1 === d.x0 ? 'x0' : b.x1 === d.x1 ? 'x1' : null;
+}
+
 /**
- * Oyuncunun Kat 2'de yürüyebildiği dikdörtgenler. Dış duvarlar kat kenarının 0,5 dışında (Kat 1 ile
- * aynı kural) → kenar olduğu gibi; İÇ duvarlar (kilitli salonun bölmesi, kovanın ara duvarları) tam
- * hatta → gövde yarıçapı kadar içeri.
+ * Oyuncunun Kat 2'de yürüyebildiği dikdörtgenler: AÇIK alanların birleşimi + merdiven kovası. Dış
+ * duvarlar kat kenarının 0,5 dışında (Kat 1 ile aynı kural) → kenar olduğu gibi. Bir alanın kenarı
+ * yalnız KAPALI alanlara bakıyorsa (kilitli salonun bölmesi) o kenar gövde + duvar yarısı kadar içeri
+ * çekilir; açık bir alana da bakıyorsa kenar yerinde kalır ve duvarı `kat2Duvarlar` katı tutar
+ * (geçit yalnız oradan açılır). Kovanın ara duvarları tam hatta → gövde yarıçapı kadar içeri.
  */
 export function kat2YurumeAlani(acikAlan = KAT2_ACIK_ALAN): Dik[] {
   const ic = PR + DUVAR_YARI;
-  const out = KAT2_ALANLAR.slice(0, acikAlan).map((d) => ({ ...d }));
-  // Ön salonlar kapalıyken z = 0 bölme duvarıdır (K2-3'te kemerli geçitler açılır).
-  if (acikAlan === 1) out[0].z1 = -ic;
+  const out: Dik[] = [];
+  for (let a = 0; a < Math.min(acikAlan, KAT2_ALANLAR.length); a++) {
+    const d = { ...KAT2_ALANLAR[a] };
+    const kenarlar = new Map<Kenar, boolean>(); // kenar → karşısında açık alan var mı
+    for (const b of KAT2_BOLMELER) {
+      if (!b.alanlar.includes(a)) continue;
+      const k = bolmeKenari(b, KAT2_ALANLAR[a]);
+      if (!k) continue;
+      const karsi = b.alanlar[0] === a ? b.alanlar[1] : b.alanlar[0];
+      kenarlar.set(k, (kenarlar.get(k) ?? false) || karsi < acikAlan);
+    }
+    for (const [k, acikKomsu] of kenarlar) {
+      if (acikKomsu) continue;
+      if (k === 'x0' || k === 'z0') d[k] += ic;
+      else d[k] -= ic;
+    }
+    out.push(d);
+  }
   out.push({ x0: KOVA.x0 + ic, x1: KOVA.x1 - ic, z0: KOVA.z0 + PR, z1: KOVA.z1 });
   return out;
+}
+
+/**
+ * Bölme duvarlarının katı gövdeleri. En az bir yanı açık her bölme çizilir; geçitleri (`kapilar`)
+ * yalnız İKİ yanı da açıksa boşluk bırakır — kapalı salonun geçidi tahta perdeyle kapalıdır.
+ */
+export function kat2Duvarlar(acikAlan = KAT2_ACIK_ALAN): Solid[] {
+  const out: Solid[] = [];
+  for (const b of KAT2_BOLMELER) {
+    const [a1, a2] = b.alanlar;
+    const acik1 = a1 < acikAlan;
+    const acik2 = a2 < acikAlan;
+    if (!acik1 && !acik2) continue;
+    const yatay = b.z1 === b.z2;
+    const bas = yatay ? Math.min(b.x1, b.x2) : Math.min(b.z1, b.z2);
+    const son = yatay ? Math.max(b.x1, b.x2) : Math.max(b.z1, b.z2);
+    const kapilar = acik1 && acik2 ? [...b.kapilar].sort((p, q) => p[0] - q[0]) : [];
+    let u = bas;
+    const parca = (p: number, q: number) => {
+      if (q - p <= 1e-9) return;
+      const orta = (p + q) / 2;
+      out.push(yatay ? { c: [orta, 0, b.z1], h: [(q - p) / 2, DUVAR_YARI] } : { c: [b.x1, 0, orta], h: [DUVAR_YARI, (q - p) / 2] });
+    };
+    for (const [p, q] of kapilar) {
+      parca(u, p);
+      u = Math.max(u, q);
+    }
+    parca(u, son);
+  }
+  return out;
+}
+
+/** Noktanın bulunduğu alan (0 merdiven salonu + bant · 1 okey salonu · 2 tavla köşesi). */
+export function kat2AlanBul(x: number, z: number): number {
+  if (z < 0) return 0;
+  return x < 0 ? 1 : 2;
 }
 
 /** Merdiven kuyusu — korkuluklu ağız; içine yürünmez (arka sahanlık açık). */
@@ -155,7 +216,8 @@ export function kat2Adim(
   engeller: readonly Solid[] = [],
 ): [number, number] {
   const alan = kat2YurumeAlani(acikAlan);
-  const katilar = engeller.length ? [KUYU, ...engeller] : [KUYU];
+  const duvar = kat2Duvarlar(acikAlan);
+  const katilar = [KUYU, ...duvar, ...engeller];
   let [nx, nz] = dikKelepce(x + dx, z + dz, alan);
   const icinde = hitsSolid(x, z, katilar, PR);
   if (!icinde) {
@@ -163,12 +225,19 @@ export function kat2Adim(
     if (dz !== 0 && hitsSolid(nx, nz, katilar, PR)) nz = z;
     [nx, nz] = dikKelepce(nx, nz, alan);
   }
+  // Bölme duvarı her durumda katı: kelepçe ya da "içindeyse çık" kuralı onu delemez.
+  if (hitsSolid(nx, nz, duvar, PR) && !hitsSolid(x, z, duvar, PR)) return [x, z];
   return [nx, nz];
 }
 
-/** K2-3: açık okey masalarının katı gövdesi (masa + sandalyeler). Pad'i bitmemiş masa yok sayılır. */
+/** Masanın katı gövdesi (masa + oturaklar) — türüne göre ayak izi. */
+export function masaGovdesi(m: Kat2MasaYeri): Solid {
+  return m.tur === 'tavla' ? { c: [m.x, 0, m.z], h: [TAVLA_YARI[0], TAVLA_YARI[1]] } : { c: [m.x, 0, m.z], h: [OKEY_YARI, OKEY_YARI] };
+}
+
+/** Açık masaların (okey + tavla) katı gövdesi. Pad'i bitmemiş masa yok sayılır. */
 export function kat2Engeller(padsDone: readonly string[]): Solid[] {
-  return OKEY_YER.filter((o) => padsDone.includes(o.id)).map((o) => ({ c: [o.x, 0, o.z], h: [OKEY_YARI, OKEY_YARI] }));
+  return KAT2_MASALAR.filter((m) => padsDone.includes(m.id)).map(masaGovdesi);
 }
 
 // ============================== MERDİVEN ==============================
@@ -250,6 +319,43 @@ export const OKEY_YARI = 1.25;
 export const OKEY_ERISIM = OKEY_YARI + 0.7;
 /** Kalkan grubun masa ücreti masanın salona bakan önüne düşer. */
 export const PARA_DUSME_DZ = OKEY_YARI + 0.35;
+
+/**
+ * Tavla masası (D-181 yol A): küçük masa + iki yanında (±x) tabure → ayak izi [x, z] yarısı. Sv4'te
+ * masa ×1,2 büyür; ayak izi o hâle göre (tabure ±0,94 + yarıçap). Kahve erişimi okeyle aynı pay.
+ */
+export const TAVLA_YARI: readonly [number, number] = [1.2, 0.6];
+export const TAVLA_ERISIM: readonly [number, number] = [TAVLA_YARI[0] + 0.7, TAVLA_YARI[1] + 0.7];
+/** Tavlada oturaklar yanlarda → yığın masanın +z önüne, ayak izinin kenarından aynı payla düşer. */
+export const TAVLA_PARA_DZ = TAVLA_YARI[1] + 0.35;
+
+/** Masa başına oturan kişi (D-181: okeyde 4, tavlada 2 — seviye ile değişmez). Görsel grup bunu okur. */
+export const KAT2_KISI: Readonly<Record<MasaTuru, number>> = { okey: 4, tavla: 2 };
+
+/** Masaya kahve bırakılabilir mi (oyuncu masanın erişim kutusunda mı)? */
+export function masaErisimde(m: Kat2MasaYeri, x: number, z: number): boolean {
+  const dx = Math.abs(x - m.x);
+  const dz = Math.abs(z - m.z);
+  if (m.tur === 'tavla') return dx <= TAVLA_ERISIM[0] && dz <= TAVLA_ERISIM[1];
+  return Math.max(dx, dz) <= OKEY_ERISIM;
+}
+
+/** Kalkan grubun yığınının düştüğü yer (masanın +z önü, türüne göre pay). */
+export function paraDusmeYeri(m: Kat2MasaYeri): [number, number] {
+  return [m.x, m.z + (m.tur === 'tavla' ? TAVLA_PARA_DZ : PARA_DUSME_DZ)];
+}
+
+/**
+ * Salon pad'lerinin yeri: merdiven salonu tarafında, açtığı salonun GENİŞ kemerli geçidinin önünde
+ * (bölme z = 0; pad çerçevesinin yarı yüksekliği 0,85 + duvar payı). Pad bitince geçidin perdesi kalkar.
+ */
+export const KAT2_SALON_PAD_YER: Readonly<Record<string, [number, number]>> = Object.fromEntries(
+  KAT2_SALON_PAD.map((id, i) => {
+    const b = KAT2_BOLMELER.find((x) => x.alanlar[0] === 0 && x.alanlar[1] === i + 1)!;
+    const [p, q] = [...b.kapilar].sort((u, v) => v[1] - v[0] - (u[1] - u[0]))[0];
+    return [id, [(p + q) / 2, -1.6] as [number, number]];
+  }),
+);
 
 /**
  * Cezve ocağı (D-181 cezve 7): bandın solunda, sırtı arka duvara değil SALONA bakar (maket

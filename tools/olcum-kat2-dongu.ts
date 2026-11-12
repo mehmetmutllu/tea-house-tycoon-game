@@ -15,7 +15,7 @@
 import { KISA, botDamgasi, damga, kipBandi, kisaDeger, korunumDamgasi, varyantDamgasi } from './olcum-lib';
 import { attractRadiusFor, charMaxTier, economyConfig, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
 import { OCAK, OKEY_ERISIM, OKEY_YER, VARIS, kat2Adim } from '../src/game/kat';
-import { kat2Tick, yeniKat2Dunya, type Kat2Ayar } from '../src/game/kat2Dongu';
+import { kat2MasaYeri, kat2Tick, yeniKat2Dunya, type Kat2Ayar } from '../src/game/kat2Dongu';
 
 kipBandi();
 
@@ -96,8 +96,8 @@ function kos(ayar: Kat2Ayar, masaSay: number, o: Oyuncu = GUCLU): Sonuc {
       hedef = [p.x, p.z];
     } else {
       const bekleyen = d.masalar
-        .map((m, i) => ({ m, yer: OKEY_YER[i] }))
-        .filter(({ m }) => m.durum === 'oyunda' && m.istek > 0);
+        .filter((m) => m.durum === 'oyunda' && m.istek > 0)
+        .map((m) => ({ m, yer: kat2MasaYeri(m.id)! }));
       if (d.tepsi > 0 && bekleyen.length) {
         const b = bekleyen.reduce((a, c) => (a.m.sabir <= c.m.sabir ? a : c));
         hedef = [b.yer.x, b.yer.z + OKEY_ERISIM - 0.3];
