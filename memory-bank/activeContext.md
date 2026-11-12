@@ -59,6 +59,7 @@ TR+EN metin (ChatGPT mikrometin). TestFlight'ta pencere çıkmaz; doğrulama yay
   + `tools/kat2-*.tsx` 46 (dev araçları, react-refresh kuralı).
 - `tools/olcum-bardak-t8.ts` korunum damgası kırık (W20 B0/B2 2 birim, Y1 8 birim) — K2-2'den ÖNCE de böyleydi, bakılmadı.
 - Tam vitest bir kez 1 kararsız düşüş verdi (hangisi yakalanmadı; sonraki koşular yeşil).
+- Duman 2026-11-13'te bir kez 75/76 (`waitForSelector` 5 sn zaman aşımı istisnası, hangi denetim yakalanmadı); sonraki iki koşu 77/77.
 - Wordmaster oturumu Kaktus'a Unity'yi S17 sonrası kendi kuracak.
 - Play: servis hesabı JSON'u → RevenueCat; RC'de Android baslangic/reklamsiz = Non-consumable.
 - iOS'ta iCloud kayıt gerçek cihazda denenmedi · AdMob "ABD eyalet yönetmelikleri" bakılmadı.

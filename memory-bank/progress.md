@@ -39,7 +39,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-12 (6.): ✅ K2-1 tur 2b — eşya görünüşü + masa yükseltme yolları → okey G · tavla A · cezve 7 (KayKit) · merdiven 2 · D-181 · K2-1 tasarımı bitti
   · 2026-11-12 (7.): 🔧 K2-2a — kat altyapısı: kayıt (additive) · merdiven geçişi + perde · boş Kat 2 salonu · Kat 1 arkada işler · D-182 · bekçi 16 test · sıradaki K2-2b
   · 2026-11-12 (8.): ✅ K2-2b — Kat 1'de tamir edilmiş merdiven (yolluklu) · Kat 2'de kat bandı + Kat 1 ipuçları susar · dev planı sis düzeltmesi · D-183 · vitest 1904 · duman 77/77 · sıradaki K2-3
-  · 2026-11-13: 🔧 K2-3a — okey + Türk kahvesi döngüsü (mantık): 6 kol ölçüldü → V4 (3 dk · 25 sn'de 2 kahve · %60 kahve) · D-184 · store + kayıt + çarpışma · bekçi 16 test, mutasyon 6/6 · sıradaki K2-3b görsel
+  · 2026-11-13: 🔧 K2-3a — okey + Türk kahvesi döngüsü (mantık): 6 kol ölçüldü → V4 (3 dk · 25 sn'de 2 kahve · %60 kahve) · D-184 · store + kayıt + çarpışma · bekçi 16 test, mutasyon 6/6 · vitest 1920 · duman 77/77 · sıradaki K2-3b görsel
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.

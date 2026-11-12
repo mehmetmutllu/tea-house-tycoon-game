@@ -2,7 +2,7 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "12.11.2026",
- "kart": 92,
+ "kart": 93,
  "gunluk": [
   {
    "tarih": "13.10.2026",
@@ -1328,6 +1328,17 @@
     "mesafe kullanıcıyla ayarlandı: %30 → <b>%25</b>",
     "teklif T3 · \"Bir kez alınabilir\" · Paketler notu artık kesilmiyor",
     "bekçi 24 test · mutasyon <b>12/12</b> · duman <b>67/67</b>"
+   ]
+  },
+  {
+   "tarih": "13.10.2026",
+   "etiket": "Sprint C tur 2 — ikonlar + renk seçimi (D-166 · D-167)",
+   "baslik": "Oyun <b>kendi ikonlarına</b> kavuştu",
+   "govde": "ChatGPT sohbetindeki iki ikon ızgarasının asılları indirilip 32 ikona kesildi; para, elmas, alt menü, mağaza sekmeleri, elmas paketleri, Çaycı yükseltmeleri ve görev resimleri artık bu ikonlarla.<br><br>Ardından ekran zemini için dört mor ton ve Başlangıç Paketi için dokuz afiş oyundan çekilip gösterildi: Ametist zemin ve koyu mor ışınlı, sandıklı afiş seçildi. Uygulama bir sonraki oturumda.",
+   "maddeler": [
+    "test <b>1862</b>",
+    "duman <b>74/74</b>",
+    "ikon <b>32</b>"
    ]
   }
  ]
