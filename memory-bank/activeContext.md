@@ -53,7 +53,7 @@ tavla masası / cezve ocağı / merdiven çıkışı için 6-12 görünüş aday
 **Tur 2a (D-180):** 5 ayrım + 8 zemin takımı (`?bolme=` `?zemin=`) → **T tam bölme + Z2 tek düz ahşap** ("gerekirse bölmeyi
 sonra kaldırırız"). Açılış: arka → okey → tavla.
 **Tur 2b (D-181):** 24 görünüş + masa Sv1–Sv5 yolları (`tools/kat2-esya.tsx`, ortak parça `tools/kat2-ortak.tsx`) →
-**okey F** (tabure → ahşap sandalye → mavi minder → masa büyür → mavi arkalık + pirinç + çay) · **tavla A** · **cezve 7**
+**okey G** (tabure → ahşap sandalye → mavi minder → masa büyür → tam döşemeli mavi sandalye + pirinç + çay) · **tavla A** · **cezve 7**
 (KayKit tezgâh+ocak+davlumbaz) · **merdiven 2**. **K2-1 TASARIMI BİTTİ** → SIRADAKİ: K2-2 kat altyapısı (`docs/kat2-plan.md`:
 kayıt + migrasyon, merdiven geçişi, boş Kat 2 salonu). Balkon hâlâ açık. Okeyde 4 / tavlada 2 kişi sabit.
 

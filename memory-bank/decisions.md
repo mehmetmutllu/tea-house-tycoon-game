@@ -5098,12 +5098,12 @@ gerekirse sonra kaldırırız" · **Z2 tek ahşap**: üç salon da Kat 1'in düz
 Açılış sırası D-179'daki gibi: arka merdiven salonu → okey salonu → tavla köşesi. Balkon hâlâ açık (en sona).
 Sonraki: tur 2b — okey/tavla masası, cezve ocağı, merdiven çıkışı görünüş adayları.
 
-## D-181 · Kat 2 eşya görünüşü — okey F · tavla A · cezve 7 · merdiven 2 (K2-1 tur 2b, 2026-11-12)
+## D-181 · Kat 2 eşya görünüşü — okey G · tavla A · cezve 7 · merdiven 2 (K2-1 tur 2b, 2026-11-12)
 24 görünüş adayı + masa için Sv1–Sv5 yükseltme yolları çizildi (`tools/kat2-esya.tsx` `?esya=&no=` · `?yol=`).
 Kullanıcı: **tavla = yol A** (sade kutu → kakma kutu → minder → masa büyür → pirinç + çay/zar; "sandalyeye de dönebilir,
 fark etmez") · **merdiven = 2** kalın ahşap korkuluk + topuzlu babalar ("abartmaya gerek yok") · **okey**: seviye
 yükseldikçe tabure → SANDALYE, sonra mavileşme → kullanıcı "sandalye D gibi, masa E gibi, sonda arkalık da mavi"
-→ **okey = yol F**: Sv1 çuhalı Kat 1 masası + `chair_stool_wood` · Sv2 `chair_A_wood` · Sv3 `chair_A` (mavi minder) ·
-Sv4 çerçeveli masa büyür (×1,15) · Sv5 `chair_B` (mavi arkalık) + pirinç kenar + çay (G = tam döşemeli `chair_C`, yedek) ·
+→ **okey = yol G** (kullanıcı F'yi görünce G'yi seçti): Sv1 çuhalı Kat 1 masası + `chair_stool_wood` · Sv2 `chair_A_wood` · Sv3 `chair_A` (mavi minder) ·
+Sv4 çerçeveli masa büyür (×1,15) · Sv5 `chair_C` (tam döşemeli mavi sandalye) + pirinç kenar + çay (F = `chair_B` ahşap gövde mavi arkalık, elendi) ·
 **cezve ocağı = 7**: "Kat 1'deki restoran gibi" → KayKit restoran (tezgâh + `stove_single` + davlumbaz, ölçek 0,9, sırt
 duvarda), ocakta cezve 1,5×. Okeyde 4, tavlada 2 kişi sabit → seviye sinyali oturak SAYISI değil.

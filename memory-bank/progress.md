@@ -36,7 +36,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
 **Sonraki program (D-174, 2026-11-12):** 1.0.7 arayüz + puanla + analitik → Kat 2 (K2-0…K2-6, ~11-15 oturum) · `docs/kat2-plan.md`
   · 2026-11-12 (5.): ✅ K2-1 tur 1 — Kat 2 planı oyunun parçalarıyla 4 aday çizildi, **B bölmeli salonlar** seçildi · D-179 · `tools/kat2-maket.tsx` · sıradaki: tur 2 eşya görünüşü
   · 2026-11-12 (6.): ✅ K2-1 tur 2a — 5 salon ayrımı + 8 zemin takımı → **tam bölme + tek düz ahşap** · D-180 · sıradaki: tur 2b eşya görünüşü
-  · 2026-11-12 (6.): ✅ K2-1 tur 2b — eşya görünüşü + masa yükseltme yolları → okey F · tavla A · cezve 7 (KayKit) · merdiven 2 · D-181 · K2-1 tasarımı bitti
+  · 2026-11-12 (6.): ✅ K2-1 tur 2b — eşya görünüşü + masa yükseltme yolları → okey G · tavla A · cezve 7 (KayKit) · merdiven 2 · D-181 · K2-1 tasarımı bitti
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
