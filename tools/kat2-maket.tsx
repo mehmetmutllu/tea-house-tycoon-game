@@ -14,16 +14,14 @@
  */
 import { createRoot } from 'react-dom/client';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
-import { Suspense, useEffect, useMemo, useRef, type ReactNode } from 'react';
-import { AnimationMixer, MeshStandardMaterial, type Group, type SkinnedMesh } from 'three';
-import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { Suspense, useEffect, useRef, type ReactNode } from 'react';
 import { SceneLights } from '../src/components/three/lights';
 import { FloorPattern } from '../src/components/three/floorPattern';
 import { WallPanels, type WallSlab } from '../src/components/three/wallPanel';
 import { WALL_H } from '../src/components/three/wallOlcu';
 import { Model } from '../src/components/three/Model';
-import { KayActor, KLIP, basMi, ekipmanMi, kafaKucult, useKayKlipler } from '../src/components/three/KayActor';
+import { KayActor } from '../src/components/three/KayActor';
+import { KAY_F, Sandalye } from './kat2-ortak';
 import {
   MaketCezveStation,
   MaketCrates,
@@ -35,7 +33,7 @@ import {
   MaketWallShelf,
 } from '../src/components/three/maketParts';
 import { FLOOR_THEMES, LIGHTING, PALETTE, WALL_THEMES, type FloorTheme } from '../src/config/palette';
-import { KAY_KOK, KAY_MUSTERI_GOVDE, KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, KAY_SCALE, CAMERA_LOOK_Y } from '../src/config/actor';
+import { CAMERA_LOOK_Y } from '../src/config/actor';
 import { CAMERA_FOV, cameraDistance } from '../src/config/camera';
 
 const q = new URLSearchParams(location.search);
@@ -581,21 +579,6 @@ function CayOcagi() {
 }
 
 // ---- Okey / tavla birimi (görünüşü bu turda SABİT; sonraki turun adayları buradan çıkar) ----
-const KAY_F = '/assets/models/kaykit-furniture-bits/';
-const SANDALYE_S = 0.82; // chair_A_wood oturağı ~0,55 → 0,45 (Kat 1 taburesiyle aynı oturak)
-const GOMLEK = ['#c0504d', '#4f81bd', '#9bbb59', '#8064a2', '#f79646', '#4bacc6', '#d6b656', '#7f6084', '#e8e1d0'];
-
-function Sandalye({ x, z, aci, kisi, i }: { x: number; z: number; aci: number; kisi: boolean; i: number }) {
-  return (
-    <group>
-      <group position={[x, 0, z]} rotation={[0, aci, 0]}>
-        <Model src={`${KAY_F}chair_A_wood.gltf`} scale={SANDALYE_S} fallback={null} />
-      </group>
-      {kisi && KISI && <Oturan x={x} z={z} aci={aci} i={i} />}
-    </group>
-  );
-}
-
 function OkeyMasasi({ x, z, i, dolu }: { x: number; z: number; i: number; dolu: boolean }) {
   const yer: [number, number][] = [
     [0, 1.0],
@@ -631,7 +614,7 @@ function OkeyMasasi({ x, z, i, dolu }: { x: number; z: number; i: number; dolu: 
         ))}
       </group>
       {yer.map(([dx, dz], k) => (
-        <Sandalye key={k} x={x + dx} z={z + dz} aci={Math.atan2(-dx, -dz)} kisi={dolu} i={i * 4 + k} />
+        <Sandalye key={k} x={x + dx} z={z + dz} aci={Math.atan2(-dx, -dz)} kisi={dolu && KISI} i={i * 4 + k} />
       ))}
     </group>
   );
@@ -666,7 +649,7 @@ function TavlaMasasi({ x, z, rot = 0, i, dolu }: { x: number; z: number; rot?: n
         ))}
       </group>
       {yer.map(([dx, dz], k) => (
-        <Sandalye key={k} x={x + dx} z={z + dz} aci={Math.atan2(-dx, -dz)} kisi={dolu} i={i * 2 + k + 200} />
+        <Sandalye key={k} x={x + dx} z={z + dz} aci={Math.atan2(-dx, -dz)} kisi={dolu && KISI} i={i * 2 + k + 200} />
       ))}
     </group>
   );
@@ -685,40 +668,6 @@ function Esyalar() {
         ) : null,
       )}
     </group>
-  );
-}
-
-// ---- Oturan müşteri: oyunun müşteri gövdesi (Customers.yuvaKur'un sade hâli) ----
-function Oturan({ x, z, aci, i }: { x: number; z: number; aci: number; i: number }) {
-  const yol = `${KAY_KOK}${KAY_MUSTERI_GOVDE[i % KAY_MUSTERI_GOVDE.length]}.glb`;
-  const gltf = useGLTF(yol);
-  const klipler = useKayKlipler();
-  const { kok, mixer } = useMemo(() => {
-    const k = skinKlon(gltf.scene) as Group;
-    const govde = new MeshStandardMaterial({ color: GOMLEK[(i * 7) % GOMLEK.length], roughness: 0.85 });
-    const pant = new MeshStandardMaterial({ color: PALETTE.pants, roughness: 0.85 });
-    k.traverse((n) => {
-      const m = n as SkinnedMesh;
-      if (!m.isSkinnedMesh) return;
-      if (ekipmanMi(m.name)) m.visible = false;
-      else if (!basMi(m.name)) m.material = /leg/i.test(m.name) ? pant : govde;
-      m.castShadow = true;
-    });
-    kafaKucult(k);
-    k.scale.setScalar(KAY_SCALE);
-    const mx = new AnimationMixer(k);
-    const klip = klipler.find((c) => c.name === KLIP.otur);
-    if (klip) mx.clipAction(klip).play();
-    mx.setTime((i % 9) * 0.37);
-    return { kok: k, mixer: mx };
-  }, [gltf, klipler, i]);
-  useFrame((_, dt) => mixer.update(dt));
-  return (
-    <primitive
-      object={kok}
-      position={[x + Math.sin(aci) * KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, z + Math.cos(aci) * KAY_OTURMA_ILERI]}
-      rotation={[0, aci, 0]}
-    />
   );
 }
 
