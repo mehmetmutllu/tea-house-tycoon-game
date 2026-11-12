@@ -5089,3 +5089,11 @@ ocağı bandın solunda, sağ blok tadilatta, kilitli alan kaba şap + iskele. M
 değil; ekonomi K2-5'te ölçülür). Elenen: A (salon boş/geniş), C (ilk adımda çay ocağı yarı kapalı, kanatlar koridor),
 D (balkon kamerada cephenin arkasında). **Açık:** D'nin cadde balkonu 4. adım olarak — kullanıcı "düşünürüz".
 Bölme duvarı yürüme yolunu uzatır → K2-5'te ölçülecek. Sonraki: tur 2 — okey/tavla/cezve/merdiven GÖRÜNÜŞ adayları.
+
+## D-180 · Kat 2 salon ayrımı = TAM BÖLME, zemin = TEK DÜZ AHŞAP (K2-1 tur 2a, 2026-11-12)
+5 ayrım (tam · yarım duvar · parmaklık · sütun-kiriş · yok) ve 8 zemin takımı aynı kadrajda çizildi (`tools/kat2-maket.tsx`
+`?bolme=` `?zemin=`, sayfa KX9AKbp2GHMgbHJmQKdwxH). Kullanıcı: **T tam bölme** (2,2 + kemerli geçit) — "en başta tam bölme,
+gerekirse sonra kaldırırız" · **Z2 tek ahşap**: üç salon da Kat 1'in düz `parke`'si ("tek renk en iyisi"). Öneri (P parmaklık
++ Z3 ahşap tonları) seçilmedi. Ayrımı zemin değil bölme taşıyor → bölme ileride kalkarsa zemin sorusu yeniden açılır.
+Açılış sırası D-179'daki gibi: arka merdiven salonu → okey salonu → tavla köşesi. Balkon hâlâ açık (en sona).
+Sonraki: tur 2b — okey/tavla masası, cezve ocağı, merdiven çıkışı görünüş adayları.

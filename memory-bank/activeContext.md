@@ -50,6 +50,8 @@ Adaylar: **A** Kat 1'in aynası (arka→sol ön→sağ ön, bölmesiz) · **B** 
 zemini; öneri ✓) · **C** ortadan kanatlanan · **D** balkonlu (cadde balkonunda tavla). Ortak: merdiven boşluğu arka orta,
 çay ocağı bandın solu, sağ blok tadilat, kilitli alan kaba şap. **KARAR: B (D-179)** · balkon 4. adım = kullanıcı "düşünürüz" (açık) → SIRADAKİ: tur 2 — okey masası /
 tavla masası / cezve ocağı / merdiven çıkışı için 6-12 görünüş adayı aynı kadrajda (aynı araca `?esya=` kipi).
+**Tur 2a (D-180):** 5 ayrım + 8 zemin takımı çizildi (`?bolme=` `?zemin=`) → **T tam bölme + Z2 tek düz ahşap** (öneri P+Z3
+seçilmedi; "gerekirse bölmeyi sonra kaldırırız"). Açılış: arka → okey → tavla. → SIRADAKİ: **tur 2b** eşya görünüşü (yukarıdaki).
 
 ## ⏭️ SIRADAKİ ADIM — KULLANICIYA HATIRLAT
 -1. Play üretim erişimi başvurusu sonucu ne oldu? (onay → 9B ile 1.0.6 üretime; ret → e-postayı iste)
