@@ -1,0 +1,49 @@
+=== K2-3 — KAT 2 DÖNGÜSÜ: okey masası + Türk kahvesi (kollar) ===
+Kip: tam · 20 dk koşu, ilk 4 dk ısınma sayılmaz · dt 0.1
+Bot: son kademe hız 4.95 · tepsi 6 · mıknatıs 5 | ilk kademe hız 4.5 · tepsi 2 · mıknatıs 2.6 · pad YOK (masalar açık)
+Sabit: {"gelisAralik":15,"yurume":5,"kahveSabir":25,"demleme":4,"ocakKuyruk":4} · fiyatlar her kolda teorik 54 ₺/dk/masa tavanına normalize
+Kıyas: Kat 1 geç oyun 127-144 ₺/dk (docs/olcum-izdiham-t6.txt §D/§E, garsonlu, 20 masa).
+
+kol | masa | ₺/dk  | ₺/dk/masa | yığın ort ₺ | yığın aralığı sn | servis | kaçan | servis % | meşgul
+----------------------------------------------------------------------------------------------------
+V0  |    1 |    45 |        45 |         180 |              200 |     40 |     0 |     %100 | %2
+V0  |    2 |   101 |        51 |         180 |              100 |     78 |     0 |     %100 | %7
+V0  |    4 |   189 |        47 |         159 |               50 |    126 |     0 |     %100 | %29
+      V0: taban: 3 dk oyun · 40 sn’de 2 kahve · gelirin %60’ı kahveden → ücret 68 ₺ · kahve 14 ₺
+V1  |    1 |    50 |        50 |          99 |              110 |     18 |     0 |     %100 | %1
+V1  |    2 |   105 |        53 |          99 |               55 |     34 |     0 |     %100 | %4
+V1  |    4 |   217 |        54 |          99 |               28 |     70 |     0 |     %100 | %27
+      V1: KISA oyun 90 sn → ücret 39 ₺ · kahve 30 ₺
+V2  |    1 |    54 |        54 |         288 |              320 |     42 |     0 |     %100 | %2
+V2  |    2 |   108 |        54 |         288 |              160 |     84 |     0 |     %100 | %7
+V2  |    4 |   182 |        45 |         264 |               80 |    144 |     0 |     %100 | %26
+      V2: UZUN oyun 300 sn → ücret 120 ₺ · kahve 12 ₺
+V3  |    1 |    45 |        45 |         180 |              200 |     40 |     0 |     %100 | %2
+V3  |    2 |   101 |        51 |         180 |              100 |     78 |     0 |     %100 | %7
+V3  |    4 |   205 |        51 |         173 |               50 |    126 |     0 |     %100 | %29
+      V3: ÜCRET ağır: gelirin %20’si kahveden → ücret 140 ₺ · kahve 5 ₺
+V4  |    1 |    45 |        45 |         180 |              200 |     60 |     0 |     %100 | %3
+V4  |    2 |   101 |        51 |         180 |              100 |    118 |     0 |     %100 | %10
+V4  |    4 |   208 |        52 |         175 |               50 |    218 |     0 |     %100 | %41
+      V4: SIK kahve: 25 sn’de 2 fincan → ücret 72 ₺ · kahve 9 ₺
+V5  |    1 |    45 |        45 |         180 |              200 |     10 |     0 |     %100 | %1
+V5  |    2 |   101 |        51 |         180 |              100 |     20 |     0 |     %100 | %4
+V5  |    4 |   214 |        53 |         180 |               50 |     39 |     0 |     %100 | %22
+      V5: SEYREK kahve: 60 sn’de 1 fincan → ücret 72 ₺ · kahve 54 ₺
+
+--- ILK KADEME OYUNCU · 4 masa ---
+kol | ₺/dk  | servis | kaçan | servis % | meşgul
+V0  |   182 |    114 |     0 |     %100 | %32
+V1  |   217 |     70 |     0 |     %100 | %33
+V2  |   182 |    144 |     0 |     %100 | %37
+V3  |   203 |    114 |     0 |     %100 | %32
+V4  |   203 |    210 |     0 |     %100 | %54
+V5  |   214 |     39 |     0 |     %100 | %25
+
+--- TEORİK TAVAN (her istek servis edilir) ---
+V0: döngü 200 sn · ~4 istek · yığın ≤ 180 ₺ · 54.0 ₺/dk/masa · kahve payı %62
+V1: döngü 110 sn · ~1 istek · yığın ≤ 99 ₺ · 54.0 ₺/dk/masa · kahve payı %61
+V2: döngü 320 sn · ~7 istek · yığın ≤ 288 ₺ · 54.0 ₺/dk/masa · kahve payı %58
+V3: döngü 200 sn · ~4 istek · yığın ≤ 180 ₺ · 54.0 ₺/dk/masa · kahve payı %22
+V4: döngü 200 sn · ~6 istek · yığın ≤ 180 ₺ · 54.0 ₺/dk/masa · kahve payı %60
+V5: döngü 200 sn · ~2 istek · yığın ≤ 180 ₺ · 54.0 ₺/dk/masa · kahve payı %60

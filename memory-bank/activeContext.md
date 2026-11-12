@@ -23,11 +23,14 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Göz aracı: `node tools/_kat-kare.mjs <klasör> x '[["kat2"],["gec"],["tp",x,z],["js","..."],["kare","ad",ms]]'`.
 - Kat 2 metni EN dahil yayından önce ChatGPT mikrometin turuna girer.
 
-## ⏭️ SIRADAKİ ADIM — K2-3: okey masası döngüsü + Türk kahvesi + cezve ocağı
-- D-181 görünüşleriyle (okey yol G · cezve 7 KayKit restoran). Denge sayıları varyant kapısından (ölç → sor → uygula).
-- Kat 2 görev hattı → kat bandının yerini alır. Merdiven tamir pad'i + fiyatı K2-5.
-- Gözlem: Kat 2 varış kadrajında arka duvarın üstü koyu boşluk (Kat 1'de bahçe/sokak görünüyor) → dış manzara/çatı?
-  K2-3'te göz kontrolüyle bak.
+## 🔧 TUR KARTI — K2-3a: okey + Türk kahvesi döngüsü (mantık) · K2-3b görsel ayrı tur
+- **SORU:** oyun ne kadar sürsün, kahve ne sıklıkla/ağırlıkta istensin (his; ₺ düzeyi K2-5).
+- **KOLLAR:** V0 3 dk·40 sn'de 2·%60 kahve · V1 90 sn · V2 300 sn · V3 ücret ağır · V4 sık kahve · V5 seyrek (₺ normalize 54/dk/masa).
+- **SAYILAR:** `docs/kat2-dongu-raporu-k2-3.md` §Bulgular — servis her kolda %100; ayıran meşguliyet (V5 %22 … V4 %41/%54).
+- **KARAR:** (bekliyor — karar paketi) · **UYGULAMA:** `economy.config.kat2` + store bağlantısı + kayıt `kat2.padsDone`
+  + pad zinciri (okey1 → cezve → okey2-4, fiyat TASLAK K2-5) · **BEKÇİ:** `tests/kat2-dongu.test.ts`.
+- Mantık `src/game/kat2Dongu.ts` (saf) · geometri `kat.ts` `OKEY_YER`/`OCAK`. K2-3b: masalar/NPC/balon/ocak modeli + duman.
+- Gözlem: Kat 2 varışında arka duvar üstü koyu boşluk → K2-3b'de göz kontrolü.
 
 ## KULLANICIYA HATIRLAT
 - Play üretim erişimi sonucu ne oldu?

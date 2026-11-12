@@ -182,3 +182,29 @@ export const defaultKat2 = (): Kat2Kayit => ({ acik: false, padsDone: [] });
 export function baslangicKati(kayitKat: unknown, kat2: Kat2Kayit, etkin = kat2Etkin()): KatNo {
   return kayitKat === 2 && kat2.acik && etkin ? 2 : 1;
 }
+
+// ============================== EŞYA YERLERİ (K2-3) ==============================
+
+/**
+ * Merdiven salonunun dört okey masası (maket B'nin `ARKA_OKEY`i: x = ±7,5 · ±13, z = −4,9). Açılış
+ * sırası soldan içe: önce ocağa yakın olanlar. Yer geometri, sayı değil — fiyatlar `economy.config`.
+ */
+export const OKEY_YER: readonly { id: string; x: number; z: number }[] = [
+  { id: 'k2okey1', x: -7.5, z: -4.9 },
+  { id: 'k2okey2', x: -13, z: -4.9 },
+  { id: 'k2okey3', x: 7.5, z: -4.9 },
+  { id: 'k2okey4', x: 13, z: -4.9 },
+];
+
+/** Okey masasının ayak izi (masa + dört sandalye) yarısı — oyuncu içine yürümez. */
+export const OKEY_YARI = 1.25;
+/** Masaya kahve bırakma: ayak izinin kenarından pay (Kat 1'in `collectReach`iyle aynı dil). */
+export const OKEY_ERISIM = OKEY_YARI + 0.7;
+/** Kalkan grubun masa ücreti masanın salona bakan önüne düşer. */
+export const PARA_DUSME_DZ = OKEY_YARI + 0.35;
+
+/**
+ * Cezve ocağı (D-181 cezve 7): bandın solunda, sırtı arka duvara değil SALONA bakar (maket
+ * `CayOcagi` −7,4). Oyuncu salondan, ocağın önündeki noktadan kahve alır.
+ */
+export const OCAK = { id: 'k2cezve', x: -7.4, z: BAND.front - 0.55, al: [-7.4, BAND.front + 0.6] as [number, number], erisim: 0.9 } as const;
