@@ -18,7 +18,9 @@ const URL = adres(PORT);
 const CIKTI = path.join(KOK, 'docs/tasarim/1.0.7/pad');
 mkdirSync(CIKTI, { recursive: true });
 
-const ADAYLAR = {
+// D-176 sonrası aday kodu silindi: `__padStil` yoksa araç yalnız BUGÜNKÜ işareti çeker
+// (ADAY=A ile). Yeni bir görünüş turu açılırsa adaylar yeniden geliştirme anahtarına yazılır.
+const ADAYLAR_TUM = {
   A: 'Bugünkü (köşe parantez)',
   B: 'Tam beyaz çerçeve',
   C: 'Renkli karo',
@@ -29,6 +31,9 @@ const ADAYLAR = {
   H: 'Fiyat şeridi',
   I: 'Işık havuzu',
 };
+const ADAYLAR = process.env.ADAY
+  ? Object.fromEntries(process.env.ADAY.split(',').map((h) => [h, ADAYLAR_TUM[h]]))
+  : ADAYLAR_TUM;
 
 const { dosya, argv } = sunucuKomutu(PORT, 'dev', KOK);
 const sunucu = spawn(dosya, argv, { cwd: KOK, stdio: ['ignore', 'pipe', 'pipe'] });
@@ -147,7 +152,7 @@ if (process.env.DOLUM) {
       return LAYOUT.tables[window.__hedefMasa].upgradeSpot;
     }, tur);
     for (const harf of Object.keys(ADAYLAR)) {
-      await ev((h) => window.__padStil(h), harf);
+      await ev((h) => window.__padStil?.(h), harf);
       await sifirla(tur);
       // yanından başla, sonra üstüne bas
       await ev((n) => window.__teleport(n[0] + 1.4, n[2] + 0.4), nokta);
@@ -180,7 +185,7 @@ for (const [kadraj, git] of Object.entries(KADRAJLAR)) {
   await git();
   await page.waitForTimeout(1800);
   for (const [harf, ad] of Object.entries(ADAYLAR)) {
-    await ev((h) => window.__padStil(h), harf);
+    await ev((h) => window.__padStil?.(h), harf);
     await page.waitForTimeout(700);
     await page.screenshot({ path: path.join(CIKTI, `${kadraj}-${harf}.png`) });
     console.log(`  ${kadraj}-${harf} · ${ad}`);

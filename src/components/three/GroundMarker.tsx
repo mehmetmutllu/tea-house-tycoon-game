@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
-import { MathUtils, MeshBasicMaterial, Shape, type Group, type Mesh } from 'three';
+import { MathUtils, MeshBasicMaterial, Path, Shape, type Group, type Mesh } from 'three';
 import { activeStep, markerTier } from '../../game/activeStep';
 import { dwellState } from '../../game/dwell';
 import { useGame } from '../../game/store';
@@ -15,7 +15,6 @@ import {
   markerFrame,
 } from '../../game/markerFrame';
 import type { Vec3 } from '../../game/types';
-import { PadAday, usePadAday } from './padAday';
 
 /** Oyun fontu (Baloo 2, OFL) — YEREL bundle; troika'nın CDN default fontu kullanılmaz
  * (D-018 dersi + offline APK'da zemin yazıları her zaman çalışsın). */
@@ -60,11 +59,15 @@ export { HARF_EM, ETIKET_PUNTO, OK_GENIS, OK_BOSLUK, KENAR_PAYI } from '../../ga
 export const OK_YUKSEKLIK_ORAN = 0.75;
 export const OK_KALINLIK_ORAN = 0.275;
 
-/** Köşe parantezi: kol uzunluğu · kalınlık · DIŞ KÖŞE YARIÇAPI (yarı-yüksekliğe oran). */
-export const KOL = 0.46;
-export const KALINLIK = 0.17;
+/**
+ * Çerçeve: KESİNTİSİZ BEYAZ KENARLIK (D-176, 1.0.7 — kullanıcı dokuz adaydan B'yi seçti; aday
+ * aracı `tools/aday-pad.mjs`). Eskiden dört köşe parantezdi, kenar ortaları boştu. Kenarlık
+ * kalınlığı · dış köşe yarıçapı yarı-yüksekliğe orandır. Renk (yeşil = aç, sarı = yükselt)
+ * artık dolumda okunur; kenar her zeminde belli olsun diye beyaz.
+ */
+export const CERCEVE = 0.13;
 export const KOSE_R = 0.3;
-/** İç zeminin çerçeveden içeri kaçtığı pay — parantez çizgilerinin DIŞINA taşmasın. */
+/** İç zeminin çerçeveden içeri kaçtığı pay — kenarlığın DIŞINA taşmasın. */
 export const ZEMIN_ICE = 0.055;
 
 /* İşaretin zemin düzlemindeki YEREL ekseni: `rotation=[-PI/2,0,0]` sonrası yerel +Y dünyada
@@ -134,18 +137,15 @@ function okShape(en: number): Shape {
   return s;
 }
 
-/** Dış köşesi YUVARLATILMIŞ L parantezi; köşe orijinde, kollar +x ve +y yönünde. */
-function bracketShape(kol: number, kalinlik: number, r: number): Shape {
-  const s = new Shape();
-  const rr = Math.min(r, kalinlik * 0.95, kol * 0.5);
-  s.moveTo(kol, 0);
-  s.lineTo(rr, 0);
-  s.quadraticCurveTo(0, 0, 0, rr);
-  s.lineTo(0, kol);
-  s.lineTo(kalinlik, kol);
-  s.lineTo(kalinlik, kalinlik);
-  s.lineTo(kol, kalinlik);
-  s.closePath();
+/** Yazı · ok · pul zeminin, dolumun ve kenarlığın ÜSTÜNDE çizilir: hepsi saydam geçişte ve derinlik
+ *  yazmıyor, sıra verilmezse kameraya uzaklığa göre karışıp ok ve pul soluk görünüyordu (D-176). */
+const ON_KATMAN = 10;
+
+/** Kesintisiz yuvarlak kenarlık: dış yuvarlak dikdörtgen − iç yuvarlak dikdörtgen. */
+function halkaShape(w: number, h: number, r: number, k: number): Shape {
+  const s = roundedRectShape(w, h, r);
+  const ic = roundedRectShape(w - 2 * k, h - 2 * k, Math.max(0.01, r - k));
+  s.holes.push(new Path(ic.getPoints(12).reverse()));
   return s;
 }
 
@@ -190,7 +190,6 @@ export function GroundMarker({
    *  (Usta noktaları. Biçim ayrı değil — kullanıcı 2026-09-09: "yuvarlak yapma, yükseltme gibi olsun".) */
   dwellId?: string;
 }) {
-  const padStil = usePadAday((s) => s.v);
   const p = Math.max(0, Math.min(1, progress));
   const r = radius;
   const punto = r * ETIKET_PUNTO;
@@ -207,8 +206,8 @@ export function GroundMarker({
   const buyume = useRef(1);
 
   const bracketMat = useMemo(
-    () => new MeshBasicMaterial({ color: tint, transparent: true, opacity: 0.5, depthWrite: false }),
-    [tint],
+    () => new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.5, depthWrite: false }),
+    [],
   );
   const plateMat = useMemo(
     () => new MeshBasicMaterial({ color: '#14202a', transparent: true, opacity: 0.16, depthWrite: false }),
@@ -218,21 +217,11 @@ export function GroundMarker({
 
   const gem = useMemo(() => gemShape(), []);
   const ok = useMemo(() => okShape(OK_GENIS * r), [r]);
-  const bracket = useMemo(() => bracketShape(hh * KOL, hh * KALINLIK, hh * KOSE_R), [hh]);
+  const kenar = useMemo(() => halkaShape(2 * hw, 2 * hh, hh * KOSE_R, hh * CERCEVE), [hw, hh]);
   // Zemin çerçeveden ZEMIN_ICE kadar içeride ve köşeleri parantezle AYNI yarıçapta.
   const zeminW = 2 * (hw - hh * ZEMIN_ICE);
   const zeminH = 2 * (hh - hh * ZEMIN_ICE);
   const zemin = useMemo(() => roundedRectShape(zeminW, zeminH, hh * KOSE_R), [zeminW, zeminH, hh]);
-
-  const koseler = useMemo(
-    () => [
-      { pos: [-hw, -hh, 0] as [number, number, number], rot: 0 },
-      { pos: [hw, -hh, 0] as [number, number, number], rot: Math.PI / 2 },
-      { pos: [hw, hh, 0] as [number, number, number], rot: Math.PI },
-      { pos: [-hw, hh, 0] as [number, number, number], rot: -Math.PI / 2 },
-    ],
-    [hw, hh],
-  );
 
   useFrame((state, dt) => {
     const tier = markerTier(pos, activeStep, useGame.getState().player);
@@ -263,9 +252,6 @@ export function GroundMarker({
     }
   }, [p, fillH]);
 
-  if (import.meta.env.DEV && padStil !== 'A') {
-    return <PadAday v={padStil} pos={pos} label={label} sub={sub} tint={tint} progress={p} afford={afford} r={r} arrow={arrow} />;
-  }
   return (
     <group position={[pos[0], 0, pos[2]]} name={`isaret:${label}`} userData={{ olcum: { label, r, hw, hh, arrow } }}>
       <group ref={scaleRef} name="isaret-olcek">
@@ -288,27 +274,24 @@ export function GroundMarker({
             dolunca onay modali açılır. React'e dokunmaz: ölçek her karede `dwellState`ten yazılır. */}
         {dwellId && <DwellFill w={zeminW * 0.9} h={fillH} dwellId={dwellId} />}
 
-        {/* köşe parantezleri — kenar ortaları BOŞ, dış köşeler YUVARLATILMIŞ */}
-        <group position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-          {koseler.map((k, i) => (
-            <mesh key={i} name={`parantez${i}`} position={k.pos} rotation={[0, 0, k.rot]} material={bracketMat}>
-              <shapeGeometry args={[bracket]} />
-            </mesh>
-          ))}
-        </group>
+        {/* kesintisiz beyaz kenarlık (D-176) */}
+        <mesh name="kenar" position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]} material={bracketMat}>
+          <shapeGeometry args={[kenar]} />
+        </mesh>
 
         {/* KONUŞAN katman: yazı + maliyet. Sessizken hiç çizilmez. */}
         <group ref={speakRef} visible={false}>
           {arrow && (
             /* Ok, YAZININ dikey bandında durur (ikisi de -hh·0,3'te ortalı). Eski hâl tabandan
                yukarı büyüyordu ve üst parantezin bandına 0,006 birim kalıyordu. */
-            <mesh name="ok-uc" position={[okX, 0.05, -hh * 0.3]} rotation={[-Math.PI / 2, 0, 0]}>
+            <mesh name="ok-uc" position={[okX, 0.05, -hh * 0.3]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={ON_KATMAN}>
               <shapeGeometry args={[ok]} />
               <meshBasicMaterial color="#ffffff" transparent opacity={0.95} depthWrite={false} />
             </mesh>
           )}
           <Text
             name="etiket"
+            renderOrder={ON_KATMAN + 2}
             font={GAME_FONT_3D}
             fontWeight={800}
             letterSpacing={0.02}
@@ -333,30 +316,33 @@ export function GroundMarker({
                       iki para birimi biçimden ayrılır (feedback_upgrade_legibility). */}
                   {pip === 'gem' ? (
                     <>
-                      <mesh rotation={[-Math.PI / 2, 0, 0]} scale={[r * 0.5, r * 0.5, 1]}>
+                      <mesh rotation={[-Math.PI / 2, 0, 0]} scale={[r * 0.5, r * 0.5, 1]} renderOrder={ON_KATMAN}>
                         <shapeGeometry args={[gem]} />
-                        <meshBasicMaterial color="#0277bd" depthWrite={false} />
+                        <meshBasicMaterial color="#0277bd" transparent depthWrite={false} />
                       </mesh>
-                      <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[r * 0.4, r * 0.4, 1]}>
+                      <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={[r * 0.4, r * 0.4, 1]} renderOrder={ON_KATMAN + 1}>
                         <shapeGeometry args={[gem]} />
-                        <meshBasicMaterial color="#81d4fa" depthWrite={false} />
+                        <meshBasicMaterial color="#81d4fa" transparent depthWrite={false} />
                       </mesh>
                     </>
                   ) : (
                     <>
-                      <mesh rotation={[-Math.PI / 2, 0, 0]}>
+                      <mesh rotation={[-Math.PI / 2, 0, 0]} renderOrder={ON_KATMAN}>
                         <circleGeometry args={[r * 0.19, 20]} />
-                        <meshBasicMaterial color="#ffc933" depthWrite={false} />
+                        {/* `transparent`: saydam zemin saydam geçişte SONRA çizildiği için opak pul
+                            onun altında kalıp soluk görünüyordu (D-176 aday turunda bulundu). */}
+                        <meshBasicMaterial color="#ffc933" transparent depthWrite={false} />
                       </mesh>
-                      <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+                      <mesh position={[0, 0.004, 0]} rotation={[-Math.PI / 2, 0, 0]} renderOrder={ON_KATMAN + 1}>
                         <ringGeometry args={[r * 0.14, r * 0.19, 20]} />
-                        <meshBasicMaterial color="#b87400" depthWrite={false} />
+                        <meshBasicMaterial color="#b87400" transparent depthWrite={false} />
                       </mesh>
                     </>
                   )}
                 </group>
               )}
               <Text
+                renderOrder={ON_KATMAN + 2}
                 font={GAME_FONT_3D}
                 fontWeight={800}
                 position={[pip ? 0.13 * r : 0, 0.05, hh * 0.52]}

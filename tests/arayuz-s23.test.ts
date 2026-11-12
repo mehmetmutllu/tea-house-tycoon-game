@@ -32,8 +32,7 @@ import {
   KENAR_PAYI,
   OK_YUKSEKLIK_ORAN,
   OK_KALINLIK_ORAN,
-  KOL,
-  KALINLIK,
+  CERCEVE,
   ZEMIN_ICE,
 } from '../src/components/three/GroundMarker';
 
@@ -109,19 +108,19 @@ describe('§O — yükseltme oku kendi bloğunun içinde', () => {
     }
   });
 
-  it('kenar payı parantez kalınlığından GENİŞ — ok köşe parantezinin sütununa girmiyor', () => {
-    // Parantezin dikey kolu `hh * KALINLIK` kalınlığında, çerçevenin sol kenarından içeri.
-    expect(KENAR_PAYI).toBeGreaterThan(KALINLIK);
+  it('kenar payı kenarlık kalınlığından GENİŞ — ok kenarlığın sütununa girmiyor', () => {
+    // D-176: köşe parantezi yerine kesintisiz kenarlık; kalınlığı `hh * CERCEVE`.
+    expect(KENAR_PAYI).toBeGreaterThan(CERCEVE);
   });
 
-  it('ok, parantez kollarının DİKEY bandına hiç girmiyor', () => {
-    // Parantez kolları çerçevenin üst/alt kenarından `KOL` kadar içeri iner (yerel birim: hh = r).
+  it('ok, üst kenarlığın bandına hiç girmiyor', () => {
+    // D-176: kenarlık çerçevenin üst kenarından `CERCEVE` kadar içeri iner (yerel birim: hh = r).
     // Ok etiketle aynı bantta (-0,3 r merkezli) ve boyu OK_GENIS * OK_YUKSEKLIK_ORAN.
     for (const { label } of ISARETLER) {
       void label;
       const okBoy = OK_GENIS * OK_YUKSEKLIK_ORAN; // r biriminde
       const okUst = 0.3 + okBoy / 2; // merkez -0,3 r, yukarı doğru
-      const parantezAlt = 1 - KOL; // üst parantezin kolu buraya kadar iniyor
+      const parantezAlt = 1 - CERCEVE; // üst kenarlık buraya kadar iniyor
       expect(okUst).toBeLessThan(parantezAlt);
       // Eşik UYDURULMUYOR: işaretin kendi tasarımındaki EN KÜÇÜK bilinçli açıklık `ZEMIN_ICE`
       // (iç zeminin parantez çizgilerinden kaçtığı pay). Ok en az o kadar uzakta duracak —
@@ -130,6 +129,18 @@ describe('§O — yükseltme oku kendi bloğunun içinde', () => {
       // Çizgi kalınlığı da bloğun içinde kalmalı: chevron'un kolu enin yarısını geçemez.
       expect(OK_KALINLIK_ORAN).toBeLessThan(0.5);
     }
+  });
+});
+
+describe('D-176 — zemin işareti: kesintisiz beyaz kenarlık', () => {
+  it('köşe parantezi yok, tek parça kenarlık var', () => {
+    expect(MARKER).toMatch(/name="kenar"/);
+    expect(MARKER).toMatch(/halkaShape\(2 \* hw, 2 \* hh/);
+    expect(MARKER).not.toMatch(/parantez\$\{i\}|bracketShape/);
+  });
+  it('para pulu saydam geçişte çizilir (saydam zeminin altında kalıp solmaz)', () => {
+    expect(MARKER).toMatch(/color="#ffc933" transparent/);
+    expect(MARKER).toMatch(/color="#b87400" transparent/);
   });
 });
 

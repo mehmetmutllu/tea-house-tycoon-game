@@ -5045,3 +5045,12 @@ görevinde 64 px çubuk) · **ödül** (+200) · ok. Üstteki küçük lakap ("S
 (lakap Görevler ekranında duruyor); masanın fiyatı karttan kalktı — kullanıcı: "ya ödül ya ücret olsun, bence ödül".
 Dokununca kamera göreve gider (değişmedi). Günlük bant da aynı biçime girdi. C (taşan ikon) ikinci tercihti.
 Bekçi: `ekran-kabugu` 6 · `gorev-seridi-g1` (48 px taban) · `arayuz-t9d` B8; 2 mutasyon yakalandı.
+
+## D-176 · Zemin işareti (pad + yükseltme noktası) = kesintisiz beyaz kenarlık (2026-11-12)
+
+**Karar (kullanıcı, 9 adaydan B):** gerçek oyundan aynı kadrajda çekilen dokuz görünüş (`tools/aday-pad.mjs`, artifact
+B74iowMefn2ddooSuCC1aW) arasından **B · tam beyaz çerçeve**. Dört köşe parantezi yerine tek parça yuvarlak beyaz kenarlık
+(`CERCEVE` = 0,13 hh); zemin, dolum rengi (yeşil aç / sarı yükselt), yazı ve çerçeve ÖLÇÜSÜ (D-121 tetik alanı) aynı.
+Aday turunda bulunan çizim hatası da kapandı: para pulu opak, zemin saydam olduğu için pul zeminin altında kalıp soluk
+görünüyordu → pul saydam geçişte, yazı/ok/pul `ON_KATMAN` çizim sırasıyla en üstte. Dolum animasyonu istendi ama kullanıcı
+sabit görüntüden seçti. Bekçi: `arayuz-s23` D-176 (2 mutasyon yakalandı). Duman: q_coin kararsızlığı iki kez denk geldi.
