@@ -5125,7 +5125,7 @@ BİREBİR aynı çıktı. Not: o aracın korunum damgası (W20 B0/B2/Y1) değiş
 Teknik/görsel küçük çatallar, D-181'in uygulaması (yeni seçim sorulmadı). ① Kat 2 açılınca (`kat.merdivenTamirli`, üretim
 kapısına bağlı) Kat 1'de yıkık merdiven + şerit + dubalar yerine `Kat2.MerdivenTamir`: ölçü yıkıkla birebir (14 × 0,46,
 sahanlık), dil D-181 merdiven 2 (ahşap basamak, kalın eğimli küpeşte, dipte topuzlu babalar) + kırmızı yolluk ("çıkılır"
-okunsun; kullanıcı istemezse tek satırla kalkar). ② Kat 2'deyken Kat 1 görev bandı yerine sade bant "Kat 2 — oyun salonu
+okunsun; kullanıcı karelere bakıp onayladı — artifact 5urr3ut2YGwzVNrwigG1MU). ② Kat 2'deyken Kat 1 görev bandı yerine sade bant "Kat 2 — oyun salonu
 hazırlanıyor" (EN "Floor 2 — the game hall is getting ready"; yayından önce ChatGPT mikrometin turu); Kat 1'e bağlı
 öğretici/bulaşık/karakter/tepsi ipuçları Kat 2'de susar. Kat göstergesi ayrıca eklenmedi: bant zaten katı söylüyor.
 ③ `__devPlan` dar portrede boştu: kamera ~70+ birimde, sis 72'de kapanıyordu → plan kipinde sis kamera yüksekliği kadar
