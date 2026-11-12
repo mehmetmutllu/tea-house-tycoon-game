@@ -10,6 +10,7 @@ import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { Model } from '../src/components/three/Model';
 import { KLIP, basMi, ekipmanMi, kafaKucult, useKayKlipler } from '../src/components/three/KayActor';
 import { PALETTE } from '../src/config/palette';
+import { STOOL_S } from '../src/components/three/tableLook';
 import { KAY_KOK, KAY_MUSTERI_GOVDE, KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, KAY_SCALE } from '../src/config/actor';
 
 export const KAY_F = '/assets/models/kaykit-furniture-bits/';
@@ -48,12 +49,17 @@ export function Tabure({ x, z }: { x: number; z: number }) {
   );
 }
 
-export type Oturak = 'chair_A_wood' | 'chair_B_wood' | 'tabure';
+/** tabure = Kat 1 greybox taburesi (kırmızı minder) · stool_wood/stool = Kat 1'in GERÇEK oturağı (KayKit; L0-1 çıplak, L2+ mavi minderli). */
+export type Oturak = 'chair_A_wood' | 'chair_B_wood' | 'tabure' | 'stool_wood' | 'stool';
 export function Sandalye({ x, z, aci, kisi, i, tip = 'chair_A_wood' }: { x: number; z: number; aci: number; kisi: boolean; i: number; tip?: Oturak }) {
   return (
     <group>
       {tip === 'tabure' ? (
         <Tabure x={x} z={z} />
+      ) : tip === 'stool_wood' || tip === 'stool' ? (
+        <group position={[x, 0, z]}>
+          <Model src={`${KAY_F}${tip === 'stool' ? 'chair_stool' : 'chair_stool_wood'}.gltf`} scale={STOOL_S} fallback={<Tabure x={0} z={0} />} />
+        </group>
       ) : (
         <group position={[x, 0, z]} rotation={[0, aci, 0]}>
           <Model src={`${KAY_F}${tip}.gltf`} scale={SANDALYE_S} fallback={null} />

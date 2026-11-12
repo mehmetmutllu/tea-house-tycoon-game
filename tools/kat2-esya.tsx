@@ -6,6 +6,7 @@
  * Dört eşya × altı aday; bir eşyanın adayları birebir aynı kadrajda.
  *
  * Adres: /tools/kat2-esya.html?esya=okey|tavla|cezve|merdiven&no=1..6
+ *        /tools/kat2-esya.html?esya=okey|tavla&yol=A|B|C  (yükseltme yolu: Sv1…Sv5 yan yana, boş masa)
  * Çekim: node tools/kat2-esya-cek.mjs
  */
 import { createRoot } from 'react-dom/client';
@@ -26,6 +27,7 @@ const q = new URLSearchParams(location.search);
 type Tur = 'okey' | 'tavla' | 'cezve' | 'merdiven';
 const ESYA = (q.get('esya') ?? 'okey') as Tur;
 const NO = Number(q.get('no') ?? 1);
+const YOL = q.get('yol') as 'A' | 'B' | 'C' | null;
 
 const ZEMIN = FLOOR_THEMES.parke; // D-180
 const TEMA = WALL_THEMES.krem;
@@ -35,7 +37,7 @@ const KOYU = '#5d4037';
 const KREM_TAS = '#f4eedc';
 
 // ================================ OKEY ================================
-type OkeyAday = { masa: 'kayOrta' | 'kat1' | 'cerceve' | 'yuvarlak'; cuha: string; oturak: Oturak; ortu?: string; cay?: boolean };
+type OkeyAday = { masa: 'kayOrta' | 'kat1' | 'cerceve' | 'yuvarlak'; cuha?: string; oturak: Oturak; ortu?: string; cay?: boolean; boy?: number; pirinc?: boolean };
 const OKEY: Record<number, OkeyAday> = {
   1: { masa: 'kayOrta', cuha: '#2e7d4f', oturak: 'chair_A_wood' }, // tur 1'deki hâl
   2: { masa: 'kat1', cuha: '#2e7d4f', oturak: 'tabure' }, // Kat 1 masa + tabure ailesi
@@ -47,8 +49,62 @@ const OKEY: Record<number, OkeyAday> = {
 
 const UST = 0.75; // tabla üstü (Kat 1 ile aynı, D-073)
 
+/*
+ * YÜKSELTME YOLLARI — Kat 1'in masa merdiveni (Tables.tsx): Sv1 çıplak + 1 tabure · Sv2 +1 tabure ·
+ * Sv3 minder · Sv4 masa BÜYÜR · Sv5 örtü. Okeyde hep 4, tavlada hep 2 kişi oturur → oturak SAYISI
+ * seviye sinyali olamaz; yerine çuha/oturak tipi/boy/aksesuar. Her basamak TEK gözle görülür değişim.
+ */
+const YESIL = '#2e7d4f';
+const BORDO = '#8e2f2a';
+const OKEY_YOL: Record<'A' | 'B' | 'C', OkeyAday[]> = {
+  A: [ // Kat 1'in yolu: çuha → minder → masa büyür → pirinç + çay
+    { masa: 'kat1', oturak: 'stool_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'stool' },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'stool', boy: 1.15 },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'stool', boy: 1.15, pirinc: true, cay: true },
+  ],
+  B: [ // Sandalyeye geçiş: tabure → sandalye → çerçeveli masa → oymalı sandalye + büyür → bordo çuha
+    { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'chair_A_wood' },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A_wood' },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_B_wood', boy: 1.15 },
+    { masa: 'cerceve', cuha: BORDO, oturak: 'chair_B_wood', boy: 1.15, cay: true },
+  ],
+  C: [ // Yuvarlak: çıplak → çuha → minder → büyür + sandalye → pirinç + çay
+    { masa: 'yuvarlak', oturak: 'stool_wood' },
+    { masa: 'yuvarlak', cuha: YESIL, oturak: 'stool_wood' },
+    { masa: 'yuvarlak', cuha: YESIL, oturak: 'stool' },
+    { masa: 'yuvarlak', cuha: YESIL, oturak: 'chair_A_wood', boy: 1.15 },
+    { masa: 'yuvarlak', cuha: YESIL, oturak: 'chair_A_wood', boy: 1.15, pirinc: true, cay: true },
+  ],
+};
+
+function Pirinc({ hw, y, yuvarlak }: { hw: number; y: number; yuvarlak?: boolean }) {
+  const m = <meshStandardMaterial color={PALETTE.brass} metalness={0.7} roughness={0.3} />;
+  if (yuvarlak)
+    return (
+      <mesh position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[hw, 0.022, 6, 32]} />
+        {m}
+      </mesh>
+    );
+  return (
+    <group>
+      {[[0, hw, 2 * hw + 0.05, 0.03], [0, -hw, 2 * hw + 0.05, 0.03], [hw, 0, 0.03, 2 * hw + 0.05], [-hw, 0, 0.03, 2 * hw + 0.05]].map(([x, z, w, d], k) => (
+        <mesh key={k} position={[x, y, z]}>
+          <boxGeometry args={[w, 0.06, d]} />
+          {m}
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 function OkeyMasasi({ x, z, a, dolu, i }: { x: number; z: number; a: OkeyAday; dolu: boolean; i: number }) {
-  const yer: [number, number][] = [[0, 1.0], [1.0, 0], [0, -1.0], [-1.0, 0]];
+  const b = a.boy ?? 1;
+  const r = 1.0 + (b - 1) * 0.6;
+  const yer: [number, number][] = [[0, r], [r, 0], [0, -r], [-r, 0]];
   const yuvarlak = a.masa === 'yuvarlak';
   let ust = UST;
   let tabla: ReactNode;
@@ -80,15 +136,16 @@ function OkeyMasasi({ x, z, a, dolu, i }: { x: number; z: number; a: OkeyAday; d
   const cuhaY = ust + 0.006;
   return (
     <group>
-      <group position={[x, 0, z]}>
+      <group position={[x, 0, z]} scale={[b, 1, b]}>
         {tabla}
+        {a.pirinc && <Pirinc hw={yuvarlak ? 0.665 : a.masa === 'cerceve' ? 0.6 : 0.565} y={ust - 0.03} yuvarlak={yuvarlak} />}
         {a.ortu && (
           <mesh position={[0, ust + 0.003, 0]} rotation={[0, Math.PI / 4, 0]}>
             <boxGeometry args={[1.25, 0.006, 1.25]} />
             <meshStandardMaterial color={a.ortu} />
           </mesh>
         )}
-        {yuvarlak ? (
+        {!a.cuha ? null : yuvarlak ? (
           <Silindir r1={0.58} r2={0.58} h={0.012} renk={a.cuha} pos={[0, cuhaY + 0.004, 0]} seg={28} />
         ) : (
           <mesh position={[0, cuhaY + (a.ortu ? 0.006 : 0), 0]} receiveShadow>
@@ -97,7 +154,7 @@ function OkeyMasasi({ x, z, a, dolu, i }: { x: number; z: number; a: OkeyAday; d
           </mesh>
         )}
         {yer.map(([dx, dz], k) => (
-          <group key={k} position={[dx * 0.4, cuhaY + 0.03, dz * 0.4]} rotation={[0, Math.atan2(dx, dz), 0]}>
+          <group key={k} position={[(dx / r) * 0.4, cuhaY + 0.03, (dz / r) * 0.4]} rotation={[0, Math.atan2(dx, dz), 0]}>
             <Kutu w={0.62} h={0.05} d={0.11} renk="#8a5a3b" pos={[0, 0, 0]} />
             <Kutu w={0.54} h={0.08} d={0.025} renk={KREM_TAS} pos={[0, 0.06, -0.02]} />
             {Array.from({ length: 6 }, (_, t) => (
@@ -134,7 +191,30 @@ function CayBardaklari({ ust }: { ust: number }) {
 }
 
 // ================================ TAVLA ================================
-type TavlaAday = { masa: 'kayKucuk' | 'kat1' | 'yuvarlak'; tahta: 'kutu' | 'kakma' | 'cuha'; oturak: Oturak; cay?: boolean };
+type TavlaAday = { masa: 'kayKucuk' | 'kat1' | 'yuvarlak'; tahta: 'kutu' | 'kakma' | 'cuha'; oturak: Oturak; cay?: boolean; boy?: number; pirinc?: boolean };
+const TAVLA_YOL: Record<'A' | 'B' | 'C', TavlaAday[]> = {
+  A: [ // Kat 1'in yolu: kakma kutu → minder → masa büyür → pirinç + çay/zar
+    { masa: 'kat1', tahta: 'kutu', oturak: 'stool_wood' },
+    { masa: 'kat1', tahta: 'kakma', oturak: 'stool_wood' },
+    { masa: 'kat1', tahta: 'kakma', oturak: 'stool' },
+    { masa: 'kat1', tahta: 'kakma', oturak: 'stool', boy: 1.2 },
+    { masa: 'kat1', tahta: 'kakma', oturak: 'stool', boy: 1.2, pirinc: true, cay: true },
+  ],
+  B: [ // Sandalyeye geçiş: kakma → sandalye → oymalı + büyür → yeşil çuhalı tavla + çay
+    { masa: 'kat1', tahta: 'kutu', oturak: 'stool_wood' },
+    { masa: 'kat1', tahta: 'kakma', oturak: 'stool_wood' },
+    { masa: 'kat1', tahta: 'kakma', oturak: 'chair_A_wood' },
+    { masa: 'kat1', tahta: 'kakma', oturak: 'chair_B_wood', boy: 1.2 },
+    { masa: 'kat1', tahta: 'cuha', oturak: 'chair_B_wood', boy: 1.2, cay: true },
+  ],
+  C: [ // Yuvarlak masa: kakma → minder → büyür + sandalye → pirinç + çay/zar
+    { masa: 'yuvarlak', tahta: 'kutu', oturak: 'stool_wood' },
+    { masa: 'yuvarlak', tahta: 'kakma', oturak: 'stool_wood' },
+    { masa: 'yuvarlak', tahta: 'kakma', oturak: 'stool' },
+    { masa: 'yuvarlak', tahta: 'kakma', oturak: 'chair_A_wood', boy: 1.2 },
+    { masa: 'yuvarlak', tahta: 'kakma', oturak: 'chair_A_wood', boy: 1.2, pirinc: true, cay: true },
+  ],
+};
 const TAVLA: Record<number, TavlaAday> = {
   1: { masa: 'kayKucuk', tahta: 'kutu', oturak: 'chair_A_wood' }, // tur 1'deki hâl
   2: { masa: 'kat1', tahta: 'kutu', oturak: 'tabure' }, // Kat 1 ikili masa + tabure
@@ -213,7 +293,9 @@ function Pullar({ y }: { y: number }) {
 }
 
 function TavlaMasasi({ x, z, a, dolu, i }: { x: number; z: number; a: TavlaAday; dolu: boolean; i: number }) {
-  const yer: [number, number][] = [[0.85, 0], [-0.85, 0]];
+  const b = a.boy ?? 1;
+  const r = 0.85 + (b - 1) * 0.45;
+  const yer: [number, number][] = [[r, 0], [-r, 0]];
   let tabla: ReactNode;
   if (a.masa === 'kayKucuk') tabla = <Model src={`${KAY_F}table_small.gltf`} scale={[0.8, 0.75, 0.8]} fallback={null} />;
   else if (a.masa === 'kat1') tabla = <Model src={`${KAY_F}table_small.gltf`} scale={[0.9, 0.75, 0.9]} fallback={null} />;
@@ -228,7 +310,10 @@ function TavlaMasasi({ x, z, a, dolu, i }: { x: number; z: number; a: TavlaAday;
   return (
     <group>
       <group position={[x, 0, z]}>
-        {tabla}
+        <group scale={[b, 1, b]}>
+          {tabla}
+          {a.pirinc && <Pirinc hw={a.masa === 'yuvarlak' ? 0.505 : 0.45} y={UST - 0.03} yuvarlak={a.masa === 'yuvarlak'} />}
+        </group>
         <TavlaTahtasi tip={a.tahta} ust={UST} />
         {a.cay && (
           <group>
@@ -546,8 +631,9 @@ function Kamera() {
   const { camera } = useThree();
   useEffect(() => {
     const cam = camera as import('three').PerspectiveCamera;
-    const { bak, d } = KADRAJ[ESYA];
-    cam.fov = CAMERA_FOV;
+    // Yol karesi beş masayı yan yana gösterir: dar açı + uzak kamera → kenardaki masa çarpılmaz (aynı boy okunur).
+    const { bak, d } = YOL ? { bak: [0, 0.35, 0.15] as [number, number, number], d: ESYA === 'okey' ? 8.6 : 8.0 } : KADRAJ[ESYA];
+    cam.fov = YOL ? 26 : CAMERA_FOV;
     cam.position.set(bak[0], bak[1] + d, bak[2] + d);
     cam.lookAt(bak[0], bak[1], bak[2]);
     cam.updateProjectionMatrix();
@@ -580,14 +666,14 @@ function Zemin() {
       </group>
     );
   }
-  return parca(-12, 12, -12, 12);
+  return parca(-30, 30, -12, 14);
 }
 
 function Duvar() {
   const z = ESYA === 'merdiven' ? -3.6 : ESYA === 'cezve' ? -2.2 : -2.6;
   return (
     <group>
-      <WallPanels slabs={[{ x: 0, z, w: 24, d: 0.18, theme: TEMA, h: WALL_H }]} />
+      <WallPanels slabs={[{ x: 0, z, w: 60, d: 0.18, theme: TEMA, h: WALL_H }]} />
       {ESYA === 'merdiven' && (
         <>
           <MaketWall x1={-4.6} z1={-3.6} x2={-4.6} z2={3.5} h={2.2} />
@@ -598,7 +684,25 @@ function Duvar() {
   );
 }
 
+const YOL_ARA = { okey: 3.4, tavla: 3.2 } as const;
+function Yol() {
+  const ara = YOL_ARA[ESYA as 'okey' | 'tavla'];
+  const seri = ESYA === 'okey' ? OKEY_YOL[YOL!] : TAVLA_YOL[YOL!];
+  return (
+    <>
+      {seri.map((a, k) =>
+        ESYA === 'okey' ? (
+          <OkeyMasasi key={k} x={(k - 2) * ara} z={0} a={a as OkeyAday} dolu={false} i={k} />
+        ) : (
+          <TavlaMasasi key={k} x={(k - 2) * ara} z={0} a={a as TavlaAday} dolu={false} i={k} />
+        ),
+      )}
+    </>
+  );
+}
+
 function Icerik() {
+  if (YOL) return <Yol />;
   if (ESYA === 'okey') {
     const a = OKEY[NO];
     return (

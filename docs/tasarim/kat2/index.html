@@ -56,6 +56,15 @@
 
   .kartlar.tek .kartc img { aspect-ratio: 900 / 680; object-fit: cover; }
   .kartlar.tek { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+
+  .yol { margin-top: 16px; }
+  .yol h3 { margin: 0 0 6px; font-size: 19px; }
+  .yol h3 .k { display:inline-grid; place-items:center; font-family:'Luckiest Guy', cursive; color:#fff; background:var(--mor); width:34px; height:34px; border-radius:9px; margin-right:8px; padding-top:4px; font-weight:400; }
+  .yol img { width:100%; border-radius:12px; display:block; background:#1f2733; }
+  .basamak { display:grid; grid-template-columns: repeat(5, 1fr); gap:6px; margin-top:6px; }
+  .basamak span { background:var(--zemin); border:1px solid var(--cizgi); border-radius:8px; padding:4px 8px; font-size:13px; text-align:center; }
+  .basamak b { display:block; color:var(--mor); }
+  @media (max-width: 820px) { .basamak { grid-template-columns: repeat(5, minmax(0,1fr)); font-size: 11px; } .basamak span { padding: 3px 4px; font-size: 11px; } }
 </style>
 </head>
 <body>
@@ -63,7 +72,35 @@
   <h1>Kat 2 — tasarım turları</h1>
   <p class="alt">Oyun Katı (okey + tavla). Kareler oyunun kendi ışığı, zemini, duvarı, mobilyası ve müşterileriyle çizildi. Tur 1’de <b>katın planı</b> seçildi (B). Tur 2a’da salonların arası ve zemini seçildi (tam bölme + tek ahşap). Tur 2b’de eşyaların görünüşü seçiliyor.</p>
 
-  <nav><a href="#tur2b-okey">2b · Okey</a><a href="#tur2b-tavla">2b · Tavla</a><a href="#tur2b-cezve">2b · Cezve</a><a href="#tur2b-merdiven">2b · Merdiven</a><a href="#tur2a-bolme">2a · Ayrım</a><a href="#tur2a-zemin">2a · Zemin</a><a href="#aday-a">A · Kat 1'in aynası</a><a href="#aday-b">B · Bölmeli salonlar</a><a href="#aday-c">C · Ortadan kanatlanan</a><a href="#aday-d">D · Balkonlu</a></nav>
+  <nav><a href="#tur2b-okey-yol">2b · Okey seviyeleri</a><a href="#tur2b-tavla-yol">2b · Tavla seviyeleri</a><a href="#tur2b-okey">2b · Okey</a><a href="#tur2b-tavla">2b · Tavla</a><a href="#tur2b-cezve">2b · Cezve</a><a href="#tur2b-merdiven">2b · Merdiven</a><a href="#tur2a-bolme">2a · Ayrım</a><a href="#tur2a-zemin">2a · Zemin</a><a href="#aday-a">A · Kat 1'in aynası</a><a href="#aday-b">B · Bölmeli salonlar</a><a href="#aday-c">C · Ortadan kanatlanan</a><a href="#aday-d">D · Balkonlu</a></nav>
+  <section class="tur" id="tur2b-okey-yol">
+    <div class="bas"><h2><span class="no">Tur 2b ·</span> Okey masası — yükseltme yolları</h2></div>
+    <p class="ozet">Masa soldan sağa Sv1’den Sv5’e yükseliyor (boş hâli, masa görünsün diye). Kat 1’de seviyeyi tabure sayısı da gösteriyordu; okeyde hep 4, tavlada hep 2 kişi oturduğu için burada her basamak tek bir görünür değişimle okunuyor: çuha, minder, sandalye, masanın büyümesi, pirinç kenar, çay.</p>
+    <div class="yol"><h3><span class="k">A</span>Kat 1’in yolu</h3>
+      <a href="esya-okey-yol-A.png"><img src="esya-okey-yol-A.png" alt="Okey masası — yükseltme yolları A"></a>
+      <div class="basamak"><span><b>Sv1</b>Çıplak ahşap masa, ahşap tabure</span><span><b>Sv2</b>+ yeşil çuha</span><span><b>Sv3</b>+ tabure minderleri</span><span><b>Sv4</b>Masa büyür, çerçeveli</span><span><b>Sv5</b>+ pirinç kenar, çay</span></div></div>
+    <div class="yol"><h3><span class="k">B</span>Sandalyeye geçiş</h3>
+      <a href="esya-okey-yol-B.png"><img src="esya-okey-yol-B.png" alt="Okey masası — yükseltme yolları B"></a>
+      <div class="basamak"><span><b>Sv1</b>Çuhalı masa, ahşap tabure</span><span><b>Sv2</b>Tabure → sandalye</span><span><b>Sv3</b>Çerçeveli masa</span><span><b>Sv4</b>Masa büyür, oymalı sandalye</span><span><b>Sv5</b>Çuha bordo olur, çay</span></div></div>
+    <div class="yol"><h3><span class="k">C</span>Yuvarlak masa</h3>
+      <a href="esya-okey-yol-C.png"><img src="esya-okey-yol-C.png" alt="Okey masası — yükseltme yolları C"></a>
+      <div class="basamak"><span><b>Sv1</b>Çıplak yuvarlak masa</span><span><b>Sv2</b>+ yeşil çuha</span><span><b>Sv3</b>+ tabure minderleri</span><span><b>Sv4</b>Masa büyür, sandalye</span><span><b>Sv5</b>+ pirinç kenar, çay</span></div></div>
+  </section>
+
+  <section class="tur" id="tur2b-tavla-yol">
+    <div class="bas"><h2><span class="no">Tur 2b ·</span> Tavla masası — yükseltme yolları</h2></div>
+    <p class="ozet">Masa soldan sağa Sv1’den Sv5’e yükseliyor (boş hâli, masa görünsün diye). Kat 1’de seviyeyi tabure sayısı da gösteriyordu; okeyde hep 4, tavlada hep 2 kişi oturduğu için burada her basamak tek bir görünür değişimle okunuyor: çuha, minder, sandalye, masanın büyümesi, pirinç kenar, çay.</p>
+    <div class="yol"><h3><span class="k">A</span>Kat 1’in yolu</h3>
+      <a href="esya-tavla-yol-A.png"><img src="esya-tavla-yol-A.png" alt="Tavla masası — yükseltme yolları A"></a>
+      <div class="basamak"><span><b>Sv1</b>Sade kutu, ahşap tabure</span><span><b>Sv2</b>Kakma tavla kutusu</span><span><b>Sv3</b>+ tabure minderleri</span><span><b>Sv4</b>Masa büyür</span><span><b>Sv5</b>+ pirinç kenar, çay + zar</span></div></div>
+    <div class="yol"><h3><span class="k">B</span>Sandalyeye geçiş</h3>
+      <a href="esya-tavla-yol-B.png"><img src="esya-tavla-yol-B.png" alt="Tavla masası — yükseltme yolları B"></a>
+      <div class="basamak"><span><b>Sv1</b>Sade kutu, ahşap tabure</span><span><b>Sv2</b>Kakma tavla kutusu</span><span><b>Sv3</b>Tabure → sandalye</span><span><b>Sv4</b>Masa büyür, oymalı sandalye</span><span><b>Sv5</b>Yeşil çuhalı tavla, çay</span></div></div>
+    <div class="yol"><h3><span class="k">C</span>Yuvarlak masa</h3>
+      <a href="esya-tavla-yol-C.png"><img src="esya-tavla-yol-C.png" alt="Tavla masası — yükseltme yolları C"></a>
+      <div class="basamak"><span><b>Sv1</b>Yuvarlak masa, sade kutu</span><span><b>Sv2</b>Kakma tavla kutusu</span><span><b>Sv3</b>+ tabure minderleri</span><span><b>Sv4</b>Masa büyür, sandalye</span><span><b>Sv5</b>+ pirinç kenar, çay + zar</span></div></div>
+  </section>
+
   <section class="tur" id="tur2b-okey">
     <div class="bas"><h2><span class="no">Tur 2b ·</span> Okey masası</h2></div>
     <p class="ozet">Solda dolu masa, sağda boş masa (masanın kendisi görünsün diye). Masa yüksekliği Kat 1 ile aynı. Zemin seçilen tek ahşap (Z2). Altı aday aynı kadrajda; 1 numara Tur 1'deki hâl.</p>
