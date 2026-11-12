@@ -5079,3 +5079,13 @@ oturum süresi Firebase'in otomatik olaylarından; toplu sıçrama (yükleme/bul
 girmez (depo açık): dev-ortam `gizli/kiraathane/firebase/`, iOS Codemagic `firebase_ios` grubu (base64). Bekçi 11 test ·
 4 mutasyon (biri kaçtı → test güçlendi) · duman +2 (Firestore yakalanır, gerçek DB'ye yazmaz).
 **Yayından önce:** gizlilik politikası ("kendi analitiğimiz yok" diyor) + ASC App Privacy + Play Veri güvenliği güncellenmeli.
+
+## D-179 · Kat 2 planı = B "bölmeli salonlar" (K2-1 tur 1, 2026-11-12)
+Dört aday oyunun kendi parçalarıyla aynı kadrajda çizildi (`tools/kat2-maket.tsx`, sayfa
+https://claude.ai/artifact/KX9AKbp2GHMgbHJmQKdwxH). Kullanıcı **B**'yi seçti: Kat 1'in üç alanı ters sırayla açılır
+(arka şerit "merdiven salonu" → sol ön "okey salonu" → sağ ön "tavla köşesi"), her alan kendi zemini olan ayrı oda,
+araları 2,2 bölme + ahşap kemerli geçit. Ortak iskelet: merdiven boşluğu arka orta (Kat 1 merdiveninin üst ucu), çay
+ocağı bandın solunda, sağ blok tadilatta, kilitli alan kaba şap + iskele. Maket kapasitesi 10 okey + 12 tavla (sayı
+değil; ekonomi K2-5'te ölçülür). Elenen: A (salon boş/geniş), C (ilk adımda çay ocağı yarı kapalı, kanatlar koridor),
+D (balkon kamerada cephenin arkasında). **Açık:** D'nin cadde balkonu 4. adım olarak — kullanıcı "düşünürüz".
+Bölme duvarı yürüme yolunu uzatır → K2-5'te ölçülecek. Sonraki: tur 2 — okey/tavla/cezve/merdiven GÖRÜNÜŞ adayları.

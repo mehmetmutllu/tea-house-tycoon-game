@@ -43,12 +43,13 @@ akıyor; ilk müşterinin sabrı bitince yerine oturan 2. müşteri 8 sn pencere
 oyuncu ışınlanıyor → para yerde. Eski denetim `lifetime`'a bakıyordu (görev ödülü dolduruyor, toplamayı kanıtlamıyordu).
 `tools/smoke.mjs`: coinsCollected>0 olana dek saniye saniye sar (≤20 sn) + kutlama için 1 sn. 18/18 yeşil · 2 mutasyon yakalandı.
 
-## 🆕 2026-11-12 (5.) — K2-1 KAT 2 MAKETİ, tur 1: PLAN (karar BEKLİYOR)
+## 🆕 2026-11-12 (5.) — K2-1 KAT 2 MAKETİ, tur 1: PLAN SEÇİLDİ (B)
 Araç: `tools/kat2-maket.tsx` (oyunun ışığı/zemini/duvarı/KayKit/müşteri gövdesi; `?v=A&adim=3&kadraj=genel|oyun`) +
 `tools/kat2-maket-cek.mjs` → `docs/tasarim/kat2/` · sayfa https://claude.ai/artifact/KX9AKbp2GHMgbHJmQKdwxH
 Adaylar: **A** Kat 1'in aynası (arka→sol ön→sağ ön, bölmesiz) · **B** bölmeli salonlar (A + 2,2 bölme + kemer + salon
 zemini; öneri ✓) · **C** ortadan kanatlanan · **D** balkonlu (cadde balkonunda tavla). Ortak: merdiven boşluğu arka orta,
-çay ocağı bandın solu, sağ blok tadilat, kilitli alan kaba şap. **KARAR:** (boş) → sonra tur 2: okey/tavla/cezve/merdiven görünüşü.
+çay ocağı bandın solu, sağ blok tadilat, kilitli alan kaba şap. **KARAR: B (D-179)** · balkon 4. adım = kullanıcı "düşünürüz" (açık) → SIRADAKİ: tur 2 — okey masası /
+tavla masası / cezve ocağı / merdiven çıkışı için 6-12 görünüş adayı aynı kadrajda (aynı araca `?esya=` kipi).
 
 ## ⏭️ SIRADAKİ ADIM — KULLANICIYA HATIRLAT
 -1. Play üretim erişimi başvurusu sonucu ne oldu? (onay → 9B ile 1.0.6 üretime; ret → e-postayı iste)
