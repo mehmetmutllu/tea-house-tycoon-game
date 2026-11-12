@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useRef, useState, useSyncExternalStore, type ComponentProps, type ReactNode } from 'react';
+import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ComponentProps, type ReactNode } from 'react';
 import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenCuzdan } from '../../game/store';
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
@@ -305,6 +305,18 @@ export function HUD() {
   // F3 geçişli C1′ (D-144): panel KAPANIŞI reklamı patlatır (soğuma dolduysa). Sekmeden sekmeye
   // geçmek kapanış değildir; kural ve soğuma `ads.ts`te.
   const oncekiSheet = useRef<Sheet>(null);
+  // D-177: alt menüdeki ekranlar menünün üst kenarında biter. Menünün boyu sabit değil (safe-area,
+  // tablet ölçeği, cihaz yazı boyutu: ölçüm 79 · 78 · 110 px) — gerçek boyu `--nav-h` olarak yazılır.
+  const navRef = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    const el = navRef.current;
+    if (!el) return;
+    const yaz = () => document.documentElement.style.setProperty('--nav-h', `${el.getBoundingClientRect().height}px`);
+    yaz();
+    const ro = new ResizeObserver(yaz);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
   useEffect(() => {
     const onceki = oncekiSheet.current;
     oncekiSheet.current = sheet;
@@ -509,7 +521,7 @@ export function HUD() {
       {/* B1 (T9d): ipucu açıkken alt gezinme KARARTMANIN ÜSTÜNE çıkar. Eskiden sekmenin kendi z'si
           (36) gezinmenin katmanından (13) kaçamıyordu: ilk dokunuş karartmaya gidip yalnız onu
           kapatıyor, panel ikinci dokunuşta açılıyordu. */}
-      <nav className={`botnav${spotlight ? ' spot-acik' : ''}`}>
+      <nav ref={navRef} className={`botnav${spotlight ? ' spot-acik' : ''}${sheet && sheet !== 'settings' ? ' ekranda' : ''}`}>
         {/* G-62 revize (2026-10-07): halka yalnız İÇERİDE alınacak ödül varken çalar. Hat görevinin
             ödülü otomatik verilir; her bitişte sekmeyi yakmak boşa çağırıyordu — o anı bant kendisi kutlar. */}
         <NavTab
@@ -1123,7 +1135,7 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
   const gunKalan = gunler.filter((g) => g.state !== 'claimed').reduce((a, g) => a + g.diamonds, 0);
 
   return (
-    <Sheet title={t('Görevler')} testid="quests-panel" onClose={onClose}>
+    <Sheet title={t('Görevler')} testid="quests-panel" onClose={onClose} navda>
       <div className="sheet-sec" data-testid="daily-sec">
         {t('BUGÜN')}{gunHazir > 0 ? ` ${t('· {1} ÖDÜL HAZIR', gunHazir)}` : ''}
       </div>
@@ -1318,7 +1330,7 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
     tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length - ustaSahip;
 
   return (
-    <Sheet title={t('Hedefler')} testid="goals-panel" onClose={onClose}>
+    <Sheet title={t('Hedefler')} testid="goals-panel" onClose={onClose} navda>
       <div className="rep-hero">
         <span className="rep-hero-medal">
           <ReputationIcon size={54} />
@@ -2090,7 +2102,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
   };
 
   return (
-    <Sheet title={tab === 'paket' ? t('Paketler') : t('Mağaza')} testid="shop-panel" onClose={onClose}>
+    <Sheet title={tab === 'paket' ? t('Paketler') : t('Mağaza')} testid="shop-panel" onClose={onClose} navda>
       <div className="shop-card">
         <div className="shop-tabs" ref={sekmeler}>
           {TABS.map(({ k, label, ikon }) => (

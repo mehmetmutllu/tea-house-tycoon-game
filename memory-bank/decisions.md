@@ -5054,3 +5054,13 @@ B74iowMefn2ddooSuCC1aW) arasından **B · tam beyaz çerçeve**. Dört köşe pa
 Aday turunda bulunan çizim hatası da kapandı: para pulu opak, zemin saydam olduğu için pul zeminin altında kalıp soluk
 görünüyordu → pul saydam geçişte, yazı/ok/pul `ON_KATMAN` çizim sırasıyla en üstte. Dolum animasyonu istendi ama kullanıcı
 sabit görüntüden seçti. Bekçi: `arayuz-s23` D-176 (2 mutasyon yakalandı). Duman: q_coin kararsızlığı iki kez denk geldi.
+
+## D-177 · Tam ekran menüler: alt menü açık kalır, geri düğmesi yalnız Ayarlar'da (2026-11-12)
+
+**Karar (kullanıcı, 7 adaydan F):** gerçek oyundan üç ekranda çekilen yedi kabuk biçimi (`tools/aday-ekran.mjs`, artifact
+QCCNkCuKJ4WdgaGz1bmEEo) arasından **F**. Görevler · Hedefler · Mağaza · Çaycı (`Sheet navda`) açıkken alt menü üstte kalır,
+ekranlar arası tek dokunuşla geçilir, açık sekmeye yeniden dokunmak kapatır; bu dört ekranda geri düğmesi yok. Ayarlar'ın
+sekmesi olmadığı için geri düğmesini korur. Zemin her boyutta en alta iner (tablet/yatayda ortalı dar menünün yanından sahne
+görünmesin), menü `.ekranda` ile z 21; ekrandan açılan pencereler z 22. Gövde payı menünün GERÇEK boyu (`--nav-h`,
+ResizeObserver; ölçüm 79 · 78 · 110 px, `tools/olcum-navda.mjs`). Bekçi `ekran-kabugu` 2b (2 mutasyon). Duman kapanışları
+sekmeden yapılıyor.

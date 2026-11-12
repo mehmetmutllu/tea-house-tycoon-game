@@ -152,7 +152,7 @@ for (const [harf, { ad, css }] of Object.entries(ADAYLAR)) {
     await page.waitForSelector(panel, { timeout: 5000 });
     await page.waitForTimeout(600);
     await page.screenshot({ path: path.join(CIKTI, `${harf}-${ekran}.png`) });
-    await page.$eval(`${panel} .sheet-back`, (el) => el.click());
+    await page.$eval(ac, (el) => el.click()); // D-177: açık sekme kapatır
     await page.waitForSelector(panel, { state: 'detached', timeout: 5000 });
   }
   await h.evaluate((el) => el.remove());

@@ -884,6 +884,21 @@
   background: var(--g2);
   backdrop-filter: none;
 }
+/* D-177: alt menüde sekmesi olan ekranda menü AÇIK KALIR. Zemin en alta kadar iner (tablette ve
+   yatayda ortalı dar menünün iki yanından sahne görünmesin), menü zeminin ÜSTÜNE çıkar (`.ekranda`),
+   gövdenin altına menünün gerçek boyu kadar pay bırakılır — son kart menünün altında kalmaz.
+   `--nav-h` safe-area dahil, HUD'da ResizeObserver ile yazılır. */
+/* `:not(.spot-acik)`: ipucu karartması açıkken menünün kendi z'si (31) korunur. */
+.botnav.ekranda:not(.spot-acik) {
+  z-index: 21;
+}
+/* Ekranın içinden açılan pencereler (satın alma ödülü, seviye atlama…) açık kalan menünün ÜSTÜNDE. */
+.modal-backdrop:not(.screen-backdrop) {
+  z-index: 22;
+}
+.screen-backdrop.navda .sheet-body {
+  padding-bottom: calc(var(--nav-h, calc(var(--sab) + 79px)) + 14px);
+}
 .modal-card.screen {
   width: min(100%, 520px);
   height: 100%;

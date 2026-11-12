@@ -116,7 +116,12 @@ for (const [boyut, vp] of BOYUTLAR) {
       try { await fn(); } catch (e) { notlar.push(`[${anah}] ${ekran} çekilemedi: ${String(e.message).split('\n')[0]}`); }
     };
     const tikla = async (sel) => { await kapatAcik(); await page.click(sel, { timeout: 5000 }); };
-    const geri = async (panel) => { await page.click(`[data-testid="${panel}"] .sheet-back`); await page.waitForSelector(`[data-testid="${panel}"]`, { state: 'detached', timeout: 5000 }); };
+    // D-177: alt menüdeki ekranlar açık sekmeye yeniden dokunarak kapanır; Ayarlar'da geri düğmesi var.
+    const SEKME = { 'quests-panel': 'quests', 'goals-panel': 'goals', 'shop-panel': 'shop', 'char-panel': 'char' };
+    const geri = async (panel) => {
+      await page.click(SEKME[panel] ? `[data-testid="${SEKME[panel]}"]` : `[data-testid="${panel}"] .sheet-back`);
+      await page.waitForSelector(`[data-testid="${panel}"]`, { state: 'detached', timeout: 5000 });
+    };
 
     // 1) YÜKLEME EKRANI — açılışın ilk anı.
     await page.goto(URL, { waitUntil: 'commit', timeout: 60000 });

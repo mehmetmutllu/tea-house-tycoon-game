@@ -113,6 +113,26 @@ describe('ekran kabuğu — K3 (D-106)', () => {
     expect(perde).toMatch(/align-items:\s*stretch/);
   });
 
+  it('2b · D-177: alt menüdeki dört ekranda menü açık kalır, geri düğmesi yok; Ayarlar geri düğmesini korur', () => {
+    const sheet = yorumsuz(oku(SHEET));
+    expect(sheet).toMatch(/\{!navda && \(\s*<button className="sheet-back"/);
+    const hud = yorumsuz(oku(HUD));
+    for (const id of ['quests-panel', 'goals-panel', 'shop-panel']) {
+      expect(hud, `${id} menü-üstü değil`).toMatch(new RegExp(`testid="${id}" onClose=\{onClose\} navda>`));
+    }
+    expect(yorumsuz(oku(CHAR))).toMatch(/testid="char-panel"\s+onClose=\{onClose\}\s+navda/);
+    expect(hud).toMatch(/testid="menu"\s+onClose=/);
+    expect(hud).not.toMatch(/testid="menu"[^>]*navda/);
+    // Menü ekranın ÜSTÜNDE (z 21 > zemin 20), ekrandan açılan pencereler menünün de üstünde (22);
+    // gövdenin altında menünün gerçek boyu kadar pay var, boy canlı ölçülüyor.
+    const css = yorumsuz(oku(HUD_CSS));
+    expect(kural(css, '.botnav.ekranda:not(.spot-acik)')).toMatch(/z-index:\s*21/);
+    expect(kural(css, '.modal-backdrop:not(.screen-backdrop)')).toMatch(/z-index:\s*22/);
+    expect(kural(css, '.screen-backdrop.navda .sheet-body')).toMatch(/var\(--nav-h/);
+    expect(hud).toMatch(/setProperty\('--nav-h'/);
+    expect(hud).toMatch(/sheet && sheet !== 'settings' \? ' ekranda'/);
+  });
+
   it('3 · üç bölge: sol üstte geri · ortada başlık · sağ üstte cüzdan', () => {
     const kod = yorumsuz(oku(SHEET));
     const sira = ['sheet-back', 'screen-title', 'screen-purse'].map((c) => kod.indexOf(c));

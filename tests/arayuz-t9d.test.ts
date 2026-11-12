@@ -116,7 +116,7 @@ describe('B2 — tepsi ipucu doğru anda', () => {
 
 describe('B1 — ipucu açıkken ilk dokunuş sekmeye gider', () => {
   it('gezinme ve sağ yığın karartmanın (30) üstüne çıkar', () => {
-    expect(HUD).toMatch(/className=\{`botnav\$\{spotlight \? ' spot-acik' : ''\}`\}/);
+    expect(HUD).toMatch(/className=\{`botnav\$\{spotlight \? ' spot-acik' : ''\}/); // D-177: ardından ' ekranda' gelebilir
     expect(HUD).toMatch(/className=\{`side-stack\$\{traySpot \? ' spot-acik' : ''\}`\}/);
     const kural = CSS.match(/\.botnav\.spot-acik,\s*\.side-stack\.spot-acik \{[^}]*\}/)?.[0] ?? '';
     const z = Number(kural.match(/z-index:\s*(\d+)/)?.[1]);

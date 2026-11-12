@@ -2,7 +2,8 @@
 // Çalışan dev sunucusuna bağlanır: önce `npm run dev`, sonra `node tools/smoke.mjs`.
 import { chromium } from 'playwright';
 
-// K3 (D-106, S12): ekranlar TAM EKRAN — perde kalmadı, tek çıkış sol üstteki `.sheet-back`.
+// K3 (D-106, S12): ekranlar TAM EKRAN. D-177: alt menüdeki dört ekranın çıkışı açık sekmeye yeniden dokunmak;
+// geri düğmesi (`.sheet-back`) yalnız Ayarlar'da.
 
 const URL = process.env.SMOKE_URL || 'http://localhost:5173/';
 const results = [];
@@ -226,7 +227,7 @@ try {
   // Backdrop'un ÜST şeridine tıkla (kartın dışı). Merkeze tıklamak kırılgandı: panel açılış
   // animasyonu bitince kart backdrop'un merkezini kaplıyor ve tıklama "intercepted" oluyor —
   // test bugüne dek yalnız animasyon henüz tamamlanmadığı için geçiyordu (D3'te ortaya çıktı).
-  await tikla('[data-testid="char-panel"] .sheet-back');
+  await tikla('[data-testid="char"]'); // D-177: açık sekmeye yeniden dokunmak kapatır
 
   // HEDEFLER paneli (D3/D-089 · ödül kalıbı D3b/D-090): beş kategori + ödül toplama. Ödülü CONFIG
   // verir, HUD çizer — burada sınanan şey "panel açıldı mı" değil, ödülün GERÇEKTEN işlemesi:
@@ -265,7 +266,7 @@ try {
       else fail(`Hedef toplandı ama gelir çarpanı 1 kaldı (×${mult})`);
     }
     // Backdrop'un ÜST şeridi (kartın dışı) — merkez kartın altında kalıyor.
-    await tikla('[data-testid="goals-panel"] .sheet-back');
+    await tikla('[data-testid="goals"]'); // D-177: açık sekmeye yeniden dokunmak kapatır
   }
 
   // GÜNLÜK GÖREVLER (D8): kartlar Görevler panelinde çıkıyor mu ve ödül GERÇEKTEN 💎 veriyor mu?
@@ -302,7 +303,7 @@ try {
       if (!tekrar) pass('Toplanan günlük görev ikinci kez toplanamıyor');
       else fail('Toplanan günlük görevin "Ödülü al" butonu duruyor');
     }
-    await tikla('[data-testid="quests-panel"] .sheet-back');
+    await tikla('[data-testid="quests"]'); // D-177: açık sekmeye yeniden dokunmak kapatır
   }
 
   // Bardak döngüsü (Faz 2e): garson servis ederken kirli bardak üretilir → oyuncu toplar → bulaşıkta yıkar.
@@ -424,7 +425,7 @@ try {
     const sayac = await page.textContent('[data-testid="usta-owned"]');
     if (sayac.trim() === '1') pass('Hedefler panelinde Usta sayacı 1');
     else fail(`Usta sayacı yanlış: "${sayac}"`);
-    await tikla('[data-testid="goals-panel"] .sheet-back');
+    await tikla('[data-testid="goals"]'); // D-177: açık sekmeye yeniden dokunmak kapatır
   }
 
 
@@ -660,7 +661,7 @@ try {
       .catch(() => false);
     if (cekim) pass('Dekor önizlemesi salondaki yerinden çekiliyor (ayrı kamera)');
     else fail('Dekor önizlemesi salondan çekilmedi — kutu boş kalır');
-    await tikla('[data-testid="shop-panel"] .sheet-back');
+    await tikla('[data-testid="shop"]'); // D-177: açık sekmeye yeniden dokunmak kapatır
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
     const ka = await say();
     await page.waitForTimeout(1000);
@@ -710,7 +711,7 @@ try {
     await page.click(al);
     await page.waitForSelector('[data-testid="satin-odul"]', { timeout: 5000 });
     await page.click('[data-testid="satin-odul-tamam"]');
-    await tikla('[data-testid="shop-panel"] .sheet-back');
+    await tikla('[data-testid="shop"]'); // D-177: açık sekmeye yeniden dokunmak kapatır
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
     await page.waitForTimeout(200);
     const g1 = (await page.evaluate(() => window.__ads.durum())).gecisli;
@@ -742,7 +743,7 @@ try {
     await page.waitForSelector('[data-testid="satin-odul"]', { timeout: 5000 });
     await page.click('[data-testid="satin-odul-tamam"]');
     await page.waitForFunction((s) => document.querySelector(s)?.textContent?.includes('Alındı'), al, { timeout: 5000 });
-    await tikla('[data-testid="shop-panel"] .sheet-back');
+    await tikla('[data-testid="shop"]'); // D-177: açık sekmeye yeniden dokunmak kapatır
     await page.waitForSelector('[data-testid="shop-panel"]', { state: 'detached', timeout: 5000 });
     await page.evaluate(() => window.__ads.saat(180_000));
     const r0 = await page.evaluate(() => window.__ads.durum());

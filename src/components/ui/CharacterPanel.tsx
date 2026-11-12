@@ -330,6 +330,7 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
       title={tab === 'player' ? t('Çaycı') : tab === 'waiter' ? t('Garson') : t('Bulaşıkçı')}
       testid="char-panel"
       onClose={onClose}
+      navda
     >
       <div className="char-card">
         <div className="char-head">
