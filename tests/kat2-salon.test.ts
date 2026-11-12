@@ -261,3 +261,20 @@ describe('tavla masası katıdır (ayak izi masa + iki oturak)', () => {
     expect(TAVLA_YARI[0]).toBeGreaterThanOrEqual(1.0);
   });
 });
+
+describe('store — açılmış salona geçitten girilir', () => {
+  it('k2salon2 kayıtta → oyuncu okey salonuna yürür; yokken bölmede durur', async () => {
+    const { useGame } = await import('../src/game/store');
+    const yuruIleri = (pads: string[]) => {
+      useGame.getState().hardReset();
+      useGame.getState().kat2Ac();
+      useGame.setState({ kat: 2, kat2: { acik: true, padsDone: pads }, player: [-8.85, 0.6, -2] as never });
+      useGame.getState().setKeyboardInput(0, 1);
+      for (let t = 0; t < 2; t += 0.05) useGame.getState().tick(0.05);
+      useGame.getState().setKeyboardInput(0, 0);
+      return useGame.getState().player[2];
+    };
+    expect(yuruIleri(['k2salon2'])).toBeGreaterThan(1);
+    expect(yuruIleri([])).toBeLessThan(0);
+  });
+});

@@ -195,7 +195,7 @@ export {
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
-import { GECIS_SN, VARIS, baslangicKati, defaultKat2, kat2Adim, kat2Engeller, kat2Etkin, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
+import { GECIS_SN, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
 import { kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
 import { t } from '../i18n';
@@ -1006,7 +1006,7 @@ export const useGame = create<GameState>((set, get) => ({
       const j = s.inputJoystick;
       girdi = gecis ? [0, 0] : Math.hypot(j[0], j[1]) > 0.05 ? j : s.inputKeyboard;
       const hiz = playerSpeedFor(s.charUpgrades.speed) * c.carryMult * dt;
-      const [nx, nz] = kat2Adim(s.player[0], s.player[2], girdi[0] * hiz, girdi[1] * hiz, undefined, kat2Engeller(kat2.padsDone));
+      const [nx, nz] = kat2Adim(s.player[0], s.player[2], girdi[0] * hiz, girdi[1] * hiz, kat2AcikAlan(kat2.padsDone), kat2Engeller(kat2.padsDone));
       player = [nx, s.player[1], nz];
       camFocus = null; // Kat 1'in görev/açılış panları Kat 2'deki kamerayı çekmesin
       // K2-3: Kat 2'nin döngüsü (Kat 1 arkada `runTick`le işledi; cüzdan ortak).
