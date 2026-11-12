@@ -111,16 +111,29 @@ export function dikKelepce(x: number, z: number, dikler: readonly Dik[]): [numbe
  * Kat 2'de bir adımlık yürüyüş: alan kelepçesi + kuyu katı engeli (eksen-başı kayma — Kat 1'in
  * `playerMoveSystem`iyle aynı desen; içindeyse çıkışa izin verilir, hapsolmaz).
  */
-export function kat2Adim(x: number, z: number, dx: number, dz: number, acikAlan = KAT2_ACIK_ALAN): [number, number] {
+export function kat2Adim(
+  x: number,
+  z: number,
+  dx: number,
+  dz: number,
+  acikAlan = KAT2_ACIK_ALAN,
+  engeller: readonly Solid[] = [],
+): [number, number] {
   const alan = kat2YurumeAlani(acikAlan);
+  const katilar = engeller.length ? [KUYU, ...engeller] : [KUYU];
   let [nx, nz] = dikKelepce(x + dx, z + dz, alan);
-  const icinde = hitsSolid(x, z, [KUYU], PR);
+  const icinde = hitsSolid(x, z, katilar, PR);
   if (!icinde) {
-    if (dx !== 0 && hitsSolid(nx, z, [KUYU], PR)) nx = x;
-    if (dz !== 0 && hitsSolid(nx, nz, [KUYU], PR)) nz = z;
+    if (dx !== 0 && hitsSolid(nx, z, katilar, PR)) nx = x;
+    if (dz !== 0 && hitsSolid(nx, nz, katilar, PR)) nz = z;
     [nx, nz] = dikKelepce(nx, nz, alan);
   }
   return [nx, nz];
+}
+
+/** K2-3: açık okey masalarının katı gövdesi (masa + sandalyeler). Pad'i bitmemiş masa yok sayılır. */
+export function kat2Engeller(padsDone: readonly string[]): Solid[] {
+  return OKEY_YER.filter((o) => padsDone.includes(o.id)).map((o) => ({ c: [o.x, 0, o.z], h: [OKEY_YARI, OKEY_YARI] }));
 }
 
 // ============================== MERDİVEN ==============================

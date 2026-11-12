@@ -154,6 +154,15 @@ export function installDevHooks(): void {
       kat: s.kat,
       kat2Acik: s.kat2.acik,
       merdivenTamirli: merdivenTamirli(s.kat2),
+      // K2-3: Kat 2 döngüsü (salt-okunur özet).
+      kat2: {
+        padsDone: [...s.kat2.padsDone],
+        masalar: s.kat2Dunya.masalar.map((m) => ({ id: m.id, durum: m.durum, istek: m.istek, birikim: m.birikim })),
+        ocakHazir: s.kat2Dunya.ocakHazir,
+        tepsi: s.kat2Dunya.tepsi,
+        paralar: s.kat2Dunya.paralar.map((p) => ({ ...p })),
+        padFill: { ...s.kat2Dunya.padFill },
+      },
       katGecis: s.katGecis ? { ...s.katGecis } : null,
       // Servis durumu (D-011): hazır ÇAY (geri-uyum adı; tost ayrı — service.readyTost).
       readyCups: s.ready.tea,

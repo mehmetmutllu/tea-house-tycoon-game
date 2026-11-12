@@ -5130,3 +5130,11 @@ hazırlanıyor" (EN "Floor 2 — the game hall is getting ready"; yayından önc
 öğretici/bulaşık/karakter/tepsi ipuçları Kat 2'de susar. Kat göstergesi ayrıca eklenmedi: bant zaten katı söylüyor.
 ③ `__devPlan` dar portrede boştu: kamera ~70+ birimde, sis 72'de kapanıyordu → plan kipinde sis kamera yüksekliği kadar
 ötelenir, çıkınca geri döner (Kat 1'i de etkiliyordu). Bekçi: kat2-altyapi +3 test · duman 77. denetim · mutasyon 2/2.
+
+## D-184 · Kat 2 döngüsü: okey 3 dk · 25 sn'de 2 kahve · gelirin %60'ı kahve (K2-3a, 2026-11-13)
+Varyant kapısı: 6 kol aynı teorik tavana (54 ₺/dk/masa) normalize edildi. Seçim yalnız döngünün BİÇİMİ üzerine
+(`docs/kat2-dongu-raporu-k2-3.md`). Kullanıcı üç soruda da öneriyi seçti → **V4**: ücret 72 ₺ + kahve 9 ₺/fincan,
+tek yığın. Bulgu: kahve sabrı hiçbir kolda bağlamadı (servis %100); kahvenin işi kayıp riski değil oyuncuyu
+yürütmek (4 masada meşgul %41, ilk kademede %54). Mantık saf modül `game/kat2Dongu.ts`; store'da Kat 2'deyken
+koşar, cüzdan ortak, kazanç `lifetime`a girer. Kat 1'deyken Kat 2 DONUK (K2-4'te ele alınacak). Açık masa katıdır
+(`kat2Engeller`). Pad zinciri okey1 → cezve → okey2-4, fiyatlar TASLAK (K2-5). Görsel (masa/NPC/balon/ocak/pad) K2-3b.

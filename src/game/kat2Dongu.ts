@@ -217,14 +217,14 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     if (m.durum === 'bos') {
       if (m.t <= 0) {
         m.durum = 'geliyor';
-        m.t = ayar.yurume;
+        m.t += ayar.yurume; // taşan kesir korunur (dt'den bağımsız süre)
       }
       return;
     }
     if (m.durum === 'geliyor') {
       if (m.t <= 0) {
         m.durum = 'oyunda';
-        m.t = ayar.oturum;
+        m.t += ayar.oturum;
         m.kahveT = ayar.kahveAralik;
         m.istek = 0;
         m.birikim = 0;
@@ -269,7 +269,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       olay.dusen.push(miktar);
       olay.kalkis += 1;
       m.durum = 'bos';
-      m.t = ayar.gelisAralik;
+      m.t += ayar.gelisAralik;
       m.istek = 0;
       m.birikim = 0;
     }

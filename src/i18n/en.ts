@@ -382,6 +382,8 @@ export const en: Record<string, string> = {
   "Bütün hedefleri topla.": "Claim all goals.",
   "Seviye {1}": "Level {1}",
   "Çay Ocağı": "Tea Station",
+  "Cezve Ocağı": "Coffee Stove",
+  "Okey Masası": "Okey Table",
   "Yükselt": "Upgrade",
   "Lavaboyu Büyüt": "Expand Restroom",
   "Sv {1}": "Lv {1}",

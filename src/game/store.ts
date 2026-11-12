@@ -195,8 +195,9 @@ export {
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
-import { GECIS_SN, VARIS, baslangicKati, defaultKat2, kat2Adim, kat2Etkin, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
-import { playerSpeedFor } from '../config/economy.config';
+import { GECIS_SN, VARIS, baslangicKati, defaultKat2, kat2Adim, kat2Engeller, kat2Etkin, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
+import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
+import { kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
 import { t } from '../i18n';
 
 
@@ -530,6 +531,8 @@ export interface GameState {
   kat2: Kat2Kayit;
   /** Süren merdiven geçişi (transient): perde iner → kat değişir → perde kalkar. */
   katGecis: KatGecis | null;
+  /** K2-3: Kat 2'nin anlık dünyası (masalar, ocak, tepsi, yığınlar — transient; kalıcı olan `kat2.padsDone`). */
+  kat2Dunya: Kat2Dunya;
   // Aksiyonlar
   init: () => void;
   tick: (dt: number) => void;
@@ -673,6 +676,9 @@ function ustaAcilabilir(s: { mastersOwned?: string[]; tables: number; tableLevel
   return masterUnlockedForTable(s.tableLevels[masaIdx] ?? 0);
 }
 
+/** K2-3: Kat 2 döngüsünün denge sayıları — tek kaynak `economy.config.kat2` (D-184). */
+const KAT2_AYAR: Kat2Ayar = economyConfig.kat2;
+
 export const useGame = create<GameState>((set, get) => ({
   wallet: D(0),
   diamonds: D(0),
@@ -761,6 +767,7 @@ export const useGame = create<GameState>((set, get) => ({
   kat: 1,
   kat2: defaultKat2(),
   katGecis: null,
+  kat2Dunya: yeniKat2Dunya([], KAT2_AYAR),
 
   init: () => {
     const save: SaveData = loadSave();
@@ -965,6 +972,7 @@ export const useGame = create<GameState>((set, get) => ({
       kat: ilkKat,
       kat2: { ...save.kat2, padsDone: [...save.kat2.padsDone] },
       katGecis: null,
+      kat2Dunya: yeniKat2Dunya(save.kat2.padsDone, KAT2_AYAR),
     });
     reklamsizAyarla(save.satin.reklamsiz);
   },
@@ -990,13 +998,39 @@ export const useGame = create<GameState>((set, get) => ({
     let player = c.player;
     let girdi: readonly number[] = c.input;
     let camFocus = c.camFocus;
+    let wallet = c.wallet;
+    let lifetime = c.lifetime;
+    let kat2 = s.kat2;
+    let kat2Dunya = s.kat2Dunya;
     if (kat === 2) {
       const j = s.inputJoystick;
       girdi = gecis ? [0, 0] : Math.hypot(j[0], j[1]) > 0.05 ? j : s.inputKeyboard;
       const hiz = playerSpeedFor(s.charUpgrades.speed) * c.carryMult * dt;
-      const [nx, nz] = kat2Adim(s.player[0], s.player[2], girdi[0] * hiz, girdi[1] * hiz);
+      const [nx, nz] = kat2Adim(s.player[0], s.player[2], girdi[0] * hiz, girdi[1] * hiz, undefined, kat2Engeller(kat2.padsDone));
       player = [nx, s.player[1], nz];
       camFocus = null; // Kat 1'in görev/açılış panları Kat 2'deki kamerayı çekmesin
+      // K2-3: Kat 2'nin döngüsü (Kat 1 arkada `runTick`le işledi; cüzdan ortak).
+      const r = kat2Tick(
+        kat2Dunya,
+        {
+          x: nx,
+          z: nz,
+          durdu: Math.hypot(girdi[0], girdi[1]) <= 0.1,
+          cuzdan: wallet.toNumber(),
+          padsDone: kat2.padsDone,
+          tepsiKap: trayCapacityFor(s.charUpgrades.tray),
+          miknatis: attractRadiusFor(s.charUpgrades.magnet),
+        },
+        dt,
+        KAT2_AYAR,
+      );
+      kat2Dunya = r.dunya;
+      if (r.harcama > 0) wallet = wallet.sub(r.harcama);
+      if (r.kazanc > 0) {
+        wallet = wallet.add(r.kazanc);
+        lifetime = lifetime.add(r.kazanc);
+      }
+      if (r.padsDone !== kat2.padsDone) kat2 = { ...kat2, padsDone: r.padsDone };
     }
     let katGecis: KatGecis | null = null;
     if (gecis) {
@@ -1040,8 +1074,10 @@ export const useGame = create<GameState>((set, get) => ({
         autoCollectSum: c.autoCollectSum,
         autoCollectToastCooldown: c.autoCollectToastCooldown,
         dishes: c.dishes,
-        wallet: c.wallet,
-        lifetime: c.lifetime,
+        wallet,
+        lifetime,
+        kat2,
+        kat2Dunya,
         tables: c.out.tables.length,
         stations: openServices(c.out.areasOpen).length,
         areasOpen: c.out.areasOpen,

@@ -23,14 +23,19 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Göz aracı: `node tools/_kat-kare.mjs <klasör> x '[["kat2"],["gec"],["tp",x,z],["js","..."],["kare","ad",ms]]'`.
 - Kat 2 metni EN dahil yayından önce ChatGPT mikrometin turuna girer.
 
-## 🔧 TUR KARTI — K2-3a: okey + Türk kahvesi döngüsü (mantık) · K2-3b görsel ayrı tur
-- **SORU:** oyun ne kadar sürsün, kahve ne sıklıkla/ağırlıkta istensin (his; ₺ düzeyi K2-5).
-- **KOLLAR:** V0 3 dk·40 sn'de 2·%60 kahve · V1 90 sn · V2 300 sn · V3 ücret ağır · V4 sık kahve · V5 seyrek (₺ normalize 54/dk/masa).
-- **SAYILAR:** `docs/kat2-dongu-raporu-k2-3.md` §Bulgular — servis her kolda %100; ayıran meşguliyet (V5 %22 … V4 %41/%54).
-- **KARAR:** (bekliyor — karar paketi) · **UYGULAMA:** `economy.config.kat2` + store bağlantısı + kayıt `kat2.padsDone`
-  + pad zinciri (okey1 → cezve → okey2-4, fiyat TASLAK K2-5) · **BEKÇİ:** `tests/kat2-dongu.test.ts`.
-- Mantık `src/game/kat2Dongu.ts` (saf) · geometri `kat.ts` `OKEY_YER`/`OCAK`. K2-3b: masalar/NPC/balon/ocak modeli + duman.
-- Gözlem: Kat 2 varışında arka duvar üstü koyu boşluk → K2-3b'de göz kontrolü.
+## ✅ K2-3a — okey + Türk kahvesi döngüsü (MANTIK) bitti · D-184 — kod girdi, üretimde kapı kapalı
+- Mantık `src/game/kat2Dongu.ts` (saf; `kat2Tick`) · geometri `kat.ts` `OKEY_YER`/`OCAK`/`kat2Engeller` · sayılar
+  `economy.config.kat2` (V4: 3 dk oyun · 25 sn'de 2 kahve · ücret 72 + kahve 9). Store: `kat2Dunya` (transient),
+  Kat 2'deyken koşar, Kat 1'deyken DONUK (K2-4). Dev: `__game().kat2` (masalar/tepsi/ocak/paralar/padFill).
+- Rapor `docs/kat2-dongu-raporu-k2-3.md` · bekçi `tests/kat2-dongu.test.ts` 16 test · mutasyon 6/6.
+- Pad zinciri okey1 → cezve → okey2-4, fiyatlar TASLAK (K2-5'te ölçülür). EN etiketleri geçici (ChatGPT turu).
+
+## ⏭️ SIRADAKİ ADIM — K2-3b: Kat 2 döngüsünün GÖRSELİ
+- Sahnede: pad işaretleri (`kat2PadYeri` + `padCercevesi(kat2PadEtiket)`, Kat 1 `GroundMarker` dili) · okey masası
+  D-181 yol G Sv1 (çuhalı masa + `chair_stool_wood`) · cezve ocağı 7 (KayKit restoran, ölçek 0,9) + tadilat perdesinin
+  ocak açılınca kalkması · dörtlü grup NPC (merdivenden gelir, oturur, okey oynar) · kahve balonu (istek sayısı) ·
+  tepside kahve · masa önünde para yığını + toplama juice. Duman: Kat 2 döngü denetimi.
+- Gözlem: Kat 2 varışında arka duvar üstü koyu boşluk → göz kontrolü.
 
 ## KULLANICIYA HATIRLAT
 - Play üretim erişimi sonucu ne oldu?

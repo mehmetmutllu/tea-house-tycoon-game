@@ -1177,6 +1177,36 @@ export const economyConfig = {
   },
 
   /**
+   * KAT 2 — OKEY + TÜRK KAHVESİ (K2-3, D-184; `game/kat2Dongu.ts`). Dörtlü grup okey masasında 3 dk
+   * oynar, 25 sn'de bir 2 fincan kahve ister; kalkarken masa ücreti + kahve parası TEK yığın düşer.
+   * Kol V4 (`docs/kat2-dongu-raporu-k2-3.md`): fiyatlar teorik 54 ₺/dk/masa tavanına normalize,
+   * gelirin %60'ı kahveden. ₺ DÜZEYİ ve pad fiyatları K2-5'te zincirle ölçülür (D-084).
+   */
+  kat2: {
+    gelisAralik: 15,
+    yurume: 5,
+    oturum: 180,
+    kahveAralik: 25,
+    istekAdet: 2,
+    kahveSabir: 25,
+    kahveFiyat: 9,
+    masaUcreti: 72,
+    demleme: 4,
+    ocakKuyruk: 4,
+    /**
+     * Açılış zinciri — ilk masa ocaktan ÖNCE (ilk grup kahvesiz oynar, ocak açılınca istekler başlar).
+     * Fiyatlar TASLAK (ölçülmedi, K2-5): dolum ~3,5 sn (Kat 1'in pad tavanı).
+     */
+    padler: [
+      { id: 'k2okey1', cost: 500, fillRate: 143 },
+      { id: 'k2cezve', cost: 800, fillRate: 229 },
+      { id: 'k2okey2', cost: 1_500, fillRate: 429 },
+      { id: 'k2okey3', cost: 2_500, fillRate: 714 },
+      { id: 'k2okey4', cost: 4_000, fillRate: 1_143 },
+    ],
+  },
+
+  /**
    * KOZMETİK MAĞAZA (WP6, 2026-06-11; feedback §D19): zemin + duvar temaları ZONE-BAŞINA ₺ ile
    * satın alınır — PAHALI (geç oyun para biriktirme hedefi; "tek alan için 10k+"). Satın alınan
    * tema o ALAN için kalıcı sahipliktir (ownedCosmetics); tekrar seçmek ücretsiz. Görsel karşılıklar

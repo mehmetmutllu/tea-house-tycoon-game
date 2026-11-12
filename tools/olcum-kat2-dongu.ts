@@ -12,8 +12,8 @@
  *   OLCUM=kisa npx tsx tools/olcum-kat2-dongu.ts
  *   OLCUM=tam  npx tsx tools/olcum-kat2-dongu.ts > docs/olcum-kat2-dongu.txt
  */
-import { KISA, botDamgasi, kipBandi, kisaDeger, korunumDamgasi, varyantDamgasi } from './olcum-lib';
-import { attractRadiusFor, charMaxTier, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
+import { KISA, botDamgasi, damga, kipBandi, kisaDeger, korunumDamgasi, varyantDamgasi } from './olcum-lib';
+import { attractRadiusFor, charMaxTier, economyConfig, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
 import { OCAK, OKEY_ERISIM, OKEY_YER, VARIS, kat2Adim } from '../src/game/kat';
 import { kat2Tick, yeniKat2Dunya, type Kat2Ayar } from '../src/game/kat2Dongu';
 
@@ -182,6 +182,21 @@ for (const kol of KOLLAR) {
   }
   const a = fiyatla(kol.b);
   console.log(`      ${kol.ad}: ${kol.not} → ücret ${a.masaUcreti} ₺ · kahve ${a.kahveFiyat} ₺`);
+}
+
+// FİNAL (D-184): config'e yazılan kol V4'ün kendisi mi? Sayılar ve koşu birebir aynı olmalı.
+{
+  const secilen: Kat2Ayar = { ...economyConfig.kat2, padler: [] };
+  const v4 = { ...fiyatla(KOLLAR.find((k) => k.ad === 'V4')!.b), padler: [] };
+  const sirali = (o: object) => JSON.stringify(Object.entries(o).sort(([x], [y]) => x.localeCompare(y)));
+  damga('config = V4', sirali({ ...secilen, padler: [] }) === sirali(v4), sirali(secilen));
+  console.log('');
+  console.log('--- SEÇİLEN (economy.config.kat2) · son kademe oyuncu ---');
+  for (const n of [1, 2, 4]) {
+    const r = kos(secilen, n);
+    const oran = r.servis + r.kacan ? r.servis / (r.servis + r.kacan) : NaN;
+    console.log(`config | ${n} masa | ${f0(r.dk)} ₺/dk | yığın ort ${f0(r.yiginOrt)} ₺ | aralık ${f0(r.aralikOrt)} sn | servis ${pc(oran)} | meşgul ${pc(r.mesgul)}`);
+  }
 }
 
 // Zayıf oyuncu: kahve sabrı ve meşguliyet sınırı nerede?

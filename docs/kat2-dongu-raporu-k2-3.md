@@ -61,3 +61,12 @@ verdiği ~180-217 ₺/dk normalizasyondan geliyor. Bu bir hedef değil, K2-5'te 
 
 ## §Karar
 
+**D-184 (2026-11-13) — kullanıcı üç soruda da öneriyi seçti → kol V4:** oyun 3 dk · 25 sn'de 2 fincan · gelirin %60'ı
+kahveden → `economy.config.kat2`: ücret 72 ₺ · kahve 9 ₺ (diğer sabitler §Yöntem'deki gibi).
+
+- Final tam koşu `docs/olcum-kat2-dongu-final.txt`: config = V4 damgası temiz. 4 masada 208 ₺/dk · yığın ort 175 ₺ ·
+  50 sn'de bir · servis %100 · meşgul %41 (ilk kademe oyuncuda %54). Taban koşusundan tek fark servis 218 → 220:
+  durum geçişleri artık taşan kesri koruyor (bekçi testi dt hassasiyetini yakaladı).
+- Pad zinciri okey1 → cezve → okey2 → okey3 → okey4. Fiyatlar (500 / 800 / 1.500 / 2.500 / 4.000) **TASLAK, ölçülmedi**:
+  K2-5'te zincirle birlikte ölçülecek.
+- Bekçi `tests/kat2-dongu.test.ts`: 16 test, mutasyon 6/6 yakalandı.
