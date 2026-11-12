@@ -1,12 +1,18 @@
 /**
- * Kat2.tsx — KAT 2'NİN SAHNESİ (K2-2: boş salon). Görünüş kararları K2-1'de maketle verildi:
+ * Kat2.tsx — KAT 2'NİN SAHNESİ. Görünüş kararları K2-1'de maketle verildi:
  * plan B bölmeli salonlar (D-179) · tek düz ahşap zemin + tam bölme (D-180) · merdiven 2 = kalın
  * ahşap korkuluk + topuzlu babalar (D-181). Çizim `tools/kat2-maket.tsx` / `kat2-esya.tsx`ten taşındı;
  * ölçünün tek kaynağı `game/kat.ts` (yürüme alanı ile çizim aynı sayılardan doğar).
  *
- * K2-2'de yalnız arka "merdiven salonu" açık; ön salonlar kaba inşaat, bandın iki yanı tadilat
- * perdesinin arkasında (sol: K2-3'ün cezve ocağı · sağ: kilitli blok).
+ * K2-3b: sahne DÖNGÜYÜ gösterir (durum store'dan, çizim `three/kat2/`): sıradaki pad · açık masalar
+ * (okey G Sv1 · tavla A Sv1) · cezve ocağı + hazır fincanlar · gelen/oturan/kalkan grup · kahve
+ * balonu · masa önündeki para yığını. Açık alan `kat2AcikAlan(padsDone)`dan TÜRER: kapalı salon kaba
+ * inşaat; salonlar arası 2,2 bölme, iki yanı da açıksa kemerli geçit, değilse geçit tahta perdeli.
+ * Bina kabuğu (dış duvarlar) sabit — kat aynı binanın üst katı, ayak izi baştan belli.
+ * Bandın sağ bloğu tadilatta kalır; sol blok (ocak) açılınca perdesi kalkar.
  */
+import { Suspense, useLayoutEffect, useRef } from 'react';
+import { CylinderGeometry, MeshStandardMaterial, Object3D, type InstancedMesh } from 'three';
 import { FloorPattern } from './floorPattern';
 import { WallPanels, type WallSlab } from './wallPanel';
 import { WALL_H } from './wallOlcu';
@@ -14,7 +20,15 @@ import { MaketIskele, MaketMoloz, MaketPlant, MaketTadilatPerde, MaketWall } fro
 import { FLOOR_THEMES, PALETTE, WALL_THEMES, type FloorTheme } from '../../config/palette';
 import { BAND, FLOOR_HALF } from '../../game/layout';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
-import { AGIZ, KAT2_ACIK_ALAN, KAT2_ALANLAR, KOVA, type Dik } from '../../game/kat';
+import { AGIZ, KAT2_ALANLAR, KAT2_BOLMELER, KAT2_MASALAR, KOVA, kat2AcikAlan, type Dik } from '../../game/kat';
+import { ocakAcik } from '../../game/kat2Dongu';
+import { useGame } from '../../game/store';
+import { CezveOcagi, Dogus, OcakKosesi, OkeyMasa, TavlaMasa } from './kat2/Esya';
+import { MasaGrubu } from './kat2/Grup';
+import { KahveBalonu } from './kat2/Balon';
+import { ParaYiginlari } from './kat2/Para';
+import { Kat2PadIsareti } from './kat2/PadIsaret';
+import { ArkaDuvarUstu } from './kat2/Dis';
 
 const H = FLOOR_HALF;
 /** Dış duvar kat kenarının 0,5 dışında (Scene.Walls ile aynı). */
@@ -91,9 +105,13 @@ function hat(k: Kenar): WallSlab[] {
   return out;
 }
 
+/**
+ * Bina kabuğu: bant + ÜÇ alanın birleşiminin DIŞ kenarları (sabit). İç kenarlar bölme duvarıdır ve
+ * açık alana göre `Bolmeler`de çizilir (`kat.kat2Duvarlar`ın katı gövdeleriyle aynı kural).
+ */
 function Duvarlar() {
   const bant: Dik = { x0: -H, x1: H, z0: BANT_ARKA, z1: BAND.front };
-  const kenarlar = cevre([bant, ...KAT2_ALANLAR.slice(0, KAT2_ACIK_ALAN)]);
+  const kenarlar = cevre([bant, ...KAT2_ALANLAR]).filter((k) => k.dis);
   const camlar = kenarlar.flatMap((k) =>
     pencereler(k).map((g) => {
       const c = k.c + Math.sign(k.c) * M;
@@ -146,11 +164,24 @@ function KabaInsaat({ r }: { r: Dik }) {
   );
 }
 
-function Zemin() {
+function Zemin({ acikAlan }: { acikAlan: number }) {
   const x = AGIZ.x;
   return (
     <group>
-      {KAT2_ALANLAR.map((r, i) => (i < KAT2_ACIK_ALAN ? <ZeminParca key={i} r={r} tema={ZEMIN} /> : <KabaInsaat key={i} r={r} />))}
+      {/* dış duvarlar kat kenarının 0,5 dışında — duvar dibinde aşağı (Kat 1'e) bakan yarık kalmasın:
+          çevre şeridi (kuyu açık kalır, tam taban onu örterdi) */}
+      {[
+        { x0: -H - M - 0.2, x1: H + M + 0.2, z0: BANT_ARKA - M - 0.2, z1: BANT_ARKA },
+        { x0: -H - M - 0.2, x1: H + M + 0.2, z0: H, z1: H + M + 0.2 },
+        { x0: -H - M - 0.2, x1: -H, z0: BANT_ARKA, z1: H },
+        { x0: H, x1: H + M + 0.2, z0: BANT_ARKA, z1: H },
+      ].map((r, i) => (
+        <mesh key={`c${i}`} rotation={[-Math.PI / 2, 0, 0]} position={[(r.x0 + r.x1) / 2, 0.002, (r.z0 + r.z1) / 2]}>
+          <planeGeometry args={[r.x1 - r.x0, r.z1 - r.z0]} />
+          <meshStandardMaterial color={SAP} />
+        </mesh>
+      ))}
+      {KAT2_ALANLAR.map((r, i) => (i < acikAlan ? <ZeminParca key={i} r={r} tema={ZEMIN} /> : <KabaInsaat key={i} r={r} />))}
       {/* bant: servis köşesi fayans · kova (kuyu hariç) · sağ blok */}
       <ZeminParca r={{ x0: -H, x1: KOVA.x0, z0: BANT_ARKA, z1: BAND.front }} tema={FLOOR_THEMES.fayans} />
       <ZeminParca r={{ x0: KOVA.x0, x1: -x, z0: BANT_ARKA, z1: BAND.front }} tema={ZEMIN} />
@@ -158,6 +189,63 @@ function Zemin() {
       <ZeminParca r={{ x0: -x, x1: x, z0: BANT_ARKA, z1: AGIZ.arka }} tema={ZEMIN} />
       <ZeminParca r={{ x0: -x, x1: x, z0: AGIZ.on, z1: BAND.front }} tema={ZEMIN} />
       <ZeminParca r={{ x0: KOVA.x1, x1: H, z0: BANT_ARKA, z1: BAND.front }} tema={ZEMIN} />
+    </group>
+  );
+}
+
+// ---- Bölmeler (D-180 tam bölme 2,2) + kemerli geçitler (maket `Bolmeler`) ----
+function Bolme({ b, acik }: { b: (typeof KAT2_BOLMELER)[number]; acik: boolean }) {
+  const yatay = b.z1 === b.z2;
+  const a0 = yatay ? Math.min(b.x1, b.x2) : Math.min(b.z1, b.z2);
+  const a1 = yatay ? Math.max(b.x1, b.x2) : Math.max(b.z1, b.z2);
+  const kapilar = [...b.kapilar].sort((p, q) => p[0] - q[0]);
+  const parca: [number, number][] = [];
+  let u = a0;
+  for (const [ka, kb] of kapilar) {
+    parca.push([u, ka]);
+    u = kb;
+  }
+  parca.push([u, a1]);
+  const P = (v: number) => (yatay ? ([v, b.z1] as const) : ([b.x1, v] as const));
+  return (
+    <group>
+      {parca.filter(([p, r]) => r - p > 0.05).map(([p, r], i) => {
+        const [x1, z1] = P(p);
+        const [x2, z2] = P(r);
+        return <MaketWall key={i} x1={x1} z1={z1} x2={x2} z2={z2} h={2.2} />;
+      })}
+      {kapilar.map(([ka, kb], i) => {
+        const [x, z] = P((ka + kb) / 2);
+        const w = kb - ka;
+        return (
+          <group key={`k${i}`} position={[x, 0, z]} rotation={[0, yatay ? 0 : Math.PI / 2, 0]}>
+            {[-1, 1].map((s) => (
+              <mesh key={s} position={[(s * w) / 2, 1.2, 0]} castShadow>
+                <boxGeometry args={[0.22, 2.4, 0.3]} />
+                <meshStandardMaterial color={PALETTE.doorWood} />
+              </mesh>
+            ))}
+            <mesh position={[0, 2.3, 0]} castShadow>
+              <boxGeometry args={[w + 0.22, 0.22, 0.3]} />
+              <meshStandardMaterial color={PALETTE.doorWood} />
+            </mesh>
+            {/* kapalı salonun geçidi: tahta perde (kilitli obje = tadilat hâli) */}
+            {!acik && <MaketTadilatPerde x1={-w / 2 + 0.11} x2={w / 2 - 0.11} z={0} />}
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+function Bolmeler({ acikAlan }: { acikAlan: number }) {
+  return (
+    <group>
+      {KAT2_BOLMELER.map((b, i) => {
+        const [a1, a2] = b.alanlar;
+        if (a1 >= acikAlan && a2 >= acikAlan) return null;
+        return <Bolme key={i} b={b} acik={a1 < acikAlan && a2 < acikAlan} />;
+      })}
     </group>
   );
 }
@@ -189,16 +277,42 @@ function Korkuluk({ x1, z1, x2, z2 }: { x1: number; z1: number; x2: number; z2: 
         <boxGeometry args={boy(0.06, 0.1)} />
         <meshStandardMaterial color={PALETTE.doorWood} />
       </mesh>
-      {Array.from({ length: n + 1 }, (_, i) => {
-        const t = i / n;
-        return (
-          <group key={i} position={[x1 + (x2 - x1) * t, 0, z1 + (z2 - z1) * t]}>
-            <Silindir r={0.035} h={0.86} renk="#7a5236" pos={[0, 0.55, 0]} />
-            <Silindir r={0.05} h={0.14} renk="#7a5236" pos={[0, 0.5, 0]} />
-          </group>
-        );
-      })}
+      <Dikmeler x1={x1} z1={z1} x2={x2} z2={z2} n={n} />
     </group>
+  );
+}
+
+/**
+ * Korkuluk dikmeleri TEK instanced çizimde (K2-3b perf): eskiden her dikme iki ayrı mesh'ti —
+ * kuyunun üç kenarı ~120 çizim çağrısı, Kat 2'nin boş hâlinin en büyük kalemi. Görünüş aynı.
+ */
+const DIKME_GEO = new CylinderGeometry(0.035, 0.035, 0.86, 8).translate(0, 0.55, 0);
+const DIKME_BOGUM = new CylinderGeometry(0.05, 0.05, 0.14, 8).translate(0, 0.5, 0);
+const DIKME_MAT = new MeshStandardMaterial({ color: '#7a5236' });
+
+function Dikmeler({ x1, z1, x2, z2, n }: { x1: number; z1: number; x2: number; z2: number; n: number }) {
+  const govde = useRef<InstancedMesh>(null);
+  const bogum = useRef<InstancedMesh>(null);
+  useLayoutEffect(() => {
+    const d = new Object3D();
+    for (let i = 0; i <= n; i++) {
+      const t = i / n;
+      d.position.set(x1 + (x2 - x1) * t, 0, z1 + (z2 - z1) * t);
+      d.updateMatrix();
+      govde.current?.setMatrixAt(i, d.matrix);
+      bogum.current?.setMatrixAt(i, d.matrix);
+    }
+    for (const m of [govde.current, bogum.current]) {
+      if (!m) continue;
+      m.instanceMatrix.needsUpdate = true;
+      m.computeBoundingSphere();
+    }
+  }, [x1, z1, x2, z2, n]);
+  return (
+    <>
+      <instancedMesh ref={govde} args={[DIKME_GEO, DIKME_MAT, n + 1]} castShadow />
+      <instancedMesh ref={bogum} args={[DIKME_BOGUM, DIKME_MAT, n + 1]} castShadow />
+    </>
   );
 }
 
@@ -307,19 +421,73 @@ export function MerdivenTamir({ pos }: { pos: [number, number, number] }) {
   );
 }
 
-export function Kat2Sahne() {
-  const salon = KAT2_ALANLAR[0];
+/** Açık masalar: tür + durum İD ile bulunur (dizi sırasına güvenilmez — masa listesi büyüyor). */
+function Masalar({ padsDone, ilk }: { padsDone: readonly string[]; ilk: ReadonlySet<string> }) {
+  const oyunda = useGame((s) => s.kat2Dunya.masalar.filter((m) => m.durum === 'oyunda').map((m) => m.id).join(','));
+  const oynayan = new Set(oyunda.split(','));
   return (
     <group>
-      <Zemin />
+      {KAT2_MASALAR.map((yer, i) => {
+        if (!padsDone.includes(yer.id)) return null;
+        const oyn = oynayan.has(yer.id);
+        return (
+          <group key={yer.id}>
+            <Dogus dogus={!ilk.has(yer.id)}>
+              <group position={[yer.x, 0, yer.z]}>
+                {yer.tur === 'okey' ? <OkeyMasa x={0} z={0} oyunda={oyn} faz={i} /> : <TavlaMasa x={0} z={0} oyunda={oyn} faz={i} />}
+              </group>
+            </Dogus>
+            <MasaGrubu yer={yer} sira={i} />
+            <KahveBalonu yer={yer} />
+          </group>
+        );
+      })}
+    </group>
+  );
+}
+
+function Ocak({ ilk }: { ilk: ReadonlySet<string> }) {
+  const hazir = useGame((s) => s.kat2Dunya.ocakHazir);
+  const pisiyor = useGame((s) => s.kat2Dunya.demT > 0);
+  return (
+    <Dogus dogus={!ilk.has('k2cezve')}>
+      <CezveOcagi hazir={hazir} pisiyor={pisiyor} />
+    </Dogus>
+  );
+}
+
+export function Kat2Sahne() {
+  const salon = KAT2_ALANLAR[0];
+  const padsDone = useGame((s) => s.kat2.padsDone);
+  const acikAlan = kat2AcikAlan(padsDone);
+  const ocak = ocakAcik(padsDone);
+  // Kata girildiğinde açık olanlar doğrudan tam boy; oturumda açılanlar yerinde büyüyerek belirir.
+  const ilk = useRef<ReadonlySet<string>>(new Set(padsDone));
+  return (
+    <group>
+      <Zemin acikAlan={acikAlan} />
       <Duvarlar />
+      <Bolmeler acikAlan={acikAlan} />
       <MerdivenAgzi />
-      <MaketTadilatPerde x1={-H} x2={KOVA.x0 - 0.2} z={BAND.front} />
+      <ArkaDuvarUstu />
+      {ocak ? (
+        <>
+          <Ocak ilk={ilk.current} />
+          <OcakKosesi />
+        </>
+      ) : (
+        <MaketTadilatPerde x1={-H} x2={KOVA.x0 - 0.2} z={BAND.front} />
+      )}
       <MaketTadilatPerde x1={KOVA.x1 + 0.2} x2={H} z={BAND.front} />
       <MaketPlant pos={[salon.x0 + 0.8, 0, salon.z0 + 0.8]} big />
       <MaketPlant pos={[salon.x1 - 0.8, 0, salon.z0 + 0.8]} big />
       <MaketPlant pos={[salon.x0 + 0.8, 0, salon.z1 - 0.8]} />
       <MaketPlant pos={[salon.x1 - 0.8, 0, salon.z1 - 0.8]} />
+      <Suspense fallback={null}>
+        <Masalar padsDone={padsDone} ilk={ilk.current} />
+        <ParaYiginlari />
+        <Kat2PadIsareti />
+      </Suspense>
     </group>
   );
 }
