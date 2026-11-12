@@ -5152,8 +5152,9 @@ Rapor `docs/kat2-kasa-raporu-k2-4.md`.
 Seçilen: T120U (ücret 51 · kahve 3) · okey salonuna 2. ocak · tavla köşesiyle Kat 2 garsonu · zincir okey1 → ocak → okey2-4 →
 okey salonu → 2 masa → 2. ocak → 4 masa → tavla köşesi → garson → 12 tavla. Fiyatlar K2-5. Rapor `docs/kat2-tavla-raporu-k2-3c.md`.
 
-## D-187 · Kat 2 görselleri: kahve balonu A · arka duvar üstü A bahçe · para yığını (bekliyor) (K2-S1, 2026-11-13)
+## D-187 · Kat 2 görselleri: kahve balonu A · arka duvar üstü A bahçe · para yığını A sikke kulesi (K2-S1, 2026-11-13)
 Kareler oyunun kadrajından (`docs/sprintler/kat2-S1/kareler/`, sayfa https://claude.ai/artifact/9NwbyL23GQUfsT1UvkvsyK).
 Arka duvar: kullanıcı A (aşağıda bahçe). Balon: kullanıcı "idealini yap" → A fincan + sayı (Kat 1 sipariş balonu dili;
-sabır halkası D elendi: sabır çoğu durumda bağlamıyor). Para yığını: kullanıcı görmek istedi, seçim bekliyor.
+sabır halkası D elendi: sabır çoğu durumda bağlamıyor). Para yığını: sayfayı görüp A sikke kulesi (para büyüdükçe kule uzar).
+Üçü de kodun varsayılanı (`kat2/gorselSecim.ts`); kaybeden adaylar S2'de silinir.
 

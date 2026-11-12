@@ -2,7 +2,7 @@
  "not": "İlerleme panosunun ESKİ oturum kartları. Pano her turda büyüyordu (67 kart / 219 KB) ve yayını canlı sürümün tamamının okunmasını şart koştuğu için tur başına maliyeti ARTIYORDU — okunanın neredeyse tamamı bir daha bakılmayacak arşivdi. Projenin kendi kuralı buraya da uygulandı (eski anlatı → arsiv/). Pano son 8 turu gösterir; öncesi burada ve git geçmişinde durur.",
  "kaynak": "docs/pano/ilerleme-panosu.html",
  "tasindi": "12.11.2026",
- "kart": 93,
+ "kart": 94,
  "gunluk": [
   {
    "tarih": "13.10.2026",
@@ -1339,6 +1339,18 @@
     "test <b>1862</b>",
     "duman <b>74/74</b>",
     "ikon <b>32</b>"
+   ]
+  },
+  {
+   "tarih": "14.10.2026",
+   "etiket": "Sprint C tur 2 sonu — Ametist + revize (D-167 · D-168)",
+   "baslik": "Ekranlar <b>yeni kılığına</b> girdi",
+   "govde": "Ametist zemin ve koyu mor, sandıklı Başlangıç afişi koda girdi; sandığın yeri ve alınmış hâli kullanıcıya seçtirildi. Kartlardaki sarı ve mavi sayılar beyazda okunmuyordu, koyu tonlarıyla hepsi 4,5:1'i geçti.<br><br>Ardından ChatGPT'nin revize tasarımı uygulandı: kartlar konturu bırakıp yumuşak gölgeyle ayrışıyor, geri düğmesi beyaz, seçili sekme mor, Sırada satırları kilitli. Kullanıcı \"çok daha iyi\" dedi; test APK telefonda denenecek. Apple'dan cevap: inceleme sırada, beklenecek.",
+   "maddeler": [
+    "test <b>1862</b>",
+    "duman <b>74/74</b>",
+    "kontrast <b>≥ 4,5</b>",
+    "Play <b>1.0.2</b> AAB hazır"
    ]
   }
  ]

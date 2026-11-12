@@ -23,19 +23,18 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Göz aracı: `node tools/_kat-kare.mjs <klasör> x '[["kat2"],["gec"],["tp",x,z],["js","..."],["kare","ad",ms]]'`.
 - Kat 2 metni EN dahil yayından önce ChatGPT mikrometin turuna girer.
 
-## ✅ K2-3a — okey + Türk kahvesi döngüsü (MANTIK) bitti · D-184 — kod girdi, üretimde kapı kapalı
-- Mantık `src/game/kat2Dongu.ts` (saf; `kat2Tick`) · geometri `kat.ts` `OKEY_YER`/`OCAK`/`kat2Engeller` · sayılar
-  `economy.config.kat2` (V4: 3 dk oyun · 25 sn'de 2 kahve · ücret 72 + kahve 9). Store: `kat2Dunya` (transient),
-  Kat 2'deyken koşar, Kat 1'deyken DONUK (K2-4). Dev: `__game().kat2` (masalar/tepsi/ocak/paralar/padFill).
-- Rapor `docs/kat2-dongu-raporu-k2-3.md` · bekçi `tests/kat2-dongu.test.ts` 16 test · mutasyon 6/6.
-- Pad zinciri okey1 → cezve → okey2-4, fiyatlar TASLAK (K2-5'te ölçülür). EN etiketleri geçici (ChatGPT turu).
+## ✅ Kat 2 sprint S1 bitti (2026-11-13) · D-185 · D-186 · D-187 — üretimde kapı kapalı
+- Plan `docs/sprintler/kat2-S1-plan.md` · defter `docs/sprintler/kat2-S1-defter.md` (S2'ye devreden tam liste orada).
+- Kodda: Kat 2 döngüsü çiziliyor (pad, okey/tavla, ocak, grup, balon A, tepside kahve, sikke kulesi A, bahçe A) · salonlar +
+  geçit yürüyüşü store'a bağlı · `kasa.ts` saf modül (bağlı DEĞİL) · tavla mantığı (`Kat2Ayar.tavla?` yok → grup gelmez).
+- Raporlar: `docs/kat2-tavla-raporu-k2-3c.md` · `docs/kat2-kasa-raporu-k2-4.md` (§Karar dolu, final koşu S2'de).
 
-## ⏭️ SIRADAKİ ADIM — K2-3b: Kat 2 döngüsünün GÖRSELİ
-- Sahnede: pad işaretleri (`kat2PadYeri` + `padCercevesi(kat2PadEtiket)`, Kat 1 `GroundMarker` dili) · okey masası
-  D-181 yol G Sv1 (çuhalı masa + `chair_stool_wood`) · cezve ocağı 7 (KayKit restoran, ölçek 0,9) + tadilat perdesinin
-  ocak açılınca kalkması · dörtlü grup NPC (merdivenden gelir, oturur, okey oynar) · kahve balonu (istek sayısı) ·
-  tepside kahve · masa önünde para yığını + toplama juice. Duman: Kat 2 döngü denetimi.
-- Gözlem: Kat 2 varışında arka duvar üstü koyu boşluk → göz kontrolü.
+## ⏭️ SIRADAKİ ADIM — Kat 2 sprint S2: kararları koda + zincir ölçümü
+Önce `kat2-S2-plan.md` yaz (S1 planının S2 taslağı + defterin "S2'ye devreden"i), sonra paralel ajanlar:
+A kasa + çevrimdışı + Kat 2 arkada (tick/store/save/offline + HUD sayacı — store/tick orkestratörde kalabilir) ·
+B tavla config + 2. cezve ocağı + Kat 2 garsonu (mantık + görsel) · C K2-5 zincir ölçüm aracı (pad fiyat kolları, hedef 4-6 sa).
+Varyant kapısı: D-185/D-186 sayıları raporda var → uygulanır, final tam koşu. Pad fiyatları → S2 sonu karar paketi.
+Açık görsel soru S2 paketine: bölme arkasında oyuncu görünmüyor (bölme boyu / kesik duvar).
 
 ## KULLANICIYA HATIRLAT
 - Play üretim erişimi sonucu ne oldu?

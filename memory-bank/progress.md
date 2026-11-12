@@ -40,6 +40,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-12 (7.): 🔧 K2-2a — kat altyapısı: kayıt (additive) · merdiven geçişi + perde · boş Kat 2 salonu · Kat 1 arkada işler · D-182 · bekçi 16 test · sıradaki K2-2b
   · 2026-11-12 (8.): ✅ K2-2b — Kat 1'de tamir edilmiş merdiven (yolluklu) · Kat 2'de kat bandı + Kat 1 ipuçları susar · dev planı sis düzeltmesi · D-183 · vitest 1904 · duman 77/77 · sıradaki K2-3
   · 2026-11-13: 🔧 K2-3a — okey + Türk kahvesi döngüsü (mantık): 6 kol ölçüldü → V4 (3 dk · 25 sn'de 2 kahve · %60 kahve) · D-184 · store + kayıt + çarpışma · bekçi 16 test, mutasyon 6/6 · vitest 1920 · duman 77/77 · sıradaki K2-3b görsel
+  · 2026-11-13 (2.): ✅ Kat 2 sprint S1 — 3 paralel ajan: görsel döngü (K2-3b) · tavla + salonlar (K2-3c mantık) · kasa/çevrimdışı ölçümü (K2-4) → D-185 · D-186 · D-187 · `docs/sprintler/kat2-S1-defter.md` · vitest 1952 · duman 77/77 · sıradaki S2
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
