@@ -20,15 +20,24 @@ Zip masaüstünde `TeaHouseTycoon-1.0.6-vc10006-GooglePlay.zip` → arkadaş KAP
 (8 soru, EN metin + TR açıklama) → arkadaş girecek. Not: 10-20'de "erişim alındı" yazılmıştı ama test uzatıldı → ilk başvuru
 muhtemelen reddedildi; ret gerekçesi gelirse cevaplar ona göre güçlendirilir. Onayda: Production → Add from library 1.0.6 (rehber 9B).
 
-## 🆕 2026-11-12 — YÖN KARARI (D-174, `docs/kat2-plan.md`)
-Yapıldı: 2. masa 20→15₺ · oyuncunun masa çarpışma kutusu çizilen tabla boyunda (bekçi `tests/masa-govde-k1112.test.ts`).
-**Sıradaki iş = 1.0.7:** ① arayüz varyasyonları — tam ekran menüler, yerdeki pad/yükseltme noktaları, görev kartı;
-her biri için 6-12 aday AYNI kadrajda göster, kullanıcı eleyerek seçer (diğer ekranlara da bak) ② puanla (sistem
-penceresi + Ayarlar satırı; geri bildirim hedefi e-posta mı form mu SORULACAK) ③ basit analitik. Sonra K2-1 Kat 2 maketi.
+## 🆕 2026-11-12 — 1.0.7 ARAYÜZ TURU (D-175 · D-176 · D-177) — kod girdi, sürüm ÇIKMADI
+Yöntem: adaylar canlı oyuna enjekte edilip aynı kadrajda çekiliyor (`tools/aday-gorev-karti.mjs` · `aday-pad.mjs` ·
+`aday-ekran.mjs`), artifact'ta gösterilip kullanıcı eliyor. Seçilenler: görev kartı **B ince hap** (sağda ödül, lakap/fiyat
+yok, uzun başlık 2 satır) · zemin işareti **B kesintisiz beyaz kenarlık** (pul artık solmuyor) · menüler **F alt menü açık**
+(geri yalnız Ayarlar'da, açık sekme kapatır). Kalan arayüz: istenirse başka ekranlar (Usta, ödül/teklif pencereleri).
+**Sıradaki iş:** ② geri bildirim + ③ analitik = **Firebase** (kullanıcı önerdi): Ayarlar'da "Geri bildirim gönder" →
+Firestore (yalnız yazılır kural, sürüm/cihaz ekli) + Firebase Analytics (oturum süresi, bırakılan adım). Gerekenler:
+`mutlubadem.dev` hesabıyla Firebase projesi, iOS plist + Android json, ASC gizlilik beyanı (Play'i arkadaş).
+**Puanla (5 yıldız / sistem penceresi) BEKLİYOR** — kullanıcı: "uygulama daha güzelken ekleyelim".
+Sonra 1.0.7 derlemesi (iOS + Play zip) → K2-1 Kat 2 maketi.
+⚠️ Duman "q_coin" kararsızlığı bu tur SIK düştü (5 koşudan 3'ü 16/23): servis sonrası yerde para yok, cüzdan 6,
+`coinsCollected` 0 — para mıknatısla toplanmadan kaybolmuş gibi. Arayüz değişikliğinden bağımsız (aynı kodla 74/74 da
+geçti). Kök sebep bulunmadı; sonraki oturumda ilk iş.
 
 ## ⏭️ SIRADAKİ ADIM — KULLANICIYA HATIRLAT
 -1. Play üretim erişimi başvurusu sonucu ne oldu? (onay → 9B ile 1.0.6 üretime; ret → e-postayı iste)
-0. **iOS 1.0.5'i incelemeye GÖNDER** (kullanıcı istedi: "bir sonraki oturumda hatırlat"). Önce 1.0.4 durumu:
+0. **iOS 1.0.5'i incelemeye GÖNDER?** 2026-11-12'de soruldu, cevap gelmedi (1.0.4 2026-10-30'da yayına girdi, engel
+   yok). 1.0.7 yakınsa 1.0.5'i atlayıp 1.0.7'yi göndermek de seçenek — kullanıcıya sor. Önce 1.0.4 durumu:
    `curl -s "https://itunes.apple.com/lookup?id=6816790079"` → version. 1.0.4 onaylandıysa ASC'de 1.0.5 sürüm kaydı aç,
    build 10005'i bağla, Yenilikler "Arayüzde iyileştirmeler ve küçük düzeltmeler yapıldı." / EN "UI improvements and
    small fixes.", incelemeye gönder. 1.0.4 hâlâ incelemedeyse GERİ ÇEKME (sıra sıfırlanır) — bekle.
@@ -38,7 +47,7 @@ penceresi + Ayarlar satırı; geri bildirim hedefi e-posta mı form mu SORULACAK
 2. Play'de yayına girince: Liftoff + Unity Android uygulamalarına Play mağaza bağlantısını ekle; AdMob Android'i bağla.
 3. 1.0.4 yayına girince AdMob iOS "Güncellemeleri kontrol edin" (sellerUrl kök olur).
 4. 1.0.5 yayından birkaç gün sonra: AdMob raporunda Liftoff/Unity dolum oranı (gerçek doğrulama).
-5. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · duman "q_coin" ara sıra · lint `src/game/ads.ts` 2 hata.
+5. Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · lint `src/game/ads.ts` 2 hata.
 
 ## 🆕 SONRAKİ ÖZELLİK — Puanla + geri bildirim (kullanıcı istedi 2026-10-22, 1.0.4 + Play yayına girince)
 Kaynak kalıp: Wordmaster `js/puan.js` (+ `@capacitor-community/in-app-review` ~8.0.0). Oradaki kurallar:
