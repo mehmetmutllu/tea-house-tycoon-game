@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kat 2 — plan adayları</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Nunito:wght@500;700;800&display=swap" rel="stylesheet">
+<style>
+  :root { --zemin:#f5efe4; --kart:#fffaf1; --murekkep:#2d2433; --soluk:#6d6275; --mor:#5b3f8c; --cizgi:#e4d9c6; --yesil:#2e7d4f; }
+  * { box-sizing: border-box; }
+  body { margin:0; background:var(--zemin); color:var(--murekkep); font:500 16px/1.55 Nunito, system-ui, sans-serif; }
+  main { max-width: 1180px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font-family:'Luckiest Guy', cursive; font-weight:400; letter-spacing:.5px; color:var(--mor); font-size: 40px; margin: 0 0 6px; }
+  .alt { color:var(--soluk); max-width: 760px; margin:0 0 22px; }
+  .sabit { background:var(--kart); border:1px solid var(--cizgi); border-radius:14px; padding:14px 18px; margin: 0 0 28px; font-size:15px; }
+  .sabit b { color:var(--mor); }
+  nav { display:flex; gap:8px; flex-wrap:wrap; position:sticky; top:0; background:var(--zemin); padding:10px 0; z-index:2; }
+  nav a { text-decoration:none; color:var(--murekkep); background:var(--kart); border:1px solid var(--cizgi); border-radius:999px; padding:6px 14px; font-weight:800; }
+  nav a:hover { border-color: var(--mor); color: var(--mor); }
+  section { background:var(--kart); border:1px solid var(--cizgi); border-radius:18px; padding:22px; margin: 22px 0; scroll-margin-top: 64px; }
+  .bas { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; }
+  .harf { font-family:'Luckiest Guy', cursive; font-size:44px; color:#fff; background:var(--mor); width:58px; height:58px; border-radius:14px; display:grid; place-items:center; line-height:1; padding-top:6px; }
+  h2 { margin:0; font-size:26px; font-weight:800; }
+  .oneri { background:var(--yesil); color:#fff; border-radius:999px; padding:3px 12px; font-size:14px; font-weight:800; }
+  .ozet { margin: 10px 0 16px; max-width: 900px; }
+  .sayilar { display:flex; gap:10px; flex-wrap:wrap; margin: 0 0 16px; }
+  .sayilar span { background:var(--zemin); border:1px solid var(--cizgi); border-radius:10px; padding:4px 12px; font-weight:700; font-size:14px; }
+  .izgara { display:grid; grid-template-columns: 1fr 260px; gap:14px; align-items:start; }
+  .izgara img { width:100%; border-radius:12px; display:block; background:#1f2733; }
+  .oyun img { border-radius:12px; }
+  figure { margin:0; }
+  figcaption { font-size:13px; color:var(--soluk); margin-top:6px; }
+  .adimlar { display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; margin-top:14px; }
+  .artieksi { display:grid; grid-template-columns: 1fr 1fr; gap:14px; margin-top:16px; font-size:15px; }
+  .artieksi div { border-radius:12px; padding:10px 14px; }
+  .arti { background:#e8f3ea; } .eksi { background:#f8e9e4; }
+  .artieksi b { display:block; margin-bottom:2px; }
+  ul { margin:4px 0 0; padding-left: 18px; }
+  @media (max-width: 820px) { .izgara { grid-template-columns: 1fr; } .oyun { max-width: 300px; } .artieksi { grid-template-columns: 1fr; } h1 { font-size: 32px; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kat 2 — plan adayları</h1>
+  <p class="alt">Oyun Katı (okey + tavla). Kareler oyunun kendi ışığı, zemini, duvarı, mobilyası ve müşterileriyle çizildi. Bu turda yalnız <b>katın nasıl bölündüğü ve hangi sırayla açıldığı</b> seçiliyor. Okey ve tavla masasının, cezve ocağının, merdivenin görünüşü bir sonraki turda ayrıca seçilecek. O yüzden dört adayda bu eşyalar birebir aynı.</p>
+  <div class="sabit">
+    <b>Dört adayda ortak olanlar:</b> Kat 2, Kat 1'le aynı binanın üst katı; ölçü 34 × 34. Merdiven arkanın ortasından çıkar: boşluk korkuluklu, Kat 1'in merdiveni aşağı iner. Solunda <b>çay ocağı</b> (cezve ve çay burada; çaycı tezgâhın arkasında), sağında ileride açılacak bir oda (şimdilik tahta perde) var. Açılmamış alan kaba inşaat hâlinde durur: şap, iskele ve moloz. Kat 1'deki çim, üst katta olmaz.<br>
+    <b>Sayılar yalnız maketin kapasitesidir.</b> Masaların fiyatı, kazancı ve açılma süresi ölçülmeden yazılmaz. Kat 1'de bugün 20 masa var.
+  </div>
+  <nav><a href="#aday-a">A · Kat 1'in aynası</a><a href="#aday-b">B · Bölmeli salonlar</a><a href="#aday-c">C · Ortadan kanatlanan</a><a href="#aday-d">D · Balkonlu</a></nav>
+
+  <section id="aday-a">
+    <div class="bas"><div class="harf">A</div><h2>Kat 1'in aynası</h2></div>
+    <p class="ozet">Kat 1'deki üç alan, ters sırayla açılır. Önce merdivenin önündeki arka şerit açılır, sonra sol ön ve sağ ön. Bölme duvarı yoktur; kat açıldıkça tek büyük salon olur. Okey solda, tavla sağda (pencere tarafında) toplanır.</p>
+    <div class="sayilar"><span>10 okey masası</span><span>12 tavla masası</span><span>3 açılış adımı</span></div>
+    <div class="izgara">
+      <figure><img src="A-3-genel.png" alt="A bitmiş hâl"><figcaption>Bitmiş hâl</figcaption></figure>
+      <figure class="oyun"><img src="A-3-oyun.png" alt="A oyun kadrajı"><figcaption>Oyunda telefonda görünen (okey salonunun ortası)</figcaption></figure>
+    </div>
+    <div class="adimlar">
+      <figure><img src="A-1-genel.png" alt="A adım 1"><figcaption>1 · Merdiven salonu (4 okey)</figcaption></figure>
+      <figure><img src="A-2-genel.png" alt="A adım 2"><figcaption>2 · Okey salonu (+6 okey)</figcaption></figure>
+      <figure><img src="A-3-genel.png" alt="A adım 3"><figcaption>3 · Tavla köşesi (+12 tavla)</figcaption></figure>
+    </div>
+    <div class="artieksi">
+      <div class="arti"><b>İyi</b>Oyuncu Kat 1'den alışık olduğu düzeni tanır. Kat 1'in alan yapısı aynen kullanılır, yani en az iş ve en az risk.</div>
+      <div class="eksi"><b>Bedeli</b>Bitince çok geniş, boş bir salon olur. Telefonda masalar arasında uzun boş zemin görünür. Okey ile tavlanın ayrı birer yer olduğu hissedilmez.</div>
+    </div>
+  </section>
+
+  <section id="aday-b">
+    <div class="bas"><div class="harf">B</div><h2>Bölmeli salonlar</h2><span class="oneri">Önerim</span></div>
+    <p class="ozet">Alanlar ve açılış sırası A ile aynı. Fark şu: her alan kendi zemini olan <b>ayrı bir salon</b>. Okey salonu koyu ceviz zeminli, tavla köşesi dama zeminli. Salonlar arasında 2,2 m bölme duvarları ve ahşap kemerli geçitler var. Yön, v2 maketinde onayladığın Kat 2'nin dili.</p>
+    <div class="sayilar"><span>10 okey masası</span><span>12 tavla masası</span><span>3 açılış adımı</span></div>
+    <div class="izgara">
+      <figure><img src="B-3-genel.png" alt="B bitmiş hâl"><figcaption>Bitmiş hâl</figcaption></figure>
+      <figure class="oyun"><img src="B-3-oyun.png" alt="B oyun kadrajı"><figcaption>Oyunda telefonda görünen (okey salonunun ortası)</figcaption></figure>
+    </div>
+    <div class="adimlar">
+      <figure><img src="B-1-genel.png" alt="B adım 1"><figcaption>1 · Merdiven salonu (4 okey)</figcaption></figure>
+      <figure><img src="B-2-genel.png" alt="B adım 2"><figcaption>2 · Okey salonu, ceviz zemin (+6 okey)</figcaption></figure>
+      <figure><img src="B-3-genel.png" alt="B adım 3"><figcaption>3 · Tavla köşesi, dama zemin (+12 tavla)</figcaption></figure>
+    </div>
+    <div class="artieksi">
+      <div class="arti"><b>İyi</b>Her açılış gözle görülür yeni bir oda getirir. Bu, kemerden geçip yeni bir zemine basmak demek. Okey ve tavlanın kendi yeri olur. Gerçek bir kıraathanenin oyun bölümüne en çok bu benziyor.</div>
+      <div class="eksi"><b>Bedeli</b>Duvarlar müşterinin ve garsonun yolunu uzatır (geçitlerden dolaşırlar); yürüme süresi ölçülecek. Dama zemin kalabalık görünebilir, zemin rengi sonraki turda değişebilir.</div>
+    </div>
+  </section>
+
+  <section id="aday-c">
+    <div class="bas"><div class="harf">C</div><h2>Ortadan kanatlanan</h2></div>
+    <p class="ozet">Merdivenden caddeye kadar uzanan uzun bir orta salonla başlar. Sonra iki yana kanat açılır: solda tavla kanadı, sağda okey kanadı. Kat 1'den farklı bir büyüme biçimi.</p>
+    <div class="sayilar"><span>12 okey masası</span><span>12 tavla masası</span><span>3 açılış adımı</span></div>
+    <div class="izgara">
+      <figure><img src="C-3-genel.png" alt="C bitmiş hâl"><figcaption>Bitmiş hâl</figcaption></figure>
+      <figure class="oyun"><img src="C-3-oyun.png" alt="C oyun kadrajı"><figcaption>Oyunda telefonda görünen (orta salon)</figcaption></figure>
+    </div>
+    <div class="adimlar">
+      <figure><img src="C-1-genel.png" alt="C adım 1"><figcaption>1 · Orta okey salonu (8 okey)</figcaption></figure>
+      <figure><img src="C-2-genel.png" alt="C adım 2"><figcaption>2 · Tavla kanadı (+12 tavla)</figcaption></figure>
+      <figure><img src="C-3-genel.png" alt="C adım 3"><figcaption>3 · Okey kanadı (+4 okey)</figcaption></figure>
+    </div>
+    <div class="artieksi">
+      <div class="arti"><b>İyi</b>İlk adımda bile salon dolu ve kalabalık görünür: merdivenden çıkan oyuncu karşısında uzun bir okey salonu bulur. En çok masa bu adayda.</div>
+      <div class="eksi"><b>Bedeli</b>İlk adımda çay ocağının yarısı kilitli kanadın duvarının arkasında kalır (1. kareye bak). Kanatlar dar ve uzun koridorlar gibi duruyor. Kat 1'in alan kodu yeniden yazılmalı.</div>
+    </div>
+  </section>
+
+  <section id="aday-d">
+    <div class="bas"><div class="harf">D</div><h2>Balkonlu</h2></div>
+    <p class="ozet">Önce merdiven salonu, sonra katın bütün önü tek bir okey salonu olarak açılır. Son adım <b>caddeye bakan balkon</b>: cepheye üç kapı açılır, balkonda tavla oynanır.</p>
+    <div class="sayilar"><span>12 okey masası</span><span>6 tavla masası (balkonda)</span><span>3 açılış adımı</span></div>
+    <div class="izgara">
+      <figure><img src="D-3-genel.png" alt="D bitmiş hâl"><figcaption>Bitmiş hâl</figcaption></figure>
+      <figure class="oyun"><img src="D-3-oyun.png" alt="D oyun kadrajı"><figcaption>Oyunda telefonda görünen (balkon kapısının önü)</figcaption></figure>
+    </div>
+    <div class="adimlar">
+      <figure><img src="D-1-genel.png" alt="D adım 1"><figcaption>1 · Merdiven salonu (4 okey)</figcaption></figure>
+      <figure><img src="D-2-genel.png" alt="D adım 2"><figcaption>2 · Büyük okey salonu (+8 okey)</figcaption></figure>
+      <figure><img src="D-3-genel.png" alt="D adım 3"><figcaption>3 · Tavla balkonu (+6 tavla)</figcaption></figure>
+    </div>
+    <div class="artieksi">
+      <div class="arti"><b>İyi</b>Balkon akılda kalan, özel bir yer. "Cadde manzaralı tavla" kıraathanenin en sıcak hâli. Son adım, binanın dışına taşan bir ödül gibi hissettirir.</div>
+      <div class="eksi"><b>Bedeli</b>Ortadaki büyük salon A'daki gibi boş durur. Balkon, oyun kamerasında cephe duvarının arkasında kalabilir (kamera önden bakıyor), bu da ayrıca denenmeli. Tavla masası az.</div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
