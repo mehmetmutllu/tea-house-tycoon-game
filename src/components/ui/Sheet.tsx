@@ -2,7 +2,7 @@ import { useLayoutEffect, type ReactNode } from 'react';
 import { useGame, gorunenCuzdan } from '../../game/store';
 import { sahneOrtusuAc } from '../three/sahneOrtusu';
 import { fmt } from '../../game/decimal';
-import { BackIcon, CoinIcon, GemIcon } from './icons';
+import { BackIcon, CloseIcon, CoinIcon, GemIcon } from './icons';
 import { t } from '../../i18n';
 
 /**
@@ -19,8 +19,9 @@ import { t } from '../../i18n';
  *
  * D-177 (1.0.7, kullanıcı yedi adaydan F'yi seçti): alt menüdeki dört ekran (`navda`) ALT MENÜNÜN
  * ÜSTÜNDE biter — menü açık kalır, ekranlar arası tek dokunuşla geçilir, aynı sekmeye yeniden
- * dokunmak ekranı kapatır (sekme seçili hâlde vurgulu). Bu ekranlarda geri düğmesi YOK; alt menüde
- * karşılığı olmayan ekran (Ayarlar) geri düğmesini korur.
+ * dokunmak ekranı kapatır (sekme seçili hâlde vurgulu). Bu ekranlarda geri oku yerine ✕ durur
+ * (kullanıcı: "kapatma işareti de ekle" — sekmeye yeniden dokunmak tek başına keşfedilmiyor); alt
+ * menüde karşılığı olmayan ekran (Ayarlar) geri okunu korur.
  *
  * T2 (kullanıcı kararı 2026-09-14): ikincil metinler kartsız gövde zemininde durmaz. Gövdenin
  * kendisi `--kart` yüzeyine oturur; `--tx2` orada 3,84 değil 4,57 verir (WCAG AA ≥ 4,5).
@@ -50,7 +51,11 @@ export function Sheet({
     <div className={`modal-backdrop screen-backdrop${navda ? ' navda' : ''}`} data-testid={testid}>
       <div className="modal-card screen">
         <div className="screen-top">
-          {!navda && (
+          {navda ? (
+            <button className="sheet-back sheet-kapat" onClick={onClose} aria-label={t('Kapat')}>
+              <CloseIcon size={18} />
+            </button>
+          ) : (
             <button className="sheet-back" onClick={onClose} aria-label={t('Geri')}>
               <BackIcon size={20} />
             </button>

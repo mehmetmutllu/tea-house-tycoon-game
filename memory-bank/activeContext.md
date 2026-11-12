@@ -24,7 +24,7 @@ muhtemelen reddedildi; ret gerekçesi gelirse cevaplar ona göre güçlendirilir
 Yöntem: adaylar canlı oyuna enjekte edilip aynı kadrajda çekiliyor (`tools/aday-gorev-karti.mjs` · `aday-pad.mjs` ·
 `aday-ekran.mjs`), artifact'ta gösterilip kullanıcı eliyor. Seçilenler: görev kartı **B ince hap** (sağda ödül, lakap/fiyat
 yok, uzun başlık 2 satır) · zemin işareti **B kesintisiz beyaz kenarlık** (pul artık solmuyor) · menüler **F alt menü açık**
-(geri yalnız Ayarlar'da, açık sekme kapatır). Kalan arayüz: istenirse başka ekranlar (Usta, ödül/teklif pencereleri).
+(sol üstte ✕, açık sekme de kapatır; Ayarlar'da geri oku). Kalan arayüz: istenirse başka ekranlar (Usta, ödül/teklif pencereleri).
 **Sıradaki iş:** ② geri bildirim + ③ analitik = **Firebase** (kullanıcı önerdi): Ayarlar'da "Geri bildirim gönder" →
 Firestore (yalnız yazılır kural, sürüm/cihaz ekli) + Firebase Analytics (oturum süresi, bırakılan adım). Gerekenler:
 `mutlubadem.dev` hesabıyla Firebase projesi, iOS plist + Android json, ASC gizlilik beyanı (Play'i arkadaş).

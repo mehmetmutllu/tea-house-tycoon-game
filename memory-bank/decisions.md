@@ -5064,3 +5064,4 @@ sekmesi olmadığı için geri düğmesini korur. Zemin her boyutta en alta iner
 görünmesin), menü `.ekranda` ile z 21; ekrandan açılan pencereler z 22. Gövde payı menünün GERÇEK boyu (`--nav-h`,
 ResizeObserver; ölçüm 79 · 78 · 110 px, `tools/olcum-navda.mjs`). Bekçi `ekran-kabugu` 2b (2 mutasyon). Duman kapanışları
 sekmeden yapılıyor.
+**Ek (aynı gün, kullanıcı):** "kapatma işareti de ekle" → sekme ekranlarında geri oku yerine ✕ (`sheet-kapat`).

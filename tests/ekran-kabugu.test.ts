@@ -113,9 +113,10 @@ describe('ekran kabuğu — K3 (D-106)', () => {
     expect(perde).toMatch(/align-items:\s*stretch/);
   });
 
-  it('2b · D-177: alt menüdeki dört ekranda menü açık kalır, geri düğmesi yok; Ayarlar geri düğmesini korur', () => {
+  it('2b · D-177: alt menüdeki dört ekranda menü açık kalır, geri oku yerine ✕; Ayarlar geri okunu korur', () => {
     const sheet = yorumsuz(oku(SHEET));
-    expect(sheet).toMatch(/\{!navda && \(\s*<button className="sheet-back"/);
+    // Kapatma işareti (kullanıcı 2026-11-12): sekme ekranında geri oku yerine ✕.
+    expect(sheet).toMatch(/navda \? \(\s*<button className="sheet-back sheet-kapat"[^>]*>\s*<CloseIcon/);
     const hud = yorumsuz(oku(HUD));
     for (const id of ['quests-panel', 'goals-panel', 'shop-panel']) {
       expect(hud, `${id} menü-üstü değil`).toMatch(new RegExp(`testid="${id}" onClose=\{onClose\} navda>`));
