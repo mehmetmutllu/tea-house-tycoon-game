@@ -1,0 +1,30 @@
+<!DOCTYPE html><html lang="tr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1.0.7 · Tam ekran menü adayları</title>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#efeaf8;color:#2a1f4d;font-family:'Baloo 2',system-ui,sans-serif}
+header,section{max-width:1100px;margin:0 auto;padding:0 20px} header{padding-top:28px}
+h1{margin:0;font-size:28px} h2{margin:28px 0 0;font-size:21px}
+p{margin:4px 0 10px;max-width:780px;line-height:1.45}
+.uc{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.uc img{width:100%;border-radius:12px;box-shadow:0 4px 14px rgba(40,20,90,.15);cursor:zoom-in;display:block}
+.harf{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#4b3aa8;color:#fff;margin-right:8px;font-size:16px}
+#buyuk{position:fixed;inset:0;background:rgba(20,10,40,.85);display:none;place-items:center;cursor:zoom-out}
+#buyuk img{max-height:96vh;max-width:96vw;border-radius:12px}
+footer{height:40px}
+</style></head><body>
+<header><h1>Tam ekran menüler · 7 aday</h1>
+<p>Bütün menüler (Görevler, Hedefler, Mağaza, Çaycı, Ayarlar) aynı kabuğu paylaşıyor; seçilen biçim hepsine birden uygulanır. Her aday aynı oyun durumunda üç ekranda gösterildi: <b>Görevler · Çaycı · Mağaza</b>. Yalnız kabuğun <b>biçimi</b> değişiyor (nasıl açıldığı, başlık, geri/kapat, cüzdanın yeri); kartlar ve renkler bugünkü gibi.</p>
+<p>Beğenmediklerini ele, kalanları sohbette yaz; parçalar birleşebilir (ör. "B'nin alt sayfası + D'nin ✕'i"). Büyütmek için resme dokun. Sol üstteki gri "DEV" yazısı yalnız geliştirme sürümünde var.</p></header>
+<section><h2><span class="harf">A</span>Bugünkü</h2><p>Tam ekran, oyun tamamen kapanır; geri solda, cüzdan sağda. Karşılaştırma için.</p><div class="uc">
+<img src="A-gorevler.jpg" alt="A Görevler"><img src="A-cayci.jpg" alt="A Çaycı"><img src="A-magaza.jpg" alt="A Mağaza"></div></section><section><h2><span class="harf">B</span>Alt sayfa</h2><p>Menü aşağıdan açılır, ekranın %84'ü; üstte oyun ve paran görünmeye devam eder. Boyu her ekranda aynı.</p><div class="uc">
+<img src="B-gorevler.jpg" alt="B Görevler"><img src="B-cayci.jpg" alt="B Çaycı"><img src="B-magaza.jpg" alt="B Mağaza"></div></section><section><h2><span class="harf">C</span>Koyu başlık bandı</h2><p>Başlık kısmı oyundaki mor çubuklar gibi koyu bir bant; gövde açık.</p><div class="uc">
+<img src="C-gorevler.jpg" alt="C Görevler"><img src="C-cayci.jpg" alt="C Çaycı"><img src="C-magaza.jpg" alt="C Mağaza"></div></section><section><h2><span class="harf">D</span>Ortada başlık, sağda kapat</h2><p>Başlık tam ortada, sağ üstte ✕; cüzdan başlığın altında.</p><div class="uc">
+<img src="D-gorevler.jpg" alt="D Görevler"><img src="D-cayci.jpg" alt="D Çaycı"><img src="D-magaza.jpg" alt="D Mağaza"></div></section><section><h2><span class="harf">E</span>Pencere + kurdele başlık</h2><p>Kenarlardan boşluklu pencere, başlık üstte taşan sarı kurdele; arkada oyun karartılı.</p><div class="uc">
+<img src="E-gorevler.jpg" alt="E Görevler"><img src="E-cayci.jpg" alt="E Çaycı"><img src="E-magaza.jpg" alt="E Mağaza"></div></section><section><h2><span class="harf">F</span>Alt menü açık kalır</h2><p>Menü açıkken alttaki Görevler/Hedefler/Mağaza/Çaycı çubuğu görünür; ekranlar arası tek dokunuşla geçilir, geri düğmesi yok.</p><div class="uc">
+<img src="F-gorevler.jpg" alt="F Görevler"><img src="F-cayci.jpg" alt="F Çaycı"><img src="F-magaza.jpg" alt="F Mağaza"></div></section><section><h2><span class="harf">G</span>Büyük sola yaslı başlık</h2><p>Üstte geri + cüzdan, altında büyük başlık (telefon ayarları gibi).</p><div class="uc">
+<img src="G-gorevler.jpg" alt="G Görevler"><img src="G-cayci.jpg" alt="G Çaycı"><img src="G-magaza.jpg" alt="G Mağaza"></div></section><footer></footer>
+<div id="buyuk"><img alt=""></div>
+<script>const b=document.getElementById('buyuk'),bi=b.querySelector('img');
+document.querySelectorAll('.uc img').forEach(i=>i.onclick=()=>{bi.src=i.src;b.style.display='grid';});b.onclick=()=>{b.style.display='none';};</script>
+</body></html>
