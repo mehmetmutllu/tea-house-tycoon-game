@@ -92,3 +92,25 @@ describe('geri bildirim (1.0.7)', () => {
     expect(JSON.parse(govde).writes[0].update.fields.metin.stringValue).toBe('selam');
   });
 });
+
+describe('analitik izleme yapmaz (gizlilik politikası + mağaza beyanı buna dayanır)', () => {
+  it('Android: reklam kimliği ve reklam sinyalleri kapalı', () => {
+    const m = readFileSync(new URL('../android/app/src/main/AndroidManifest.xml', import.meta.url), 'utf8');
+    for (const k of [
+      'google_analytics_adid_collection_enabled',
+      'google_analytics_default_allow_ad_storage',
+      'google_analytics_default_allow_ad_user_data',
+      'google_analytics_default_allow_ad_personalization_signals',
+    ]) expect(m).toMatch(new RegExp(`android:name="${k}"\\s+android:value="false"`));
+  });
+
+  it('iOS: reklam sinyalleri ve IDFV kapalı', () => {
+    const p = readFileSync(new URL('../ios/App/App/Info.plist', import.meta.url), 'utf8');
+    for (const k of [
+      'GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_STORAGE',
+      'GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_USER_DATA',
+      'GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS',
+      'GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED',
+    ]) expect(p).toMatch(new RegExp(`<key>${k}</key>\\s*<false/>`));
+  });
+});

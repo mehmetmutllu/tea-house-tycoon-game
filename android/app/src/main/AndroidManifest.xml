@@ -68,6 +68,13 @@
         <meta-data
             android:name="com.google.android.gms.games.APP_ID"
             android:value="@string/game_services_project_id" />
+
+        <!-- ANALİTİK (1.0.7 · D-178): Firebase yalnız oyun istatistiği toplar — reklam kimliği ve reklam
+             sinyalleri ilk olaydan önce KAPALI (izleme yok; gizlilik politikası ve mağaza beyanı buna dayanır). -->
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+        <meta-data android:name="google_analytics_default_allow_ad_storage" android:value="false" />
+        <meta-data android:name="google_analytics_default_allow_ad_user_data" android:value="false" />
+        <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="false" />
     </application>
 
     <!-- Permissions -->

@@ -164,14 +164,15 @@
   <p class="kucuk">Beklenen sonuç: PEGI 3 / ESRB Everyone / USK 0 civarı. Anketi bitirince <b>Submit</b> (Gönder) de.</p>
 
   <h3>3.6 Data safety (Veri güvenliği)</h3>
-  <p>Bu formun cevapları oyundaki iki hazır hizmete göre verildi: <b>Google AdMob</b> (reklam) ve <b>RevenueCat</b> (satın alma). Oyunun kendisi kişisel veri toplamıyor, oyunda üyelik yok.</p>
+  <p>Bu formun cevapları oyundaki hizmetlere göre verildi: <b>Google AdMob</b> (reklam), <b>RevenueCat</b> (satın alma) ve 1.0.7'den itibaren <b>Google Firebase</b> (anonim oyun istatistiği + oyuncunun Ayarlar'dan gönderdiği geri bildirim). Oyunda üyelik yok; ad, e-posta sorulmuyor.</p>
   <p><b>Genel sorular</b></p>
   <table>
     <tr><th>Soru</th><th style="width:30%">Cevap</th></tr>
     <tr><td>Does your app collect or share any of the required user data types? (Veri topluyor veya paylaşıyor mu?)</td><td class="cevap">Yes</td></tr>
     <tr><td>Is all of the user data collected by your app encrypted in transit? (Aktarımda şifreli mi?)</td><td class="cevap">Yes</td></tr>
     <tr><td>Which account creation methods does your app support? (Hesap oluşturma)</td><td><b>My app does not allow users to create an account</b> (Hesap oluşturulmuyor)</td></tr>
-    <tr><td>Do you provide a way for users to request that their data is deleted? (Veri silme talebi)</td><td><b>No</b></td></tr>
+    <tr><td>Do you provide a way for users to request that their data is deleted? (Veri silme talebi)</td><td class="cevap">Yes</td></tr>
+    <tr><td>Silme talebi nasıl yapılır? (adres sorulursa)</td><td>Gizlilik politikası adresi: <code>https://mehmetmutllu.github.io/tea-house-tycoon/privacy.html</code> (e-postayla talep)</td></tr>
   </table>
   <p><b>Veri türleri</b>: yalnızca bunları işaretle, diğer her şey boş kalacak.</p>
   <table>
@@ -182,6 +183,7 @@
     <tr><td>App info and performance → <b>Diagnostics</b> (Teşhis)</td><td>✔</td><td>✔</td><td>Required</td><td>Analytics · Fraud prevention, security, and compliance</td></tr>
     <tr><td>Device or other IDs → <b>Device or other IDs</b> (Cihaz kimlikleri)</td><td>✔</td><td>✔</td><td>Required</td><td>Advertising or marketing · Analytics · Fraud prevention, security, and compliance</td></tr>
     <tr><td>Financial info → <b>Purchase history</b> (Satın alma geçmişi)</td><td>✔</td><td>—</td><td>Required</td><td>App functionality · Analytics</td></tr>
+    <tr><td>App activity → <b>Other user-generated content</b> (Kullanıcının oluşturduğu diğer içerik), 1.0.7 geri bildirim</td><td>✔</td><td>—</td><td><b>Optional</b></td><td>App functionality · Analytics</td></tr>
   </table>
   <p class="kucuk">Her türde ayrıca "Is this data processed ephemerally?" (yalnız anlık mı işleniyor?) sorusu gelir: hepsine <b>No</b>. Ad, e-posta, telefon, kesin konum, fotoğraf, kişiler, sağlık, mesajlar vb. <b>toplanmıyor</b>: işaretleme.</p>
 
@@ -369,7 +371,16 @@
 <section>
   <h2><span class="adim">10</span>Sonrası ve sık sorunlar</h2>
   <h3>Güncelleme geldiğinde</h3>
-  <p>Mehmet sana yeni bir <code>app-release.aab</code> gönderir (sürüm numarası her seferinde büyür). <span class="yol">Production → Create new release</span> → yeni AAB'yi yükle → sürüm notunu Mehmet'in verdiği metinle doldur → Send for review. Mağaza sayfasına ve formlara dokunmak gerekmez.</p>
+  <p>Mehmet sana yeni bir <code>app-release.aab</code> gönderir (sürüm numarası her seferinde büyür). <span class="yol">Production → Create new release</span> → yeni AAB'yi yükle → sürüm notunu Mehmet'in verdiği metinle doldur → Send for review. Mağaza sayfasına ve formlara dokunmak gerekmez, <b>aşağıdaki istisna hariç</b>.</p>
+  <div class="kutu"><b>1.0.7 için bir kerelik: Data safety güncellemesi</b>Bu sürümle oyuna Firebase (anonim istatistik + Ayarlar'da "Geri bildirim") geldi. AAB'yi yüklemeden <b>önce</b>:
+    <ol>
+      <li><span class="yol">App content → Data safety → Manage</span> (Uygulama içeriği → Veri güvenliği → Yönet)</li>
+      <li>"Do you provide a way for users to request that their data is deleted?" → <b>Yes</b></li>
+      <li>Veri türlerinde <b>App activity → Other user-generated content</b> kutusunu işaretle: Collected ✔, Shared ✘, ephemeral <b>No</b>, <b>Optional</b> (kullanıcı isterse gönderir), amaçlar <b>App functionality</b> + <b>Analytics</b>.</li>
+      <li>Diğer satırlar (konum, uygulama etkileşimleri, cihaz kimliği, teşhis) zaten "Analytics" içeriyor: dokunma.</li>
+      <li><b>Save</b>, ardından AAB'yi her zamanki gibi yükle. İkisi aynı incelemeye gider.</li>
+    </ol>
+  </div>
 
   <h3>Sık hatalar</h3>
   <table>
@@ -378,7 +389,7 @@
     <tr><td>"You uploaded an APK or Android App Bundle that is signed with the wrong key"</td><td>Yanlış dosya. Yalnız Mehmet'in gönderdiği AAB yüklenir. Mehmet'e haber ver.</td></tr>
     <tr><td>"Your app doesn't have any in-app products yet"</td><td>Adım 6 tamamlanmamış veya paket işleniyor. Birkaç dakika bekle.</td></tr>
     <tr><td>Oyunda mağaza "hazır değil" diyor</td><td>Ürünler <b>Active</b> mi? Ürün kimlikleri birebir aynı mı? Hizmet hesabı 36 saati doldurdu mu? Oyunu Play Store'dan (test bağlantısıyla) kurdun mu? Elle APK kurulumunda satın alma çalışmaz.</td></tr>
-    <tr><td>Data safety ret / uyarı</td><td>Adım 3.6 tablosuyla birebir aynı olduğunu kontrol et. AdMob ve RevenueCat dışında veri yok.</td></tr>
+    <tr><td>Data safety ret / uyarı</td><td>Adım 3.6 tablosuyla birebir aynı olduğunu kontrol et. AdMob, RevenueCat ve Firebase dışında veri yok.</td></tr>
     <tr><td>"Policy violation" e-postası</td><td>E-postayı olduğu gibi Mehmet'e ilet; panelden itiraz etmeden önce birlikte bakın.</td></tr>
     <tr><td>Kapalı testte sayaç ilerlemiyor</td><td>12 kişinin hepsi bağlantıdan "Become a tester" demiş ve oyunu <b>Play Store'dan</b> kurmuş olmalı. Sayaç, onaydan ve 12. kişiden sonra başlar.</td></tr>
   </table>
