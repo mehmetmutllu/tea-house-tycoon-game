@@ -29,10 +29,13 @@ yok, uzun başlık 2 satır) · zemin işareti **B kesintisiz beyaz kenarlık** 
 bildirim kutusu (Firestore'a yalnız ekleme; mesajlar konsol → Firestore → `geribildirim`), yerel analitik (`gorev_tamam` ile
 bırakılan adım). Android debug APK Firebase'le derlendi; iOS Codemagic'te `firebase_ios` değişkeni + plist adımı hazır (derlenmedi).
 Konsolda silinecek: `geribildirim/deneme-…` (kurulum deneme belgesi).
-**Sıradaki — 1.0.7 YAYIN ÖNCESİ (kullanıcıya SOR, dışa dönük):** ① gizlilik politikası (`mehmetmutllu/tea-house-tycoon`
-`privacy.html` "kendi analitiğimiz yok / sunucumuz yok" diyor → Firebase Analytics + geri bildirim bölümü, TR+EN) ② ASC App
-Privacy: Ürün etkileşimi + Diğer kullanıcı içeriği + Cihaz kimliği (izlemede değil, kimliğe bağlı değil) ③ Play Veri
-güvenliği rehberi arkadaşa ④ package.json 1.0.7 → Codemagic iOS + `npm run play` zip.
+✅ **1.0.7 GÖNDERİLDİ (2026-11-12):** gizlilik politikası + destek sayfası yayında (Firebase + geri bildirim bölümleri) ·
+ASC App Privacy: Customer Support (işlevsellik+analitik, bağlı değil, izleme yok) + Device ID/Coarse Location'a Analytics ·
+Firebase reklam sinyalleri manifest/plist'te kapalı (bekçi) · Codemagic `6af5df09007bc73c4ae4e059` yeşil → derleme 6 →
+**iOS 1.0.7 WAITING_FOR_REVIEW** (1.0.5 atlandı) · Play zip masaüstünde `TeaHouseTycoon-1.0.7-vc10007-GooglePlay.zip`
+(`0-BU-SURUM.txt`: önce Data safety, sonra AAB) → kullanıcı arkadaşına atacak.
+**Açık:** Firestore konsolundan `geribildirim/deneme-…` belgesini sil (kural silmeyi kapatıyor) · tam vitest bir kez 1 kararsız
+düşüş verdi (hangisi yakalanmadı; sonraki 3 koşu yeşil) · yayında: Firebase'de olaylar geliyor mu (DebugView/Realtime) kontrol.
 **Puanla (5 yıldız / sistem penceresi) BEKLİYOR** — kullanıcı: "uygulama daha güzelken ekleyelim".
 Sonra 1.0.7 derlemesi (iOS + Play zip) → K2-1 Kat 2 maketi.
 ✅ 2026-11-12 (2.): Duman "q_coin" kararsızlığı ÇÖZÜLDÜ — ürün hatası değil, test yarışı. Duman beklerken gerçek döngü

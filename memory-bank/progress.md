@@ -142,6 +142,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-12: 1.0.7 arayüz turu — görev kartı ince hap (D-175) · zemin işareti beyaz kenarlık (D-176) · menülerde alt menü açık (D-177); adaylar canlı oyundan aynı kadrajda · vitest 1872 · duman 74/74 (q_coin kararsızlığı sık) · sıradaki: Firebase geri bildirim + analitik
   · 2026-11-12 (2.): duman q_coin kararsızlığı çözüldü (test yarışı: 2. müşteri geç servis + denetim lifetime'a bakıyordu → coinsCollected) · 18/18 yeşil · 2 mutasyon · vitest 1872 · duman 74/74
   · 2026-11-12 (3.): Firebase `tea-house-tycoon` — Ayarlar'da geri bildirim (Firestore REST, yalnız-ekle kuralı) + yerel analitik (görev/nokta/seviye olayları) · D-178 · vitest 1883 · duman 76/76 · kalan: gizlilik metni + ASC/Play veri beyanı → 1.0.7 derlemesi
+  · 2026-11-12 (4.): gizlilik/destek sitesi + ASC App Privacy güncellendi · Firebase reklam sinyalleri kapalı · **iOS 1.0.7 (derleme 6) incelemede** · Play 1.0.7 zip masaüstünde (Data safety adımlı)
 - ✅ **F6 — açılış ekranı + ekran yönü + yatay/tablet HUD** (F1b iki tur + tur 3) …
 
 ## Faz T — TUR SERİSİ: GERİ BİLDİRİM + PERFORMANS (13/13) ✅
