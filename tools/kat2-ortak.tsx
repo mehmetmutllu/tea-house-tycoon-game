@@ -50,7 +50,7 @@ export function Tabure({ x, z }: { x: number; z: number }) {
 }
 
 /** tabure = Kat 1 greybox taburesi (kırmızı minder) · stool_wood/stool = Kat 1'in GERÇEK oturağı (KayKit; L0-1 çıplak, L2+ mavi minderli). */
-export type Oturak = 'chair_A_wood' | 'chair_B_wood' | 'tabure' | 'stool_wood' | 'stool';
+export type Oturak = 'chair_A_wood' | 'chair_A' | 'chair_B_wood' | 'tabure' | 'stool_wood' | 'stool';
 export function Sandalye({ x, z, aci, kisi, i, tip = 'chair_A_wood' }: { x: number; z: number; aci: number; kisi: boolean; i: number; tip?: Oturak }) {
   return (
     <group>

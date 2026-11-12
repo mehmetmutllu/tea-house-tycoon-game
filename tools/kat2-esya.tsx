@@ -21,13 +21,13 @@ import { MaketCezveStation, MaketCounter, MaketPlant, MaketWall, MaketWallShelf 
 import { FLOOR_THEMES, LIGHTING, PALETTE, WALL_THEMES } from '../src/config/palette';
 import { CAMERA_LOOK_Y } from '../src/config/actor';
 import { CAMERA_FOV } from '../src/config/camera';
-import { KAY_F, Kutu, Sandalye, Silindir, type Oturak } from './kat2-ortak';
+import { KAY_F, KAY_R, Kutu, Sandalye, Silindir, type Oturak } from './kat2-ortak';
 
 const q = new URLSearchParams(location.search);
 type Tur = 'okey' | 'tavla' | 'cezve' | 'merdiven';
 const ESYA = (q.get('esya') ?? 'okey') as Tur;
 const NO = Number(q.get('no') ?? 1);
-const YOL = q.get('yol') as 'A' | 'B' | 'C' | null;
+const YOL = q.get('yol') as 'A' | 'B' | 'C' | 'D' | 'E' | null;
 
 const ZEMIN = FLOOR_THEMES.parke; // D-180
 const TEMA = WALL_THEMES.krem;
@@ -56,7 +56,23 @@ const UST = 0.75; // tabla üstü (Kat 1 ile aynı, D-073)
  */
 const YESIL = '#2e7d4f';
 const BORDO = '#8e2f2a';
-const OKEY_YOL: Record<'A' | 'B' | 'C', OkeyAday[]> = {
+const MAVI = '#5a93cf'; // Kat 1'in örtü mavisi (PALETTE.tableclothByLevel)
+const OKEY_YOL: Record<'A' | 'B' | 'C' | 'D' | 'E', OkeyAday[]> = {
+  // Kullanıcı (tur 2b): "seviye yükseldikçe sandalye olsun; sandalyeler ya da masa Kat 1'deki gibi mavileşsin".
+  D: [ // tabure → ahşap sandalye → MAVİ sandalye → masa büyür → MASA mavileşir (Kat 1 Sv5 örtüsü)
+    { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'chair_A_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'chair_A' },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A', boy: 1.15 },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A', boy: 1.15, ortu: MAVI, cay: true },
+  ],
+  E: [ // tabure → MAVİ tabure → ahşap sandalye → masa büyür + MAVİ sandalye → pirinç + çay
+    { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'stool' },
+    { masa: 'kat1', cuha: YESIL, oturak: 'chair_A_wood' },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A', boy: 1.15 },
+    { masa: 'cerceve', cuha: YESIL, oturak: 'chair_A', boy: 1.15, pirinc: true, cay: true },
+  ],
   A: [ // Kat 1'in yolu: çuha → minder → masa büyür → pirinç + çay
     { masa: 'kat1', oturak: 'stool_wood' },
     { masa: 'kat1', cuha: YESIL, oturak: 'stool_wood' },
@@ -192,7 +208,7 @@ function CayBardaklari({ ust }: { ust: number }) {
 
 // ================================ TAVLA ================================
 type TavlaAday = { masa: 'kayKucuk' | 'kat1' | 'yuvarlak'; tahta: 'kutu' | 'kakma' | 'cuha'; oturak: Oturak; cay?: boolean; boy?: number; pirinc?: boolean };
-const TAVLA_YOL: Record<'A' | 'B' | 'C', TavlaAday[]> = {
+const TAVLA_YOL: Partial<Record<'A' | 'B' | 'C' | 'D' | 'E', TavlaAday[]>> = {
   A: [ // Kat 1'in yolu: kakma kutu → minder → masa büyür → pirinç + çay/zar
     { masa: 'kat1', tahta: 'kutu', oturak: 'stool_wood' },
     { masa: 'kat1', tahta: 'kakma', oturak: 'stool_wood' },
@@ -338,9 +354,9 @@ function TavlaMasasi({ x, z, a, dolu, i }: { x: number; z: number; a: TavlaAday;
 }
 
 // ================================ CEZVE OCAĞI ================================
-function Cezve({ x, y, z, gomuk = 0 }: { x: number; y: number; z: number; gomuk?: number }) {
+function Cezve({ x, y, z, gomuk = 0, s = 1 }: { x: number; y: number; z: number; gomuk?: number; s?: number }) {
   return (
-    <group position={[x, y - gomuk, z]}>
+    <group position={[x, y - gomuk, z]} scale={s}>
       <Silindir r1={0.07} r2={0.095} h={0.16} renk={BAKIR} pos={[0, 0.08, 0]} seg={10} />
       <Silindir r1={0.016} r2={0.016} h={0.28} renk={KOYU} pos={[0, 0.13, -0.17]} rot={[Math.PI / 2.4, 0, 0]} seg={5} />
     </group>
@@ -367,11 +383,11 @@ function KumOcagi({ x, len = 1.5 }: { x: number; len?: number }) {
   );
 }
 
-function Fincanlar({ x, z, n = 4 }: { x: number; z: number; n?: number }) {
+function Fincanlar({ x, z, n = 4, yukseklik = 0.97 }: { x: number; z: number; n?: number; yukseklik?: number }) {
   return (
     <group>
       {Array.from({ length: n }, (_, j) => (
-        <group key={j} position={[x + (j % 2) * 0.2, 0.97, z + Math.floor(j / 2) * 0.2]}>
+        <group key={j} position={[x + (j % 2) * 0.2, yukseklik, z + Math.floor(j / 2) * 0.2]}>
           <Silindir r1={0.06} r2={0.06} h={0.008} renk="#f4f1ea" pos={[0, 0.006, 0]} seg={12} />
           <Silindir r1={0.042} r2={0.032} h={0.06} renk="#f4f1ea" pos={[0, 0.04, 0]} seg={10} />
         </group>
@@ -420,7 +436,60 @@ function Davlumbaz() {
   );
 }
 
+// ---- KayKit restoran parçalarıyla (Kat 1 mutfağı: kitchenLook.ts — ölçek 0,9, sırt duvarda) ----
+const KS = 0.9;
+const DUVAR_IC = -2.11; // Duvar() z −2,2 · kalınlık 0,18
+const MODUL = 2.0 * KS;
+const kz = (minZ: number) => DUVAR_IC - minZ * KS; // kitchenLook.arkaZ ile aynı türetme
+const ASILI_Y = 3.2 - (2.0 + 2.0) * KS; // kitchenLook.WALL_UNIT_Y
+function Kay({ ad, x, z, y = 0 }: { ad: string; x: number; z: number; y?: number }) {
+  return <Model src={`${KAY_R}${ad}.gltf`} scale={KS} position={[x, y, z]} fallback={null} />;
+}
+function KayOcak({ no }: { no: number }) {
+  const ust = 1.0 * KS; // tezgâh üstü
+  const onZ = kz(-1.0) + 0.1; // tezgâhın orta-önü
+  return (
+    <group>
+      <Kay ad="kitchencounter_straight_A_backsplash" x={-MODUL} z={kz(-1.0)} />
+      <Kay ad="stove_single" x={0} z={kz(-1.03)} />
+      <Kay ad={no === 9 ? 'kitchencounter_straight_B_backsplash' : 'kitchencounter_straight_B_backsplash'} x={MODUL} z={kz(-1.0)} />
+      {no !== 9 && <Kay ad="extractorhood" x={0} z={DUVAR_IC} y={ASILI_Y} />}
+      {no === 8 && (
+        <>
+          <Kay ad="kitchencabinet" x={-MODUL} z={DUVAR_IC} y={ASILI_Y} />
+          <Kay ad="kitchencabinet" x={MODUL} z={DUVAR_IC} y={ASILI_Y} />
+        </>
+      )}
+      {/* ocak gözlerinde cezveler */}
+      {/* KayKit ölçeğinde cezve 1,5× (ocak ızgarası iri); ızgaranın üstünde durur */}
+      {[-0.24, 0.24].map((x) => (
+        <Cezve key={x} x={x} y={ust + 0.16} z={kz(-1.03) + 0.05} s={1.5} />
+      ))}
+      {/* sol tezgâh: fincanlar · sağ tezgâh: semaver (9) ya da cezve dizisi */}
+      <Fincanlar x={-MODUL - 0.3} z={onZ - 0.85} n={4} yukseklik={ust} />
+      {no === 9 ? (
+        <group position={[MODUL, ust - 0.97, onZ]}>
+          <Semaver x={0} />
+        </group>
+      ) : (
+        Array.from({ length: 3 }, (_, i) => <Cezve key={`d${i}`} x={MODUL - 0.45 + i * 0.45} y={ust} z={onZ} s={1.5} />)
+      )}
+      {no === 9 && <Kay ad="shelf_papertowel_decorated" x={-MODUL} z={DUVAR_IC} y={1.9} />}
+    </group>
+  );
+}
+
 function CezveAday({ no }: { no: number }) {
+  if (no >= 7) {
+    return (
+      <group>
+        <KayOcak no={no} />
+        <group position={[0.15, 0, 0.45]} rotation={[0, Math.PI, 0]}>
+          <KayActor kind="waiter" hal="calis" />
+        </group>
+      </group>
+    );
+  }
   // Tezgâh dünyada z = 0'da, müşteri yüzü +z; çaycı arkasında (−z), duvar onun arkasında.
   return (
     <group>
@@ -632,7 +701,11 @@ function Kamera() {
   useEffect(() => {
     const cam = camera as import('three').PerspectiveCamera;
     // Yol karesi beş masayı yan yana gösterir: dar açı + uzak kamera → kenardaki masa çarpılmaz (aynı boy okunur).
-    const { bak, d } = YOL ? { bak: [0, 0.35, 0.15] as [number, number, number], d: ESYA === 'okey' ? 8.6 : 8.0 } : KADRAJ[ESYA];
+    const { bak, d } = YOL
+      ? { bak: [0, 0.35, 0.15] as [number, number, number], d: ESYA === 'okey' ? 8.6 : 8.0 }
+      : ESYA === 'cezve' && NO >= 7
+        ? { bak: [0, 0.9, -0.7] as [number, number, number], d: 4.4 } // KayKit ocağı üç modül (5,4 m)
+        : KADRAJ[ESYA];
     cam.fov = YOL ? 26 : CAMERA_FOV;
     cam.position.set(bak[0], bak[1] + d, bak[2] + d);
     cam.lookAt(bak[0], bak[1], bak[2]);
@@ -687,7 +760,7 @@ function Duvar() {
 const YOL_ARA = { okey: 3.4, tavla: 3.2 } as const;
 function Yol() {
   const ara = YOL_ARA[ESYA as 'okey' | 'tavla'];
-  const seri = ESYA === 'okey' ? OKEY_YOL[YOL!] : TAVLA_YOL[YOL!];
+  const seri = (ESYA === 'okey' ? OKEY_YOL[YOL!] : TAVLA_YOL[YOL!]) ?? [];
   return (
     <>
       {seri.map((a, k) =>
