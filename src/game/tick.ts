@@ -10,6 +10,7 @@
  * değişebilen çalışma değerleridir. `store.tick()` ctx'i kurar, `runTick`i çağırır, sonucu tek
  * `set()` ile yazar. Bu ayrım sayesinde sistemler saf, tek tek okunabilir ve test edilebilir kalır.
  */
+import { KAT1_DISI } from './kat';
 import { activeQuestIndex, eksikPadGorevi } from './questProgress';
 import { olcKoş, olcumAcik } from './olcum';
 import type { Decimal } from './decimal';
@@ -724,6 +725,14 @@ function npcAyristir(npcs: Npc[], dt: number): void {
  */
 function playerMoveSystem(c: TickCtx): void {
   const { dt, s, tables, areasOpen } = c;
+  // K2-2: oyuncu Kat 2'de → Kat 1'in sistemleri onu hiçbir şeye yetişemeyeceği yerde görür; Kat 1
+  // kendi başına işler. Kat 2'deki yürüyüş store'da (`kat.kat2Adim`). Denge sayısı değişmez.
+  if (s.kat === 2) {
+    c.input = [0, 0];
+    c.pr = LAYOUT.playerRadius;
+    c.player = [...KAT1_DISI];
+    return;
+  }
   const jMag = Math.hypot(s.inputJoystick[0], s.inputJoystick[1]);
   const input = jMag > 0.05 ? s.inputJoystick : s.inputKeyboard;
   const pr = LAYOUT.playerRadius;

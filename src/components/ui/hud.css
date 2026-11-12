@@ -2388,3 +2388,12 @@
   border-color: var(--afis-2);
   border-width: 3px;
 }
+
+/* K2-2: merdiven geçişinin perdesi (KatPerdesi.tsx) — sahnenin üstünde, HUD'un altında. */
+.kat-perdesi {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  pointer-events: none;
+  z-index: 5;
+}

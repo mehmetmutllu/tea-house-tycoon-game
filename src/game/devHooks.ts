@@ -41,6 +41,8 @@ declare global {
     __addMoney?: (amount: number) => Record<string, unknown>;
     __upgradeStation?: () => boolean;
     __teleport?: (x: number, z: number) => Record<string, unknown>;
+    /** K2-2: merdiveni aç (tamir pad'i K2-5'te) · `kat` verilirse oraya geç (perdeli). */
+    __kat2?: (kat?: 1 | 2) => { kat: number; acik: boolean; gecis: boolean };
     /** Mağaza videosu (D-170): joystick girdisi + hafif konum okuma (`__game` her karede ağır). */
     __girdi?: (x: number, z: number) => [number, number];
     __sinema?: (k: { pos: [number, number, number]; bak: [number, number, number]; fov: number; gok?: string } | null) => void;
@@ -148,6 +150,9 @@ export function installDevHooks(): void {
       stationLevel: s.stationLevels[THE_SERVICE],
       padsDone: [...s.padsDone],
       npcCount: s.npcCount,
+      kat: s.kat,
+      kat2Acik: s.kat2.acik,
+      katGecis: s.katGecis ? { ...s.katGecis } : null,
       // Servis durumu (D-011): hazır ÇAY (geri-uyum adı; tost ayrı — service.readyTost).
       readyCups: s.ready.tea,
       tray: s.tray,
@@ -353,6 +358,13 @@ export function installDevHooks(): void {
   };
 
   window.__upgradeStation = () => useGame.getState().upgradeStation();
+
+  window.__kat2 = (kat) => {
+    const g = useGame.getState();
+    if (!g.kat2.acik) g.kat2Ac();
+    const gecis = kat ? useGame.getState().katDegistir(kat) : false;
+    return { kat: useGame.getState().kat, acik: useGame.getState().kat2.acik, gecis };
+  };
 
   window.__teleport = (x: number, z: number) => {
     useGame.setState({ player: [x, 0.6, z] as Vec3 });

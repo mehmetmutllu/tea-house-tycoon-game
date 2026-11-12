@@ -12,6 +12,7 @@ import { activeQuestIndex, completedQuestIds } from './questProgress';
 import type { LevelUpOdul } from './rules';
 import { D } from './decimal';
 import { kaliciOku, kaliciSil, kaliciYaz, kaliciYerelOku } from './kalicilik';
+import { defaultKat2, type Kat2Kayit } from './kat';
 
 /**
  * KAYIT ŞEMASI SÜRÜMÜ. Bir denge sayısı değil, bu dosyanın kendi kavramı — bu yüzden
@@ -295,6 +296,14 @@ export interface SaveData {
    * yoksa başka cihazdaki eski kayıt sıfırlamayı geri alırdı. Additive → sürüm ARTMADI (eksik = 0).
    */
   sifirlamaNo: number;
+  /**
+   * K2-2: oyuncunun bulunduğu kat (1 | 2). Additive → sürüm ARTMADI (`sifirlamaNo` deseni): eski kayıtta
+   * yok → 1. Bilinçli tercih: sürüm artsaydı bu kaydı okuyan ESKİ uygulama yazma kilidine düşerdi
+   * (`kayitKilitli`); additive alanı ise `derinBirlestir` olduğu gibi taşır, eski sürüm de silmez.
+   */
+  kat: number;
+  /** K2-2: Kat 2'nin kendi ilerlemesi (`kat.ts` · `Kat2Kayit`). Additive — eksik alan varsayılanla dolar. */
+  kat2: Kat2Kayit;
   lastSaved: number; // epoch ms
 }
 
@@ -349,6 +358,8 @@ export function defaultSave(): SaveData {
     levelUp: null,
     // Oturumun bildiği sayaç: `kayitVerisi` bu yayılımdan başladığı için yazılan kayıt onu taşır.
     sifirlamaNo,
+    kat: 1,
+    kat2: defaultKat2(),
     lastSaved: Date.now(),
   };
 }
@@ -593,6 +604,8 @@ export function kayitDogrula(d: SaveData): { data: SaveData; red: string[] } {
     kafeAdi: typeof d.kafeAdi === 'string' ? d.kafeAdi : null,
     levelUp,
     sifirlamaNo: Math.floor(negatifsiz(d.sifirlamaNo)),
+    kat: d.kat === 2 ? 2 : 1,
+    kat2: { ...d.kat2, acik: d.kat2.acik === true, padsDone: metinKumesi(d.kat2.padsDone) },
   };
   return { data, red };
 }

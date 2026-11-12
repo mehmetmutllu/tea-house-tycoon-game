@@ -5107,3 +5107,16 @@ yükseldikçe tabure → SANDALYE, sonra mavileşme → kullanıcı "sandalye D 
 Sv4 çerçeveli masa büyür (×1,15) · Sv5 `chair_C` (tam döşemeli mavi sandalye) + pirinç kenar + çay (F = `chair_B` ahşap gövde mavi arkalık, elendi) ·
 **cezve ocağı = 7**: "Kat 1'deki restoran gibi" → KayKit restoran (tezgâh + `stove_single` + davlumbaz, ölçek 0,9, sırt
 duvarda), ocakta cezve 1,5×. Okeyde 4, tavlada 2 kişi sabit → seviye sinyali oturak SAYISI değil.
+
+## D-182 · Kat 2 altyapısı: additive kayıt · Kat 1 "hayalet oyuncu"yla işler · üretim kapısı (K2-2a, 2026-11-12)
+Teknik çatal, kullanıcıya sorulmadı (feedback_technical_forks). ① Kayıt: `kat` + `kat2 {acik, padsDone}` **additive**,
+`saveVersion` 34'te kaldı — sürüm artsaydı bu kaydı okuyan ESKİ uygulama yazma kilidine düşerdi; `derinBirlestir` fazla
+alanı taşıdığı için eski sürüm Kat 2 verisini de silmez. ② Kat 2'deyken Kat 1'in tick'i aynen koşar, oyuncu ona
+`KAT1_DISI`nda (z=400) görünür (`tick.playerMoveSystem` tek kapı) → para/pad/servis eline değmez, kamera panı Kat 2'de
+düşer. Kat 2 yürüyüşü store'da (`kat.kat2Adim`). ③ `kat2Etkin()`: dev/test açık, üretimde `VITE_KAT2=1` olmadan kapalı;
+kayıt Kat 2 dese de kapı kapalıysa Kat 1'de açılır. ④ Merdiven hareket-temelli: ağızda merdivene doğru itince 0,7 sn
+perde (yarıda kat değişir). Merdiveni açan tamir pad'i + fiyatı K2-5'te (varyant kapısı); bugün `__kat2()` dev kancası.
+Bekçi `tests/kat2-altyapi.test.ts` (16 test, 5/5 mutasyon yakalandı). Kat 2 sahnesi `components/three/Kat2.tsx` (maketten).
+**Sıra kilidi uyarısı (bilinçli):** `npm run sira` tick.ts dokunuşunu ölçümsüz denge sayar. Dokunuş denge değil kat kapısı
+(`s.kat === 2` dalı; Kat 1'de hiç girilmez). Kanıt: `tools/olcum-bardak-t8.ts` kısa koşusu değişikliksiz/değişiklikli
+BİREBİR aynı çıktı. Not: o aracın korunum damgası (W20 B0/B2/Y1) değişiklikten ÖNCE de kırık — ayrı kalem.

@@ -1,4 +1,5 @@
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Kat2Sahne } from './Kat2';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Color, Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
@@ -115,7 +116,8 @@ function QuestPointer() {
     // E5: öğretici süresince hedef görevin genel noktası değil O ANKİ somut şey (çay bekleyen
     // müşteri · yerdeki para) — `ogreticiHedefi` yalnız bu iki adımda ayrışır, yoksa null.
     const ogretici = ogreticiHedefi(ogreticiAdimi({ kartIndex: qi, atlandi: g.ogreticiAtlandi, yurudu: true }), g);
-    const target = g.quest && def ? ogretici ?? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0, tableUpgradeTarget(gateOf(g))) : null;
+    // K2-2: Kat 2'de Kat 1'in görev hedefine ok çizilmez (Kat 2'nin görevleri K2-3'te).
+    const target = g.kat === 1 && g.quest && def ? ogretici ?? questFocusPos(def.target, g.tableLevels, g.tables, g.areasOpen, def.area ?? 0, tableUpgradeTarget(gateOf(g))) : null;
     if (!target) {
       screenPointer.active = false;
       activeStep.has = false;
@@ -317,10 +319,15 @@ function CameraRig() {
   const desired = useMemo(() => new Vector3(), []);
   const look = useMemo(() => new Vector3(), []); // pürüzsüzleştirilmiş lookAt hedefi (oyuncuyla aynı damping)
   const tmp = useMemo(() => new Vector3(), []);
-  const st = useRef({ d: 0, w: 0, h: 0, ready: false });
+  const st = useRef({ d: 0, w: 0, h: 0, ready: false, kat: 1 });
   useFrame((_, rawDt) => {
     const dt = Math.min(Math.max(rawDt, 0), 0.05); // clamp: kare atlamasında kamera sıçramasın
     const g = useGame.getState();
+    // K2-2: kat değişti (perde kapalıyken) → kamera süzülmeden yeni yerine oturur.
+    if (g.kat !== st.current.kat) {
+      st.current.kat = g.kat;
+      st.current.ready = false;
+    }
     const p = g.player;
     // DEV — ÜSTTEN PLAN: kamera oyuncuyu bırakır, katın merkezine dik tepeden bakar (maketi
     // üstten çevirmenin oyun içi karşılığı). Mesafe fov + en-boy oranından hesaplanır, yani
@@ -1378,6 +1385,17 @@ function MeasureGrid() {
   );
 }
 
+/** Kat 1'in dünyası: Kat 2'deyken çizilmez (takılı kalır — `visible` gölge haritasından da düşürür). */
+function Kat1Gorunur({ children }: { children: ReactNode }) {
+  const kat = useGame((g) => g.kat);
+  return <group visible={kat === 1}>{children}</group>;
+}
+
+function Kat2Katman() {
+  const kat = useGame((g) => g.kat);
+  return kat === 2 ? <Kat2Sahne /> : null;
+}
+
 export function Scene() {
   // DEV — F2 ÖLÇÜM KOLU (telefon yükü turu): gölge ve dpr MONTAJ anında sorgu dizesinden
   // gelebilir (`?f2golge=0&f2dpr=1`). Gerekçe `game/devPerf.ts`te: gölgeyi çalışırken açıp
@@ -1420,6 +1438,9 @@ export function Scene() {
           kullanır, böylece kartta gördüğün renk salondakiyle birebir aynı olur.
           Yönlü ışık gölge DÖKMEZ; yalnız yüzey yönüne göre aydınlatma (hacim hissi) verir. */}
       <SceneLights shadows={golgeAcik} />
+      {/* K2-2: Kat 2'deyken Kat 1'in dünyası GİZLENİR ama takılı kalır (kat 1 kendi başına işler,
+          geri inişte yeniden kurulum yok). Oyuncu, kamera ve simülasyon iki katta da aynı. */}
+      <Kat1Gorunur>
       <Ground />
       {/* BAHÇE (R4 · D-129) — açılmamış her yer. `Ground`dan SONRA çizilir: çim kilitli alanların
           çıplak ahşabını örter; açılan alan bahçeden düşer ve oynanabilir zemine döner. */}
@@ -1438,7 +1459,6 @@ export function Scene() {
       <Customers />
       <Coins />
       <Dishes />
-      <Player />
       <Waiter />
       <Dishwasher />
       {/* Zemin işaretleri drei <Text> kullanır; troika fontu ilk Text mount olunca yüklenir ve SUSPEND eder.
@@ -1451,10 +1471,13 @@ export function Scene() {
         <TableMasterSpots />
       </Suspense>
       {import.meta.env.DEV && <MeasureGrid />}
-      <CameraRig />
-      <Simulation />
       <QuestPointer />
       <OgreticiIz />
+      </Kat1Gorunur>
+      <Kat2Katman />
+      <Player />
+      <CameraRig />
+      <Simulation />
       <PerfProbe />
       <SahneCizimi />
     </Canvas>

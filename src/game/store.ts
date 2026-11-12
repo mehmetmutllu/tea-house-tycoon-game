@@ -195,6 +195,8 @@ export {
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
+import { GECIS_SN, VARIS, baslangicKati, defaultKat2, kat2Adim, kat2Etkin, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
+import { playerSpeedFor } from '../config/economy.config';
 import { t } from '../i18n';
 
 
@@ -288,6 +290,9 @@ export function kayitVerisi(s: GameState): SaveData {
     ogreticiAtlandi: s.ogreticiAtlandi,
     // A7: alınmamış ₺'li seviye ödülü kayda gider (ekran açıkken kapanırsa yanmasın).
     levelUp: s.levelUp && s.levelUp.amount > 0 ? { ...s.levelUp } : null,
+    // Geçiş sürerken kayıt HEDEF katı yazar (perde inerken kapanırsa oyuncu vardığı katta açılır).
+    kat: s.katGecis?.hedef ?? s.kat,
+    kat2: { ...s.kat2, padsDone: [...s.kat2.padsDone] },
     lastSaved: Date.now(),
   };
 }
@@ -519,6 +524,12 @@ export interface GameState {
   nextId: number;
   inputKeyboard: [number, number];
   inputJoystick: [number, number];
+  /** K2-2: oyuncunun bulunduğu kat. Kat 2'deyken Kat 1 kendi başına işler (`kat.ts`). */
+  kat: KatNo;
+  /** K2-2: Kat 2'nin kaydı (merdiven açık mı + ilerlemesi). */
+  kat2: Kat2Kayit;
+  /** Süren merdiven geçişi (transient): perde iner → kat değişir → perde kalkar. */
+  katGecis: KatGecis | null;
   // Aksiyonlar
   init: () => void;
   tick: (dt: number) => void;
@@ -611,6 +622,10 @@ export interface GameState {
   /** Çevrimdışı ödül ekranı kapatıldı (₺ zaten cüzdanda; ekran bir sonraki dönüşe kadar çıkmaz). */
   claimOffline: (izledi?: boolean) => void;
   hardReset: () => void;
+  /** K2-2: merdiven geçişini başlat (perde iner, kat değişir). Merdiven kapalıysa / geçiş sürüyorsa false. */
+  katDegistir: (hedef: KatNo) => boolean;
+  /** K2-2: merdiveni aç. Bugün yalnız dev kancası/test çağırır — tamir pad'i ve fiyatı K2-5'te (varyant kapısı). */
+  kat2Ac: () => void;
 }
 
 /** A7: kayıttaki bekleyen seviye ödülü — bozuksa yok say (ödül ekranı çöp göstermesin). */
@@ -743,9 +758,13 @@ export const useGame = create<GameState>((set, get) => ({
   nextId: 1,
   inputKeyboard: [0, 0],
   inputJoystick: [0, 0],
+  kat: 1,
+  kat2: defaultKat2(),
+  katGecis: null,
 
   init: () => {
     const save: SaveData = loadSave();
+    const ilkKat = baslangicKati(save.kat, save.kat2);
     // D-015: masa/servis/personel padsDone'dan TÜRETİLİR (ayrı saklanmaz).
     const world: World = deriveWorld(save.padsDone);
     const openSvc = openServices(world.areasOpen);
@@ -831,7 +850,7 @@ export const useGame = create<GameState>((set, get) => ({
       padFills: { ...save.padFills },
       offlineEarned,
       offlineIzleEki,
-      player: [...LAYOUT.player] as Vec3,
+      player: (ilkKat === 2 ? [...VARIS[2]] : [...LAYOUT.player]) as Vec3,
       npcs: [],
       coins: [],
       autoCollectSum: 0,
@@ -943,6 +962,9 @@ export const useGame = create<GameState>((set, get) => ({
       spawnArea: 0,
       saveTimer: SAVE_INTERVAL,
       nextId: 1,
+      kat: ilkKat,
+      kat2: { ...save.kat2, padsDone: [...save.kat2.padsDone] },
+      katGecis: null,
     });
     reklamsizAyarla(save.satin.reklamsiz);
   },
@@ -957,9 +979,43 @@ export const useGame = create<GameState>((set, get) => ({
     const dt = Math.min(Math.max(rawDt, 0), 0.25);
     if (dt <= 0) return;
     const s = get();
+    const gecis = s.katGecis;
 
-    const c = createTickCtx(s, dt);
+    // K2-2: geçiş sürerken girdi yok (perdenin arkasında yürünmez). Kat 2'deyken Kat 1 sistemleri
+    // oyuncuyu `KAT1_DISI`nda görür (`tick.playerMoveSystem` kapısı) — Kat 1 kendi başına işler.
+    const c = createTickCtx(gecis ? { ...s, inputKeyboard: [0, 0], inputJoystick: [0, 0] } : s, dt);
     runTick(c);
+
+    let kat = s.kat;
+    let player = c.player;
+    let girdi: readonly number[] = c.input;
+    let camFocus = c.camFocus;
+    if (kat === 2) {
+      const j = s.inputJoystick;
+      girdi = gecis ? [0, 0] : Math.hypot(j[0], j[1]) > 0.05 ? j : s.inputKeyboard;
+      const hiz = playerSpeedFor(s.charUpgrades.speed) * c.carryMult * dt;
+      const [nx, nz] = kat2Adim(s.player[0], s.player[2], girdi[0] * hiz, girdi[1] * hiz);
+      player = [nx, s.player[1], nz];
+      camFocus = null; // Kat 1'in görev/açılış panları Kat 2'deki kamerayı çekmesin
+    }
+    let katGecis: KatGecis | null = null;
+    if (gecis) {
+      const t = gecis.t + dt;
+      if (gecis.t < GECIS_SN / 2 && t >= GECIS_SN / 2) {
+        // Perde tam indi: kat değişir, oyuncu varış noktasında belirir.
+        kat = gecis.hedef;
+        player = [...VARIS[kat]];
+        camFocus = null;
+      }
+      katGecis = t >= GECIS_SN ? null : { hedef: gecis.hedef, t };
+    } else if (
+      s.kat2.acik &&
+      kat2Etkin() &&
+      (kat === 2 || c.out.areasOpen >= 3) &&
+      merdivenTetik(kat, player[0], player[2], girdi)
+    ) {
+      katGecis = { hedef: kat === 1 ? 2 : 1, t: 0 };
+    }
 
     // GÜN DÖNÜMÜ (D8): `tick.ts`e DOKUNMAZ — denge dosyası değil, store'un defter işi
     // (`saveTimer` deseni). Gün değişmediyse `rollDaily` ÖNCEKİ NESNEYİ döndürür, yani
@@ -1017,9 +1073,11 @@ export const useGame = create<GameState>((set, get) => ({
         questDoneIndex: c.questDoneIndex,
         xp: c.xp,
         quest: c.quest,
-        camFocus: c.camFocus,
+        camFocus,
         camBekleyen: c.camBekleyen,
-        player: c.player,
+        player,
+        kat,
+        katGecis,
         waiters: c.waiters,
         dishwasher: c.dishwasher,
         legen: c.legen,
@@ -1518,6 +1576,18 @@ export const useGame = create<GameState>((set, get) => ({
     writeSave(d);
     get().init();
     set({ notice: { text: t('Bulut kaydı yüklendi'), ttl: 4, kind: 'reveal' } });
+  },
+
+  katDegistir: (hedef) => {
+    const s = get();
+    if (s.katGecis || s.kat === hedef || !s.kat2.acik || !kat2Etkin()) return false;
+    set({ katGecis: { hedef, t: 0 } });
+    return true;
+  },
+
+  kat2Ac: () => {
+    set((s) => ({ kat2: { ...s.kat2, acik: true } }));
+    get().saveNow();
   },
 
   hardReset: () => {

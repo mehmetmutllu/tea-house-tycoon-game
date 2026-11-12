@@ -4,6 +4,7 @@ import { App as CapApp } from '@capacitor/app';
 import { HUD } from './components/ui/HUD';
 import { Joystick } from './components/ui/Joystick';
 import { SplashScreen } from './components/ui/SplashScreen';
+import { KatPerdesi } from './components/ui/KatPerdesi';
 import { kayitVerisi, useGame } from './game/store';
 import { sesiBagla } from './game/audioBridge';
 import { analitigiBagla } from './game/analitik';
@@ -190,6 +191,7 @@ export default function App() {
             <Scene />
           </Suspense>
         </SahneKurtarici>
+        <KatPerdesi />
         <HUD />
         <Joystick />
         <SplashScreen />
