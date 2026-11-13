@@ -64,6 +64,10 @@ android {
         }
     }
     buildTypes {
+        // D-197 deneme APK'sı: mağaza sürümünün yanına kurulur (imza çakışmaz, kayıt ayrı). Yalnız debug.
+        debug {
+            applicationIdSuffix ".deneme"
+        }
         release {
             /*
              * KÜÇÜLTME AÇIK (D-130 · kol V1). Ölçüldü: APK 10,58 → 8,58 MB (−%18,9); kazancın

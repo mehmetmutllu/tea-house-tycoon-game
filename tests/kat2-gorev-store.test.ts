@@ -7,7 +7,8 @@ import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { economyConfig as C } from '../src/config/economy.config';
 import { useGame } from '../src/game/store';
 import { kat2Gorevleri } from '../src/game/kat2Gorev';
-import { VARIS } from '../src/game/kat';
+import { VARIS, merdivenPadAcik } from '../src/game/kat';
+import { kat1OmurgaBitti } from '../src/game/rules';
 import type { Kat2Ayar } from '../src/game/kat2Dongu';
 import type { Vec3 } from '../src/game/types';
 
@@ -63,5 +64,28 @@ describe('Kat 2 görev hattı — store bağlantısı', () => {
     const s = useGame.getState();
     expect(s.kat2.gorev?.idx).toBeGreaterThan(i);
     expect(s.wallet.eq(w0)).toBe(true);
+  });
+
+  it("D-197: banda dokunma kamerayı görevin hedefine kaydırır, odak Kat 2 tick'inde yaşar, girdiyle biter", () => {
+    useGame.getState().kat2Ac();
+    const i = HAT.findIndex((x) => x.hedef.tip === 'pad');
+    const k2 = useGame.getState().kat2;
+    useGame.setState({ kat: 2, player: [...VARIS[2]] as Vec3, kat2: { ...k2, gorev: { idx: i, sayac: {} } }, camFocus: null });
+    useGame.getState().kat2GorevOdak();
+    expect(useGame.getState().camFocus?.kat2).toBe(true);
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().camFocus).not.toBeNull();
+    useGame.setState({ inputKeyboard: [1, 0] });
+    useGame.getState().tick(0.05);
+    expect(useGame.getState().camFocus).toBeNull();
+  });
+
+  it("D-197 deneme kısayolu: Kat 1 bitmiş sayılır, merdiven pad'i açılır, parası cüzdanda", () => {
+    useGame.getState().denemeKat1Bitir();
+    const s = useGame.getState();
+    expect(kat1OmurgaBitti(s.padsDone)).toBe(true);
+    expect(merdivenPadAcik(true, s.kat2)).toBe(true);
+    expect(s.wallet.toNumber()).toBeGreaterThanOrEqual(C.kat2.merdiven.cost);
+    expect(s.questIndex).toBe(C.quests.length);
   });
 });

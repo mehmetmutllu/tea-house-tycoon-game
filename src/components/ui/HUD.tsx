@@ -164,6 +164,8 @@ export function HUD() {
   const kat2de = useGame((s) => s.kat === 2);
   // S3: Kat 2 görev şeridi — kayıt nesnesi yalnız pad/görev değişince yenilenir, görünüm ondan türer.
   const kat2Kayit = useGame((s) => s.kat2);
+  const kat2GorevOdak = useGame((s) => s.kat2GorevOdak);
+  const denemeKat1Bitir = useGame((s) => s.denemeKat1Bitir);
   const kat2Gorev = kat2de ? kat2GorevGorunumu(kat2Kayit, economyConfig.kat2Gorevler, economyConfig.kat2) : null;
   // D-195 (Kat 1'in G-04 + geçiş ritmi aynen): görev bitince bant önce biten görevi "Tamamlandı" gösterir
   // (QUEST_COMPLETE_DUR), sonra kısa boşluk (QUEST_GAP_DUR), sonra sıradaki. Hat mantığı o anda ilerledi — yalnız görsel.
@@ -520,9 +522,8 @@ export function HUD() {
           </div>
         ) : null
       ) : kat2de && kat2Gorev ? (
-        // S3 (ajan D): Kat 2'deyken şerit Kat 2'nin görevini aynı hap diliyle gösterir (D-175). Kamera
-        // odağı Kat 2'de yok (`focusQuest` Kat 1'in) — dokunma bağlanana dek şerit düğme değil.
-        <div className="band" data-testid="kat-bandi" data-gorev={kat2Gorev.id} key={kat2Gorev.id}>
+        // S3: Kat 2'deyken şerit Kat 2'nin görevini aynı hap diliyle gösterir (D-175); dokununca kamera hedefe (D-197).
+        <button className="band" data-testid="kat-bandi" data-gorev={kat2Gorev.id} key={kat2Gorev.id} onClick={kat2GorevOdak}>
           <span className="band-photo">
             <QuestPhoto target={kat2Gorev.foto} size={38} />
           </span>
@@ -540,7 +541,7 @@ export function HUD() {
           <span className="band-reward" data-testid="kat2-quest-reward">
             <CoinIcon size={14} />+{fmt(kat2Gorev.reward)}
           </span>
-        </div>
+        </button>
       ) : kat2de ? (
         <div className="band idle" data-testid="kat-bandi">
           <span className="band-body">
@@ -759,6 +760,17 @@ export function HUD() {
                 {t('Yaz')}
               </button>
             </div>
+            {import.meta.env.VITE_DENEME === '1' && (
+              <div className="setting-row">
+                <span className="setting-label">
+                  {t("Deneme: Kat 1'i bitir")}
+                  <small>{t('Merdivenin önüne atlar (yalnız deneme sürümü)')}</small>
+                </span>
+                <button className="kafe-adi-degistir" data-testid="set-deneme-kat1" onClick={() => { denemeKat1Bitir(); setSheet(null); }}>
+                  {t('Atla')}
+                </button>
+              </div>
+            )}
             {/* E3 (S23 · D-120): ekranın altındaki 525 px'lik ölü alan İÇERİKLE kapanıyor.
                 Ölçüm: içerik 782 px'lik gövdenin yalnız %31'ini dolduruyordu — beş ekranın
                 en boşu buydu. Seçilmeyen kol E2 idi (satırlar ekrana yayılsın): doluluk

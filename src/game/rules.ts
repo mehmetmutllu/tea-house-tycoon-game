@@ -757,6 +757,8 @@ export function questFocusPos(
 export interface CamFocus {
   pos: [number, number, number];
   ttl: number;
+  /** Kat 2'nin görev bandından gelen odak (Kat 2 dalı yalnız bunu korur). */
+  kat2?: boolean;
 }
 export const CAM_FOCUS_TTL = 2.2; // sn — kayma + kısa bekleme; joystick girdisi anında iptal eder
 

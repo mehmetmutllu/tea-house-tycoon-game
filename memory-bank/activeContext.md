@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-13 — Kat 2 sprint S3 bitti: masa Sv · ses · görev hattı/başarım · D-195 · sırada metin turu + 1.1 kapısı)
+## ŞU AN (2026-11-13 — Kat 2 S3 + metin turu bitti · KULLANICI TÜM OYUNU DENİYOR (deneme APK) · yayın onun geri bildiriminden sonra)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -46,9 +46,11 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Kareler `tools/kat2-s3-kare.mjs` · ses sayfası paketleme: esbuild ile `tools/kat2-ses-dinle.html` tek dosyaya.
 
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
-1. ✅ Metin turu bitti (D-196).
-2. Kasa doluluğu görsel işareti (ChatGPT önerisi; "Kat 1 dolu:" yerine) — Kat 1'de karşılığı varsa onu uyarla.
-3. 1.1 yayın turu: `VITE_KAT2=1` üretim kapısı · Game Center başarımları (ASC) + Play listesi arkadaşa · mağaza "Yenilikler".
+1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
+   bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
+   Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).
+2. Geri bildirim turu bitince 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım (ASC) · Play listesi + zip arkadaşa · "Yenilikler".
+3. Not: Kat 1'deki yıkık merdivende sarı-siyah bant var (hafıza: bantlar beğenilmemişti) — kullanıcı denemede söylerse ele al.
 Göz aracı: `node tools/_kat-kare.mjs` · geniş kadraj karşılaştırma (feedback_show_dont_ask).
 
 ## KULLANICIYA HATIRLAT

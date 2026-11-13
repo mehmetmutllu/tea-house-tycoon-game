@@ -490,4 +490,6 @@ export const en: Record<string, string> = {
   "Kat 2'nin tüm görevlerini tamamla.": "Complete all tasks on Floor 2.",
   "Dolu Salonlar": "Packed Game Hall",
   "Kat 2'deki tüm masaları aç.": "Unlock every table on Floor 2.",
+  "Deneme: Kat 1'i bitir": "Test: finish Floor 1",
+  "Merdivenin önüne atlar (yalnız deneme sürümü)": "Jumps to the stairs (test build only)",
 };

@@ -196,11 +196,11 @@ export {
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
-import { GECIS_SN, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
+import { GECIS_SN, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo, OCAKLAR } from './kat';
 import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
-import { kat2Tick, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
-import { kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
+import { kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2Tick, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
+import { kat2Gorevleri, kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
 import { bosKasaOlcum, kasaSiniriOlcumden, kasayaAt, type KasaOlcum } from './kasa';
 import { t } from '../i18n';
 
@@ -554,6 +554,10 @@ export interface GameState {
   addMoney: (amount: number) => void;
   /** Görev barına dokununca: kamera aktif görevin hedefine kayar (görev yoksa no-op). */
   focusQuest: () => void;
+  /** D-197: Kat 2 görev bandına dokunma — Kat 1'in `focusQuest`i gibi kamera görevin hedefine kayar. */
+  kat2GorevOdak: () => void;
+  /** DENEME DERLEMESİ (VITE_DENEME=1, D-197): Kat 1'i bitmiş say + merdivenin önüne koy + merdiven parası. Üretimde düğmesi yok. */
+  denemeKat1Bitir: () => void;
   /** G-63: kamerayı bulaşık tezgâhına çevirir (öğretme kartı açılırken). */
   focusDish: () => void;
   /** Hedef ödülünü topla (D3/D-089). Toplanabilir değilse hiçbir şey yapmaz ve `false` döner. */
@@ -1066,7 +1070,10 @@ export const useGame = create<GameState>((set, get) => ({
       const hiz = playerSpeedFor(s.charUpgrades.speed) * c.carryMult * dt;
       const [nx, nz] = kat2Adim(s.player[0], s.player[2], girdi[0] * hiz, girdi[1] * hiz, kat2AcikAlan(kat2.padsDone), kat2Engeller(kat2.padsDone));
       player = [nx, s.player[1], nz];
-      camFocus = null; // Kat 1'in görev/açılış panları Kat 2'deki kamerayı çekmesin
+      // Kat 1'in görev/açılış panları Kat 2'deki kamerayı çekmesin; Kat 2 bandının odağı (kat2) Kat 1'in kuralıyla yaşar:
+      // süre dolunca ya da girdiyle biter (tick.ts "Kamera odağı" bloğu).
+      const f = s.camFocus;
+      camFocus = f?.kat2 && f.ttl - dt > 0 && Math.hypot(girdi[0], girdi[1]) <= 0.25 ? { ...f, ttl: f.ttl - dt } : null;
       // K2-3: Kat 2'nin döngüsü (Kat 1 arkada `runTick`le işledi; cüzdan ortak).
       const r = kat2Tick(
         kat2Dunya,
@@ -1451,6 +1458,41 @@ export const useGame = create<GameState>((set, get) => ({
   focusDish: () => {
     const p = servicePlace(get().areasOpen).dish;
     set({ camFocus: { pos: [p[0], p[1], p[2]], ttl: CAM_FOCUS_TTL * 2 } });
+  },
+
+  denemeKat1Bitir: () => {
+    const hepsi = (C.pads as readonly { id: string }[]).map((p) => p.id);
+    set((s) => ({
+      padsDone: [...new Set([...s.padsDone, ...hepsi])],
+      questsDone: [...new Set([...s.questsDone, ...C.quests.map((q) => q.id)])],
+      questIndex: C.quests.length,
+      questPhase: 'active',
+      questPhaseT: 0,
+      camFocus: null,
+      player: [MERDIVEN_PAD_YER[0], s.player[1], MERDIVEN_PAD_YER[1] + 2] as Vec3,
+      wallet: Decimal.max(s.wallet, D(KAT2_MERDIVEN.cost)),
+    }));
+    get().saveNow();
+  },
+
+  kat2GorevOdak: () => {
+    const s = get();
+    if (s.kat !== 2) return;
+    const g = kat2Gorevleri(C.kat2Gorevler, KAT2_AYAR)[s.kat2.gorev?.idx ?? 0];
+    if (!g) return;
+    let p: [number, number] | null = null;
+    if (g.hedef.tip === 'pad') {
+      const sira = kat2SiradakiPad(KAT2_AYAR, s.kat2.padsDone);
+      if (sira) p = kat2PadYeri(sira.id);
+    } else if (g.hedef.tip === 'masaSv') {
+      const t = kat2SvCanliTetik(KAT2_AYAR, s.kat2.padsDone, s.kat2.masaSv ?? {}, true)[0];
+      if (t) p = [t.x, t.z];
+    } else {
+      // Sayaç görevleri (kahve/servis/para): kahvenin çıktığı yer — açık ilk ocak (Kat 1'de ocak görevi ocağa döner).
+      const o = OCAKLAR.find((x) => s.kat2.padsDone.includes(x.id));
+      if (o) p = [o.al[0], o.al[1]];
+    }
+    if (p) set({ camFocus: { pos: [p[0], 0, p[1]], ttl: CAM_FOCUS_TTL, kat2: true } });
   },
 
   focusQuest: () => {

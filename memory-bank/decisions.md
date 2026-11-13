@@ -5230,3 +5230,10 @@ Görev: "Masanın parasını topla" · lakap MERDİVEN · "5 misafir grubunu ağ
 "Tavla masalarına 10 kahve götür" · "Tavla köşesinde 6 masaya ulaş" (EN eşleri `en.ts`). Başarım EN "unlock" dili; TR "tüm/tamamla".
 ChatGPT "2. kat" önerdi → oyunun her yerdeki adı **Kat 2** korundu. "Dolu Salonlar" EN = **Packed Game Hall** (Full House Kat 1'in
 "Dolu Mekân"ında). Lavabo = Restroom kalır (oda tuvalet; ChatGPT'nin Sink notu Kat 1'de de böyle karara bağlıydı).
+
+## D-197 · Kat 2 bant odağı + tam oyun deneme APK'sı (2026-11-13)
+- Kat 2 görev bandına dokununca kamera hedefe kayar (Kat 1 `focusQuest` karşılığı; `kat2GorevOdak`, odak `kat2` bayraklı,
+  girdiyle/süreyle biter). Kullanıcı kuralı: Kat 2 = Kat 1 uyarlaması.
+- Kullanıcı yayından önce tüm oyunu (Kat 1 + Kat 2) Android'de deneyecek: debug APK `applicationIdSuffix ".deneme"` (mağaza
+  sürümünün yanına kurulur), `VITE_KAT2=1 VITE_DENEME=1 npm run apk`; derlemede google-services.json'a geçici `.deneme`
+  istemcisi eklenip geri alınır. Ayarlar'da yalnız deneme derlemesinde "Deneme: Kat 1'i bitir" (merdiven önü + 9.400 coin).
