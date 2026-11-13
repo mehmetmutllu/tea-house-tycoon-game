@@ -10,7 +10,8 @@
 import { useGame } from '../../../game/store';
 import { economyConfig } from '../../../config/economy.config';
 import { fmt } from '../../../game/decimal';
-import { kat2SvTetikleri, type Kat2SvTetik } from '../../../game/kat2Dongu';
+import { kat2SvCanliTetik, type Kat2Ayar, type Kat2SvTetik } from '../../../game/kat2Dongu';
+import { kat2SvCanli } from '../../../game/kat2Gorev';
 import { MASA_ISARET_R } from '../../../game/markerFrame';
 import { GroundMarker } from '../GroundMarker';
 import { useMasaSvleri } from './masaSv';
@@ -35,10 +36,14 @@ function SvIsareti({ t }: { t: Kat2SvTetik }) {
   );
 }
 
+const AYAR = economyConfig.kat2 as Kat2Ayar;
+
 export function Kat2SvIsaretleri() {
   const padsDone = useGame((s) => s.kat2.padsDone);
   const masaSv = useMasaSvleri();
-  const tetikler = kat2SvTetikleri(economyConfig.kat2, padsDone, masaSv);
+  // D-124 + D-142 karşılığı: tek masa, yalnız Sv görevi aktifken (ya da hat bitince) — tick ile aynı kural.
+  const canli = useGame((s) => kat2SvCanli(s.kat2, economyConfig.kat2Gorevler, AYAR));
+  const tetikler = kat2SvCanliTetik(AYAR, padsDone, masaSv, canli);
   return (
     <>
       {tetikler.map((t) => (

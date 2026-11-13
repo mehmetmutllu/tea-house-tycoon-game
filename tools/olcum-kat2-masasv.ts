@@ -29,7 +29,7 @@ import { KISA, botDamgasi, damga, damgaOzeti, izOlustur, kipBandi, kisaDeger, ko
 import { attractRadiusFor, charMaxTier, economyConfig as C, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
 import { useGame } from '../src/game/store';
 import { AGIZ, GECIS_SN, KAT2_KISI, KAT2_MASALAR, KAT2_SV_MAX, OCAKLAR, OKEY_ERISIM, TAVLA_ERISIM, VARIS, kat2AcikAlan, kat2Adim, type MasaTuru } from '../src/game/kat';
-import { kat2MasaYeri, kat2SvTetikleri, kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya, type Kat2SvKol } from '../src/game/kat2Dongu';
+import { kat2MasaYeri, kat2SvCanliTetik, kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya, type Kat2SvKol } from '../src/game/kat2Dongu';
 import { BAND, LAYOUT } from '../src/game/layout';
 import { D } from '../src/game/decimal';
 import { kasaBosalt, kasaDolu, kasaSiniri, kasayaAt } from '../src/game/kasa';
@@ -296,8 +296,9 @@ function kos(ayar: Kat2Ayar, o: { masaSv: Record<string, number>; sure: number; 
       continue;
     }
 
-    // Hedef seçimi: Sv (parası yetiyorsa, en ucuzu) → Kat 1 kasası → yığın → kahve servisi → ocak.
-    const tetik = o.alir && MUT !== 'almaz' ? kat2SvTetikleri(ayar, PADS, masaSv) : [];
+    // Hedef seçimi: Sv (parası yetiyorsa; S3b: oyunun kuralı TEK HEDEF — D-124 karşılığı `kat2SvCanliTetik`) → Kat 1 kasası →
+    // yığın → kahve servisi → ocak. Ölçüm Sv evresinde: görev hattı Sv görevinde/bitmiş (D-142 kapısı açık).
+    const tetik = o.alir && MUT !== 'almaz' ? kat2SvCanliTetik(ayar, PADS, masaSv) : [];
     const ucuz = tetik.length ? tetik.reduce((a, b) => (a.fiyat - (d.padFill[a.id] ?? 0) <= b.fiyat - (d.padFill[b.id] ?? 0) ? a : b)) : null;
     const kalan = ucuz ? ucuz.fiyat - (d.padFill[ucuz.id] ?? 0) : Infinity;
     const kasaN = kasa.toNumber();
@@ -384,8 +385,8 @@ const t0 = Date.now();
 console.log('=== S3 — KAT 2 MASA SEVİYESİ (Sv1-5): ne artsın, ne kadar tutsun ===');
 console.log(`Kip: ${KISA ? 'kisa' : 'tam'} · dt ${DT} · plato ${PLATO_ISINMA / 60}+${PLATO_SURE / 60} dk · ilerleme ufku ${UFUK / 3600} sa${MUT ? ` · MUTASYON ${MUT}` : ''}`);
 console.log(`Kat 2 zinciri BİTMİŞ (config D-192: ${MASALAR.length} masa = ${N_OKEY} okey + ${N_TAVLA} tavla, 2 ocak, lavabo, garson D-189) · ${SV_SAYI} Sv alımı.`);
-console.log(`Bot: hız ${HIZ} · tepsi ${TEPSI} · mıknatıs ${MIKNATIS} · Sv dolumu ${3.5} sn (pad kuralı) · alım sırası: en ucuz tetik önce.`);
-damga('config\'te masaSv YOK (varyant kapısı)', !(C.kat2 as unknown as Kat2Ayar).masaSv);
+console.log(`Bot: hız ${HIZ} · tepsi ${TEPSI} · mıknatıs ${MIKNATIS} · Sv dolumu ${3.5} sn (pad kuralı) · alım sırası: oyunun kuralı TEK HEDEF (D-124 karşılığı, D-195).`);
+
 
 const { iz: IZ1, r1Dk } = kat1Izi();
 const SINIR = kasaSiniri(Math.round(r1Dk), KASA_DK)!;
@@ -491,6 +492,25 @@ function fiyatlar(k: KolTanim, e: Egri): Record<MasaTuru, number[]> {
   return { okey: tur('okey'), tavla: tur('tavla') };
 }
 const EGRILER: Egri[] = ['SB9', 'SB3', 'SB3T', 'GEO'];
+// D-195 sonrası: karar config'te — damga "config = seçilen kol (UG/SB3T)"; kolların hepsi config'i ezerek ölçülür.
+{
+  const k = KOLLAR.find((x) => x.ad === 'UG')!;
+  const f = fiyatlar(k, 'SB3T');
+  const c = (C.kat2 as unknown as Kat2Ayar).masaSv;
+  const es = (a: readonly number[] | undefined, b: readonly number[] | undefined) => JSON.stringify(a ?? []) === JSON.stringify(b ?? []);
+  const ayni = !!c && (['okey', 'tavla'] as MasaTuru[]).every((t) =>
+    es(c[t].fiyat, f[t]) && es(c[t].ucretCarpan, k.carp[t].ucretCarpan) && es(c[t].gelisAralikCarpan, k.carp[t].gelisAralikCarpan));
+  damga('config masaSv = karar D-195 (UG/SB3T)', ayni);
+}
+// KARAR SONRASI: `OLCUM=tam KOL_DOK=UG/SB3T` (fiyat ölçülen gelirden: kisa kipte farklı çıkar!) → seçilen kolun config değerini (Kat2Ayar.masaSv) JSON basar, ölçüm koşmaz.
+if (process.env.KOL_DOK) {
+  const [kAd, eAd] = process.env.KOL_DOK.split('/');
+  const k = KOLLAR.find((x) => x.ad === kAd)!;
+  const f = fiyatlar(k, eAd as Egri);
+  const kol = (t: MasaTuru) => ({ fiyat: f[t], ucretCarpan: k.carp[t].ucretCarpan ?? BIR, kahveAralikCarpan: k.carp[t].kahveAralikCarpan ?? BIR, gelisAralikCarpan: k.carp[t].gelisAralikCarpan ?? BIR });
+  console.log(JSON.stringify({ okey: kol('okey'), tavla: kol('tavla') }));
+  process.exit(0);
+}
 const ILERLEME: { k: KolTanim; e: Egri }[] = KISA
   ? [{ k: KOLLAR.find((x) => x.ad === 'U')!, e: 'SB3' }, { k: KOLLAR.find((x) => x.ad === 'UK')!, e: 'SB3' }]
   : KOLLAR.flatMap((k) => (k.tur === 'tek' ? (['SB9', 'SB3'] as Egri[]) : EGRILER).map((e) => ({ k, e })));

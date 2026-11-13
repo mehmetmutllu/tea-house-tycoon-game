@@ -135,6 +135,23 @@ Açık sorular (karar paketine):
 2. Sv tetiği masa açılır açılmaz mı görünsün (bugünkü kod), yoksa zincir bitince mi? Ölçüm zincir bitmiş hâlde; zincir
    sürerken Sv görünürse oyuncu pad ile Sv arasında bölünür (D-124 Kat 1'de "tek hedef" kuralı vardı).
 
-## §Karar
+## §Karar (D-195, 2026-11-13)
 
-_(boş — S3 karar paketinde kullanıcı seçer)_
+Kullanıcı **UG + SB3T**'yi seçti (öneri). Çerçeve sorusuna cevap: *"kat 2 sistemi ile kat 1 sistemi aynı olacak, uyarla"* →
+Sv noktası D-124 gibi **tek hedef** ("başladığını bitir", açılış sırası) + D-142 gibi **görev kapısı** (Sv görevinde ya da hat
+bitince). Config `kat2.masaSv` = `OLCUM=tam KOL_DOK=UG/SB3T` çıktısı (okey 4.300→7.300 · tavla 2.300→3.800).
+
+## §Uygulama — final tam koşu (`docs/olcum-kat2-masasv-final.txt`, damgalar temiz, "config = karar" damgası dahil)
+
+Bot artık oyunun kuralıyla (tek hedef) alıyor; önceki tablo "en ucuz tetik önce" idi.
+
+| UG/SB3T | toplam | bitiş | medyan bekleyiş | en uzun (#) | p90 | son saat coin/dk |
+|---|---|---|---|---|---|---|
+| serbest sıra (karar öncesi) | 378.400 | 5,32 sa | 3,5 dk | 5,0 (#79) | 4,5 | 1.628 |
+| **tek hedef (oyun kuralı)** | 378.400 | **5,19 sa** | **2,5 dk** | **9,1 (#4)** | 6,6 | 1.688 |
+
+- Tek hedef süreyi kısalttı (−0,13 sa) ve medyanı düşürdü — Kat 1'deki D-124 bulgusuyla aynı yön (kapının tempo bedeli yok).
+- Bedeli: ilk masanın Sv4'ü (#4, okey 6.300) erken geliyor → en uzun bekleyiş 9,1 dk (serbestte ucuz tavla araya giriyordu).
+  Kat 1'de de "başladığını bitir" bu bekleyişi kabul ediyor; eşik değil, not.
+- Plato değişmedi (×2,31, %100 — Sv'nin getirisi sıradan bağımsız).
+- Mutasyon: "config = karar" damgası config'te kısa-kip fiyatı (tavla 2.200) yakaladı → düzeltildi (2.300).

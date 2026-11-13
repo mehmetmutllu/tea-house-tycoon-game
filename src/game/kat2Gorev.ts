@@ -354,3 +354,13 @@ export function kat2GorevHatasi(
     return 'her salon açılışının kendi görevi olmalı';
   return null;
 }
+
+/**
+ * S3 — D-142'nin Kat 2 karşılığı (Kat 1: `rules.upgradeSpotLive`): masa Sv noktası yalnız görev hattı bir Sv
+ * görevindeyken canlıdır; hat bitince hep canlı. Pad'lerde zaten tek hedef var — Sv de görev ritmini bozmaz.
+ */
+export function kat2SvCanli(durum: Kat2GorevDurum, gorevler: readonly Kat2GorevDef[], ayar: Pick<Kat2Ayar, 'masaSv'>): boolean {
+  const hat = kat2Gorevleri(gorevler, ayar);
+  const g = hat[durum.gorev?.idx ?? 0];
+  return !g || svGorevi(g);
+}

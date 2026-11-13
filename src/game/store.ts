@@ -200,7 +200,7 @@ import { GECIS_SN, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangic
 import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
 import { kat2Tick, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
-import { kat2GorevHizala, kat2GorevIlerlet, type Kat2GorevOlay } from './kat2Gorev';
+import { kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
 import { bosKasaOlcum, kasaSiniriOlcumden, kasayaAt, type KasaOlcum } from './kasa';
 import { t } from '../i18n';
 
@@ -1079,6 +1079,7 @@ export const useGame = create<GameState>((set, get) => ({
           tepsiKap: trayCapacityFor(s.charUpgrades.tray),
           miknatis: attractRadiusFor(s.charUpgrades.magnet),
           masaSv: kat2.masaSv,
+          svCanli: kat2SvCanli(kat2, C.kat2Gorevler, KAT2_AYAR),
         },
         dt,
         KAT2_AYAR,

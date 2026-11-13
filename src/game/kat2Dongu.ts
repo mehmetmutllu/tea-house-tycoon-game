@@ -93,17 +93,17 @@ export interface Kat2Ayar {
  * indeks 0'ı 1,0 (Sv1 = bugünkü masa). `fiyat[i]` = Sv(i+1)'e ÇIKIŞIN fiyatı → `fiyat[0]` kullanılmaz (0).
  */
 export interface Kat2SvKol {
-  fiyat: number[];
+  fiyat: readonly number[];
   /** Masa ücreti × (₺/müşteri). */
-  ucretCarpan: number[];
+  ucretCarpan: readonly number[];
   /** Kahve isteme aralığı × (< 1 = daha sık kahve → daha çok servis). */
-  kahveAralikCarpan: number[];
+  kahveAralikCarpan: readonly number[];
   /** Boş masaya grubun gelme aralığı × (< 1 = masa daha az boş kalır). */
-  gelisAralikCarpan: number[];
+  gelisAralikCarpan: readonly number[];
   /** Opsiyonel (ölçüm kolu): kahve fiyatı × (yoksa 1). */
-  kahveFiyatCarpan?: number[];
+  kahveFiyatCarpan?: readonly number[];
   /** Opsiyonel (ölçüm kolu): oyun süresi × (< 1 = grup daha çabuk kalkar; yoksa 1). */
-  oturumCarpan?: number[];
+  oturumCarpan?: readonly number[];
   /** Sv tetiğinin TAM dolum süresi (sn; yoksa `SV_DOLUM_SN`). */
   dolumSn?: number;
 }
@@ -208,6 +208,8 @@ export interface Kat2Girdi {
   miknatis: number;
   /** S3: masa id → Sv (1..5; yok = 1). Yalnız `Kat2Ayar.masaSv` varken etkili. */
   masaSv?: Readonly<Record<string, number>>;
+  /** S3 / D-142 Kat 1 karşılığı: Sv noktası şu an canlı mı (görev hattı Sv görevinde ya da hat bitti). Yok = canlı. */
+  svCanli?: boolean;
 }
 
 export interface Kat2Cikti {
@@ -437,6 +439,31 @@ export function kat2SvTetikleri(ayar: Kat2Ayar, padsDone: readonly string[], mas
   return out;
 }
 
+/**
+ * S3 — D-124'ün Kat 2 karşılığı (kullanıcı: "Kat 2 sistemi Kat 1 ile aynı"): aynı anda TEK masanın Sv noktası
+ * canlıdır, sıra "başladığını bitir" — yarım kalmış (1 < Sv < tavan) masalardan açılış sırasında ilki, yoksa
+ * el değmemiş ilk masa. Açılış sırası `padsDone` sırası (Kat 1'de masa indeksi = açılış sırası).
+ */
+export function kat2SvHedef(ayar: Kat2Ayar, padsDone: readonly string[], masaSv: Readonly<Record<string, number>>): string | null {
+  if (!ayar.masaSv) return null;
+  let elDegmemis: string | null = null;
+  for (const id of padsDone) {
+    if (!MASA_YERI.has(id)) continue;
+    const sv = masaSvOku(masaSv, id);
+    if (sv >= KAT2_SV_MAX) continue;
+    if (sv > 1) return id;
+    if (elDegmemis == null) elDegmemis = id;
+  }
+  return elDegmemis;
+}
+
+/** Canlı Sv noktası (en fazla bir): `kat2SvHedef`in tetiği; `canli` false ise (D-142 görev kapısı) hiçbiri. */
+export function kat2SvCanliTetik(ayar: Kat2Ayar, padsDone: readonly string[], masaSv: Readonly<Record<string, number>>, canli = true): Kat2SvTetik[] {
+  if (!canli) return [];
+  const h = kat2SvHedef(ayar, padsDone, masaSv);
+  return h ? kat2SvTetikleri(ayar, padsDone, masaSv).filter((t) => t.masaId === h) : [];
+}
+
 // ---- KAT 2 GARSONU (S2) -------------------------------------------------------------------------
 
 /** i. garsonun evi (pad'in yeri; ikinci garson bir adım SOLUNDA — sağı iç tavla sütunu). */
@@ -594,7 +621,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
   // ---- MASA Sv (S3): oyuncunun durduğu Sv çerçevesi cüzdandan dolar (pad deseni); dolunca masa olaya
   // yazılır, Sv'yi çağıran artırır. Çerçeveler birbirine değmez → en fazla biri.
   if (ayar.masaSv) {
-    for (const tt of kat2SvTetikleri(ayar, padsDone, g.masaSv ?? {})) {
+    for (const tt of kat2SvCanliTetik(ayar, padsDone, g.masaSv ?? {}, g.svCanli ?? true)) {
       if (!inFrame(g.x, g.z, [tt.x, 0, tt.z], { hw: tt.w / 2, hh: tt.d / 2 })) continue;
       let fill = d.padFill[tt.id] ?? 0;
       if (g.durdu) {

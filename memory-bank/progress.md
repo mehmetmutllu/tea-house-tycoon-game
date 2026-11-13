@@ -47,6 +47,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-13 (6.): ✅ K2-6 — D-191 mantığı koda: N7 · geçitsiz duvar · 2. ocak bantta · hazır masa+ocak · lavabo Kat 1 gibi · merdiven pad'i 9.400 · zincir SB9-L1 4,90 sa · D-192 · bekçi 15 test, mutasyon 4/4 · vitest 2002 · duman 77/77 · sıradaki: görsel parça
   · 2026-11-13 (7.): ✅ K2-6 görsel — tam boy sıva duvar (açılınca gömülür) · P3 perde simgeli levha (Kat 1 dahil) · Kat 2 lavabo odası + kaba inşaat · merdiven dönüşüm anı · yol bekçisi N7 (mutasyon 2/2) · D-193 · vitest 2006 · duman 77/77 · sıradaki: Kat 2 metinleri ChatGPT + K2 kalan
   · 2026-11-13 (8.): ✅ Kat 2 metinleri — ChatGPT mikrometin turu: bant "Oyun Salonu" · Coffee Station · Okey Room · Collected! · Garson EN her yerde Server · D-193 görseli onaylandı · D-194 · vitest 2006 · duman 77/77 · sıradaki: K2 kalan seçimi
+  · 2026-11-13 (9.): ✅ Kat 2 sprint S3 — 4 paralel ajan: masa Sv1-5 (UG/SB3T, Kat 1'in tek hedef + görev kapısı) · Kat 2 sesleri · görev hattı 18+2 + kutlama · 6 başarım · analitik · D-195 · vitest 2095 · duman 78/78 · sıradaki: metin turu + 1.1 kapısı
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.

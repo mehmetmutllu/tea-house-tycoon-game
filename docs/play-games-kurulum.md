@@ -16,7 +16,7 @@ kurulmaz, Ayarlar'da bölüm görünmez, oyun onsuz oynanır (emülatörde doğr
    - **Debug anahtarı**: `npm run apk` ile kurulan geliştirme APK'sı için.
    (Yükleme ve debug SHA-1'leri oturumda verildi; `keytool -list -v` ile yeniden alınır.)
 3. **Özellikler → Kayıtlı oyunlar (Saved Games): AÇIK.** Kapalıysa bulut kaydı çalışmaz.
-4. **Başarımlar:** aşağıdaki 19 satırı gir (ad · açıklama · puan). Her başarım **512×512 PNG simge** ister
+4. **Başarımlar:** aşağıdaki 25 satırı gir (toplam 1000 puan; D-195: Kat 2'nin 6 başarımı için Kat 1'in altı büyüğü 25'er indi) (ad · açıklama · puan). Her başarım **512×512 PNG simge** ister
    (simgeleri istersen ben hazırlarım). Puanların toplamı tam **1000** (Play'in tavanı).
 5. **Test kullanıcıları:** yayımlanmamış Play Games yapılandırması yalnız test hesaplarında çalışır → kendi Google
    hesabını *Test kullanıcıları*'na ekle.
@@ -38,17 +38,23 @@ kurulmaz, Ayarlar'da bölüm görünmez, oyun onsuz oynanır (emülatörde doğr
 | seviye_10 | Mahallenin Gözdesi | Seviye 10'a ulaş. | 30 |
 | servis_100 | Çaycı Çırağı | 100 servis yap. | 25 |
 | servis_1000 | Semaver Başında | 1.000 servis yap. | 50 |
-| servis_6000 | Mahallenin Çaycısı | 6.000 servis yap. | 100 |
+| servis_6000 | Mahallenin Çaycısı | 6.000 servis yap. | 75 |
 | mekan_10 | Büyüyen Mekân | 10 nokta aç. | 50 |
-| mekan_24 | Dolu Kıraathane | 24 nokta aç. | 100 |
+| mekan_24 | Dolu Kıraathane | 24 nokta aç. | 75 |
 | kazanc_10k | Kasa Doluyor | Toplam 10.000 ₺ kazan. | 25 |
 | kazanc_200k | Esnaf | Toplam 200.000 ₺ kazan. | 50 |
-| kazanc_600k | Köşenin Sahibi | Toplam 600.000 ₺ kazan. | 100 |
+| kazanc_600k | Köşenin Sahibi | Toplam 600.000 ₺ kazan. | 75 |
 | ilk_usta | Usta Dokunuşu | İlk Usta yükseltmesini al. | 50 |
 | masa_8 | Özenli Masalar | 8 masayı son seviyeye çıkar. | 75 |
-| masa_20 | Eksiksiz Salon | 20 masayı son seviyeye çıkar. | 100 |
-| gorev_hatti | Hepsi Tamam | Bütün görevleri bitir. | 75 |
-| koleksiyon | Koleksiyoncu | Bütün hedefleri topla. | 100 |
+| masa_20 | Eksiksiz Salon | 20 masayı son seviyeye çıkar. | 75 |
+| gorev_hatti | Hepsi Tamam | Bütün görevleri bitir. | 50 |
+| koleksiyon | Koleksiyoncu | Bütün hedefleri topla. | 75 |
+| kat2_ac | Yukarı Kat | Merdiveni onar, Kat 2'yi aç. | 20 |
+| kat2_ilk_masa | Okey Başlasın | Kat 2'de ilk yeni masanı aç. | 10 |
+| kat2_tavla | Tavla Köşesi | Tavla köşesini aç. | 25 |
+| kat2_gozde_masa | Gözde Masa | Kat 2'de bir masayı Seviye 5'e çıkar. | 25 |
+| kat2_gorev | Üst Kat Tamam | Kat 2'nin bütün görevlerini bitir. | 30 |
+| kat2_tamam | Dolu Salonlar | Kat 2'nin bütün masalarını aç. | 40 |
 
 Kaynak `src/config/playGames.config.ts`; tablo oradan kopyalandı, değişirse ikisi birlikte güncellenir.
 

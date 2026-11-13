@@ -281,3 +281,20 @@ describe('Kat 2 analitik olayları', () => {
     expect(adlar(kesit(), kesit({ kat2GorevIdx: 6 }))).toEqual([]);
   });
 });
+
+// S3b / D-195: D-142'nin Kat 2 karşılığı — Sv noktası yalnız Sv görevindeyken ya da hat bitince canlı.
+import { kat2SvCanli as svCanli, kat2Gorevleri as hatOf } from '../src/game/kat2Gorev';
+import { economyConfig as CFG } from '../src/config/economy.config';
+import type { Kat2Ayar as K2A } from '../src/game/kat2Dongu';
+describe('kat2SvCanli (D-142 karşılığı)', () => {
+  const ayar = CFG.kat2 as K2A;
+  const hat = hatOf(CFG.kat2Gorevler, ayar);
+  const svIdx = hat.findIndex((g) => g.hedef.tip === 'masaSv');
+  it('hat başında kapalı, Sv görevinde açık, hat bitince açık', () => {
+    expect(svIdx).toBeGreaterThan(0);
+    expect(svCanli({ padsDone: [], gorev: { idx: 0, sayac: {} } }, CFG.kat2Gorevler, ayar)).toBe(false);
+    expect(svCanli({ padsDone: [], gorev: { idx: svIdx - 1, sayac: {} } }, CFG.kat2Gorevler, ayar)).toBe(false);
+    expect(svCanli({ padsDone: [], gorev: { idx: svIdx, sayac: {} } }, CFG.kat2Gorevler, ayar)).toBe(true);
+    expect(svCanli({ padsDone: [], gorev: { idx: hat.length, sayac: {} } }, CFG.kat2Gorevler, ayar)).toBe(true);
+  });
+});

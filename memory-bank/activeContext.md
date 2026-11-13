@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-13 — Kat 2 metinleri D-194 kodda, görsel D-193 onaylandı · sırada K2 kalan seçimi · iOS 1.0.7 incelemede)
+## ŞU AN (2026-11-13 — Kat 2 sprint S3 bitti: masa Sv · ses · görev hattı/başarım · D-195 · sırada metin turu + 1.1 kapısı)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -20,8 +20,6 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - K2-2b: Kat 1'de `MerdivenTamir` (kırmızı yolluklu — kullanıcı onayladı, kareler artifact 5urr3ut2YGwzVNrwigG1MU) · Kat 2'de kat bandı
   (`data-testid="kat-bandi"`) + Kat 1 ipuçları susar · `__devPlan` sis düzeltmesi. `__game().merdivenTamirli`.
 - Bekçi `tests/kat2-altyapi.test.ts` 19 test · duman 77/77 + 4/4 · vitest 1904.
-- Göz aracı: `node tools/_kat-kare.mjs <klasör> x '[["kat2"],["gec"],["tp",x,z],["js","..."],["kare","ad",ms]]'`.
-- Kat 2 metni EN dahil yayından önce ChatGPT mikrometin turuna girer.
 
 ## ✅ Kat 2 sprint S2 kapandı (2026-11-13) · D-188 · D-189 · D-190 — üretimde kapı kapalı
 - Kodda: kasa + çevrimdışı (D-185) · tavla/2. ocak/garson mantığı (D-186) · **pad fiyatları SB9** (D-188, config, bekçi
@@ -40,14 +38,17 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Bekçiler: `tests/kat2-akis.test.ts` · `tests/kat2-yol.test.ts` (oturak yerleri artık `kat2/yol.ts`te).
 - Dev: `__kat2()` kat açar · `__kat2Pad(id)` Kat 2 pad'ini parasız bitirir · geniş kare `__devCam({distMul:2.2})`.
 
-## ✅ KAT 2 METİNLERİ (D-194) — ChatGPT turu, sayfa F6UeznpRKocL8zLnJC2P39
-- Bant "Kat 2 — Oyun Salonu" · EN Coffee Station · Okey Room · Collected! · Garson EN her yerde **Server**.
-- D-193 görseli kullanıcı onayladı. Okey/mutfak levha simgesi bugünkü akışta görünmüyor (yedek).
-- Kare notu: Kat 2'de `__devCam` ve `__teleport` kadrajı değiştirmedi → geniş kare için `__sinema({pos,bak,fov})` kullan.
+## ✅ KAT 2 SPRINT S3 (D-195) — defter `docs/sprintler/kat2-S3-defter.md` · üretimde kapı kapalı
+- Masa Sv1-5 = ücret + geliş (UG/SB3T, config `kat2.masaSv`), Kat 1 kuralı: tek hedef (D-124) + görev kapısı (D-142) ·
+  tavla Sv4 koyu cila · Kat 2 sesleri (takırtı + ilk çıkış Aday 2) · görev hattı 18+2 + Kat 1 kutlama ritmi · 6 başarım ·
+  analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
+- Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
+- Kareler `tools/kat2-s3-kare.mjs` · ses sayfası paketleme: esbuild ile `tools/kat2-ses-dinle.html` tek dosyaya.
 
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
-1. `docs/kat2-plan.md`'de K2 kalan kalemler (balkon? · yayın kapısı · kasa doluluğu görsel işaret — ChatGPT önerisi) →
-   sonraki tur seçimi (karar paketi, sade + örnekli).
+1. ChatGPT mikrometin turu: Kat 2 görev metinleri (20 + lakaplar) + 6 başarım TR/EN (taslak EN `en.ts` sonunda).
+2. Kasa doluluğu görsel işareti (ChatGPT önerisi; "Kat 1 dolu:" yerine) — Kat 1'de karşılığı varsa onu uyarla.
+3. 1.1 yayın turu: `VITE_KAT2=1` üretim kapısı · Game Center başarımları (ASC) + Play listesi arkadaşa · mağaza "Yenilikler".
 Göz aracı: `node tools/_kat-kare.mjs` · geniş kadraj karşılaştırma (feedback_show_dont_ask).
 
 ## KULLANICIYA HATIRLAT

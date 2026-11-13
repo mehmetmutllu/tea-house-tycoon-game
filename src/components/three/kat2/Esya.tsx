@@ -40,7 +40,7 @@ const KOYU = '#5d4037';
  */
 type Oturak = 'chair_stool_wood' | 'chair_stool' | 'chair_A_wood' | 'chair_A' | 'chair_C';
 interface OkeyGorunus { cerceve: boolean; oturak: Oturak; boy: number; pirinc: boolean; cay: boolean }
-interface TavlaGorunus { kakma: boolean; oturak: Oturak; boy: number; pirinc: boolean; cay: boolean }
+interface TavlaGorunus { kakma: boolean; oturak: Oturak; boy: number; cila: boolean; pirinc: boolean; cay: boolean }
 const OKEY_SV: readonly OkeyGorunus[] = [
   { cerceve: false, oturak: 'chair_stool_wood', boy: 1, pirinc: false, cay: false },
   { cerceve: false, oturak: 'chair_A_wood', boy: 1, pirinc: false, cay: false },
@@ -48,12 +48,13 @@ const OKEY_SV: readonly OkeyGorunus[] = [
   { cerceve: true, oturak: 'chair_A', boy: 1.15, pirinc: false, cay: false },
   { cerceve: true, oturak: 'chair_C', boy: 1.15, pirinc: true, cay: true },
 ];
+// D-195: Sv4 yalnız ×1,2 büyüme oyun mesafesinde okunmuyordu → ikinci sinyal: masa üstü KOYU CİLA (renk yalnız üst yüzey).
 const TAVLA_SV: readonly TavlaGorunus[] = [
-  { kakma: false, oturak: 'chair_stool_wood', boy: 1, pirinc: false, cay: false },
-  { kakma: true, oturak: 'chair_stool_wood', boy: 1, pirinc: false, cay: false },
-  { kakma: true, oturak: 'chair_stool', boy: 1, pirinc: false, cay: false },
-  { kakma: true, oturak: 'chair_stool', boy: 1.2, pirinc: false, cay: false },
-  { kakma: true, oturak: 'chair_stool', boy: 1.2, pirinc: true, cay: true },
+  { kakma: false, oturak: 'chair_stool_wood', boy: 1, cila: false, pirinc: false, cay: false },
+  { kakma: true, oturak: 'chair_stool_wood', boy: 1, cila: false, pirinc: false, cay: false },
+  { kakma: true, oturak: 'chair_stool', boy: 1, cila: false, pirinc: false, cay: false },
+  { kakma: true, oturak: 'chair_stool', boy: 1.2, cila: true, pirinc: false, cay: false },
+  { kakma: true, oturak: 'chair_stool', boy: 1.2, cila: true, pirinc: true, cay: true },
 ];
 /** Seviye 1..5'e sıkıştırılır (kayıt bozuksa da çizim düşmez). */
 const svi = (sv: number) => Math.min(5, Math.max(1, Math.round(sv || 1))) - 1;
@@ -392,6 +393,7 @@ export function TavlaMasa({ x, z, oyunda, faz = 0, sv = 1 }: { x: number; z: num
     <group position={[x, 0, z]}>
       <group scale={[gor.boy, 1, gor.boy]}>
         <Model src={`${KAY_F}table_small.gltf`} scale={[0.9, 0.75, 0.9]} fallback={<Kutu w={0.9} h={0.75} d={0.9} renk={ISTAKA} pos={[0, 0.375, 0]} />} />
+        {gor.cila && <Kutu w={0.92} h={0.014} d={0.92} renk="#4a2716" pos={[0, UST + 0.002, 0]} golge={false} />}
         {gor.pirinc && <Pirinc hw={0.45} y={UST - 0.03} />}
       </group>
       <group position={[0, UST, 0]}>

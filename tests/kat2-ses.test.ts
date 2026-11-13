@@ -212,11 +212,11 @@ describe('bağlama: store aboneliği (sessiz kip, arka plan, Kat 1)', () => {
 
 describe('katalog: her yeni ses için iki çalınabilir aday', () => {
   const idsiz = Object.keys(KAT2_SES_ADAYLARI) as Kat2SesId[];
-  it('sekiz yeni ses, oyuna Aday 1 bağlı', () => {
+  it('sekiz yeni ses; oyuna kullanıcının seçtiği aday bağlı (D-195: takırtı + ilk çıkış Aday 2)', () => {
     expect(idsiz).toHaveLength(8);
     for (const id of idsiz) {
-      expect(KAT2_SECIM[id]).toBe(0);
-      expect(KAT2_SES_KATALOG[id]).toBe(KAT2_SES_ADAYLARI[id].adaylar[0]);
+      expect(KAT2_SECIM[id]).toBe(id === 'k2takirti' || id === 'k2yeniKat' ? 1 : 0);
+      expect(KAT2_SES_KATALOG[id]).toBe(KAT2_SES_ADAYLARI[id].adaylar[KAT2_SECIM[id]]);
     }
   });
   for (const id of idsiz) {

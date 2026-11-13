@@ -3,9 +3,9 @@ import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenC
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
+import { adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, QUEST_COMPLETE_DUR, QUEST_GAP_DUR, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
 import { ogreticiAdimi, ogreticiMetni, yurudu } from '../../game/onboarding';
-import { kat2GorevGorunumu } from '../../game/kat2Gorev';
+import { kat2GorevGorunumu, type Kat2GorevGorunum } from '../../game/kat2Gorev';
 import { LAYOUT } from '../../game/layout';
 import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
@@ -165,6 +165,28 @@ export function HUD() {
   // S3: Kat 2 görev şeridi — kayıt nesnesi yalnız pad/görev değişince yenilenir, görünüm ondan türer.
   const kat2Kayit = useGame((s) => s.kat2);
   const kat2Gorev = kat2de ? kat2GorevGorunumu(kat2Kayit, economyConfig.kat2Gorevler, economyConfig.kat2) : null;
+  // D-195 (Kat 1'in G-04 + geçiş ritmi aynen): görev bitince bant önce biten görevi "Tamamlandı" gösterir
+  // (QUEST_COMPLETE_DUR), sonra kısa boşluk (QUEST_GAP_DUR), sonra sıradaki. Hat mantığı o anda ilerledi — yalnız görsel.
+  const k2Idx = kat2Kayit.gorev?.idx ?? 0;
+  const k2OncekiIdx = useRef(k2Idx);
+  const k2OncekiGorev = useRef<Kat2GorevGorunum | null>(kat2Gorev);
+  const [k2Kutlama, setK2Kutlama] = useState<{ g: Kat2GorevGorunum; faz: 'bitti' | 'bosluk' } | null>(null);
+  useEffect(() => {
+    const onceki = k2OncekiGorev.current;
+    const ilerledi = k2Idx > k2OncekiIdx.current;
+    k2OncekiIdx.current = k2Idx;
+    if (!ilerledi || !onceki || !kat2de) return undefined;
+    setK2Kutlama({ g: onceki, faz: 'bitti' });
+    const t1 = setTimeout(() => setK2Kutlama({ g: onceki, faz: 'bosluk' }), QUEST_COMPLETE_DUR * 1000);
+    const t2 = setTimeout(() => setK2Kutlama(null), (QUEST_COMPLETE_DUR + QUEST_GAP_DUR) * 1000);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, [k2Idx, kat2de]);
+  useEffect(() => {
+    k2OncekiGorev.current = kat2Gorev;
+  });
   const [bitisGorunur, setBitisGorunur] = useState(true);
   const questBitti = quest == null;
   // Hat yeniden uzarsa (yeni görev eklenirse) bant tekrar hak eder — render sırasında düzeltilir.
@@ -480,7 +502,24 @@ export function HUD() {
       )}
 
       {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
-      {kat2de && kat2Gorev ? (
+      {kat2de && k2Kutlama ? (
+        k2Kutlama.faz === 'bitti' ? (
+          <div className="band done" data-testid="kat-bandi" data-gorev={k2Kutlama.g.id} key={`${k2Kutlama.g.id}-bitti`}>
+            <span className="band-photo">
+              <CheckBadge size={26} />
+            </span>
+            <span className="band-body">
+              <span className="band-title">{t(k2Kutlama.g.title)}</span>
+              <span className="band-sub done-sub" data-testid="kat2-quest-done">
+                {t('Tamamlandı')}
+              </span>
+            </span>
+            <span className="band-reward">
+              <CoinIcon size={14} />+{fmt(k2Kutlama.g.reward)}
+            </span>
+          </div>
+        ) : null
+      ) : kat2de && kat2Gorev ? (
         // S3 (ajan D): Kat 2'deyken şerit Kat 2'nin görevini aynı hap diliyle gösterir (D-175). Kamera
         // odağı Kat 2'de yok (`focusQuest` Kat 1'in) — dokunma bağlanana dek şerit düğme değil.
         <div className="band" data-testid="kat-bandi" data-gorev={kat2Gorev.id} key={kat2Gorev.id}>

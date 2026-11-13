@@ -1216,6 +1216,16 @@ export const economyConfig = {
      */
     hazir: ['k2okey2', 'k2cezve'],
     /**
+     * MASA SEVİYESİ Sv1-5 (S3, D-195 — `docs/kat2-masasv-raporu-k2-s3.md`, kol UG/SB3T): Sv ücreti ve grubun gelişini
+     * birlikte artırır (kahve kolu taşıma tavanına gidiyordu: %2). Fiyat "o anki gelirin ~3 dk'sı", türe göre (geri ödeme
+     * okey = tavla). Sıra Kat 1 gibi tek hedef + görev kapısı (D-124/D-142 karşılığı). Değerler aracın çıktısı:
+     * `OLCUM=tam KOL_DOK=UG/SB3T npx tsx tools/olcum-kat2-masasv.ts` (fiyat ölçülen gelirden — kip tam olmalı). Bekçi `tests/kat2-masasv.test.ts` (config = UG/SB3T).
+     */
+    masaSv: {
+      okey: { fiyat: [0, 4_300, 5_300, 6_300, 7_300], ucretCarpan: [1, 1.634, 2.243, 2.843, 3.443], kahveAralikCarpan: [1, 1, 1, 1, 1], gelisAralikCarpan: [1, 0.75, 0.5, 0.3, 0.15] },
+      tavla: { fiyat: [0, 2_300, 2_800, 3_300, 3_800], ucretCarpan: [1, 1.313, 1.607, 1.895, 2.183], kahveAralikCarpan: [1, 1, 1, 1, 1], gelisAralikCarpan: [1, 0.75, 0.5, 0.3, 0.15] },
+    },
+    /**
      * Açılış zinciri, D-191 sırası: merdiven salonunun kalanı → okey salonu (2. ocak araya) → lavabo →
      * tavla köşesi + garson. D-192 (K2-6, kol SB9-L1 — `docs/kat2-akis-zincir-raporu-k2-6.md`): her pad
      * o anki teorik gelirin (Kat 1 oyuncusuz + açık Kat 2, lavabo dahil) ~9 dk'sı; zincir ~4,9 sa, en uzun
@@ -1301,8 +1311,8 @@ export const economyConfig = {
     { id: 'k2_tavlaKahve', kicker: 'TAVLA', title: 'Tavlacılara 10 kahve', hedef: { tip: 'sayac', sayac: 'tavlaKahve', adet: 10 }, reward: 1_000 },
     { id: 'k2_tavla6', kicker: 'TAVLA KÖŞESİ', title: 'Tavla: 6 masaya çık', hedef: { tip: 'pad', id: 'k2tavla6' }, reward: 1_150 },
     { id: 'k2_tavla12', kicker: 'KAT 2 TAMAM', title: 'Tavla köşesini doldur', hedef: { tip: 'pad', id: 'k2tavla12' }, reward: 1_400 },
-    { id: 'k2_sv2', kicker: 'MASA SEVİYESİ', title: "Bir okey masasını Seviye 2'ye çıkar", hedef: { tip: 'masaSv', tur: 'okey', sv: 2, adet: 1 }, reward: 1_000 },
-    { id: 'k2_sv5', kicker: 'GÖZDE MASA', title: "Bir masayı Seviye 5'e çıkar", hedef: { tip: 'masaSv', sv: 5, adet: 1 }, reward: 1_500 },
+    { id: 'k2_sv2', kicker: 'MASA SEVİYESİ', title: "Bir okey masasını Seviye 2'ye çıkar", hedef: { tip: 'masaSv', tur: 'okey', sv: 2, adet: 1 }, reward: 650 },
+    { id: 'k2_sv5', kicker: 'GÖZDE MASA', title: "Bir masayı Seviye 5'e çıkar", hedef: { tip: 'masaSv', sv: 5, adet: 1 }, reward: 1_100 },
   ],
 
   /**

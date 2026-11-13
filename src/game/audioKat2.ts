@@ -209,7 +209,8 @@ export const KAT2_SES_ADAYLARI: Record<Kat2SesId, Kat2Aday> = {
 
 /** Oyuna bağlı aday (0 = Aday 1). Kullanıcı dinleme sayfasından seçince YALNIZ burası değişir. */
 export const KAT2_SECIM: Record<Kat2SesId, 0 | 1> = {
-  k2takirti: 0, k2zar: 0, k2cezve: 0, k2kasa: 0, k2merdiven: 0, k2duvar: 0, k2sv: 0, k2yeniKat: 0,
+  // Kullanıcı 2026-11-13 (D-195): "1. ve sonuncu aday 2, diğerleri aday 1" — takırtı + ilk çıkış Aday 2.
+  k2takirti: 1, k2zar: 0, k2cezve: 0, k2kasa: 0, k2merdiven: 0, k2duvar: 0, k2sv: 0, k2yeniKat: 1,
 };
 
 /** Oyunun çaldığı Kat 2 kataloğu — adaylardan TÜRER. */

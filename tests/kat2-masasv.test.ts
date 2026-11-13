@@ -32,6 +32,8 @@ import {
   kat2PadEtiket,
   kat2PadYeri,
   kat2SvTetikleri,
+  kat2SvCanliTetik,
+  kat2SvHedef,
   kat2Tick,
   masaSvOku,
   yeniKat2Dunya,
@@ -52,7 +54,9 @@ const kol = (o: Partial<Kat2SvKol> = {}): Kat2SvKol => ({
   gelisAralikCarpan: BIR,
   ...o,
 });
-const TEMEL: Kat2Ayar = C.kat2;
+// Sv'siz taban: config'te D-195'ten beri `masaSv` var; "ayar yokken birebir" sözleşmesi onsuz ölçülür.
+const { masaSv: _cfgSv, ...TEMEL0 } = C.kat2 as Kat2Ayar;
+const TEMEL: Kat2Ayar = TEMEL0;
 const SV: Kat2Ayar = { ...TEMEL, masaSv: { okey: kol(), tavla: kol({ fiyat: [0, 500, 1_000, 1_500, 2_000] }) } };
 const HEPSI: string[] = [...C.kat2.hazir, ...TEMEL.padler.map((p) => p.id)];
 const MASALAR = KAT2_MASALAR.map((m) => m.id);
@@ -156,7 +160,7 @@ describe('Kat 2 masa Sv — tetik çerçevesi', () => {
   });
 
   it('fiyat 3,5 sn\'de akar, dolunca svAtlayan; cüzdan yetmezse dolum yarım kalır ve korunur', () => {
-    const t = kat2SvTetikleri(SV, HEPSI, {}).find((x) => x.masaId === 'k2s2okey1')!;
+    const t = kat2SvCanliTetik(SV, HEPSI, {})[0];
     let d = yeniKat2Dunya(HEPSI, SV);
     let harcama = 0;
     let atlayan: string[] = [];
@@ -167,7 +171,7 @@ describe('Kat 2 masa Sv — tetik çerçevesi', () => {
       harcama += r.harcama;
       atlayan = r.olay.svAtlayan;
     }
-    expect(atlayan).toEqual(['k2s2okey1']);
+    expect(atlayan).toEqual([t.masaId]);
     expect(harcama).toBeCloseTo(t.fiyat, 6);
     expect(sure).toBeCloseTo(3.5, 1);
     expect(d.padFill[t.id]).toBeUndefined();
@@ -288,6 +292,60 @@ describe('Kat 2 masa Sv — erişim', () => {
       const m = KAT2_MASALAR.find((x) => x.id === t.masaId)!;
       const yari = m.tur === 'tavla' ? TAVLA_YARI[0] : OKEY_YARI;
       expect(Math.abs(t.x - m.x) - yari).toBeGreaterThan(LAYOUT.playerRadius);
+    }
+  });
+});
+
+// S3b / D-195: Kat 1'in kuralları Kat 2'de AYNI (kullanıcı: "kat 2 sistemi ile kat 1 sistemi aynı olacak").
+describe('Kat 2 masa Sv — Kat 1 kuralı: tek hedef (D-124) + görev kapısı (D-142)', () => {
+  const acikMasalar = HEPSI.filter((id) => MASALAR.includes(id));
+  it('aynı anda tek nokta; el değmemişse açılış sırasındaki ilk masa', () => {
+    const c = kat2SvCanliTetik(SV, HEPSI, {});
+    expect(c.length).toBe(1);
+    expect(c[0].masaId).toBe(acikMasalar[0]);
+  });
+  it('"başladığını bitir": yarım kalan masa (1 < Sv < 5) önce gelir, tavandakiler atlanır', () => {
+    const ikinci = acikMasalar[3];
+    expect(kat2SvHedef(SV, HEPSI, { [ikinci]: 3 })).toBe(ikinci);
+    expect(kat2SvHedef(SV, HEPSI, { [acikMasalar[0]]: 5 })).toBe(acikMasalar[1]);
+    const hepsi5 = Object.fromEntries(acikMasalar.map((id) => [id, 5]));
+    expect(kat2SvHedef(SV, HEPSI, hepsi5)).toBeNull();
+  });
+  it('tick yalnız canlı noktayı doldurur: hedef olmayan masanın çerçevesinde durmak para harcamaz', () => {
+    const baska = kat2SvTetikleri(SV, HEPSI, {}).find((t) => t.masaId !== acikMasalar[0])!;
+    let d = yeniKat2Dunya(HEPSI, SV);
+    let harcama = 0;
+    for (let i = 0; i < 50; i++) {
+      const r = kat2Tick(d, girdi([baska.x, baska.z], { cuzdan: 1e6 }), 0.1, SV);
+      d = r.dunya;
+      harcama += r.harcama;
+    }
+    expect(harcama).toBe(0);
+  });
+  it('görev kapısı kapalıyken (svCanli false) hiçbir nokta dolmaz', () => {
+    const t = kat2SvCanliTetik(SV, HEPSI, {})[0];
+    let d = yeniKat2Dunya(HEPSI, SV);
+    let harcama = 0;
+    for (let i = 0; i < 50; i++) {
+      const r = kat2Tick(d, girdi([t.x, t.z], { cuzdan: 1e6, svCanli: false }), 0.1, SV);
+      d = r.dunya;
+      harcama += r.harcama;
+    }
+    expect(harcama).toBe(0);
+    expect(kat2SvCanliTetik(SV, HEPSI, {}, false)).toEqual([]);
+  });
+});
+
+describe('Kat 2 masa Sv — config = karar (D-195, kol UG/SB3T)', () => {
+  it('config değerleri aracın UG/SB3T çıktısıyla aynı', () => {
+    const k = (C.kat2 as Kat2Ayar).masaSv!;
+    expect(k.okey.fiyat).toEqual([0, 4_300, 5_300, 6_300, 7_300]);
+    expect(k.tavla.fiyat).toEqual([0, 2_300, 2_800, 3_300, 3_800]);
+    expect(k.okey.ucretCarpan).toEqual([1, 1.634, 2.243, 2.843, 3.443]);
+    expect(k.tavla.ucretCarpan).toEqual([1, 1.313, 1.607, 1.895, 2.183]);
+    for (const t of [k.okey, k.tavla]) {
+      expect(t.gelisAralikCarpan).toEqual([1, 0.75, 0.5, 0.3, 0.15]);
+      expect(t.kahveAralikCarpan).toEqual([1, 1, 1, 1, 1]); // kahve kolu ölçümde %2 — bilerek yok
     }
   });
 });

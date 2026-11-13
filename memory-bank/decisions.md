@@ -5213,3 +5213,14 @@ Kaynak: ChatGPT turu + gösterim sayfası https://claude.ai/artifact/F6UeznpRKoc
 - **Garson = Server** her yerde (Kat 1 dahil, büyük harfli hat başlıkları + Head Server). Mağaza metinleri ve
   anahtar kelimelerdeki "waiter" bilerek kaldı (arama sözcüğü). Okey/Tavla/Backgammon adları korunur (Rummy yok).
 - Görsel D-193 onaylandı (damla levha + duvar gömülme). Okey/mutfak levha simgeleri bugünkü akışta görünmüyor (yedek).
+
+## D-195 · Kat 2 S3: masa Sv = ücret + geliş (UG/SB3T) · Kat 1 kuralları aynen · ses/görev/başarım (2026-11-13)
+Rapor `docs/kat2-masasv-raporu-k2-s3.md` · karar paketi https://claude.ai/artifact/5pUktw9KbYCGA2HNN6X1zz. Kullanıcı seçti:
+- **Masa Sv = ücret + geliş, fiyat gelirin ~3 dk'sı (türe göre)** — gerçek ×2,31 (%100); kahve kolu taşıma tavanında
+  (%61 servis) %2 → kahve Sv'de YOK. Config `kat2.masaSv` (okey 4.300→7.300 · tavla 2.300→3.800). Sv görev ödülü 650 / 1.100.
+- **"Kat 2 sistemi = Kat 1 sistemi, uyarla"** (kullanıcının cümlesi; hafıza `feedback_kat2_kat1_uyarla`): Sv noktası
+  D-124 gibi TEK HEDEF ("başladığını bitir", açılış sırası) + D-142 gibi görev kapısı (`kat2SvCanli`: Sv görevinde/hat
+  bitince) · görev bitişinde Kat 1'in kutlama ritmi (0,5 sn Tamamlandı + 0,8 sn boşluk).
+- Tavla Sv4'e ikinci sinyal: koyu cila üst yüzey. Sesler: takırtı + ilk çıkış Aday 2, gerisi Aday 1.
+- Görev hattı 18+2 (pad fiyatının ~%15'i) · 6 başarım (Kat 1'in altı büyüğü 25'er indi, toplam 1000) · analitik olayları.
+- Sıra kilidi uyarısı (karma-commit) bilinçli: commit #1 `5d22f94` (rapor, karar BOŞ) → karar paketi → commit #2'de araç değişikliği yalnız oyun kuralı (tek hedef) + "config = karar" damgası; final tam koşu #2'ye ait (D-084).
