@@ -80,13 +80,14 @@ export function kat2AcikAlan(padsDone: readonly string[]): number {
 }
 
 /**
- * Bölme duvarları + kemerli geçitler (maket B `bolmeler`, D-180 tam bölme 2,2). `kapilar` duvar
- * boyunca [a, b] aralıkları (x'e ya da z'ye göre); `alanlar` duvarın ayırdığı iki alan.
+ * Alanlar arası hatlar (D-191: bölme YOK). Yalnız BİR yanı açık hat, kapalı alanın önünde TAM duvardır
+ * (arkada kaba inşaat); iki yanı da açılınca duvar kalkar, hat serbest yürünür. Geçit yok: alan, salon
+ * pad'iyle bütün olarak açılır. `alanlar` hattın ayırdığı iki alan.
  */
-export const KAT2_BOLMELER: readonly { x1: number; z1: number; x2: number; z2: number; kapilar: readonly (readonly [number, number])[]; alanlar: readonly [number, number] }[] = [
-  { x1: -FLOOR_HALF, z1: 0, x2: 0, z2: 0, kapilar: [[-10.5, -7.2], [-1.8, 0]], alanlar: [0, 1] },
-  { x1: 0, z1: 0, x2: FLOOR_HALF, z2: 0, kapilar: [[0, 1.8], [7.2, 10.5]], alanlar: [0, 2] },
-  { x1: 0, z1: 0, x2: 0, z2: FLOOR_HALF, kapilar: [[7.2, 10.2]], alanlar: [1, 2] },
+export const KAT2_BOLMELER: readonly { x1: number; z1: number; x2: number; z2: number; alanlar: readonly [number, number] }[] = [
+  { x1: -FLOOR_HALF, z1: 0, x2: 0, z2: 0, alanlar: [0, 1] },
+  { x1: 0, z1: 0, x2: FLOOR_HALF, z2: 0, alanlar: [0, 2] },
+  { x1: 0, z1: 0, x2: 0, z2: FLOOR_HALF, alanlar: [1, 2] },
 ];
 
 export type MasaTuru = 'okey' | 'tavla';
@@ -143,34 +144,18 @@ export function kat2YurumeAlani(acikAlan = KAT2_ACIK_ALAN): Dik[] {
   return out;
 }
 
-/**
- * Bölme duvarlarının katı gövdeleri. En az bir yanı açık her bölme çizilir; geçitleri (`kapilar`)
- * yalnız İKİ yanı da açıksa boşluk bırakır — kapalı salonun geçidi tahta perdeyle kapalıdır.
- */
+/** Hat tam duvar mı: tam olarak bir yanı açık (iki yanı açıksa duvar kalkmıştır, ikisi kapalıysa görünmez). */
+export function kat2DuvarVar(b: (typeof KAT2_BOLMELER)[number], acikAlan = KAT2_ACIK_ALAN): boolean {
+  return b.alanlar[0] < acikAlan !== b.alanlar[1] < acikAlan;
+}
+
+/** Duvarların katı gövdeleri (D-191): yalnız bir yanı açık hat, boydan boya kesintisiz. */
 export function kat2Duvarlar(acikAlan = KAT2_ACIK_ALAN): Solid[] {
-  const out: Solid[] = [];
-  for (const b of KAT2_BOLMELER) {
-    const [a1, a2] = b.alanlar;
-    const acik1 = a1 < acikAlan;
-    const acik2 = a2 < acikAlan;
-    if (!acik1 && !acik2) continue;
-    const yatay = b.z1 === b.z2;
-    const bas = yatay ? Math.min(b.x1, b.x2) : Math.min(b.z1, b.z2);
-    const son = yatay ? Math.max(b.x1, b.x2) : Math.max(b.z1, b.z2);
-    const kapilar = acik1 && acik2 ? [...b.kapilar].sort((p, q) => p[0] - q[0]) : [];
-    let u = bas;
-    const parca = (p: number, q: number) => {
-      if (q - p <= 1e-9) return;
-      const orta = (p + q) / 2;
-      out.push(yatay ? { c: [orta, 0, b.z1], h: [(q - p) / 2, DUVAR_YARI] } : { c: [b.x1, 0, orta], h: [DUVAR_YARI, (q - p) / 2] });
-    };
-    for (const [p, q] of kapilar) {
-      parca(u, p);
-      u = Math.max(u, q);
-    }
-    parca(u, son);
-  }
-  return out;
+  return KAT2_BOLMELER.filter((b) => kat2DuvarVar(b, acikAlan)).map((b) =>
+    b.z1 === b.z2
+      ? { c: [(b.x1 + b.x2) / 2, 0, b.z1], h: [Math.abs(b.x2 - b.x1) / 2, DUVAR_YARI] }
+      : { c: [b.x1, 0, (b.z1 + b.z2) / 2], h: [DUVAR_YARI, Math.abs(b.z2 - b.z1) / 2] },
+  );
 }
 
 /** Noktanın bulunduğu alan (0 merdiven salonu + bant · 1 okey salonu · 2 tavla köşesi). */
@@ -309,14 +294,25 @@ export function baslangicKati(kayitKat: unknown, kat2: Kat2Kayit, etkin = kat2Et
 // ============================== EŞYA YERLERİ (K2-3) ==============================
 
 /**
- * Merdiven salonunun dört okey masası (maket B'nin `ARKA_OKEY`i: x = ±7,5 · ±13, z = −4,9). Açılış
- * sırası soldan içe: önce ocağa yakın olanlar. Yer geometri, sayı değil — fiyatlar `economy.config`.
+ * D-191 düzeni N7 (TAM AYNA): iki iç sütun x ±6,5, iki dış sütun x ±13. Merdiven salonunun arka
+ * sırası z −3,5 (dört okey); okey salonu sol iki sütun × z 2,5 / 8,5 / 14,5; tavla köşesi sağ iki
+ * sütun × altı sıra 2,5…14,5. Merdiven önü (x ±4,6 arası) yol olarak boş kalır. Yer geometri, sayı değil.
+ */
+const N7_IC = 6.5;
+const N7_DIS = 13;
+const N7_ARKA_Z = -3.5;
+const N7_OKEY_Z = [2.5, 8.5, 14.5] as const;
+const N7_TAVLA_Z = [2.5, 4.9, 7.3, 9.7, 12.1, 14.5] as const;
+
+/**
+ * Merdiven salonunun dört okey masası. `k2okey2` (iç sol, merdivene en yakın) kata çıkışta HAZIR
+ * gelir (D-191 B1); ötekiler zincirde.
  */
 export const OKEY_YER: readonly { id: string; x: number; z: number }[] = [
-  { id: 'k2okey1', x: -7.5, z: -4.9 },
-  { id: 'k2okey2', x: -13, z: -4.9 },
-  { id: 'k2okey3', x: 7.5, z: -4.9 },
-  { id: 'k2okey4', x: 13, z: -4.9 },
+  { id: 'k2okey1', x: -N7_DIS, z: N7_ARKA_Z },
+  { id: 'k2okey2', x: -N7_IC, z: N7_ARKA_Z },
+  { id: 'k2okey3', x: N7_IC, z: N7_ARKA_Z },
+  { id: 'k2okey4', x: N7_DIS, z: N7_ARKA_Z },
 ];
 
 /** Okey masasının ayak izi (masa + dört sandalye) yarısı — oyuncu içine yürümez. */
@@ -352,15 +348,12 @@ export function paraDusmeYeri(m: Kat2MasaYeri): [number, number] {
 }
 
 /**
- * Salon pad'lerinin yeri: merdiven salonu tarafında, açtığı salonun GENİŞ kemerli geçidinin önünde
- * (bölme z = 0; pad çerçevesinin yarı yüksekliği 0,85 + duvar payı). Pad bitince geçidin perdesi kalkar.
+ * Salon pad'lerinin yeri: merdiven salonu tarafında, açtığı salonun duvarının önünde, iç ve dış
+ * sütunun TAM ortasında (x ±9,75 — arka sıranın masaları arasında 0,9+ pay). z: pad çerçevesi
+ * (±0,85) duvarın (z = 0) önünde, arka sıranın ayak izine (z ≤ −2,25) değmez. Pad bitince duvar kalkar.
  */
 export const KAT2_SALON_PAD_YER: Readonly<Record<string, [number, number]>> = Object.fromEntries(
-  KAT2_SALON_PAD.map((id, i) => {
-    const b = KAT2_BOLMELER.find((x) => x.alanlar[0] === 0 && x.alanlar[1] === i + 1)!;
-    const [p, q] = [...b.kapilar].sort((u, v) => v[1] - v[0] - (u[1] - u[0]))[0];
-    return [id, [(p + q) / 2, -1.6] as [number, number]];
-  }),
+  KAT2_SALON_PAD.map((id, i) => [id, [(i === 0 ? -1 : 1) * ((N7_IC + N7_DIS) / 2), -1.4] as [number, number]]),
 );
 
 /**
@@ -370,13 +363,14 @@ export const KAT2_SALON_PAD_YER: Readonly<Record<string, [number, number]>> = Ob
 export const OCAK = { id: 'k2cezve', x: -7.4, z: BAND.front - 0.55, al: [-7.4, BAND.front + 0.6] as [number, number], erisim: 0.9 } as const;
 
 /**
- * Kat 2'nin BÜTÜN masa yerleri (maket B): merdiven salonu 4 okey (yukarıdaki `OKEY_YER`, sıra korunur)
- * · okey salonu 6 okey · tavla köşesi 12 tavla (2 kişilik, oturaklar ±x). Kimlik = pad kimliği.
+ * Kat 2'nin BÜTÜN masa yerleri (N7): merdiven salonu 4 okey (yukarıdaki `OKEY_YER`, sıra korunur) ·
+ * okey salonu 6 okey (dış sütun önden arkaya, sonra iç) · tavla köşesi 12 tavla (iç sütun önden
+ * arkaya, sonra dış; 2 kişilik, oturaklar ±x). Kimlik = pad kimliği.
  */
 export const KAT2_MASALAR: readonly Kat2MasaYeri[] = [
   ...OKEY_YER.map((o) => ({ ...o, tur: 'okey' as const, alan: 0 })),
-  ...[-12.5, -5].flatMap((x, i) => [4.5, 9.5, 14.5].map((z, j) => ({ id: `k2s2okey${i * 3 + j + 1}`, tur: 'okey' as const, alan: 1, x, z }))),
-  ...[4, 8.5, 13].flatMap((x, i) => [3.8, 7.4, 11, 14.6].map((z, j) => ({ id: `k2tavla${i * 4 + j + 1}`, tur: 'tavla' as const, alan: 2, x, z }))),
+  ...[-N7_DIS, -N7_IC].flatMap((x, i) => N7_OKEY_Z.map((z, j) => ({ id: `k2s2okey${i * 3 + j + 1}`, tur: 'okey' as const, alan: 1, x, z }))),
+  ...[N7_IC, N7_DIS].flatMap((x, i) => N7_TAVLA_Z.map((z, j) => ({ id: `k2tavla${i * 6 + j + 1}`, tur: 'tavla' as const, alan: 2, x, z }))),
 ];
 
 // ============================== S2: ÇOK OCAK + KAT 2 GARSONU (D-186) ==============================
@@ -392,36 +386,28 @@ export interface Kat2Ocak {
   govde?: readonly [number, number];
 }
 
-/** 2. ocağın gövde yarısı: tezgâh + cezve sırası, çizimin ayak izi (x [−6,3; −2,7] · z [0,09; 2,15]; sırtı bölmeye). */
-const OCAK2_YARI: readonly [number, number] = [1.8, 1.03];
-const OCAK2_Z = DUVAR_YARI + OCAK2_YARI[1];
-
 /**
- * Kat 2'nin cezve ocakları, AÇILIŞ SIRASIYLA (D-186). `[0]` bandın ocağı (`OCAK`, aynı kimlik/yer).
- * `[1]` okey salonunda: bölmenin (z = 0) salon yüzünde, iki geçidin TAM ortasında (x −4,5; geçitler
- * [−10,5; −7,2] ve [−1,8; 0], gövde [−6,3; −2,7] → iki yana 0,9 pay). Neden burası: oyuncu geniş
- * geçitten salona girince ocak önündedir; okey salonunun sağ sütunu (x −5) önünde, sol sütunu 7 br
- * ötede — salonun altı masasının hepsine kısa yol. Bölme kameranın UZAK duvarı (ocak görünür) ve
- * tavla köşesine açılan geçide (x = 0, z 7,2-10,2) en yakın ocak budur: Kat 2 garsonu buradan alır.
- * Masa ayak izinden (z ≥ 3,25) gövde önü (2,15) 1,1 açık → oyuncu (çap 0,94) ocak ile masa arasından geçer.
+ * Kat 2'nin cezve ocakları, AÇILIŞ SIRASIYLA. `[0]` bandın ocağı (`OCAK`, aynı kimlik/yer). `[1]` D-191
+ * (O1 "tek mutfak yerinde büyür"): AYNI mutfağın bandında, ilkinin solunda (x −13,2; sol dış sütunun
+ * hizası). Bant yürüme alanının dışında → gövde gerekmez; oyuncu/garson ocağın salona bakan önünden alır.
  */
 export const OCAKLAR: readonly Kat2Ocak[] = [
   OCAK,
-  {
-    id: 'k2cezve2',
-    x: -4.5,
-    z: OCAK2_Z,
-    al: [-4.5, OCAK2_Z + OCAK2_YARI[1] + PR + 0.08],
-    erisim: OCAK.erisim,
-    govde: OCAK2_YARI,
-  },
+  { id: 'k2cezve2', x: -13.2, z: OCAK.z, al: [-13.2, OCAK.al[1]], erisim: OCAK.erisim },
 ];
 
 /**
+ * Kat 2'nin LAVABOSU (D-191): bandın sağ arka köşesi (Kat 1'in lavabo odasının üstü, x 13,4). Pad
+ * salondan, köşenin önünden doldurulur; arka sıranın masasına (z ≤ −2,25) ve kovaya değmez.
+ */
+export const KAT2_LAVABO_PAD = 'k2lavabo';
+export const KAT2_LAVABO_YER: readonly [number, number] = [13.4, BAND.front + 1.2];
+
+/**
  * Kat 2 garsonunun pad'i (D-186: tavla köşesi açılınca gelen ilk pad) ve garsonun EVİ (boştayken
- * döndüğü yer). Köşenin İÇİNDE, bölmenin dibinde, 1. tavla sütununun (x 4) önü: pad çerçevesi
- * (±0,89 × ±0,85) z [0,75; 2,45] — masanın ayak izine (z ≥ 3,2) ve geniş geçide (x ≥ 7,2) değmez.
- * Neden salon pad'inin yeri (8,85; −1,6) değil: zincirde `k2salon3`ün hemen ardından geliyor, aynı
+ * döndüğü yer). Köşenin İÇİNDE, eski duvar hattının dibinde, iç tavla sütununun (x 6,5) solu: pad
+ * çerçevesi (±0,89 × ±0,85) x [3,11; 4,89] · z [0,75; 2,45] — masanın ayak izine (x ≥ 5,3) değmez.
+ * Neden salon pad'inin yeri (9,75; −1,4) değil: zincirde `k2salon3`ün hemen ardından geliyor, aynı
  * yerde çıksaydı salonu yeni açan oyuncu durduğu yerde farkında olmadan garsonu doldurmaya başlardı.
  */
 export const KAT2_GARSON_PAD = 'k2garson';

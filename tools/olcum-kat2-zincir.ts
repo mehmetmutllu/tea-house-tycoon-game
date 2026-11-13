@@ -189,8 +189,8 @@ function kat1Izi(): { iz: Float64Array; r1Dk: number; r1Ideal: number } {
 // BOT YOLU — bölme geçitleri (`olcum-kat2-tavla`) + merdiven kovası koridoru (`olcum-kat2-kasa`).
 // ---------------------------------------------------------------------------------------------
 type Kapi = { yatay: boolean; duvar: number; c: number; alanlar: readonly [number, number] };
-const KAPILAR: Kapi[] = KAT2_BOLMELER.flatMap((b) =>
-  b.kapilar.map(([p, q]) => ({ yatay: b.z1 === b.z2, duvar: b.z1 === b.z2 ? b.z1 : b.x1, c: (p + q) / 2, alanlar: b.alanlar })),
+const KAPILAR: Kapi[] = KAT2_BOLMELER.flatMap((b) => // D-191: geçit yok → boş liste, bot düz yürür
+  ((b as { kapilar?: readonly (readonly [number, number])[] }).kapilar ?? []).map(([p, q]) => ({ yatay: b.z1 === b.z2, duvar: b.z1 === b.z2 ? b.z1 : b.x1, c: (p + q) / 2, alanlar: b.alanlar })),
 );
 function kapiNoktasi(k: Kapi, alan: number): [number, number] {
   const s = alan === k.alanlar[0] ? -1.2 : 1.2;

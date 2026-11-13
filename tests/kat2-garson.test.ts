@@ -3,7 +3,7 @@
  * `olay.kalkan` ve zincirin config bekçisi.
  *
  * Garson YALNIZ kahve taşır, YALNIZ tavla masalarına; okey isteğine dokunmaz (oyuncu okeyde taşır),
- * yığın toplamaz. Bölme duvarlarını delmez, salonlar arasında geçitten geçer.
+ * yığın toplamaz. Kapalı alanın duvarını delmez (D-191: açık alanlar arasında duvar yok).
  */
 import { describe, it, expect } from 'vitest';
 import { economyConfig as C } from '../src/config/economy.config';
@@ -84,9 +84,9 @@ describe('config — D-186 tavla T120U + zincir', () => {
     expect(kat2EksikSayi(garsonsuz)).toBe('k2garson: garson sayıları (Kat2Ayar.garson) yok');
   });
 
-  it('2. ocak okey salonundan, garson tavla köşesinden önce zincire giremez', () => {
+  it('2. ocak salon beklemez (bantta); garson tavla köşesinden önce zincire giremez', () => {
     const p = (id: string) => ({ id, cost: 1, fillRate: 1 });
-    expect(kat2YapiHatasi({ ...AG, padler: [p(OCAK.id), p(OCAK2.id)] })).toMatch(/salonu/);
+    expect(kat2YapiHatasi({ ...AG, padler: [p(OCAK.id), p(OCAK2.id)] })).toBeNull();
     expect(kat2YapiHatasi({ ...AG, padler: [p('k2salon2'), p(KAT2_GARSON_PAD)] })).toMatch(/salonu/);
     expect(kat2YapiHatasi({ ...AG, padler: [p('k2salon2'), p(OCAK2.id), p('k2salon3'), p(KAT2_GARSON_PAD)] })).toBeNull();
   });
@@ -103,27 +103,24 @@ describe('yerleşim — 2. ocak ve garson pad\'i hiçbir şeyle çakışmaz', ()
   const tum = kat2AcikAlan(HEPSI);
   const masaKatilari = kat2Engeller(HEPSI).filter((s) => !(s.c[0] === OCAK2.x && s.c[2] === OCAK2.z));
 
-  it('2. ocak okey salonunda, gövdesi masalara/geçitlere değmez, alma noktası yürünebilir', () => {
-    expect(OCAK2.x).toBeLessThan(0);
-    expect(OCAK2.z).toBeGreaterThan(0);
-    const [hx, hz] = OCAK2.govde!;
-    // Masa ayak izleri (okey yarısı 1,25) ile kesişmez.
-    for (const m of KAT2_MASALAR.filter((x) => x.alan === 1))
-      expect(Math.abs(m.x - OCAK2.x) >= hx + OKEY_YARI || Math.abs(m.z - OCAK2.z) >= hz + OKEY_YARI).toBe(true);
-    // Bölmenin (z = 0) geçitlerinin önünü kapatmaz: iki yanda en az 0,85 (gövde çapı 0,7 + pay).
-    for (const [p, q] of KAT2_BOLMELER[0].kapilar) expect(OCAK2.x + hx <= p - 0.85 || OCAK2.x - hx >= q + 0.85).toBe(true);
+  it('2. ocak aynı mutfağın bandında, ilkinin solunda; alma noktası yürünebilir, masaya değmez (D-191)', () => {
+    expect(OCAK2.x).toBeLessThan(OCAK.x);
+    expect(OCAK2.z).toBe(OCAK.z);
+    expect(OCAK2.al[1]).toBe(OCAK.al[1]);
+    expect(OCAK2.govde).toBeUndefined(); // bant yürüme alanının dışında
     const katilar = [KUYU, ...kat2Duvarlar(tum), ...kat2Engeller(HEPSI)];
     expect(hitsSolid(OCAK2.al[0], OCAK2.al[1], katilar, PR)).toBe(false);
     expect(dikKelepce(OCAK2.al[0], OCAK2.al[1], kat2YurumeAlani(tum))).toEqual([OCAK2.al[0], OCAK2.al[1]]);
+    for (const m of KAT2_MASALAR) expect(Math.max(Math.abs(m.x - OCAK2.al[0]), Math.abs(m.z - OCAK2.al[1]))).toBeGreaterThan(OKEY_YARI + PR);
   });
 
-  it('2. ocak açılınca gövdesi katıdır (içinden yürünmez)', () => {
-    let [x, z] = [OCAK2.x, OCAK2.al[1] + 1];
+  it('2. ocağın önünden arkaya yürünmez (bant salonun dışı)', () => {
+    let [x, z] = [OCAK2.al[0], OCAK2.al[1] + 1];
     for (let i = 0; i < 60; i++) [x, z] = kat2Adim(x, z, 0, -0.1, tum, kat2Engeller(HEPSI));
-    expect(z).toBeGreaterThanOrEqual(OCAK2.z + OCAK2.govde![1] + PR - 1e-6);
+    expect(z).toBeGreaterThanOrEqual(OCAK.z + 0.5);
   });
 
-  it('garson pad\'i tavla köşesinde; çerçevesi masa ayak izine, duvara, geçide değmez', () => {
+  it('garson pad\'i tavla köşesinde; çerçevesi masa ayak izine değmez', () => {
     const [gx, gz] = KAT2_GARSON_YER;
     expect(gx).toBeGreaterThan(0);
     expect(gz).toBeGreaterThan(0);
@@ -131,7 +128,6 @@ describe('yerleşim — 2. ocak ve garson pad\'i hiçbir şeyle çakışmaz', ()
     for (const m of KAT2_MASALAR)
       expect(Math.abs(m.x - gx) >= c.hw + TAVLA_YARI[0] || Math.abs(m.z - gz) >= c.hh + TAVLA_YARI[1]).toBe(true);
     expect(gz - c.hh).toBeGreaterThan(0.09);
-    expect(gx + c.hw).toBeLessThan(KAT2_BOLMELER[1].kapilar[1][0]);
     expect(hitsSolid(gx, gz, [...kat2Duvarlar(tum), ...masaKatilari], PR)).toBe(false);
     // Salon pad'inden ayrı yerde: salonu bitiren oyuncu farkında olmadan garsonu doldurmaz.
     const [sx, sz] = kat2PadYeri('k2salon3');
@@ -220,34 +216,22 @@ describe('Kat 2 garsonu', () => {
     expect(okeyYigin.every((v) => v === A.masaUcreti)).toBe(true);
   });
 
-  it('geçitten geçer, hiçbir duvarı/masayı/ocağı delmez (2 garson, 6 dk)', () => {
+  it('hiçbir masayı/ocağı/kuyuyu delmez, iki ocağa da gider (2 garson, 6 dk)', () => {
     const tum = kat2AcikAlan(HEPSI);
-    const duvar = kat2Duvarlar(tum);
-    const katilar = [KUYU, ...duvar, ...kat2Engeller(HEPSI)];
+    const katilar = [KUYU, ...kat2Duvarlar(tum), ...kat2Engeller(HEPSI)];
     const ayar: Kat2Ayar = { ...AG, garson: { ...GARSON, sayi: 2 } };
-    let gecis = 0;
-    let onceki: [number, number][] = [];
     let ihlal = 0;
-    let alan1 = false;
+    let bant = false;
     const r = sur(yeniKat2Dunya(HEPSI, ayar), 360, girdi(UZAK), ayar, (d) => {
       const gs = [d.garson!, ...(d.garsonEk ?? [])];
       expect(gs).toHaveLength(2);
-      gs.forEach((g, i) => {
+      for (const g of gs) {
         if (hitsSolid(g.x, g.z, katilar, PR - 1e-6)) ihlal++;
-        if (g.x < -0.5 && g.z > 0) alan1 = true;
-        const p = onceki[i];
-        // x = 0 bölmesini (alan 1 ↔ 2) yalnız geçidinden geçer.
-        if (p && g.z > 0 && Math.sign(p[0]) !== Math.sign(g.x) && p[0] !== 0) {
-          gecis++;
-          expect(g.z).toBeGreaterThan(KAT2_BOLMELER[2].kapilar[0][0]);
-          expect(g.z).toBeLessThan(KAT2_BOLMELER[2].kapilar[0][1]);
-        }
-      });
-      onceki = gs.map((g) => [g.x, g.z]);
+        if (g.z < OCAK.al[1] + 0.5) bant = true;
+      }
     });
     expect(ihlal).toBe(0);
-    expect(alan1).toBe(true); // 2. ocağa (okey salonu) gitti
-    expect(gecis).toBeGreaterThan(2);
+    expect(bant).toBe(true); // tavla köşesinden bandın ocaklarına yürüdü
     expect(r.garsonServis).toBeGreaterThan(0);
   });
 
@@ -265,41 +249,49 @@ describe('Kat 2 garsonu', () => {
   });
 });
 
-describe('yol ağı — geçit pervazında takılmaz (S2 kapanışı: ölçüm botu kapı ucunda 15 dk itti)', () => {
-  // Izgara kaba: pervazın yarıçap kadar yakınındaki yürüyene düz hedef verilirse `kat2Adim` onu duvarda
-  // tutar. Garson da aynı ağla yürür. Her geçidin iki ucunda, iki yandan, karşı yana yürü → varmalı.
-  it('her geçidin her ucundan karşı yana yürüyen 400 adımda varır', () => {
-    const ag = kat2YolAgi(HEPSI);
+describe('yol ağı — engel kenarında takılmaz (S2 kapanışı: ölçüm botu kapı ucunda 15 dk itti)', () => {
+  // Izgara kaba: engelin yarıçap kadar yakınındaki yürüyene düz hedef verilirse `kat2Adim` onu engelde
+  // tutar. Garson da aynı ağla yürür. Her açılış durumunda, masa sıralarının ve duvar hatlarının iki
+  // yanından karşı yana yürü → varmalı.
+  it('her açılış durumunda masa/duvar kenarından karşı yana yürüyen 400 adımda varır', () => {
     const PR = LAYOUT.playerRadius;
-    const katilar = [KUYU, ...kat2Duvarlar(ag.acikAlan), ...ag.engeller];
-    const bos = (x: number, z: number) => !hitsSolid(x, z, katilar, PR) && ag.uzunluk(x, z, x, z) < 1e9;
     let denenen = 0;
     const takilan: string[] = [];
-    for (const b of KAT2_BOLMELER) {
-      const yatay = b.z1 === b.z2;
-      for (const [p, q] of b.kapilar) {
-        for (const u of [p - 0.3, p, p + PR - 0.05, p + PR + 0.05, q - PR - 0.05, q - PR + 0.05, q, q + 0.3]) {
-          for (const yan of [-1, 1]) {
-            for (const ara of [0.7, 0.9, 1.2]) {
-              const bas: [number, number] = yatay ? [u, b.z1 + yan * ara] : [b.x1 + yan * ara, u];
-              const hed: [number, number] = yatay ? [u, b.z1 - yan * 3.3] : [b.x1 - yan * 3.3, u];
-              if (!bos(...bas) || !bos(...hed)) continue;
-              let [x, z] = bas;
-              let vardi = false;
-              for (let i = 0; i < 400 && !vardi; i++) {
-                const w = ag.nokta(x, z, hed[0], hed[1]);
-                const L = Math.hypot(w[0] - x, w[1] - z);
-                if (L > 1e-6) {
-                  const k = Math.min(1, 0.45 / L);
-                  [x, z] = kat2Adim(x, z, (w[0] - x) * k, (w[1] - z) * k, ag.acikAlan, ag.engeller);
-                }
-                vardi = Math.hypot(hed[0] - x, hed[1] - z) < 0.2;
-              }
-              denenen++;
-              if (!vardi) takilan.push(`(${bas.map((v) => v.toFixed(2))}) → (${hed.map((v) => v.toFixed(2))}) kaldı (${x.toFixed(2)}, ${z.toFixed(2)})`);
-            }
-          }
+    for (const pads of [HEPSI.slice(0, HEPSI.indexOf('k2salon2')), HEPSI.slice(0, HEPSI.indexOf('k2salon3')), HEPSI]) {
+      const ag = kat2YolAgi(pads);
+      const katilar = [KUYU, ...kat2Duvarlar(ag.acikAlan), ...ag.engeller];
+      const bos = (x: number, z: number) => !hitsSolid(x, z, katilar, PR) && ag.uzunluk(x, z, x, z) < 1e9;
+      const ciftler: [[number, number], [number, number]][] = [];
+      for (const m of KAT2_MASALAR)
+        for (const [dx, dz] of [[0, 1], [0, -1], [1, 0], [-1, 0]] as const) {
+          const k = OKEY_YARI + PR + 0.05;
+          ciftler.push([[m.x + dx * k, m.z + dz * k], [m.x - dx * (k + 2), m.z - dz * (k + 2)]]);
         }
+      for (const b of KAT2_BOLMELER)
+        for (const u of [2, 6, 10, 14]) {
+          const yatay = b.z1 === b.z2;
+          const v = (yatay ? Math.min(b.x1, b.x2) : Math.min(b.z1, b.z2)) + u;
+          for (const yan of [-1, 1]) ciftler.push(yatay ? [[v, b.z1 + yan * 0.7], [v, b.z1 - yan * 3.3]] : [[b.x1 + yan * 0.7, v], [b.x1 - yan * 3.3, v]]);
+        }
+      for (const [bas, hed] of ciftler) {
+        const alanda = (p: [number, number]) => {
+          const [cx, cz] = dikKelepce(p[0], p[1], kat2YurumeAlani(ag.acikAlan));
+          return cx === p[0] && cz === p[1];
+        };
+        if (!alanda(bas) || !alanda(hed) || !bos(...bas) || !bos(...hed) || ag.uzunluk(bas[0], bas[1], hed[0], hed[1]) > 1e9) continue;
+        let [x, z] = bas;
+        let vardi = false;
+        for (let i = 0; i < 400 && !vardi; i++) {
+          const w = ag.nokta(x, z, hed[0], hed[1]);
+          const L = Math.hypot(w[0] - x, w[1] - z);
+          if (L > 1e-6) {
+            const k = Math.min(1, 0.45 / L);
+            [x, z] = kat2Adim(x, z, (w[0] - x) * k, (w[1] - z) * k, ag.acikAlan, ag.engeller);
+          }
+          vardi = Math.hypot(hed[0] - x, hed[1] - z) < 0.2;
+        }
+        denenen++;
+        if (!vardi) takilan.push(`(${bas.map((v) => v.toFixed(2))}) → (${hed.map((v) => v.toFixed(2))}) kaldı (${x.toFixed(2)}, ${z.toFixed(2)})`);
       }
     }
     expect(denenen).toBeGreaterThan(60);

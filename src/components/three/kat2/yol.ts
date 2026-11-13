@@ -20,7 +20,7 @@ export function merdivenY(x: number, z: number): number {
   return -3.2 * u;
 }
 
-/** Grubun masaya varmak için kullandığı geçidin ortası (bölme `KAT2_BOLMELER` kapıları: [−1,8, 0] · [0, 1,8]). */
+/** Grubun ön salonlara indiği hat: merdiven önünün iki yanı (D-191 N7: x ±4,6 arası boş yol). */
 const GECIT_X = 0.9;
 /** Kuyunun yanından geçilen hat (korkuluk ±2,3, kova duvarı ±4,6). */
 const YAN_X = AGIZ.x + 0.6;

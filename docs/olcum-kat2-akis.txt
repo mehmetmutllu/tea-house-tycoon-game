@@ -1,0 +1,73 @@
+=== K2-6 — D-191 AKIŞININ ZİNCİRİ (bedava başlangıç · lavabo pad'i · merdiven pad'i) ===
+Kip: tam · ufuk 10 sa · dt 0.1
+Geometri (kat.ts, D-191): N7 · duvar yalnız kapalı alanın önünde · 2. ocak bantta x -13.2 · lavabo (13.4, -8.600000000000001)
+Bot: hız 4.95 · tepsi 6 · mıknatıs 5 · başlangıç cüzdan 0 · Kat 1 bitmiş (yükseltmesiz) · kasa politikası KARMA · garsonsuz.
+Lavabo L1 = Kat 1 L1: uğrama %30 × 18 ₺ = 5.4 ₺/kişi (okey 4 · tavla 2 kişi).
+Kat 1 izi: 81.5 ₺/dk (oyuncusuz) · idealize 1.040 ₺/dk · kasa sınırı 1.620 ₺
+
+--- §A KOLLAR — bekleyiş = önceki pad açılışından bu pad açılışına (ilk pad: koşu başından) ---
+kol      | pad | zincir ₺  | toplam      | ilk servis dk | ilk ₺ dk | ilk pad dk | en uzun bekleyiş (pad)    | medyan dk | iniş | servis | kaçan | lavabo ₺
+------------------------------------------------------------------------------------------------------------------------------------------------------
+BUGUN    |  27 |   130.800 | 5.03 sa     |          19.9 |     13.5 |       10.2 | 13.4 dk (k2tavla10)       |      11.2 |   27 |   4622 |  1738 |        0
+ESKI-L0  |  26 |   134.250 | 4.87 sa     |           0.8 |      3.3 |        6.9 | 13.1 dk (k2tavla9)        |      11.7 |   26 |   4815 |  1756 |        0
+SB9-L0   |  26 |   134.700 | 4.94 sa     |           0.8 |      3.3 |       10.3 | 13.3 dk (k2tavla11)       |      11.6 |   26 |   4843 |  1811 |        0
+SB9-L1   |  26 |   145.600 | 4.91 sa     |           0.8 |      3.3 |       10.3 | 13.0 dk (k2tavla10)       |      11.3 |   26 |   4413 |  2046 |   14.947
+SB10-L1  |  26 |   162.200 | 5.39 sa     |           0.8 |      3.3 |       11.5 | 14.4 dk (k2tavla9)        |      13.2 |   26 |   5166 |  2095 |   16.319
+  BUGUN: bugünkü config: D-186 sırası, D-188 fiyatları, bedava yok, lavabo yok (yeni geometride) — TABAN
+  ESKI-L0: D-191 sırası; pad fiyatları D-188'deki gibi kalır, lavabo SB9 yerinde; lavabo süs
+  SB9-L0: D-191 sırası; SB9 yeniden hesap (hazır masa+ocak gelire sayılır); lavabo süs
+  SB9-L1: D-191 sırası; SB9 yeniden hesap (lavabo geliri dahil); lavabo Kat 1 gibi
+  SB10-L1: D-191 sırası; SB10; lavabo Kat 1 gibi
+
+--- §B PAD × KOL — fiyat ₺ / açılış dakikası ---
+pad         |           BUGUN |         ESKI-L0 |          SB9-L0 |          SB9-L1 |         SB10-L1
+k2okey1     |      750 / 10.2 |       750 / 6.9 |    1.200 / 10.3 |    1.200 / 10.3 |    1.400 / 11.5
+k2cezve     |      950 / 19.5 |           hazır |           hazır |           hazır |           hazır
+k2okey2     |    1.200 / 28.3 |           hazır |           hazır |           hazır |           hazır
+k2okey3     |    1.700 / 38.6 |    1.700 / 16.9 |    1.700 / 20.3 |    1.700 / 20.3 |    1.900 / 21.7
+k2okey4     |    2.200 / 48.5 |    2.200 / 26.4 |    2.200 / 29.4 |    2.200 / 29.4 |    2.400 / 32.1
+k2salon2    |    2.700 / 57.1 |    2.700 / 36.7 |    2.700 / 39.8 |    2.700 / 39.8 |    3.000 / 42.4
+k2s2okey1   |    2.700 / 66.9 |    2.700 / 44.4 |    2.700 / 48.7 |    2.700 / 48.7 |    3.000 / 53.2
+k2s2okey2   |    3.200 / 77.2 |    3.200 / 54.7 |    3.200 / 59.0 |    3.200 / 59.0 |    3.500 / 63.6
+k2cezve2    |    3.600 / 87.4 |    3.600 / 65.3 |    3.600 / 69.7 |    3.600 / 69.7 |    4.100 / 76.9
+k2s2okey3   |    3.600 / 97.3 |    3.600 / 75.2 |    3.600 / 79.4 |    3.600 / 79.4 |    4.100 / 87.0
+k2s2okey4   |   4.100 / 107.5 |    4.100 / 85.3 |    4.100 / 89.3 |    4.100 / 89.3 |    4.600 / 98.7
+k2s2okey5   |   4.600 / 117.7 |    4.600 / 95.6 |    4.600 / 99.8 |    4.600 / 99.8 |   5.100 / 110.3
+k2s2okey6   |   5.100 / 128.9 |   5.100 / 107.3 |   5.100 / 110.6 |   5.100 / 110.6 |   5.700 / 122.1
+k2salon3    |   5.600 / 140.8 |   5.600 / 130.6 |   5.600 / 133.9 |   6.200 / 133.9 |   6.900 / 147.3
+k2garson    |   5.600 / 152.0 |   5.600 / 142.2 |   5.600 / 146.0 |   6.200 / 146.3 |   6.900 / 160.6
+k2tavla1    |   5.600 / 163.9 |   5.600 / 153.9 |   5.600 / 157.0 |   6.200 / 157.2 |   6.900 / 173.6
+k2tavla2    |   5.800 / 175.3 |   5.800 / 165.6 |   5.800 / 169.0 |   6.500 / 169.7 |   7.200 / 185.9
+k2tavla3    |   6.100 / 187.6 |   6.100 / 177.7 |   6.100 / 180.6 |   6.700 / 181.1 |   7.500 / 199.2
+k2tavla4    |   6.300 / 199.3 |   6.300 / 190.3 |   6.300 / 193.1 |   7.000 / 193.7 |   7.800 / 212.5
+k2tavla5    |   6.600 / 212.0 |   6.600 / 202.3 |   6.600 / 205.7 |   7.300 / 206.0 |   8.100 / 225.9
+k2tavla6    |   6.800 / 224.7 |   6.800 / 214.7 |   6.800 / 217.7 |   7.600 / 218.1 |   8.400 / 240.0
+k2tavla7    |   7.100 / 237.5 |   7.100 / 227.3 |   7.100 / 230.7 |   7.900 / 230.6 |   8.800 / 253.7
+k2tavla8    |   7.300 / 250.5 |   7.300 / 240.3 |   7.300 / 243.7 |   8.200 / 243.5 |   9.100 / 267.3
+k2tavla9    |   7.500 / 262.6 |   7.500 / 253.4 |   7.500 / 256.7 |   8.500 / 256.4 |   9.400 / 281.8
+k2tavla10   |   7.800 / 276.0 |   7.800 / 266.3 |   7.800 / 269.7 |   8.700 / 269.4 |   9.700 / 295.7
+k2tavla11   |   8.000 / 288.7 |   8.000 / 279.3 |   8.000 / 283.0 |   9.000 / 282.4 |  10.000 / 309.3
+k2tavla12   |   8.300 / 301.9 |   8.300 / 292.3 |   8.300 / 296.3 |   9.300 / 294.7 |  10.500 / 323.7
+k2lavabo    |               — |   5.600 / 119.0 |   5.600 / 122.7 |   5.600 / 122.7 |   6.200 / 135.4
+
+--- §C ₺/dk — saat başına: toplam (Kat 1 · Kat 2 · lavabo) ---
+BUGUN    | 171 (81·90·0) | 364 (81·283·0) | 486 (81·405·0) | 535 (81·454·0) | 605 (81·524·0) | 640 (140·501·0)
+ESKI-L0  | 247 (81·165·0) | 425 (81·344·0) | 490 (81·409·0) | 548 (81·466·0) | 609 (81·529·0)
+SB9-L0   | 237 (81·156·0) | 416 (81·334·0) | 493 (81·412·0) | 539 (81·458·0) | 597 (82·515·0)
+SB9-L1   | 237 (81·156·0) | 416 (81·334·0) | 537 (81·391·65) | 611 (81·442·87) | 687 (82·498·107)
+SB10-L1  | 232 (81·151·0) | 395 (81·314·0) | 530 (81·400·49) | 590 (81·429·79) | 670 (81·488·100) | 740 (83·546·112)
+
+--- §D MERDİVEN PAD'i — Kat 1'in son pad'i z3table12 9.950 ₺ bitince çıkar; bekleme = fiyat / Kat 1 geliri ---
+Kat 1 geliri iki uç: aktif oyuncu (idealize, her sikke toplanır) · oyuncusuz (oto-toplanan iz). Bitmiş Kat 1 yükseltmesiz → üst sınır.
+kol           | fiyat ₺ | aktif bekleme dk | oyuncusuz bekleme dk | Kat 2'nin ilk pad'ine oranı (SB9-L0)
+M-HEMEN       |   1.000 |              1.0 |                 12.3 | ×0.8
+M-9DK         |   9.400 |              9.0 |                115.4 | ×7.8
+M-SONPAD      |   9.950 |              9.6 |                122.1 | ×8.3
+M-15DK        |  15.500 |             14.9 |                190.2 | ×12.9
+M-2xSONPAD    |  19.900 |             19.1 |                244.2 | ×16.6
+  M-HEMEN: sembolik (Kat 2'nin ilk masası ölçeği) · M-9DK: Kat 2'nin kuralı, oyuncu Kat 1'de → aktif gelirin 9 dk'sı · M-SONPAD: Kat 1'in son pad'iyle aynı ·
+  M-15DK: aktif gelirin 15 dk'sı (kat geçişi "büyük an") · M-2xSONPAD: son pad'in iki katı
+
+(süre: 29 sn)
+
+✓ Damgalar temiz (tam koşu).

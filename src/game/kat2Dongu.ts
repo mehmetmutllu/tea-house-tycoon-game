@@ -18,6 +18,8 @@
 import {
   KAT2_GARSON_PAD,
   KAT2_GARSON_YER,
+  KAT2_LAVABO_PAD,
+  KAT2_LAVABO_YER,
   KAT2_MASALAR,
   KAT2_SALON_PAD,
   KAT2_SALON_PAD_YER,
@@ -206,6 +208,7 @@ export function kat2PadYeri(id: string): [number, number] {
   const o = OCAKLAR.find((x) => x.id === id);
   if (o) return [o.al[0], o.al[1]];
   if (id === KAT2_GARSON_PAD) return [KAT2_GARSON_YER[0], KAT2_GARSON_YER[1]];
+  if (id === KAT2_LAVABO_PAD) return [KAT2_LAVABO_YER[0], KAT2_LAVABO_YER[1]];
   const s = KAT2_SALON_PAD_YER[id];
   if (s) return s;
   const m = MASA_YERI.get(id);
@@ -218,7 +221,6 @@ function padAlani(id: string): number {
   const m = MASA_YERI.get(id);
   if (m) return m.alan;
   if (id === KAT2_GARSON_PAD) return 2;
-  if (id === OCAKLAR[1].id) return 1;
   return 0;
 }
 
@@ -299,6 +301,7 @@ export function yeniKat2Dunya(padsDone: readonly string[], ayar: Kat2Ayar): Kat2
 export function kat2PadEtiket(id: string): string {
   if (OCAKLAR.some((o) => o.id === id)) return t('Cezve Ocağı');
   if (id === KAT2_GARSON_PAD) return t('Garson');
+  if (id === KAT2_LAVABO_PAD) return t('Lavabo');
   if (id === KAT2_SALON_PAD[0]) return t('Okey Salonu');
   if (id === KAT2_SALON_PAD[1]) return t('Tavla Köşesi');
   return MASA_YERI.get(id)?.tur === 'tavla' ? t('Tavla Masası') : t('Okey Masası');
@@ -306,8 +309,8 @@ export function kat2PadEtiket(id: string): string {
 
 // ---- KAT 2 GARSONU (S2) -------------------------------------------------------------------------
 
-/** i. garsonun evi (pad'in yeri; ikinci garson bir adım yanında). */
-const garsonEvi = (i: number): [number, number] => [KAT2_GARSON_YER[0] + i * 1.0, KAT2_GARSON_YER[1]];
+/** i. garsonun evi (pad'in yeri; ikinci garson bir adım SOLUNDA — sağı iç tavla sütunu). */
+const garsonEvi = (i: number): [number, number] => [KAT2_GARSON_YER[0] - i * 1.0, KAT2_GARSON_YER[1]];
 
 /** Garsonlar: pad'i açık + sayıları var → `sayi` kadar (mevcutlar korunur, yeniler evinde doğar). */
 function garsonKur(padsDone: readonly string[], ayar: Kat2Ayar, mevcut: readonly Kat2Garson[]): Kat2Garson[] {

@@ -1,9 +1,9 @@
 /**
- * kat2-salon.test.ts — K2-3c BEKÇİSİ: Kat 2'nin salonları (bölme + kemerli geçit) ve tavla masası.
+ * kat2-salon.test.ts — K2-3c BEKÇİSİ: Kat 2'nin salonları ve tavla masası.
  *
- * Plan D-179 B: merdiven salonu → okey salonu → tavla köşesi; aralarında TAM bölme (D-180), yalnız
- * kemerli geçitten geçilir. Salon, merdiven salonu tarafındaki pad'iyle açılır. Tavla 2 kişilik
- * (D-181), kendi sayılarıyla döner; ücret + kahve yine TEK yığın.
+ * Plan D-179 B: merdiven salonu → okey salonu → tavla köşesi. D-191: bölme YOK — kapalı alanın önünde
+ * boydan boya duvar, alan açılınca duvar kalkar ve hat serbest yürünür (geçit yok). Salon, merdiven
+ * salonu tarafındaki pad'iyle açılır. Tavla 2 kişilik (D-181), kendi sayılarıyla döner; ücret + kahve TEK yığın.
  */
 import { describe, it, expect } from 'vitest';
 import { economyConfig as C } from '../src/config/economy.config';
@@ -20,8 +20,10 @@ import {
   kat2AcikAlan,
   kat2Adim,
   kat2AlanBul,
+  kat2DuvarVar,
   kat2Duvarlar,
   kat2Engeller,
+  masaGovdesi,
 } from '../src/game/kat';
 import {
   kat2PadEtiket,
@@ -72,18 +74,23 @@ describe('salonlar — açık alan padsDone\'dan türer, salon pad\'iyle açıl�
     expect(kat2AcikAlan(['k2salon3', 'k2salon2'])).toBe(3);
   });
 
-  it('salon pad\'i merdiven salonunda, açtığı salonun geniş geçidinin önünde', () => {
+  it('salon pad\'i merdiven salonunda, açtığı salonun duvarının önünde; masalara değmez', () => {
     for (const [i, id] of KAT2_SALON_PAD.entries()) {
       const [x, z] = kat2PadYeri(id);
       expect(kat2AlanBul(x, z)).toBe(0);
-      const b = KAT2_BOLMELER.find((y) => y.alanlar[0] === 0 && y.alanlar[1] === i + 1)!;
-      expect(b.kapilar.some(([p, q]) => x > p && x < q && q - p >= 3)).toBe(true);
+      expect(Math.sign(x)).toBe(i === 0 ? -1 : 1); // okey salonu solda, tavla köşesi sağda
+      expect(z + 0.85).toBeLessThan(-PR); // çerçeve duvarın (z 0) önünde
+      // Pad çerçevesi (±0,89 × ±0,85) hiçbir masanın gövdesine değmez.
+      for (const m of KAT2_MASALAR) {
+        const g = masaGovdesi(m);
+        expect(Math.abs(g.c[0] - x) >= g.h[0] + 0.89 || Math.abs(g.c[2] - z) >= g.h[1] + 0.85).toBe(true);
+      }
       // Salon kapalıyken pad'in üstüne yürünür (kelepçe onu yerinden oynatmaz).
       expect(kat2Adim(x, z, 0, 0, 1)).toEqual([x, z]);
     }
   });
 
-  it('salon pad\'i durunca dolar, bitince alan açılır ve geçitten içeri yürünür', () => {
+  it('salon pad\'i durunca dolar, bitince alan açılır ve duvarın yerinden içeri yürünür', () => {
     const ayar: Kat2Ayar = { ...A, padler: [{ id: 'k2salon2', cost: 300, fillRate: 100 }] };
     const yer = kat2PadYeri('k2salon2');
     let d = yeniKat2Dunya([], ayar);
@@ -102,26 +109,27 @@ describe('salonlar — açık alan padsDone\'dan türer, salon pad\'iyle açıl�
   });
 });
 
-describe('bölme duvarı katı, yalnız geçitten geçilir', () => {
-  it('kapalı salona geçidin önünden de girilmez', () => {
+describe('D-191 duvarı: kapalı alanın önünde katı, açılınca kalkar', () => {
+  it('kapalı salona hiçbir yerden girilmez', () => {
     expect(yuru([-8.85, -2], 0, 0.1, 1)[1]).toBeLessThan(-PR);
     expect(yuru([8.85, -2], 0, 0.1, 2)[1]).toBeLessThan(-PR); // okey salonu açık, tavla köşesi kapalı
     expect(yuru([-3, 8.7], 0.1, 0, 2)[0]).toBeLessThan(-PR); // okey salonundan tavla köşesine de yok
   });
 
-  it('açık iki alan arasında geçitten geçilir', () => {
-    expect(yuru([-8.85, -2], 0, 0.1, 2)[1]).toBeGreaterThan(3);
-    expect(yuru([-0.9, -2], 0, 0.1, 2)[1]).toBeGreaterThan(3); // dar geçit (bölmenin iç ucu)
-    expect(yuru([8.85, -2], 0, 0.1, 3)[1]).toBeGreaterThan(3);
-    expect(yuru([-3, 8.7], 0.1, 0, 3)[0]).toBeGreaterThan(3); // salonlar arası geçit
+  it('açık iki alan arasındaki hat her noktasından geçilir (geçit yok, duvar kalktı)', () => {
+    for (const x of [-15, -8.85, -4.5, -0.9]) expect(yuru([x, -2], 0, 0.1, 2)[1]).toBeGreaterThan(1.5);
+    for (const x of [0.9, 3, 9.75, 15]) expect(yuru([x, -2], 0, 0.1, 3)[1]).toBeGreaterThan(1.5);
+    for (const z of [1, 8.7, 16]) expect(yuru([-3, z], 0.1, 0, 3)[0]).toBeGreaterThan(3);
   });
 
-  it('geçidin dışında duvardan geçilmez (iki yanı açık olsa da)', () => {
-    expect(yuru([-4.5, -2], 0, 0.1, 3)[1]).toBeLessThan(0);
-    expect(yuru([4.5, -2], 0, 0.1, 3)[1]).toBeLessThan(0);
-    expect(yuru([-4.5, 2], 0, -0.1, 3)[1]).toBeGreaterThan(0);
-    expect(yuru([-3, 3], 0.1, 0, 3)[0]).toBeLessThan(0);
-    expect(yuru([3, 14], -0.1, 0, 3)[0]).toBeGreaterThan(0);
+  it('hat yalnız bir yanı açıkken duvar; iki yanı açıkken duvar yok', () => {
+    expect(yuru([4.5, -2], 0, 0.1, 2)[1]).toBeLessThan(0);
+    expect(yuru([-3, 3], 0.1, 0, 2)[0]).toBeLessThan(0);
+    expect(yuru([4.5, -2], 0, 0.1, 3)[1]).toBeGreaterThan(1.5);
+    for (const b of KAT2_BOLMELER) {
+      expect(kat2DuvarVar(b, 3)).toBe(false);
+      expect(kat2DuvarVar(b, 1)).toBe(b.alanlar.includes(0));
+    }
   });
 
   it('rastgele yürüyüş (en büyük adım 0,5): hiçbir adım duvarı delmez, kapalı salona sızmaz', () => {
@@ -137,13 +145,9 @@ describe('bölme duvarı katı, yalnız geçitten geçilir', () => {
         [x, z] = kat2Adim(x, z, Math.cos(a) * L, Math.sin(a) * L, acik);
         expect(kat2AlanBul(x, z)).toBeLessThan(acik);
         expect(hitsSolid(x, z, duvar, PR)).toBe(false);
-        // Bölmeyi geçen her adım bir geçidin içinden geçer.
+        // Hattı geçen her adım iki yanı açık (duvarı kalkmış) bir hattan geçer.
         const [a0, a1] = [kat2AlanBul(px, pz), kat2AlanBul(x, z)];
-        if (a0 !== a1) {
-          const b = KAT2_BOLMELER.find((y) => y.alanlar.includes(a0) && y.alanlar.includes(a1))!;
-          const boy = b.z1 === b.z2 ? (px + x) / 2 : (pz + z) / 2;
-          expect(b.kapilar.some(([p, q]) => boy > p && boy < q)).toBe(true);
-        }
+        if (a0 !== a1) expect(Math.max(a0, a1)).toBeLessThan(acik);
       }
     }
   });
@@ -155,11 +159,11 @@ describe('bölme duvarı katı, yalnız geçitten geçilir', () => {
     expect(z).toBeLessThan(0);
   });
 
-  it('kapalı salonun duvarı geçitsiz; açık iki alanın duvarında geçit boşluğu var', () => {
+  it('duvar boyu: 1 alan → iki ön duvar · 2 alan → tavla köşesinin iki duvarı · 3 alan → hiç', () => {
     const toplamBoy = (ds: ReturnType<typeof kat2Duvarlar>) => ds.reduce((a, d) => a + 2 * Math.max(d.h[0], d.h[1]), 0);
-    // Alan 1: iki ön bölme tam (17 + 17). Alan 3: üç bölme eksi geçitler (3,3+1,8 · 1,8+3,3 · 3,0).
     expect(toplamBoy(kat2Duvarlar(1))).toBeCloseTo(34);
-    expect(toplamBoy(kat2Duvarlar(3))).toBeCloseTo(51 - 5.1 - 5.1 - 3);
+    expect(toplamBoy(kat2Duvarlar(2))).toBeCloseTo(34);
+    expect(kat2Duvarlar(3)).toHaveLength(0);
   });
 });
 

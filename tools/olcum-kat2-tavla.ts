@@ -92,8 +92,8 @@ const OCAKLAR: { ad: string; o: Ocak }[] = [
 // BOT YOLU — duvar katı: hedef başka alandaysa en kısa geçitten (gerekirse üçüncü alan üzerinden).
 // ---------------------------------------------------------------------------------------------
 type Kapi = { yatay: boolean; duvar: number; c: number; alanlar: readonly [number, number] };
-const KAPILAR: Kapi[] = KAT2_BOLMELER.flatMap((b) =>
-  b.kapilar.map(([p, q]) => ({ yatay: b.z1 === b.z2, duvar: b.z1 === b.z2 ? b.z1 : b.x1, c: (p + q) / 2, alanlar: b.alanlar })),
+const KAPILAR: Kapi[] = KAT2_BOLMELER.flatMap((b) => // D-191: geçit yok → boş liste, bot düz yürür
+  ((b as { kapilar?: readonly (readonly [number, number])[] }).kapilar ?? []).map(([p, q]) => ({ yatay: b.z1 === b.z2, duvar: b.z1 === b.z2 ? b.z1 : b.x1, c: (p + q) / 2, alanlar: b.alanlar })),
 );
 /** Kapının `alan` tarafındaki yaklaşma noktası (bölmeler alanlar[0]'ı eksi yanda tutar). */
 function kapiNoktasi(k: Kapi, alan: number): [number, number] {
