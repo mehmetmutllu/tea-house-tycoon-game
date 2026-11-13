@@ -233,6 +233,23 @@ try {
       'D-190 alçak bölme (1,2)', ['1: oyuncu bölmenin arkasında', '2: okey salonundan', '3: merdiven salonundan', '4: tavla geçidi']);
   }
 
+  if (BOLUM.has('akis')) {
+    // Kat 2 akışı: her adımda oyuncu sıradaki pad'in önünde (pad kadrajın üst yarısında), öncesi açık ve dolu.
+    const adimlar = ['k2okey1', 'k2cezve', 'k2okey2', 'k2salon2', 'k2s2okey1', 'k2cezve2', 'k2salon3', 'k2garson', 'k2tavla1', null];
+    for (const [i, hedef] of adimlar.entries()) {
+      const s = await sayfa('');
+      const S = await sabitler(s);
+      const pads = hedef ? S.zincir.slice(0, S.zincir.indexOf(hedef)) : S.zincir;
+      const mm = {};
+      for (const m of S.masalar) if (pads.includes(m.id)) mm[m.id] = OYUNDA({ istek: i % 2, sabir: 99 });
+      const yer = hedef ? await s.evaluate(async (id) => (await import('/src/game/kat2Dongu.ts')).kat2PadYeri(id), hedef) : null;
+      const [px, pz] = yer ? [yer[0], yer[1] + 2.4] : [0, 6];
+      await kur(s, { padsDone: pads, m: mm, hazir: [pads.includes('k2cezve') ? 2 : 0, pads.includes('k2cezve2') ? 2 : 0] }, [px, pz]);
+      await kare(s, `akis-${String(i + 1).padStart(2, '0')}-${hedef ?? 'son'}`, 1500, { x: 0, y: 140, width: 440, height: 560 });
+      await s.context().close();
+    }
+  }
+
   if (BOLUM.has('perf')) {
     const s = await sayfa();
     const S = await sabitler(s);

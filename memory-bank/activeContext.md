@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-12 — Kat 2 programı: K2-2 bitti · iOS 1.0.7 incelemede)
+## ŞU AN (2026-11-13 — Kat 2 sprint S2 kapandı · akış turu bekliyor · iOS 1.0.7 incelemede)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -23,37 +23,31 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Göz aracı: `node tools/_kat-kare.mjs <klasör> x '[["kat2"],["gec"],["tp",x,z],["js","..."],["kare","ad",ms]]'`.
 - Kat 2 metni EN dahil yayından önce ChatGPT mikrometin turuna girer.
 
-## ✅ Kat 2 sprint S1 bitti (2026-11-13) · D-185 · D-186 · D-187 — üretimde kapı kapalı
-- Plan `docs/sprintler/kat2-S1-plan.md` · defter `docs/sprintler/kat2-S1-defter.md` (S2'ye devreden tam liste orada).
-- Kodda: Kat 2 döngüsü çiziliyor (pad, okey/tavla, ocak, grup, balon A, tepside kahve, sikke kulesi A, bahçe A) · salonlar +
-  geçit yürüyüşü store'a bağlı · `kasa.ts` saf modül (bağlı DEĞİL) · tavla mantığı (`Kat2Ayar.tavla?` yok → grup gelmez).
-- Raporlar: `docs/kat2-tavla-raporu-k2-3c.md` · `docs/kat2-kasa-raporu-k2-4.md` (§Karar dolu, final koşu S2'de).
+## ✅ Kat 2 sprint S2 kapandı (2026-11-13) · D-188 · D-189 · D-190 — üretimde kapı kapalı
+- Kodda: kasa + çevrimdışı (D-185) · tavla/2. ocak/garson mantığı (D-186) · **pad fiyatları SB9** (D-188, config, bekçi
+  "config = SB9") · **garson hız 3 · tepsi 2 · tek** (D-189) · **alçak bölme 1,2** (D-190; B/C/D silindi, perde `h` parametreli).
+- Hata bulundu/düzeldi: yol ağı görüşü kapı pervazındaki yürüyeni "açık" sayıyordu → bot/garson geçit ucunda itip kalıyordu.
+  `kat.ts gorusAcik` gerçek katılarla sınıyor · bekçi (geçit uçları) · araçlarda "bot takılmadı" damgası. Eski "garson zayıf
+  oyuncuya +%28" bulgusu bu hatanın eseriydi (doğrusu +%7-8).
+- Raporlar tamam: kasa §Uygulama · garson §Karar · zincir §Karar. Ajan notları `docs/sprintler/kat2-S2/`.
 
-## 🔧 Kat 2 sprint S2 — 4 ajan bitti, YARIM KAPANIŞ (2026-11-13 gece, kullanıcı uyudu)
-Plan `docs/sprintler/kat2-S2-plan.md` · ajan notları `docs/sprintler/kat2-S2/` (kasa · garson · zincir · gorsel).
-- A kasa (D-185) KODDA: kasa.ts ölçüm (EMA 600 sn, soğuk 120 sn = sınırsız, taban 300), tick/store/save (additive, sürüm 34),
-  Kat 1'deyken Kat 2 işler, çevrimdışı, `KasaSayaci.tsx`, `three/Kasa.tsx`, bekçi `tests/kasa-oyun.test.ts`.
-  **EKSİK:** final tam koşu yarıda kesildi (`docs/olcum-kat2-kasa-s2.txt` yalnız başlık) · rapor §Uygulama yazılmadı · A'nın
-  mutasyonlarını ben doğrulamadım.
-- B Kat 2 mantığı (D-186) KODDA: T120U, zincir config'te (yeni fiyatlar TASLAK), `OCAKLAR`/`ocaklar`, garson (yalnız tavla kahvesi,
-  config'te sayı YOK), `olay.kalkan`. Okey birebir. Mutasyon 2/2 (ben). Ben 2. ocak kutusunu çizime eşitledim ([1,8; 1,03], al z 2,70)
-  → **garson ölçümü (`docs/olcum-kat2-garson.txt`) bu değişiklikten önce; tam koşu yeniden alınmalı.**
-- C zincir ölçümü: öneri SB9 (5,02 sa, en uzun bekleyiş 13,3 dk) · `docs/kat2-zincir-raporu-k2-5.md` · birleşik ağaçta final koşu tekrar.
-- D görsel: 2 ocak, garson, kalkış, aday temizliği, bölme panosu `docs/sprintler/kat2-S2/kareler/pano-bolme.png` (`?k2bolme=A|B|C|D`).
-- Durum: vitest 1986/1986 · tsc temiz · EN duman 4/4 · ana duman sayısı görülmedi (koşu durduruldu) → yarın ilk iş.
+## ⏸ 2. OCAĞIN YERİ — AKIŞ NETLEŞMEDEN DOKUNMA
+Kullanıcı: "akışı sırayla görmek istiyorum, o netleşmeden bir şey yapmak istemiyorum · ortada tezgâh kötü duruyor · kat
+nereden başlıyor anlamadım". Akış sayfası yayında: https://claude.ai/artifact/TUP2kGBiStuvSudKxAYigp
+(`docs/sprintler/kat2-S2/kat2-akis.html`, kareler `node tools/kat2-s2-kare.mjs <klasör> akis`). Aday (kullanıcı ilk cümlesi):
+2. ocak arka şeritte 1. ocağın yanında, mutfak yerinde büyür; okey salonu duvarı boş.
 
-## ⏭️ SIRADAKİ ADIM (yarın)
-1. `npm run duman` (ana sayı) · A için 2 mutasyon · `OLCUM=tam` kasa (`tools/olcum-kat2-kasa.ts` → `-s2.txt`) + rapor §Uygulama.
-2. Garson + zincir tam koşuları yeniden (`tools/olcum-kat2-garson.ts`, `tools/olcum-kat2-zincir.ts`).
-3. `npm run build` → S2 commit #2 → S2 karar paketi (tek mesaj, sade): ① pad eğrisi (C öneri SB9) ② garson sayıları (B tablosu)
-   ③ bölme A/B/C/D (D panosu) + D'nin iki küçük sorusu (salondaki ocak davlumbazsız kalsın mı · 2. ocak açılmadan tadilat perdesi).
-4. Defter `docs/sprintler/kat2-S2-defter.md` + D-188…
+## ⏭️ SIRADAKİ ADIM
+1. Kullanıcı akış sayfasını okusun → Kat 2 akış turu: sayfadaki 3 açık soru — ① merdiven tamiri ne zaman/kaça (bugün yalnız
+   `__kat2()` dev kancası, D-182 "K2-5'te" demişti, yapılmadı) ② 2. ocağın yeri ③ Kat 2'den sonra ne.
+2. Akış kararlarından sonra: 2. ocak yerleşimi (kat.ts geometri + garson yolu → garson/zincir tam koşu yeniden).
+3. Kat 2 metinleri (EN dahil) ChatGPT mikrometin turuna · `docs/sprintler/kat2-S2-defter.md` yazılmadı (kararlar decisions'ta).
 
 ## KULLANICIYA HATIRLAT
-- Play üretim erişimi sonucu ne oldu?
-- İki hesap ayarı yapıldı mı (sınıflandırıcı Claude'u engelledi): a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri →
-  Ayarlar → "Reklam kaynaklarını otomatikman reklam iş ortağı olarak ekle" ✓ · b) Unity → Monetization → Settings →
-  Developer website = `https://mehmetmutllu.github.io`.
+- 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
+  reklam iş ortağı olarak ekle" kutusu **BOŞ (yapılmamış)** — kullanıcı yapacak · b) Unity: Chrome'da oturum kapalı, kontrol
+  edilemedi (Monetization → Settings → Developer website = `https://mehmetmutllu.github.io`).
+- Play üretim erişimi: 2026-11-13 hâlâ ses yok; kullanıcı haber verecek.
 - Play'de yayına girince: Liftoff + Unity Android uygulamalarına Play bağlantısı; AdMob Android'i bağla.
 - 1.0.7 yayına girince AdMob iOS "Güncellemeleri kontrol edin"; birkaç gün sonra Liftoff/Unity dolum oranı.
 - Yayında Firebase olayları geliyor mu (DebugView/Realtime).

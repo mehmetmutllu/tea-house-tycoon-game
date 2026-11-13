@@ -42,6 +42,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-13: 🔧 K2-3a — okey + Türk kahvesi döngüsü (mantık): 6 kol ölçüldü → V4 (3 dk · 25 sn'de 2 kahve · %60 kahve) · D-184 · store + kayıt + çarpışma · bekçi 16 test, mutasyon 6/6 · vitest 1920 · duman 77/77 · sıradaki K2-3b görsel
   · 2026-11-13 (2.): ✅ Kat 2 sprint S1 — 3 paralel ajan: görsel döngü (K2-3b) · tavla + salonlar (K2-3c mantık) · kasa/çevrimdışı ölçümü (K2-4) → D-185 · D-186 · D-187 · `docs/sprintler/kat2-S1-defter.md` · vitest 1952 · duman 77/77 · sıradaki S2
   · 2026-11-13 (3.): 🔧 Kat 2 sprint S2 — 4 paralel ajan: kasa+çevrimdışı koda (D-185) · tavla/2. ocak/garson mantığı (D-186) · zincir ölçümü (öneri SB9 5,0 sa) · görsel (garson, 2 ocak, bölme adayları) · vitest 1986 · yarım kapanış: kasa final koşusu + karar paketi yarın
+  · 2026-11-13 (4.): ✅ Kat 2 sprint S2 kapandı — kasa final + mutasyon 2/2 · yol ağı pervaz takılması düzeldi (eski "+%28" bulgusu yanılgıydı) · D-188 pad SB9 · D-189 garson 3/2/1 · D-190 alçak bölme · 2. ocak yeri ve Kat 2 akışı açık → akış sayfası TUP2kGBiStuvSudKxAYigp · vitest 1987 · duman 77/77
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
