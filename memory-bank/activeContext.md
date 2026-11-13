@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-13 — K2-6 mantık D-192 + görsel D-193 kodda · sırada Kat 2 metinleri · iOS 1.0.7 incelemede)
+## ŞU AN (2026-11-13 — Kat 2 metinleri D-194 kodda, görsel D-193 onaylandı · sırada K2 kalan seçimi · iOS 1.0.7 incelemede)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -40,12 +40,14 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Bekçiler: `tests/kat2-akis.test.ts` · `tests/kat2-yol.test.ts` (oturak yerleri artık `kat2/yol.ts`te).
 - Dev: `__kat2()` kat açar · `__kat2Pad(id)` Kat 2 pad'ini parasız bitirir · geniş kare `__devCam({distMul:2.2})`.
 
+## ✅ KAT 2 METİNLERİ (D-194) — ChatGPT turu, sayfa F6UeznpRKocL8zLnJC2P39
+- Bant "Kat 2 — Oyun Salonu" · EN Coffee Station · Okey Room · Collected! · Garson EN her yerde **Server**.
+- D-193 görseli kullanıcı onayladı. Okey/mutfak levha simgesi bugünkü akışta görünmüyor (yedek).
+- Kare notu: Kat 2'de `__devCam` ve `__teleport` kadrajı değiştirmedi → geniş kare için `__sinema({pos,bak,fov})` kullan.
+
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
-1. Kat 2 metinleri ChatGPT mikrometin turu (EN hepsi var, ton denetimi): "Kat 2 — oyun salonu hazırlanıyor" · Merdiven/Stairs ·
-   Cezve Ocağı/Coffee Stove · Okey Salonu/Okey Hall · Tavla Köşesi/Backgammon Corner · Okey Masası · Tavla Masası · Garson · Lavabo.
-2. Kullanıcıya göster: levha simgeleri (damla · çay bardağı · okey taşı) ve duvar gömülme anı beğenildi mi (kareler bu
-   oturumda çekildi, artifact'e konmadı — gerekirse `node tools/_kat-kare.mjs` ile yeniden).
-3. `docs/kat2-plan.md`'de K2 kalan kalemler (balkon? · yayın kapısı) → sonraki tur seçimi.
+1. `docs/kat2-plan.md`'de K2 kalan kalemler (balkon? · yayın kapısı · kasa doluluğu görsel işaret — ChatGPT önerisi) →
+   sonraki tur seçimi (karar paketi, sade + örnekli).
 Göz aracı: `node tools/_kat-kare.mjs` · geniş kadraj karşılaştırma (feedback_show_dont_ask).
 
 ## KULLANICIYA HATIRLAT

@@ -5205,3 +5205,11 @@ Rapor `docs/kat2-akis-zincir-raporu-k2-6.md` (araç `tools/olcum-kat2-akis.ts`).
 - **Kat 2 lavabosu:** kapalıyken perde + iskele/moloz/kasa; açılınca Kat 1'in lavabo odası seviye 2 sabit (akış t4) yerinde büyür.
 - **Merdiven dönüşümü:** pad dolunca yıkık takım gömülür + toz, tamir merdiveni yerinde büyür (`kat2/MerdivenDonusum.tsx`).
 - Oturak yerleri three'siz `kat2/yol.ts`e taşındı; yol bekçisi `tests/kat2-yol.test.ts` (N7'de engel/kuyu/kova). Dev: `__kat2Pad(id)`.
+
+## D-194 · Kat 2 metinleri (ChatGPT mikrometin turu, 2026-11-13) — Garson EN her yerde Server
+Kaynak: ChatGPT turu + gösterim sayfası https://claude.ai/artifact/F6UeznpRKocL8zLnJC2P39. Kullanıcı seçti:
+- Bant `Kat 2 — Oyun Salonu` / `Floor 2 — Game Hall` ("hazırlanıyor" çıktı; kurulum perdeden okunuyor).
+- EN: Cezve Ocağı = **Coffee Station** (Tea Station eşi) · Okey Salonu = **Okey Room** · Kasadan alındı = **Collected!**
+- **Garson = Server** her yerde (Kat 1 dahil, büyük harfli hat başlıkları + Head Server). Mağaza metinleri ve
+  anahtar kelimelerdeki "waiter" bilerek kaldı (arama sözcüğü). Okey/Tavla/Backgammon adları korunur (Rummy yok).
+- Görsel D-193 onaylandı (damla levha + duvar gömülme). Okey/mutfak levha simgeleri bugünkü akışta görünmüyor (yedek).

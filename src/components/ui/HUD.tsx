@@ -479,7 +479,7 @@ export function HUD() {
       {kat2de ? (
         <div className="band idle" data-testid="kat-bandi">
           <span className="band-body">
-            <span className="band-title">{t('Kat 2 — oyun salonu hazırlanıyor')}</span>
+            <span className="band-title">{t('Kat 2 — Oyun Salonu')}</span>
           </span>
         </div>
       ) : quest ? (
