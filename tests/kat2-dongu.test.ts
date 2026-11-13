@@ -73,7 +73,8 @@ describe('config — D-184 kolu V4 (3 dk oyun · 25 sn\'de 2 kahve · gelirin %6
       'k2salon2', 'k2s2okey1', 'k2s2okey2', 'k2cezve2', 'k2s2okey3', 'k2s2okey4', 'k2s2okey5', 'k2s2okey6',
       'k2salon3', 'k2garson', ...Array.from({ length: 12 }, (_, i) => `k2tavla${i + 1}`),
     ]);
-    for (let i = 1; i < A.padler.length; i++) expect(A.padler[i].cost).toBeGreaterThan(A.padler[i - 1].cost);
+    // D-188 (SB9): fiyat o anki gelire bakar; salon/ocak/garson masadan pahalı değil → ardışık eşit olabilir, düşmez.
+    for (let i = 1; i < A.padler.length; i++) expect(A.padler[i].cost).toBeGreaterThanOrEqual(A.padler[i - 1].cost);
     for (const p of A.padler) {
       expect(p.cost).toBeGreaterThan(0);
       expect(p.cost / p.fillRate).toBeLessThanOrEqual(3.6); // Kat 1'in dolum tavanı

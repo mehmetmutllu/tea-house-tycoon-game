@@ -6,7 +6,7 @@ Bot: son kademe hız 4.95 · tepsi 6 · mıknatıs 5 · başlangıç cüzdan 0, 
 Ocaklar: k2cezve, k2cezve2 · garson API: VAR
 Araçta düşülen pad (B'de yeri yok): yok
 Zincir bekçisi: tutarlı
-Kat 1 izi (gerçek store, oyuncu yokken, tohum 7, 60 dk, 5 dk ısınma): 81.5 ₺/dk → kasa sınırı 20 dk = 1.620 ₺ · idealize (incomeRate) 1.040 ₺/dk · iz 33.2 sn
+Kat 1 izi (gerçek store, oyuncu yokken, tohum 7, 60 dk, 5 dk ısınma): 81.5 ₺/dk → kasa sınırı 20 dk = 1.620 ₺ · idealize (incomeRate) 1.040 ₺/dk · iz 30.5 sn
 Kat 2 teorik tavan (her istek servis): tam zincir 864 ₺/dk · 4 okey + ocak 216 ₺/dk
 
 not: politika IHT SB9 KARMA ile birebir (kasa %80'e hiç varmadı)
@@ -32,8 +32,8 @@ DUZ3000     | KARMA | yok    |    81.000 | 4.43 sa     | 37.4 dk (k2okey1)      
 SB9         | P80   | yok    |   130.800 | 5.09 sa     | 17.0 dk (k2okey1)          |      11.9 |   18 |            0.0 |       0 |       222 |             4958 / 0 | 1468
 SB9         | P100  | yok    |   130.800 | 5.17 sa     | 20.1 dk (k2okey1)          |      12.8 |   15 |            1.1 |      90 |       217 |             4801 / 0 | 1517
 SB9         | IHT   | yok    |   130.800 | 4.95 sa     | 13.1 dk (k2tavla11)        |      11.0 |   27 |            0.0 |       0 |       232 |             4903 / 0 | 1452
-SB9         | KARMA | var    |   130.800 | 4.91 sa     | 12.6 dk (k2tavla10)        |      11.0 |   27 |            0.0 |       0 |       231 |           4734 / 489 | 1181
-SB9         | KARMA | okey   |   130.800 | 4.89 sa     | 12.7 dk (k2tavla1)         |      10.7 |   27 |            0.0 |       0 |       227 |           4719 / 441 | 1138
+SB9         | KARMA | var    |   130.800 | 4.91 sa     | 12.6 dk (k2tavla7)         |      11.0 |   27 |            0.0 |       0 |       231 |           4612 / 668 | 1204
+SB9         | KARMA | okey   |   130.800 | 4.88 sa     | 12.7 dk (k2tavla1)         |      10.7 |   27 |            0.0 |       0 |       228 |           4652 / 588 | 1117
   G1.15-500: geometrik ×1,15, ilk 500 ₺ (TABAN)
   G1.10-500: geometrik ×1,10, ilk 500 ₺
   G1.10-1500: geometrik ×1,10, ilk 1.500 ₺
@@ -102,8 +102,8 @@ DUZ3000 KARMA              | 89 (81·7) | 169 (81·88) | 336 (81·254) | 500 (81
 SB9 P80                    | 145 (81·64) | 347 (81·266) | 484 (81·403) | 549 (81·467) | 625 (81·543) | 558 (84·474)
 SB9 P100                   | 135 (81·53) | 326 (81·245) | 465 (81·384) | 536 (81·454) | 607 (81·526) | 716 (77·638)
 SB9 IHT                    | 171 (81·89) | 365 (81·283) | 495 (81·413) | 557 (81·475) | 625 (81·543)
-SB9 KARMA garson           | 171 (81·89) | 365 (81·283) | 495 (81·413) | 567 (81·486) | 644 (81·562)
-SB9 KARMA garson+okey      | 169 (81·88) | 360 (81·279) | 488 (81·406) | 575 (81·493) | 669 (81·589)
+SB9 KARMA garson           | 171 (81·89) | 365 (81·283) | 495 (81·414) | 569 (81·488) | 638 (82·556)
+SB9 KARMA garson+okey      | 169 (81·88) | 360 (81·279) | 490 (81·409) | 574 (81·493) | 667 (81·586)
 
 --- §D ÇEVRİMDIŞI 1 sa (D-185) — Kat 1 → kasa (≤ 1.620 ₺) + Kat 2 payı ≤ sıradaki Kat 2 pad'i × 1.15 · rateMult 0.5 ---
 ihlal = Kat 2 bitmemişken dönüşte art arda ≥ 2 Kat 2 pad'i alınabiliyor (kasa boş kapatıldı, dönüşte kasa da boşaltılır).
@@ -125,6 +125,6 @@ SB10        |  0/27 | —                                       | —
 SB12        |  0/27 | —                                       | —
 DUZ3000     |  0/27 | —                                       | —
 
-(süre: 64 sn)
+(süre: 59 sn)
 
 ✓ Damgalar temiz (tam koşu).

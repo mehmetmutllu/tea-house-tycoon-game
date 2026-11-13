@@ -42,7 +42,7 @@ const GUCLU: Oyuncu = { ad: 'son kademe', hiz: playerSpeedFor(charMaxTier('speed
 const ZAYIF: Oyuncu = { ad: 'ilk kademe', hiz: playerSpeedFor(0), tepsi: trayCapacityFor(0), miknatis: attractRadiusFor(0) };
 
 // Okey sayıları (D-184). Tavla sayıları kolların → config'teki seçilmiş kol (D-186) burada kullanılmaz.
-const { tavla: _tavla, ...OKEY_AYAR } = economyConfig.kat2;
+const { tavla: _tavla, garson: _garson, ...OKEY_AYAR } = economyConfig.kat2;
 const OKEY: Kat2Ayar = OKEY_AYAR;
 
 // ---------------------------------------------------------------------------------------------

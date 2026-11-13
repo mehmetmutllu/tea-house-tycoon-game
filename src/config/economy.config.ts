@@ -1212,33 +1212,45 @@ export const economyConfig = {
     ocakKuyruk: 4,
     /**
      * Açılış zinciri — ilk masa ocaktan ÖNCE (ilk grup kahvesiz oynar, ocak açılınca istekler başlar).
-     * Fiyatlar TASLAK (ölçülmedi, K2-5): dolum ~3,5 sn (Kat 1'in pad tavanı).
-     * S2 (D-186 sırası): okey salonu → 2 masa → 2. ocak → 4 masa → tavla köşesi → garson → 12 tavla.
-     * `k2salon2`den sonraki fiyatların HEPSİ TASLAK, K2-5 (zincir ölçümü) sonunda karar paketinde değişir.
-     * `k2garson` pad'i açılır ama garson sayıları (`garson`) S2 kararına dek YOK → garson gelmez.
+     * D-188 (K2-5, kol SB9 — `docs/kat2-zincir-raporu-k2-5.md`): her pad o anki teorik gelirin ~9 dk'sı;
+     * salon/ocak/garson masadan pahalı değil. Zincir ~5 sa, en uzun bekleyiş ~13 dk. Dolum ~3,5 sn
+     * (`fillRate = round(cost / 3,5)`). Bekçi: `tools/olcum-kat2-zincir.ts` "config = SB9".
      */
     padler: [
-      { id: 'k2okey1', cost: 500, fillRate: 143 },
-      { id: 'k2cezve', cost: 800, fillRate: 229 },
-      { id: 'k2okey2', cost: 1_500, fillRate: 429 },
-      { id: 'k2okey3', cost: 2_500, fillRate: 714 },
-      { id: 'k2okey4', cost: 4_000, fillRate: 1_143 },
-      // ---- TASLAK, K2-5
-      { id: 'k2salon2', cost: 6_000, fillRate: 1_714 },
-      { id: 'k2s2okey1', cost: 7_500, fillRate: 2_143 },
-      { id: 'k2s2okey2', cost: 9_000, fillRate: 2_571 },
-      { id: 'k2cezve2', cost: 11_000, fillRate: 3_143 },
-      { id: 'k2s2okey3', cost: 13_000, fillRate: 3_714 },
-      { id: 'k2s2okey4', cost: 15_500, fillRate: 4_429 },
-      { id: 'k2s2okey5', cost: 18_000, fillRate: 5_143 },
-      { id: 'k2s2okey6', cost: 21_000, fillRate: 6_000 },
-      { id: 'k2salon3', cost: 25_000, fillRate: 7_143 },
-      { id: 'k2garson', cost: 30_000, fillRate: 8_571 },
-      ...Array.from({ length: 12 }, (_, i) => {
-        const cost = 33_000 + i * 3_000;
-        return { id: `k2tavla${i + 1}`, cost, fillRate: Math.round(cost / 3.5) };
-      }),
+      { id: 'k2okey1', cost: 750, fillRate: 214 },
+      { id: 'k2cezve', cost: 950, fillRate: 271 },
+      { id: 'k2okey2', cost: 1_200, fillRate: 343 },
+      { id: 'k2okey3', cost: 1_700, fillRate: 486 },
+      { id: 'k2okey4', cost: 2_200, fillRate: 629 },
+      { id: 'k2salon2', cost: 2_700, fillRate: 771 },
+      { id: 'k2s2okey1', cost: 2_700, fillRate: 771 },
+      { id: 'k2s2okey2', cost: 3_200, fillRate: 914 },
+      { id: 'k2cezve2', cost: 3_600, fillRate: 1_029 },
+      { id: 'k2s2okey3', cost: 3_600, fillRate: 1_029 },
+      { id: 'k2s2okey4', cost: 4_100, fillRate: 1_171 },
+      { id: 'k2s2okey5', cost: 4_600, fillRate: 1_314 },
+      { id: 'k2s2okey6', cost: 5_100, fillRate: 1_457 },
+      { id: 'k2salon3', cost: 5_600, fillRate: 1_600 },
+      { id: 'k2garson', cost: 5_600, fillRate: 1_600 },
+      { id: 'k2tavla1', cost: 5_600, fillRate: 1_600 },
+      { id: 'k2tavla2', cost: 5_800, fillRate: 1_657 },
+      { id: 'k2tavla3', cost: 6_100, fillRate: 1_743 },
+      { id: 'k2tavla4', cost: 6_300, fillRate: 1_800 },
+      { id: 'k2tavla5', cost: 6_600, fillRate: 1_886 },
+      { id: 'k2tavla6', cost: 6_800, fillRate: 1_943 },
+      { id: 'k2tavla7', cost: 7_100, fillRate: 2_029 },
+      { id: 'k2tavla8', cost: 7_300, fillRate: 2_086 },
+      { id: 'k2tavla9', cost: 7_500, fillRate: 2_143 },
+      { id: 'k2tavla10', cost: 7_800, fillRate: 2_229 },
+      { id: 'k2tavla11', cost: 8_000, fillRate: 2_286 },
+      { id: 'k2tavla12', cost: 8_300, fillRate: 2_371 },
     ],
+    /**
+     * Kat 2 garsonu (D-189, `docs/kat2-garson-raporu-k2-s2.md`): Kat 1'in son kademe garson hızının
+     * 1,5 katı (2,0 × 1,5 = 3,0; oyuncunun 4,5 tabanından yavaş — D-014), tepsi 2 (4 hiçbir kolda
+     * kazandırmadı), tek garson (ikincisi ileride yükseltme olabilir).
+     */
+    garson: { hiz: 3, tepsi: 2, sayi: 1 },
     /**
      * TAVLA (D-186, kol T120U — `docs/kat2-tavla-raporu-k2-3c.md`): 2 kişi 2 dk oynar, 25 sn'de 1 fincan;
      * para masa ücretinden (gelirin %20'si kahve). Tavan kişi başına okeyle eşit (27 ₺/dk/masa).

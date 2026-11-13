@@ -80,7 +80,7 @@ interface Sonuc {
 }
 
 function kos(kol: Kol, o: Oyuncu, ad: string): Sonuc {
-  const ayar: Kat2Ayar = kol.g ? { ...AYAR, garson: kol.g } : AYAR;
+  const ayar: Kat2Ayar = { ...AYAR, garson: kol.g ?? undefined }; // "yok" kolu config garsonunu (D-189) ALMAZ
   const ag = kat2YolAgi(PADLER);
   let d = yeniKat2Dunya(PADLER, ayar);
   // Masalar ayrı anlarda açılır: döngüleri eşit aralıkla kaydır (K2-3 kalıbı).

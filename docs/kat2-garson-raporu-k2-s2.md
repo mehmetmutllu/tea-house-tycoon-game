@@ -86,4 +86,5 @@ tek başına yetmiyor**.
 
 ## §Karar
 
-_(boş — S2 karar paketi)_
+**D-189 (2026-11-13):** kullanıcı önerileri seçti — hız 3,0 · tepsi 2 · tek garson. Config `kat2.garson`; bekçi
+`tests/kat2-garson.test.ts` (eksik sayı yok, hız = Kat 1 son kademe × 1,5). Soru 4 (ocak darboğazı) Kat 2 akış turuna.

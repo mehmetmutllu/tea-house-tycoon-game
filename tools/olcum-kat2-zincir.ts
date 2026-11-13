@@ -110,7 +110,9 @@ function hazirlar(d: Kat2Dunya): number[] {
   return x.ocaklar ? x.ocaklar.map((o) => o.hazir) : [x.ocakHazir ?? 0];
 }
 const GARSON_API = 'garson' in (yeniKat2Dunya([], CFG) as object);
-const GARSON_ORNEK = { hiz: 2, tepsi: 2, sayi: 1 }; // örnek sayı — B'nin ölçümü (K2-S2) gelene dek
+// D-189: garson sayıları config'ten; garsonsuz kollara SIZMASIN diye taban ayardan ayrılır.
+const { garson: CFG_GARSON, ...CFG_TEMEL } = CFG;
+damga("garson sayıları config'te (D-189)", !!CFG_GARSON);
 
 const yuvarla = (v: number): number => {
   const adim = v < 1_000 ? 50 : v < 10_000 ? 100 : v < 100_000 ? 500 : 5_000;
@@ -123,8 +125,8 @@ function ayarKur(fiyat: readonly number[], garson: boolean): Kat2Ayar {
     const cost = fiyat[i] * carp;
     return { id, cost, fillRate: Math.round(cost / PAD_SN) };
   });
-  const a: Kat2Ayar = { ...CFG, padler, tavla: T120U };
-  if (garson) (a as unknown as { garson: typeof GARSON_ORNEK }).garson = GARSON_ORNEK;
+  const a: Kat2Ayar = { ...CFG_TEMEL, padler, tavla: T120U };
+  if (garson) a.garson = CFG_GARSON;
   return a;
 }
 
@@ -518,6 +520,13 @@ console.log(`Kat 2 teorik tavan (her istek servis): tam zincir ${f0(kat2Oran(SIR
 console.log('');
 
 const KOLLAR = kollar(r1Dk);
+{
+  // D-188 bekçisi: config'teki zincir fiyatları SB9 kolunun birebir aynısı.
+  const sb9 = sabitBekleyis(9, r1Dk);
+  const sapan = SIRA.filter((id, i) => CFG.padler.find((p) => p.id === id)?.cost !== sb9[i]);
+  // Kısa kipte Kat 1 izi kısa → taban oran farklı; damga yalnız tam koşuda anlamlı.
+  if (!KISA) damga('config = SB9 (D-188)', sapan.length === 0, `sapan pad: ${sapan.join(', ')}`);
+}
 type Satir = { kol: Kol; pol: Politika; garson: boolean; okeyOdak?: boolean; r: Sonuc };
 const satirlar: Satir[] = [];
 let tabanIz = '';

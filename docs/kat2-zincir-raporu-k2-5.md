@@ -166,4 +166,6 @@ EN karşılığı gereken yeni metin yok (rapor dışı oyun metni üretilmedi).
 
 ## §Karar
 
-_(boş — S2 karar paketinde)_
+**D-188 (2026-11-13):** kullanıcı SB9'u seçti (soru 1-4 önerileri: salonlar masa ölçüsünde, ~5 sa, çevrimdışı küçük açık kabul).
+Config'e yazıldı; final tam koşu `docs/olcum-kat2-zincir.txt` ("config = SB9" + "garson sayıları config'te" damgaları temiz):
+SB9 4,95 sa garsonsuz · seçilen garsonla 4,91 sa (oyuncu her isteğe) / 4,88 sa (oyuncu okeyde).

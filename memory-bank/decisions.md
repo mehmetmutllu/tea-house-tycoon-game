@@ -5158,3 +5158,21 @@ Arka duvar: kullanıcı A (aşağıda bahçe). Balon: kullanıcı "idealini yap"
 sabır halkası D elendi: sabır çoğu durumda bağlamıyor). Para yığını: sayfayı görüp A sikke kulesi (para büyüdükçe kule uzar).
 Üçü de kodun varsayılanı (`kat2/gorselSecim.ts`); kaybeden adaylar S2'de silinir.
 
+
+## D-188 · Kat 2 pad fiyatları SB9: her pad o anki gelirin ~9 dk'sı (K2-S2, 2026-11-13)
+Ölçüm (tam koşu): SB9 zincir 4,95 sa, en uzun bekleyiş 13,1 dk / medyan 11,0 (1,2 kat); geometrik ×1,15 4,64 sa ama son tavlalar
+29 dk; ×1,35 ve üstü 10 sa'te bitmiyor. Salon/ocak/garson masadan pahalı değil (tür çarpanı tempoyu zikzaklatıyor). Çevrimdışı
+açık 2/27 (Kat 2'nin ilk ~20 dk'sı, iki ucuz pad) kabul. Config'te; bekçi zincir aracında "config = SB9". Rapor
+`docs/kat2-zincir-raporu-k2-5.md`. Not: S2 kapanışında yol ağı pervaz takılması düzeldi (bot/garson geçit ucunda itip kalıyordu).
+
+## D-189 · Kat 2 garsonu: hız 3,0 · tepsi 2 · tek garson (K2-S2, 2026-11-13)
+Kat 1 son kademe garsonunun 1,5 katı, oyuncudan yavaş (D-014). Tavla servisi %55 → %68, toplam +%7 (ocak darboğaz: kollar
+584-597 ₺/dk). Tepsi 4 hiçbir kolda kazandırmadı; 2. garson tavla %83 ama para düşüyor → ileride yükseltme adayı. Zincirde
+garsonla 4,88-4,91 sa. Rapor `docs/kat2-garson-raporu-k2-s2.md` (ilk ölçümdeki "zayıf oyuncuya +%28" takılan botun eseriydi).
+
+## D-190 · Kat 2 bölmesi ALÇAK (1,2) — A (K2-S2, 2026-11-13)
+Pano `docs/sprintler/kat2-S2/kareler/pano-bolme.png` (bugün/A/B/C/D) → A: lambri + krem bant 1,2; geçit dikmeleri 1,35, lento
+yok; oyuncu ve masalar bölme arkasında da görünür. Kilitli salonun geçit perdesi dikmenin altına indi (`MaketTadilatPerde h`),
+arkasında kalan salon pad'i artık okunuyor. Çarpışma değişmedi. B/C/D kodu silindi.
+**2. ocağın yeri AÇIK:** kullanıcı "ortada tezgâh kötü duruyor; önce Kat 2'nin akışını sırayla görmek istiyorum" → akış netleşmeden
+ocak/yerleşim değişmez.

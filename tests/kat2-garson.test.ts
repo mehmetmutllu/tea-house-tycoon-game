@@ -74,11 +74,14 @@ describe('config — D-186 tavla T120U + zincir', () => {
     expect(A.tavla).toEqual({ oturum: 120, kahveAralik: 25, istekAdet: 1, kahveFiyat: 3, masaUcreti: 51 });
   });
 
-  it('zincir bekçisi: YAPI tutarlı; eksik sayı YALNIZ garson (S2 kararı bekliyor — karar gelince null olmalı)', () => {
+  it('zincir bekçisi: YAPI tutarlı, eksik sayı yok; garson D-189 (hız 3 · tepsi 2 · 1 garson)', () => {
     expect(kat2YapiHatasi(A)).toBeNull();
-    expect(kat2EksikSayi(A)).toBe('k2garson: garson sayıları (Kat2Ayar.garson) yok');
-    expect(kat2ZincirHatasi(A)).toMatch(/garson/);
-    expect(kat2ZincirHatasi(AG)).toBeNull();
+    expect(kat2EksikSayi(A)).toBeNull();
+    expect(kat2ZincirHatasi(A)).toBeNull();
+    expect(A.garson).toEqual({ hiz: 3, tepsi: 2, sayi: 1 });
+    expect(A.garson!.hiz).toBeCloseTo(C.waiter.speedUpgrades.speeds.at(-1)! * 1.5);
+    const garsonsuz: Kat2Ayar = { ...A, garson: undefined };
+    expect(kat2EksikSayi(garsonsuz)).toBe('k2garson: garson sayıları (Kat2Ayar.garson) yok');
   });
 
   it('2. ocak okey salonundan, garson tavla köşesinden önce zincire giremez', () => {
@@ -193,8 +196,9 @@ describe('2. cezve ocağı', () => {
 
 describe('Kat 2 garsonu', () => {
   it('sayıları yoksa pad açık olsa da garson GELMEZ (null)', () => {
-    expect(yeniKat2Dunya(HEPSI, A).garson).toBeNull();
-    const r = sur(yeniKat2Dunya(HEPSI, A), 60, girdi(UZAK), A);
+    const A0: Kat2Ayar = { ...A, garson: undefined };
+    expect(yeniKat2Dunya(HEPSI, A0).garson).toBeNull();
+    const r = sur(yeniKat2Dunya(HEPSI, A0), 60, girdi(UZAK), A0);
     expect(r.d.garson).toBeNull();
     expect(r.garsonServis).toBe(0);
   });

@@ -173,5 +173,5 @@ Mutasyon 2/2: sınır yok sayılır → 2 test düşer · dolu kasada doğum kap
 
 - Rapor önerisinin dediği gibi: 20 dk'da bir inen oyuncu neredeyse hiç kaybetmez, 30 dk yukarıda kalan Kat 1'in %17'sini durdurur.
 - Ölçülen oran gerçeğe ±%15 içinde; ilk sınır 134. saniyede kuruluyor (öncesi sınırsız, para 180 sn yaşlanmadan kasaya girmez).
-- Çevrimdışı: Kat 1'de kapatan **0/81**, Kat 2'de kapatan **0/81** ihlal (S2 öncesi 15/81). Kat 2'de kapatılan kayıt: kasa 900 ₺
-  (sınır 1.513), cüzdana 19 ₺.
+- Çevrimdışı (D-188 SB9 fiyatlarıyla): Kat 1'de kapatan **0/81**, Kat 2'de kapatan **0/81** ihlal (S2 öncesi kural aynı fiyatlarla
+  48/81). Kat 2'de kapatılan kayıt: kasa 1.069 ₺ (sınır 1.513), cüzdana 23 ₺.

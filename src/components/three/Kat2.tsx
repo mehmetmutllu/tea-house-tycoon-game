@@ -13,7 +13,7 @@
  *
  * K2-S2: ocaklar `OCAKLAR`dan (2. cezve okey salonunda, açılınca yerinde büyür) · Kat 2 garsonu
  * (`kat2/Garson`, konum `kat2Dunya.garson`dan) · kalkış store aboneliğiyle (`useKalkisIzle`) ·
- * bölmeler `kat2/Bolme` (göster-seç adayları orada).
+ * bölmeler `kat2/Bolme` (D-190 alçak bölme).
  */
 import { Suspense, useLayoutEffect, useRef } from 'react';
 import { CylinderGeometry, MeshStandardMaterial, Object3D, type InstancedMesh } from 'three';

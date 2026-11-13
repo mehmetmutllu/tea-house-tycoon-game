@@ -205,16 +205,14 @@ try {
   }
 
   if (BOLUM.has('bolme')) {
-    const adaylar = ['', 'A', 'B', 'C', 'D'];
+    // D-190 alçak bölme: açık iki salon + KİLİTLİ salon (geçit perdeli, ötesi çizilmez) aynı kadrajlarda.
     const sutunlar = [];
-    for (const a of adaylar) {
-      const s = await sayfa(a ? `?k2bolme=${a}` : '');
+    for (const [ad, sonPad] of [['acik', 'k2salon3'], ['kilitli', 'k2okey4']]) {
+      const s = await sayfa('');
       const S = await sabitler(s);
-      const acik = S.zincir.slice(0, S.zincir.indexOf('k2salon3') + 1);
+      const acik = S.zincir.slice(0, S.zincir.indexOf(sonPad) + 1);
       const mm = {};
       for (const m of S.masalar) if (acik.includes(m.id)) mm[m.id] = OYUNDA();
-      const ad = a || '0';
-      // 1 · oyuncu bölmenin hemen arkasında (merdiven salonu tarafı), kameraya dönük
       await kur(s, { padsDone: acik, m: mm, hazir: [2, 2] }, [-13.8, 0.9]);
       await s.evaluate(() => window.__girdi(0, -1));
       await s.waitForTimeout(500);
@@ -222,17 +220,17 @@ try {
       await s.waitForTimeout(200);
       await s.evaluate(() => window.__teleport(-13.8, -0.5));
       const k1 = await kare(s, `bolme-${ad}-1-arkada`, 1300, { x: 0, y: 140, width: 440, height: 560 });
-      // 2 · oyun kadrajı: okey salonundan merdiven salonuna bakış (bölme kadrajın ortasında)
       await kur(s, { padsDone: acik, m: mm, hazir: [2, 2] }, [-8.8, 6.0]);
       const k2 = await kare(s, `bolme-${ad}-2-oyun`, 1300, { x: 0, y: 140, width: 440, height: 560 });
-      // 3 · oyun kadrajı: merdiven salonundan, bölme önde (salonların okunurluğu)
       await kur(s, { padsDone: acik, m: mm, hazir: [2, 2] }, [-9.5, -3.2]);
       const k3 = await kare(s, `bolme-${ad}-3-oyun`, 1300, { x: 0, y: 140, width: 440, height: 560 });
-      sutunlar.push([k1, k2, k3]);
+      await kur(s, { padsDone: acik, m: mm, hazir: [2, 2] }, [8.8, -3.2]);
+      const k4 = await kare(s, `bolme-${ad}-4-tavla-gecidi`, 1300, { x: 0, y: 140, width: 440, height: 560 });
+      sutunlar.push([k1, k2, k3, k4]);
       await s.context().close();
     }
-    await pano('bolme', sutunlar, ['Bugün · 2,2 tam', 'A · alçak 1,2', 'B · pencereli', 'C · yakında iner', 'D · silüet'],
-      'Bölme: oyuncu duvarın arkasında görünsün mü?', ['üst: oyuncu bölmenin hemen arkasında (z −0,5)', 'orta: okey salonundan bakış', 'alt: merdiven salonundan bakış']);
+    await pano('bolme', sutunlar, ['salonlar açık', 'okey salonu kilitli'],
+      'D-190 alçak bölme (1,2)', ['1: oyuncu bölmenin arkasında', '2: okey salonundan', '3: merdiven salonundan', '4: tavla geçidi']);
   }
 
   if (BOLUM.has('perf')) {

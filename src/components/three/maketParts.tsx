@@ -566,7 +566,9 @@ export function MaketUyariSeridi({ x1, x2, z }: { x1: number; x2: number; z: num
  * Kural (maketin kendi yorumu): *"kilitli ALAN hiç çizilmez; açık alanın içindeki kilitli obje
  * tadilat hâlinde durur."* Perde 2,40 — eski 1,2'lik bandın düz düzlemlerinin yerini alır.
  */
-export function MaketTadilatPerde({ x1, x2, z }: { x1: number; x2: number; z: number }) {
+/** `h`: perde boyu (varsayılan 2,4 tam duvar; Kat 2 alçak bölmesinde dikmenin altında kalır — D-190). */
+export function MaketTadilatPerde({ x1, x2, z, h = 2.4 }: { x1: number; x2: number; z: number; h?: number }) {
+  const k = h / 2.4;
   const len = x2 - x1;
   const cx = (x1 + x2) / 2;
   const n = Math.max(1, Math.round(len / 0.62));
@@ -575,19 +577,19 @@ export function MaketTadilatPerde({ x1, x2, z }: { x1: number; x2: number; z: nu
   return (
     <group>
       {Array.from({ length: n }, (_, i) => (
-        <mesh key={i} position={[x1 + st / 2 + i * st, 1.2, z]} castShadow receiveShadow>
-          <boxGeometry args={[st - 0.05, 2.4, 0.1]} />
+        <mesh key={i} position={[x1 + st / 2 + i * st, h / 2, z]} castShadow receiveShadow>
+          <boxGeometry args={[st - 0.05, h, 0.1]} />
           <meshStandardMaterial color={['#8a6242', '#9c6f4a', '#7d5b40'][i % 3]} flatShading />
         </mesh>
       ))}
       {[0.55, 2.05].map((y) => (
-        <mesh key={y} position={[cx, y, z + 0.02]}>
+        <mesh key={y} position={[cx, y * k, z + 0.02]}>
           <boxGeometry args={[len, 0.13, 0.18]} />
           <meshStandardMaterial color={MC.doorWood} />
         </mesh>
       ))}
       {Array.from({ length: bantSayisi }, (_, i) => (
-        <mesh key={`s${i}`} position={[x1 + 0.35 + i * 0.86, 1.35, z + 0.07]} rotation={[0, 0, 0.5]}>
+        <mesh key={`s${i}`} position={[x1 + 0.35 + i * 0.86, 1.35 * k, z + 0.07]} rotation={[0, 0, 0.5]}>
           <boxGeometry args={[0.5, 0.17, 0.03]} />
           <meshStandardMaterial color={i % 2 ? '#e0b13a' : '#2f2a24'} />
         </mesh>
