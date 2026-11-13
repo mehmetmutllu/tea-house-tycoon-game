@@ -48,7 +48,7 @@ perde P3 bantsız · düzen N7 tam ayna · sıra: merdiven salonu → okey salon
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
-  reklam iş ortağı olarak ekle" kutusu — kullanıcı izin verdi, Claude 2026-11-13 oturum sonunda işaretliyor · b) Unity: Chrome'da oturum kapalı, kontrol
+  reklam iş ortağı olarak ekle" kutusu ✅ 2026-11-13 Claude işaretledi + Kaydet (yenileyince kalıcı) · b) Unity: Chrome'da oturum kapalı, kontrol
   edilemedi (Monetization → Settings → Developer website = `https://mehmetmutllu.github.io`).
 - Play üretim erişimi: 2026-11-13 hâlâ ses yok; kullanıcı haber verecek.
 - Play'de yayına girince: Liftoff + Unity Android uygulamalarına Play bağlantısı; AdMob Android'i bağla.
