@@ -53,8 +53,8 @@ kurulmaz, Ayarlar'da bölüm görünmez, oyun onsuz oynanır (emülatörde doğr
 | kat2_ilk_masa | Okey Başlasın | Kat 2'de ilk yeni masanı aç. | 10 |
 | kat2_tavla | Tavla Köşesi | Tavla köşesini aç. | 25 |
 | kat2_gozde_masa | Gözde Masa | Kat 2'de bir masayı Seviye 5'e çıkar. | 25 |
-| kat2_gorev | Üst Kat Tamam | Kat 2'nin bütün görevlerini bitir. | 30 |
-| kat2_tamam | Dolu Salonlar | Kat 2'nin bütün masalarını aç. | 40 |
+| kat2_gorev | Üst Kat Tamam | Kat 2'nin tüm görevlerini tamamla. | 30 |
+| kat2_tamam | Dolu Salonlar | Kat 2'deki tüm masaları aç. | 40 |
 
 Kaynak `src/config/playGames.config.ts`; tablo oradan kopyalandı, değişirse ikisi birlikte güncellenir.
 

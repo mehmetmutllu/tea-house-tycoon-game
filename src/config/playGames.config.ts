@@ -63,7 +63,7 @@ export const playGamesConfig = {
     { anahtar: 'kat2_ilk_masa', ad: 'Okey Başlasın', aciklama: "Kat 2'de ilk yeni masanı aç.", xp: 10, olcu: 'kat2Pad', esik: 1, kimlik: null },
     { anahtar: 'kat2_tavla', ad: 'Tavla Köşesi', aciklama: "Tavla köşesini aç.", xp: 25, olcu: 'kat2Alan', esik: 3, kimlik: null },
     { anahtar: 'kat2_gozde_masa', ad: 'Gözde Masa', aciklama: "Kat 2'de bir masayı Seviye 5'e çıkar.", xp: 25, olcu: 'kat2SonSvMasa', esik: 1, kimlik: null },
-    { anahtar: 'kat2_gorev', ad: 'Üst Kat Tamam', aciklama: "Kat 2'nin bütün görevlerini bitir.", xp: 30, olcu: 'kat2GorevHatti', esik: 1, kimlik: null },
-    { anahtar: 'kat2_tamam', ad: 'Dolu Salonlar', aciklama: "Kat 2'nin bütün masalarını aç.", xp: 40, olcu: 'kat2Bitti', esik: 1, kimlik: null },
+    { anahtar: 'kat2_gorev', ad: 'Üst Kat Tamam', aciklama: "Kat 2'nin tüm görevlerini tamamla.", xp: 30, olcu: 'kat2GorevHatti', esik: 1, kimlik: null },
+    { anahtar: 'kat2_tamam', ad: 'Dolu Salonlar', aciklama: "Kat 2'deki tüm masaları aç.", xp: 40, olcu: 'kat2Bitti', esik: 1, kimlik: null },
   ] as readonly BasarimTanim[],
 } as const;

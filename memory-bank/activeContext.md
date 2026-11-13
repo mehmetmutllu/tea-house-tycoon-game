@@ -46,7 +46,7 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Kareler `tools/kat2-s3-kare.mjs` · ses sayfası paketleme: esbuild ile `tools/kat2-ses-dinle.html` tek dosyaya.
 
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
-1. ChatGPT mikrometin turu: Kat 2 görev metinleri (20 + lakaplar) + 6 başarım TR/EN (taslak EN `en.ts` sonunda).
+1. ✅ Metin turu bitti (D-196).
 2. Kasa doluluğu görsel işareti (ChatGPT önerisi; "Kat 1 dolu:" yerine) — Kat 1'de karşılığı varsa onu uyarla.
 3. 1.1 yayın turu: `VITE_KAT2=1` üretim kapısı · Game Center başarımları (ASC) + Play listesi arkadaşa · mağaza "Yenilikler".
 Göz aracı: `node tools/_kat-kare.mjs` · geniş kadraj karşılaştırma (feedback_show_dont_ask).

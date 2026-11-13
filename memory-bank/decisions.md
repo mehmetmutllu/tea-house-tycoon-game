@@ -5224,3 +5224,9 @@ Rapor `docs/kat2-masasv-raporu-k2-s3.md` · karar paketi https://claude.ai/artif
 - Tavla Sv4'e ikinci sinyal: koyu cila üst yüzey. Sesler: takırtı + ilk çıkış Aday 2, gerisi Aday 1.
 - Görev hattı 18+2 (pad fiyatının ~%15'i) · 6 başarım (Kat 1'in altı büyüğü 25'er indi, toplam 1000) · analitik olayları.
 - Sıra kilidi uyarısı (karma-commit) bilinçli: commit #1 `5d22f94` (rapor, karar BOŞ) → karar paketi → commit #2'de araç değişikliği yalnız oyun kuralı (tek hedef) + "config = karar" damgası; final tam koşu #2'ye ait (D-084).
+
+## D-196 · Kat 2 görev + başarım metinleri (ChatGPT mikrometin turu, 2026-11-13)
+Görev: "Masanın parasını topla" · lakap MERDİVEN · "5 misafir grubunu ağırla" · "Okey salonunda 2 masa aç" · SALON DOLU / FULL ROOM ·
+"Tavla masalarına 10 kahve götür" · "Tavla köşesinde 6 masaya ulaş" (EN eşleri `en.ts`). Başarım EN "unlock" dili; TR "tüm/tamamla".
+ChatGPT "2. kat" önerdi → oyunun her yerdeki adı **Kat 2** korundu. "Dolu Salonlar" EN = **Packed Game Hall** (Full House Kat 1'in
+"Dolu Mekân"ında). Lavabo = Restroom kalır (oda tuvalet; ChatGPT'nin Sink notu Kat 1'de de böyle karara bağlıydı).
