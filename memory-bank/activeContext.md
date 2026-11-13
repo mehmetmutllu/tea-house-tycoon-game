@@ -46,7 +46,8 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
    bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
    Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).
-2. Geri bildirim turu bitince 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım (ASC) · Play listesi + zip arkadaşa · "Yenilikler".
+   Beklerken yayınsız işler (kullanıcıya 2026-11-13 sunuldu, seçim bekliyor): Puanla özelliği (aşağıda) · küçük kusurlar (AÇIK KALEMLER).
+2. **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (kullanıcı 2026-11-13). Kullanıcı derse 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım (ASC) · Play listesi + zip arkadaşa · "Yenilikler".
 3. Not: Kat 1'deki yıkık merdivende sarı-siyah bant var (hafıza: bantlar beğenilmemişti) — kullanıcı denemede söylerse ele al.
 Göz aracı: `node tools/_kat-kare.mjs` · geniş kadraj karşılaştırma (feedback_show_dont_ask).
 

@@ -49,6 +49,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-13 (8.): ✅ Kat 2 metinleri — ChatGPT mikrometin turu: bant "Oyun Salonu" · Coffee Station · Okey Room · Collected! · Garson EN her yerde Server · D-193 görseli onaylandı · D-194 · vitest 2006 · duman 77/77 · sıradaki: K2 kalan seçimi
   · 2026-11-13 (9.): ✅ Kat 2 sprint S3 — 4 paralel ajan: masa Sv1-5 (UG/SB3T, Kat 1'in tek hedef + görev kapısı) · Kat 2 sesleri · görev hattı 18+2 + kutlama · 6 başarım · analitik · D-195 · vitest 2095 · duman 78/78 · sıradaki: metin turu + 1.1 kapısı
   · 2026-11-13 (10.): ✅ Kat 2 metinleri (D-196) · bant odağı + deneme APK (D-197, `.deneme` paketi, Kat 1 kısayolu) · kullanıcı tüm oyunu deniyor · sıradaki: geri bildirim turu → 1.1
+  · 2026-11-13 (11.): ✅ **iOS 1.0.7 App Store'da yayında** · yeni sürüm şimdilik gönderilmiyor (kullanıcı) · kod değişikliği yok
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.
