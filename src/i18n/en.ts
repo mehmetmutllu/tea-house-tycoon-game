@@ -195,6 +195,7 @@ export const en: Record<string, string> = {
   "3. Salon": "Hall 3",
   "3. Garson": "Waiter 3",
   "Lavabo": "Restroom",
+  "Merdiven": "Stairs",
   "5. Masa": "Table 5",
   "6. Masa": "Table 6",
   "7. Masa": "Table 7",

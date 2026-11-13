@@ -5188,3 +5188,11 @@ Sayfa https://claude.ai/artifact/Xejd4pNeiebku7FsPmjM3T (`tools/kat2-akis.tsx`, 
   okey satırları 2,5/8,5/14,5 · tavla 6 satır 2,5…14,5; merdiven önü yol açık.
 - **Sıra:** varış → merdiven salonu (mutfak büyür) → okey salonu → 2. ocak → lavabo → tavla köşesi + garson → bitti.
 Ekonomi etkisi (varyant kapısı): ilk iki pad bedava + lavabo pad'i + merdiven pad'i → zincir YENİDEN ölçülür.
+
+## D-192 · Kat 2 akış zinciri: SB9-L1 · lavabo Kat 1 gibi · merdiven 9.400 (K2-6, 2026-11-13) — D-188 fiyatlarını GEÇERSİZ kılar
+Rapor `docs/kat2-akis-zincir-raporu-k2-6.md` (araç `tools/olcum-kat2-akis.ts`). Kullanıcı seçti:
+- **Hazır başlangıç** (D-191 B1): `k2okey2` + `k2cezve` kata çıkışta açık → ilk kahve 20. dk yerine 1. dk'da.
+- **Fiyatlar yeniden hesaplandı** (öneri "aynen kalsın"dı): kural SB9 (o anki gelirin ~9 dk'sı), lavabo geliri dahil.
+- **Lavabo Kat 1 gibi** (L1: %30 × 18 coin/kişi, seviyesiz); yığın lavabonun önünde. Rastgele değil: uğrayan pay birikir.
+- **Merdiven pad'i 9.400 coin**, Kat 1'in omurgası bitince merdivenin önünde (aktif oyuncuya ~9 dk).
+- Sonuç: Kat 2 4,90 sa (önce 5,03), en uzun bekleyiş ~13 dk. Para birimi kullanıcıya "coin" diye söylenir.

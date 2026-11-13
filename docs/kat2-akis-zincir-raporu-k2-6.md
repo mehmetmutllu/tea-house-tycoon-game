@@ -107,4 +107,15 @@ EN karşılığı gereken yeni metin: "Lavabo" (var: "Restroom"). Merdiven pad'i
 
 ## §Karar
 
-(boş — karar paketinden sonra doldurulur)
+**D-192 (2026-11-13):** kullanıcı seçti — fiyatlar **yeniden hesaplansın** (soru 1: öneriden ayrıldı) · lavabo **Kat 1 gibi**
+(soru 2) · merdiven **9.400 coin** (soru 3, öneri). Birlikte kol **SB9-L1**. Kodda:
+- config `kat2.hazir` (okey2 + cezve) · `padler` D-191 sırası, SB9-L1 fiyatları · `lavabo` = Kat 1 L1 (%30 × 18) · `merdiven` 9.400.
+- `kat2Dongu.lavaboyaUgra`: kalkan kişi payı birikir, tam kişi olunca lavabonun önündeki tek yığına ücret (rastgele yok,
+  beklenen değer birebir) · `rules.kat2Oran` (çevrimdışı) lavaboyu sayar.
+- Kat 1 merdiven pad'i: omurga bitince merdivenin önünde (`MERDIVEN_PAD_YER`), dolunca `kat2HazirEkle` ile kat açılır.
+  Eski Kat 2 kaydı hazır pad'leri yüklemede kazanır (kayıt sürümü değişmedi; additive birleşim).
+- Bekçi `tests/kat2-akis.test.ts` 15 test · mutasyon 4/4 (lavabo oranı · hazır pad · durma şartı · omurga tetiği).
+- Final tam koşu `docs/olcum-kat2-akis-final.txt`: **CONFIG 4,90 sa** (SB9-L1 kolu 4,91), ilk servis 0,8 dk, en uzun
+  bekleyiş 12,9 dk, lavabo 14.922; damgalar temiz ("config = SB9-L1", "lavabo = Kat 1 L1", "merdiven = M-9DK").
+- Görsel (sıva duvar kalkışı, P3 perde, lavabo bloğu, merdiven dönüşüm anı) sonraki parça; merdiven pad'i şimdilik
+  standart zemin işaretiyle çizilir.

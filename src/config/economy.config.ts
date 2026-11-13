@@ -1211,15 +1211,19 @@ export const economyConfig = {
     demleme: 4,
     ocakKuyruk: 4,
     /**
-     * Açılış zinciri — ilk masa ocaktan ÖNCE (ilk grup kahvesiz oynar, ocak açılınca istekler başlar).
-     * D-188 (K2-5, kol SB9 — `docs/kat2-zincir-raporu-k2-5.md`): her pad o anki teorik gelirin ~9 dk'sı;
-     * salon/ocak/garson masadan pahalı değil. Zincir ~5 sa, en uzun bekleyiş ~13 dk. Dolum ~3,5 sn
-     * (`fillRate = round(cost / 3,5)`). Bekçi: `tools/olcum-kat2-zincir.ts` "config = SB9".
+     * D-191 (B1): kata çıkışta HAZIR gelenler — merdivene en yakın iç okey masası + en küçük mutfak.
+     * Servis ilk dakikada başlar. Merdiven pad'i bitince `padsDone`a girer (eski kayıt yüklemede birleşir).
+     */
+    hazir: ['k2okey2', 'k2cezve'],
+    /**
+     * Açılış zinciri, D-191 sırası: merdiven salonunun kalanı → okey salonu (2. ocak araya) → lavabo →
+     * tavla köşesi + garson. D-192 (K2-6, kol SB9-L1 — `docs/kat2-akis-zincir-raporu-k2-6.md`): her pad
+     * o anki teorik gelirin (Kat 1 oyuncusuz + açık Kat 2, lavabo dahil) ~9 dk'sı; zincir ~4,9 sa, en uzun
+     * bekleyiş ~13 dk. Dolum ~3,5 sn (`fillRate = round(cost / 3,5)`). Bekçi: `tools/olcum-kat2-akis.ts`
+     * "config = SB9-L1".
      */
     padler: [
-      { id: 'k2okey1', cost: 750, fillRate: 214 },
-      { id: 'k2cezve', cost: 950, fillRate: 271 },
-      { id: 'k2okey2', cost: 1_200, fillRate: 343 },
+      { id: 'k2okey1', cost: 1_200, fillRate: 343 },
       { id: 'k2okey3', cost: 1_700, fillRate: 486 },
       { id: 'k2okey4', cost: 2_200, fillRate: 629 },
       { id: 'k2salon2', cost: 2_700, fillRate: 771 },
@@ -1230,21 +1234,32 @@ export const economyConfig = {
       { id: 'k2s2okey4', cost: 4_100, fillRate: 1_171 },
       { id: 'k2s2okey5', cost: 4_600, fillRate: 1_314 },
       { id: 'k2s2okey6', cost: 5_100, fillRate: 1_457 },
-      { id: 'k2salon3', cost: 5_600, fillRate: 1_600 },
-      { id: 'k2garson', cost: 5_600, fillRate: 1_600 },
-      { id: 'k2tavla1', cost: 5_600, fillRate: 1_600 },
-      { id: 'k2tavla2', cost: 5_800, fillRate: 1_657 },
-      { id: 'k2tavla3', cost: 6_100, fillRate: 1_743 },
-      { id: 'k2tavla4', cost: 6_300, fillRate: 1_800 },
-      { id: 'k2tavla5', cost: 6_600, fillRate: 1_886 },
-      { id: 'k2tavla6', cost: 6_800, fillRate: 1_943 },
-      { id: 'k2tavla7', cost: 7_100, fillRate: 2_029 },
-      { id: 'k2tavla8', cost: 7_300, fillRate: 2_086 },
-      { id: 'k2tavla9', cost: 7_500, fillRate: 2_143 },
-      { id: 'k2tavla10', cost: 7_800, fillRate: 2_229 },
-      { id: 'k2tavla11', cost: 8_000, fillRate: 2_286 },
-      { id: 'k2tavla12', cost: 8_300, fillRate: 2_371 },
+      { id: 'k2lavabo', cost: 5_600, fillRate: 1_600 },
+      { id: 'k2salon3', cost: 6_200, fillRate: 1_771 },
+      { id: 'k2garson', cost: 6_200, fillRate: 1_771 },
+      { id: 'k2tavla1', cost: 6_200, fillRate: 1_771 },
+      { id: 'k2tavla2', cost: 6_500, fillRate: 1_857 },
+      { id: 'k2tavla3', cost: 6_700, fillRate: 1_914 },
+      { id: 'k2tavla4', cost: 7_000, fillRate: 2_000 },
+      { id: 'k2tavla5', cost: 7_300, fillRate: 2_086 },
+      { id: 'k2tavla6', cost: 7_600, fillRate: 2_171 },
+      { id: 'k2tavla7', cost: 7_900, fillRate: 2_257 },
+      { id: 'k2tavla8', cost: 8_200, fillRate: 2_343 },
+      { id: 'k2tavla9', cost: 8_500, fillRate: 2_429 },
+      { id: 'k2tavla10', cost: 8_700, fillRate: 2_486 },
+      { id: 'k2tavla11', cost: 9_000, fillRate: 2_571 },
+      { id: 'k2tavla12', cost: 9_300, fillRate: 2_657 },
     ],
+    /**
+     * D-192: Kat 2 lavabosu Kat 1'inki gibi para getirir — Kat 1 lavabosunun L1 sayıları (`rooms.lavabo`
+     * uğrama %30 · ücret 18). Seviyesi yok (Kat 1'in L2-L6'sı ölçülmedi). Bekçi: kat2-akis testi "= Kat 1 L1".
+     */
+    lavabo: { ugrama: 0.3, ucret: 18 },
+    /**
+     * D-192: Kat 1'de MERDİVEN PAD'i — Kat 1'in omurga pad'leri bitince merdivenin önünde belirir, dolunca
+     * Kat 2 açılır. 9.400 = aktif Kat 1 gelirinin ~9 dk'sı (son masalar 8.650 → 9.950 ritmi; K2-6 Bulgu 3).
+     */
+    merdiven: { cost: 9_400, fillRate: 2_686 },
     /**
      * Kat 2 garsonu (D-189, `docs/kat2-garson-raporu-k2-s2.md`): Kat 1'in son kademe garson hızının
      * 1,5 katı (2,0 × 1,5 = 3,0; oyuncunun 4,5 tabanından yavaş — D-014), tepsi 2 (4 hiçbir kolda

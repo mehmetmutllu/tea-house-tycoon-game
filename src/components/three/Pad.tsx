@@ -1,5 +1,7 @@
 import { useGame, LAYOUT, visiblePads } from '../../game/store';
-import { cardQuestIndex } from '../../game/rules';
+import { cardQuestIndex, kat1OmurgaBitti } from '../../game/rules';
+import { MERDIVEN_PAD, MERDIVEN_PAD_YER, merdivenPadAcik } from '../../game/kat';
+import { economyConfig as C } from '../../config/economy.config';
 import { GroundMarker } from './GroundMarker';
 import { fmt } from '../../game/decimal';
 import { t } from '../../i18n';
@@ -43,6 +45,31 @@ export function Pad() {
           />
         );
       })}
+      <MerdivenPad />
     </>
+  );
+}
+
+/**
+ * D-192: Kat 1'in merdiven pad'i (omurga bitince merdivenin önünde). Dolum store'da; çizim aynı
+ * koşuldan (`merdivenPadAcik`). Dönüşüm anı (yıkık merdiven → düzgün) görsel turda.
+ */
+function MerdivenPad() {
+  const acik = useGame((s) => merdivenPadAcik(kat1OmurgaBitti(s.padsDone), s.kat2));
+  const fill = useGame((s) => s.padFills[MERDIVEN_PAD] ?? 0);
+  const cash = useGame((s) => s.wallet.toNumber());
+  if (!acik) return null;
+  const { cost } = C.kat2.merdiven;
+  const remaining = Math.max(0, Math.ceil(cost - fill));
+  return (
+    <GroundMarker
+      pos={[MERDIVEN_PAD_YER[0], 0, MERDIVEN_PAD_YER[1]]}
+      label={t('Merdiven')}
+      sub={fmt(remaining)}
+      pip="coin"
+      tint="#43d17a"
+      progress={fill / cost}
+      afford={cash >= remaining}
+    />
   );
 }

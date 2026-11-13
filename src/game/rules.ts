@@ -29,7 +29,7 @@ import {
 import type { ReklamSayaci, SatinAlim, SaveStats } from './save';
 import { iapConfig } from '../config/iap.config';
 import { LAYOUT, LAVABO, servicePlace, type RVec3 } from './layout';
-import { KAT2_MASALAR, OCAK } from './kat';
+import { KAT2_KISI, KAT2_LAVABO_PAD, KAT2_MASALAR, OCAK } from './kat';
 import type { Kat2Ayar } from './kat2Dongu';
 import { MAX_AREAS, THE_SERVICE, areaOfTable, areaTableStart, tostShare, isCounter } from './world';
 import { t } from '../i18n';
@@ -571,6 +571,11 @@ export function availableOptionalPads(g: GateState): PadDef[] {
   );
 }
 
+/** D-192: Kat 1'in OMURGA pad'lerinin hepsi açıldı mı (opsiyonel garsonlar sayılmaz) — merdiven pad'inin tetiği. */
+export function kat1OmurgaBitti(padsDone: readonly string[]): boolean {
+  return (C.pads as readonly PadDef[]).every((p) => p.optional || padsDone.includes(p.id));
+}
+
 /** Servis yükseltme gate'i — eski adıyla (geri uyum: testler/eski çağıranlar). */
 export const stationUpgradeUnlocked0 = stationUpgradeUnlocked;
 
@@ -793,7 +798,8 @@ export interface CevrimdisiKat2 {
 /**
  * Kat 2'nin idealize oranı (₺/sn): açık her masa döngüsünü (geliş + yürüme + oturum) tamamlar ve ocak
  * açıksa her kahve isteği servis edilir. Kat 1'in `incomeRate`i gibi üst sınırdır; tavan kelepçeler.
- * Tavla sayıları config'te yoksa tavla masası gelir üretmez (`kat2Dongu` ile aynı kural).
+ * Tavla sayıları config'te yoksa tavla masası gelir üretmez (`kat2Dongu` ile aynı kural). D-192: lavabo
+ * açıksa kalkan her kişinin beklenen lavabo ücreti de girer.
  */
 export function kat2Oran(padsDone: readonly string[]): number {
   const a: Kat2Ayar = C.kat2;
@@ -804,7 +810,8 @@ export function kat2Oran(padsDone: readonly string[]): number {
     const t = m.tur === 'tavla' ? a.tavla : a;
     if (!t) continue;
     const istek = ocak ? Math.max(0, Math.floor((t.oturum - a.kahveSabir * 0.5) / t.kahveAralik)) : 0;
-    oran += (t.masaUcreti + istek * t.istekAdet * t.kahveFiyat) / (a.gelisAralik + a.yurume + t.oturum);
+    const lav = a.lavabo && padsDone.includes(KAT2_LAVABO_PAD) ? KAT2_KISI[m.tur] * a.lavabo.ugrama * a.lavabo.ucret : 0;
+    oran += (t.masaUcreti + istek * t.istekAdet * t.kahveFiyat + lav) / (a.gelisAralik + a.yurume + t.oturum);
   }
   return oran;
 }

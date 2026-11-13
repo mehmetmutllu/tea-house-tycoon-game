@@ -157,6 +157,7 @@ import {
   type QuestView,
   type CamFocus,
   tableThemeUnlocked,
+  kat1OmurgaBitti,
 } from './rules';
 // Kurallar Faz A2'de rules.ts'e taşındı; eski `from './store'` importları kırılmasın diye yeniden
 // dışa aktarılır (tek tanım, iki kapı).
@@ -195,7 +196,8 @@ export {
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
-import { GECIS_SN, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
+import { GECIS_SN, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
+import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
 import { kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
 import { bosKasaOlcum, kasaSiniriOlcumden, kasayaAt, type KasaOlcum } from './kasa';
@@ -705,6 +707,8 @@ function ustaAcilabilir(s: { mastersOwned?: string[]; tables: number; tableLevel
 
 /** K2-3: Kat 2 döngüsünün denge sayıları — tek kaynak `economy.config.kat2` (D-184). */
 const KAT2_AYAR: Kat2Ayar = economyConfig.kat2;
+const KAT2_HAZIR: readonly string[] = economyConfig.kat2.hazir;
+const KAT2_MERDIVEN = economyConfig.kat2.merdiven;
 /** D-185: oyuncu Kat 1'deyken Kat 2'nin döngüsü onu burada görür — hiçbir masaya, pada, yığına yetişmez. */
 const KAT2_DISI: readonly [number, number] = [0, 400];
 
@@ -802,6 +806,8 @@ export const useGame = create<GameState>((set, get) => ({
 
   init: () => {
     const save: SaveData = loadSave();
+    // D-191: açık katın hazır pad'leri (eski kayıtta yoksa) birleşir.
+    const kat2Kayit = kat2HazirEkle({ ...save.kat2, padsDone: [...save.kat2.padsDone] }, KAT2_HAZIR);
     const ilkKat = baslangicKati(save.kat, save.kat2);
     // D-015: masa/servis/personel padsDone'dan TÜRETİLİR (ayrı saklanmaz).
     const world: World = deriveWorld(save.padsDone);
@@ -1003,9 +1009,9 @@ export const useGame = create<GameState>((set, get) => ({
       saveTimer: SAVE_INTERVAL,
       nextId: 1,
       kat: ilkKat,
-      kat2: { ...save.kat2, padsDone: [...save.kat2.padsDone] },
+      kat2: kat2Kayit,
       katGecis: null,
-      kat2Dunya: yeniKat2Dunya(save.kat2.padsDone, KAT2_AYAR),
+      kat2Dunya: yeniKat2Dunya(kat2Kayit.padsDone, KAT2_AYAR),
       kasa,
       kasaOlcum,
     });
@@ -1078,6 +1084,32 @@ export const useGame = create<GameState>((set, get) => ({
         KAT2_AYAR,
       ).dunya;
     }
+    // D-192: Kat 1'in MERDİVEN PAD'i — omurga bitince merdivenin önünde; durunca cüzdandan dolar,
+    // dolunca kat açılır (hazır masa + ocak ile). Kat 1'in pad'leri gibi `padFills`te birikir.
+    let padFills = c.padFills;
+    let activeSpot = c.activeSpot;
+    if (kat === 1 && !gecis && merdivenPadAcik(kat1OmurgaBitti(c.padsDone), kat2)) {
+      const m = KAT2_MERDIVEN;
+      const etiket = t('Merdiven');
+      if (inFrame(player[0], player[2], [MERDIVEN_PAD_YER[0], 0, MERDIVEN_PAD_YER[1]], padCercevesi(etiket))) {
+        let fill = padFills[MERDIVEN_PAD] ?? 0;
+        const amt = Math.hypot(girdi[0], girdi[1]) <= 0.1 ? Math.min(m.fillRate * dt, wallet.toNumber(), m.cost - fill) : 0;
+        if (amt > 0) {
+          fill += amt;
+          wallet = wallet.sub(amt);
+        }
+        if (fill >= m.cost - 1e-9) {
+          const { [MERDIVEN_PAD]: _bitti, ...kalan } = padFills;
+          padFills = kalan;
+          activeSpot = null;
+          kat2 = kat2HazirEkle({ ...kat2, acik: true }, KAT2_HAZIR);
+          kat2Dunya = yeniKat2Dunya(kat2.padsDone, KAT2_AYAR);
+        } else {
+          padFills = { ...padFills, [MERDIVEN_PAD]: fill };
+          activeSpot = { kind: 'pad', label: etiket, fill, cost: m.cost };
+        }
+      }
+    }
     let katGecis: KatGecis | null = null;
     if (gecis) {
       const t = gecis.t + dt;
@@ -1133,11 +1165,11 @@ export const useGame = create<GameState>((set, get) => ({
         tableLevels: c.tableLevels,
         lavaboLevel: c.lavaboLevel,
         padsDone: c.padsDone,
-        padFills: c.padFills,
+        padFills,
         upgradeFills: c.upgradeFills,
         tableUpgradeFills: c.tableUpgradeFills,
         lavaboFill: c.lavaboFill,
-        activeSpot: c.activeSpot,
+        activeSpot,
         notice: c.notice,
         noticeQueue: c.noticeQueue,
         levelUp: c.levelUp,
@@ -1671,7 +1703,10 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   kat2Ac: () => {
-    set((s) => ({ kat2: { ...s.kat2, acik: true } }));
+    set((s) => {
+      const kat2 = kat2HazirEkle({ ...s.kat2, acik: true }, KAT2_HAZIR);
+      return { kat2, kat2Dunya: yeniKat2Dunya(kat2.padsDone, KAT2_AYAR) };
+    });
     get().saveNow();
   },
 

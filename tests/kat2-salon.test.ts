@@ -223,7 +223,8 @@ describe('tavla masası — 2 kişi, kendi sayıları, ücret + kahve tek yığ�
     expect(r.dusen).toEqual([]);
     expect(r.istek).toBe(0);
     expect(r.d.masalar.find((m) => m.id === T1.id)!.durum).toBe('bos');
-    const zincir = [...C.kat2.padler.slice(0, 5), { id: 'k2salon2', cost: 1, fillRate: 1 }, { id: 'k2salon3', cost: 1, fillRate: 1 }, { id: T1.id, cost: 1, fillRate: 1 }];
+    const salon = [...C.kat2.hazir.map((id) => ({ id, cost: 1, fillRate: 1 })), ...C.kat2.padler.slice(0, 3)];
+    const zincir = [...salon, { id: 'k2salon2', cost: 1, fillRate: 1 }, { id: 'k2salon3', cost: 1, fillRate: 1 }, { id: T1.id, cost: 1, fillRate: 1 }];
     expect(kat2ZincirHatasi({ ...okeyAyar, padler: zincir })).toMatch(/tavla/);
     expect(kat2ZincirHatasi({ ...A, padler: zincir })).toBeNull();
   });

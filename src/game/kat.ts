@@ -284,6 +284,30 @@ export interface Kat2Kayit {
 export const defaultKat2 = (): Kat2Kayit => ({ acik: false, padsDone: [] });
 
 /**
+ * D-191: açık katın HAZIR pad'leri (`kat2.hazir`) `padsDone`da olmalı. Merdiven açılınca da, eski bir
+ * kayıt yüklenince de aynı birleşim: eksik olan başa eklenir, varsa kayıt olduğu gibi döner (kimlik korunur).
+ */
+export function kat2HazirEkle(k: Kat2Kayit, hazir: readonly string[]): Kat2Kayit {
+  if (!k.acik) return k;
+  const eksik = hazir.filter((id) => !k.padsDone.includes(id));
+  return eksik.length ? { ...k, padsDone: [...eksik, ...k.padsDone] } : k;
+}
+
+// ============================== MERDİVEN PAD'i (Kat 1, D-192) ==============================
+
+/** Merdiven pad'i: Kat 1'de merdivenin önünde, varış noktasının hemen önü (kovanın ortası). */
+export const MERDIVEN_PAD = 'merdiven';
+export const MERDIVEN_PAD_YER: readonly [number, number] = [0, BAND.front + 1.6];
+
+/**
+ * Merdiven pad'i görünür/doldurulur mu: Kat 2 bu derlemede etkin, kat henüz açılmamış ve Kat 1'in
+ * OMURGA pad'leri bitmiş (opsiyonel garsonlar sayılmaz). Görsel (`Pad.tsx`) ve dolum (store) bunu okur.
+ */
+export function merdivenPadAcik(kat1Bitti: boolean, kat2: { acik: boolean }, etkin = kat2Etkin()): boolean {
+  return etkin && !kat2.acik && kat1Bitti;
+}
+
+/**
  * Yüklemede hangi katta başlanır. Kayıt Kat 2 diyor ama kat kapalıysa (merdiven yok ya da bu
  * derlemede Kat 2 kapıda) Kat 1 — kimse erişemediği bir katta açılmaz.
  */

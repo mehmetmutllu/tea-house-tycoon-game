@@ -525,7 +525,8 @@ const KOLLAR = kollar(r1Dk);
   const sb9 = sabitBekleyis(9, r1Dk);
   const sapan = SIRA.filter((id, i) => CFG.padler.find((p) => p.id === id)?.cost !== sb9[i]);
   // Kısa kipte Kat 1 izi kısa → taban oran farklı; damga yalnız tam koşuda anlamlı.
-  if (!KISA) damga('config = SB9 (D-188)', sapan.length === 0, `sapan pad: ${sapan.join(', ')}`);
+  // D-192 sonrası config zinciri D-191 sırasında → bu damga yalnız config hâlâ D-186 sırasındaysa anlamlı.
+  if (!KISA && SIRA === cfgIdler) damga('config = SB9 (D-188)', sapan.length === 0, `sapan pad: ${sapan.join(', ')}`);
 }
 type Satir = { kol: Kol; pol: Politika; garson: boolean; okeyOdak?: boolean; r: Sonuc };
 const satirlar: Satir[] = [];

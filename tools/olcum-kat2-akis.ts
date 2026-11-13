@@ -61,7 +61,8 @@ const TEPSI = trayCapacityFor(charMaxTier('tray'));
 const MIKNATIS = attractRadiusFor(charMaxTier('magnet'));
 const g = () => useGame.getState();
 const CFG = C.kat2 as unknown as Kat2Ayar;
-const { garson: _garson, ...CFG_TEMEL } = CFG;
+// Kollar garsonsuz; lavabo kollarda ARAÇTA işlenir (L1), CONFIG kolunda kodun kendisinde (`kat2Dongu`).
+const { garson: _garson, lavabo: _lavabo, ...CFG_TEMEL } = CFG;
 
 /** Kat 1 lavabosunun L1'i (config `rooms.lavabo`): kişi başı beklenen ₺ = uğrama × ücret. */
 const LAV = C.rooms.lavabo;
@@ -71,8 +72,15 @@ const LAV_KISI = LAV.visitChanceByLevel[0] * LAV.feeByLevel[0];
 // ZİNCİRLER
 // ---------------------------------------------------------------------------------------------
 const TAVLALAR = Array.from({ length: 12 }, (_, i) => `k2tavla${i + 1}`);
-/** Bugünkü config (D-186 sırası, D-188 fiyatları) — TABAN. */
-const BUGUN: readonly string[] = CFG.padler.map((p) => p.id);
+/** D-192'den önceki config (D-186 sırası, D-188 fiyatları) — TABAN, araçta sabit. */
+const D188: readonly (readonly [string, number])[] = [
+  ['k2okey1', 750], ['k2cezve', 950], ['k2okey2', 1_200], ['k2okey3', 1_700], ['k2okey4', 2_200], ['k2salon2', 2_700],
+  ['k2s2okey1', 2_700], ['k2s2okey2', 3_200], ['k2cezve2', 3_600], ['k2s2okey3', 3_600], ['k2s2okey4', 4_100],
+  ['k2s2okey5', 4_600], ['k2s2okey6', 5_100], ['k2salon3', 5_600], ['k2garson', 5_600], ['k2tavla1', 5_600],
+  ['k2tavla2', 5_800], ['k2tavla3', 6_100], ['k2tavla4', 6_300], ['k2tavla5', 6_600], ['k2tavla6', 6_800],
+  ['k2tavla7', 7_100], ['k2tavla8', 7_300], ['k2tavla9', 7_500], ['k2tavla10', 7_800], ['k2tavla11', 8_000], ['k2tavla12', 8_300],
+];
+const BUGUN: readonly string[] = D188.map(([id]) => id);
 const BEDAVA: readonly string[] = ['k2okey2', 'k2cezve'];
 /** D-191 sırası: hazır masa + ocak → merdiven salonunun kalanı → okey salonu (2. ocak araya) → lavabo → tavla köşesi + garson. */
 const D191: readonly string[] = [
@@ -165,6 +173,7 @@ interface Kol {
   sira: readonly string[];
   fiyat: readonly number[];
   lavabo: boolean; // L1 (Kat 1 gibi gelir) mi
+  kod?: boolean; // lavabo ARAÇTA değil kodun kendisinde (`Kat2Ayar.lavabo` → kat2Dongu) — CONFIG kolu
 }
 interface Sonuc {
   acilis: number[];
@@ -185,7 +194,8 @@ function kos(k: Kol, iz1: Float64Array, sinir: Decimal): Sonuc {
   const bas = MUT === 'bedavasiz' ? [] : k.bas;
   const sira = MUT === 'bedavasiz' ? [...k.bas, ...k.sira] : k.sira;
   const fiyat = MUT === 'bedavasiz' ? [...k.bas.map(() => k.fiyat[0]), ...k.fiyat] : k.fiyat;
-  const ayar: Kat2Ayar = { ...CFG_TEMEL, padler: sira.map((id, i) => ({ id, cost: fiyat[i], fillRate: Math.round(fiyat[i] / PAD_SN) })) };
+  const padler = k.kod ? CFG.padler : sira.map((id, i) => ({ id, cost: fiyat[i], fillRate: Math.round(fiyat[i] / PAD_SN) }));
+  const ayar: Kat2Ayar = { ...CFG_TEMEL, padler, ...(k.kod ? { lavabo: CFG.lavabo } : {}) };
   let d: Kat2Dunya = yeniKat2Dunya([...bas], ayar);
   let padsDone: string[] = [...bas];
   let cuzdan = 0;
@@ -205,7 +215,7 @@ function kos(k: Kol, iz1: Float64Array, sinir: Decimal): Sonuc {
   let kat2Kazanc = 0, harcama = 0, kat1Dogrudan = 0, kasaGiren = 0, kasaBosalan = 0, dusen = 0, lavDusen = 0;
   const izT = izOlustur();
   const kalisSn = 2 * GECIS_SN + (2 * Math.hypot(KASA_YER[0] - VARIS[1][0], KASA_YER[1] - VARIS[1][2])) / HIZ;
-  const lavAcik = () => k.lavabo && padsDone.includes(KAT2_LAVABO_PAD);
+  const lavAcik = () => k.lavabo && !k.kod && padsDone.includes(KAT2_LAVABO_PAD);
   const kalkanlar = (ids: readonly string[]) => {
     if (!lavAcik()) return;
     for (const id of ids) {
@@ -249,7 +259,8 @@ function kos(k: Kol, iz1: Float64Array, sinir: Decimal): Sonuc {
       }
       const r = kat2Tick(d, { x: UZAK.x, z: UZAK.z, durdu: true, cuzdan: 0, padsDone, tepsiKap: TEPSI, miknatis: MIKNATIS }, DT, ayar);
       d = r.dunya;
-      dusen += r.olay.dusen.reduce((a, b) => a + b, 0);
+      dusen += r.olay.dusen.reduce((a, b) => a + b, 0) + r.olay.lavabo;
+      lavToplam += r.olay.lavabo;
       kacan += r.olay.kacan;
       kalkanlar(r.olay.kalkan);
       if (kat1Kalan <= 0) {
@@ -320,7 +331,8 @@ function kos(k: Kol, iz1: Float64Array, sinir: Decimal): Sonuc {
     cuzdan += r.kazanc - r.harcama;
     harcama += r.harcama;
     kat2Kazanc += r.kazanc;
-    dusen += r.olay.dusen.reduce((a, b) => a + b, 0);
+    dusen += r.olay.dusen.reduce((a, b) => a + b, 0) + r.olay.lavabo;
+    lavToplam += r.olay.lavabo;
     servis += r.olay.servis;
     kacan += r.olay.kacan;
     kalkanlar(r.olay.kalkan);
@@ -374,8 +386,8 @@ damga('Kat 1 izi akıyor', r1Dk > 10, `${r1Dk.toFixed(1)} ₺/dk`);
 const yapi = kat2ZincirHatasi({ ...CFG, padler: [...BEDAVA, ...D191].map((id) => ({ id, cost: 1, fillRate: 1 })) });
 damga('D-191 zinciri yapısı tutarlı (kat2ZincirHatasi)', yapi === null, String(yapi));
 
-const bugunFiyat = CFG.padler.map((p) => p.cost);
-const eskiFiyat = (id: string, lav: number) => CFG.padler.find((p) => p.id === id)?.cost ?? lav;
+const bugunFiyat = D188.map(([, c]) => c);
+const eskiFiyat = (id: string, lav: number) => D188.find(([i]) => i === id)?.[1] ?? lav;
 const sb9Bugun = sabitBekleyis(9, r1Dk, [], BUGUN, false);
 const lavSb9 = sabitBekleyis(9, r1Dk, BEDAVA, D191, false)[D191.indexOf(KAT2_LAVABO_PAD)];
 const KOLLAR: Kol[] = [
@@ -384,10 +396,21 @@ const KOLLAR: Kol[] = [
   { ad: 'SB9-L0', not: 'D-191 sırası; SB9 yeniden hesap (hazır masa+ocak gelire sayılır); lavabo süs', bas: BEDAVA, sira: D191, fiyat: sabitBekleyis(9, r1Dk, BEDAVA, D191, false), lavabo: false },
   { ad: 'SB9-L1', not: 'D-191 sırası; SB9 yeniden hesap (lavabo geliri dahil); lavabo Kat 1 gibi', bas: BEDAVA, sira: D191, fiyat: sabitBekleyis(9, r1Dk, BEDAVA, D191, true), lavabo: true },
   { ad: 'SB10-L1', not: 'D-191 sırası; SB10; lavabo Kat 1 gibi', bas: BEDAVA, sira: D191, fiyat: sabitBekleyis(10, r1Dk, BEDAVA, D191, true), lavabo: true },
+  { ad: 'CONFIG', not: 'D-192 config\'in kendisi: hazır pad\'ler + zincir config\'ten, lavabo kodda (kat2Dongu) — FİNAL', bas: C.kat2.hazir, sira: CFG.padler.map((p) => p.id), fiyat: CFG.padler.map((p) => p.cost), lavabo: true, kod: true },
 ];
-const SECILI = KISA ? KOLLAR.filter((k) => ['BUGUN', 'SB9-L0', 'SB9-L1'].includes(k.ad)) : KOLLAR;
-damga("BUGUN = config (D-188)", KOLLAR[0].fiyat.every((v, i) => v === CFG.padler[i].cost));
-if (!KISA) damga('config = SB9 (D-188, yeni geometride de)', sb9Bugun.every((v, i) => v === bugunFiyat[i]), sb9Bugun.join(','));
+const SECILI = KISA ? KOLLAR.filter((k) => ['BUGUN', 'SB9-L0', 'SB9-L1', 'CONFIG'].includes(k.ad)) : KOLLAR;
+if (!KISA) damga('D-188 tablosu = SB9 (yeni geometride de)', sb9Bugun.every((v, i) => v === bugunFiyat[i]), sb9Bugun.join(','));
+{
+  // D-192 bekçisi: config = SB9-L1 kolu (sıra + fiyat) · hazır = okey2 + cezve · lavabo = Kat 1 L1 · merdiven = M-9DK.
+  const k = KOLLAR.find((x) => x.ad === 'SB9-L1')!;
+  const cfg = CFG.padler;
+  const sira = cfg.length === k.sira.length && cfg.every((p, i) => p.id === k.sira[i]);
+  damga('config sırası = D-191 (D-192)', sira, cfg.map((p) => p.id).join(','));
+  if (!KISA) damga('config = SB9-L1 (D-192)', sira && cfg.every((p, i) => p.cost === k.fiyat[i]), cfg.map((p) => p.cost).join(','));
+  damga('config hazır = okey2 + cezve (D-191)', C.kat2.hazir.length === BEDAVA.length && BEDAVA.every((id) => C.kat2.hazir.includes(id)));
+  damga('config lavabo = Kat 1 L1 (D-192)', CFG.lavabo?.ugrama === LAV.visitChanceByLevel[0] && CFG.lavabo?.ucret === LAV.feeByLevel[0]);
+  if (!KISA) damga('config merdiven = M-9DK (D-192)', C.kat2.merdiven.cost === yuvarla(9 * r1Ideal), `${C.kat2.merdiven.cost} ≠ ${yuvarla(9 * r1Ideal)}`);
+}
 
 const sonuclar: { k: Kol; r: Sonuc }[] = [];
 for (const k of SECILI) {

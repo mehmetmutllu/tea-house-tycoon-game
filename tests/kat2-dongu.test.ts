@@ -35,8 +35,9 @@ function withStorage(fn: () => void): void {
   };
   try { fn(); } finally { if (orig === undefined) delete g.localStorage; else g.localStorage = orig; }
 }
-/** Merdiven salonunun zinciri (4 okey + ocak): K2-3'ün dünyası, okey davranışının bekçisi. */
-const HEPSI = A.padler.slice(0, 5).map((p) => p.id);
+/** Merdiven salonu (4 okey + ocak; D-191: ikisi hazır, üçü zincirin başı): okey davranışının bekçisi. */
+const HAZIR: readonly string[] = C.kat2.hazir;
+const HEPSI = [...HAZIR, ...A.padler.slice(0, 3).map((p) => p.id)];
 const M1 = OKEY_YER[0];
 const MASA_ONU: [number, number] = [M1.x, M1.z + OKEY_ERISIM - 0.2];
 const UZAK: [number, number] = [0, -1]; // hiçbir masaya/ocağa/pada yetişmez
@@ -66,12 +67,12 @@ describe('config — D-184 kolu V4 (3 dk oyun · 25 sn\'de 2 kahve · gelirin %6
     expect([A.gelisAralik, A.yurume, A.kahveSabir, A.demleme, A.ocakKuyruk]).toEqual([15, 5, 25, 4, 4]);
   });
 
-  it('zincir (D-186): ilk masa ocaktan önce → 3 masa → okey salonu → 2 masa → 2. ocak → 4 masa → tavla köşesi → garson → 12 tavla', () => {
-    expect(HEPSI).toEqual(['k2okey1', 'k2cezve', 'k2okey2', 'k2okey3', 'k2okey4']);
+  it('zincir (D-191): hazır masa + ocak → 3 masa → okey salonu → 2 masa → 2. ocak → 4 masa → lavabo → tavla köşesi → garson → 12 tavla', () => {
+    expect(HEPSI).toEqual(['k2okey2', 'k2cezve', 'k2okey1', 'k2okey3', 'k2okey4']);
     expect(A.padler.map((p) => p.id)).toEqual([
-      ...HEPSI,
+      ...HEPSI.slice(HAZIR.length),
       'k2salon2', 'k2s2okey1', 'k2s2okey2', 'k2cezve2', 'k2s2okey3', 'k2s2okey4', 'k2s2okey5', 'k2s2okey6',
-      'k2salon3', 'k2garson', ...Array.from({ length: 12 }, (_, i) => `k2tavla${i + 1}`),
+      'k2lavabo', 'k2salon3', 'k2garson', ...Array.from({ length: 12 }, (_, i) => `k2tavla${i + 1}`),
     ]);
     // D-188 (SB9): fiyat o anki gelire bakar; salon/ocak/garson masadan pahalı değil → ardışık eşit olabilir, düşmez.
     for (let i = 1; i < A.padler.length; i++) expect(A.padler[i].cost).toBeGreaterThanOrEqual(A.padler[i - 1].cost);
@@ -210,9 +211,9 @@ describe('pad zinciri', () => {
     expect(harcanan).toBeCloseTo(ilk.cost);
     expect(pd).toEqual(['k2okey1']);
     expect(d.masalar[0].durum).toBe('bos');
-    expect(kat2SiradakiPad(A, pd)?.id).toBe('k2cezve');
+    expect(kat2SiradakiPad(A, pd)?.id).toBe(A.padler[1].id);
     // Yetmeyen cüzdan: ancak cüzdan kadar.
-    const az = kat2Tick(yeniKat2Dunya(pd, A), girdi(OCAK.al, { padsDone: pd, cuzdan: 30 }), 1, A);
+    const az = kat2Tick(yeniKat2Dunya(pd, A), girdi(kat2PadYeri(A.padler[1].id), { padsDone: pd, cuzdan: 30 }), 1, A);
     expect(az.harcama).toBe(30);
   });
 
@@ -261,7 +262,8 @@ describe('store — Kat 2 döngüsü oyunun cüzdanına bağlı', () => {
     expect(harcanan).toBeCloseTo(A.padler[0].cost, 0);
     s.saveNow();
     s.init();
-    expect(useGame.getState().kat2.padsDone).toEqual(['k2okey1']);
+    // D-191: açık katın hazır pad'leri yüklemede birleşir (kayıt onlarsız yazılmıştı).
+    expect(useGame.getState().kat2.padsDone).toEqual([...HAZIR, 'k2okey1']);
     expect(useGame.getState().kat2Dunya.masalar[0].durum).toBe('bos');
   }));
 

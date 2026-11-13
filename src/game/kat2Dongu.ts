@@ -18,6 +18,7 @@
 import {
   KAT2_GARSON_PAD,
   KAT2_GARSON_YER,
+  KAT2_KISI,
   KAT2_LAVABO_PAD,
   KAT2_LAVABO_YER,
   KAT2_MASALAR,
@@ -71,6 +72,13 @@ export interface Kat2Ayar {
    * `k2garson` pad'i açılsa bile garson gelmez; `kat2ZincirHatasi` uyarır (`kat2EksikSayi`).
    */
   garson?: Kat2GarsonAyar;
+  /**
+   * D-192: Kat 2 LAVABOSU (`k2lavabo` açıksa). Kalkan grubun her kişisi `ugrama` olasılığıyla uğrar ve
+   * lavabonun önündeki yığına `ucret` bırakır. Rastgele değil: uğrayan kişi payı `Kat2Dunya.lavaboSayac`ta
+   * birikir, tam bir kişi olunca ücret düşer (beklenen değer birebir, ölçüm `tools/olcum-kat2-akis.ts`).
+   * YOKSA lavabo süs: pad açılır, para getirmez.
+   */
+  lavabo?: { ugrama: number; ucret: number };
 }
 
 /**
@@ -151,6 +159,8 @@ export interface Kat2Dunya {
   paralar: ParaYigini[];
   padFill: Record<string, number>;
   nextId: number;
+  /** D-192: lavaboya uğrayan kişi payının birikimi (0..1; tam kişi olunca yığına ücret düşer). */
+  lavaboSayac?: number;
 }
 
 export interface Kat2Girdi {
@@ -191,6 +201,8 @@ export interface Kat2Cikti {
     /** Tavla masalarının payı (`servis`/`kacan` içinden). */
     tavlaServis: number;
     tavlaKacan: number;
+    /** D-192: bu adımda lavabonun önündeki yığına düşen ₺ (`dusen`e girmez — masa yığını değil). */
+    lavabo: number;
   };
 }
 
@@ -294,7 +306,25 @@ export function yeniKat2Dunya(padsDone: readonly string[], ayar: Kat2Ayar): Kat2
     paralar: [],
     padFill: {},
     nextId: 1,
+    lavaboSayac: 0,
   };
+}
+
+/**
+ * D-192: kalkan grubun `kisi` kişisinden uğrayan payı birikir; tam kişi olunca lavabonun önündeki TEK
+ * yığına ücret eklenir (yığın yoksa açılır). Pad'in yeri açılınca boşalır, yığın oraya düşer.
+ */
+function lavaboyaUgra(d: Kat2Dunya, kisi: number, l: { ugrama: number; ucret: number }, olay: Kat2Cikti['olay']): void {
+  const sayac = (d.lavaboSayac ?? 0) + kisi * l.ugrama;
+  const n = Math.floor(sayac + 1e-9);
+  d.lavaboSayac = sayac - n;
+  if (n <= 0) return;
+  const miktar = n * l.ucret;
+  const [x, z] = KAT2_LAVABO_YER;
+  const y = d.paralar.find((p) => p.x === x && p.z === z);
+  if (y) y.miktar += miktar;
+  else d.paralar.push({ id: d.nextId++, x, z, miktar });
+  olay.lavabo += miktar;
 }
 
 /** Pad etiketi (çerçeve ölçüsü etikete bağlı — Kat 1'in `padCercevesi` dili). */
@@ -423,6 +453,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     garsonServis: 0,
     tavlaServis: 0,
     tavlaKacan: 0,
+    lavabo: 0,
   };
   let kazanc = 0;
   let harcama = 0;
@@ -565,6 +596,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       olay.dusen.push(miktar);
       olay.kalkan.push(m.id);
       olay.kalkis += 1;
+      if (ayar.lavabo && padsDone.includes(KAT2_LAVABO_PAD)) lavaboyaUgra(d, KAT2_KISI[m.tur], ayar.lavabo, olay);
       m.durum = 'bos';
       m.t += ayar.gelisAralik;
       m.istek = 0;

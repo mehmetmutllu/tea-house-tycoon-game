@@ -44,6 +44,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-13 (3.): 🔧 Kat 2 sprint S2 — 4 paralel ajan: kasa+çevrimdışı koda (D-185) · tavla/2. ocak/garson mantığı (D-186) · zincir ölçümü (öneri SB9 5,0 sa) · görsel (garson, 2 ocak, bölme adayları) · vitest 1986 · yarım kapanış: kasa final koşusu + karar paketi yarın
   · 2026-11-13 (4.): ✅ Kat 2 sprint S2 kapandı — kasa final + mutasyon 2/2 · yol ağı pervaz takılması düzeldi (eski "+%28" bulgusu yanılgıydı) · D-188 pad SB9 · D-189 garson 3/2/1 · D-190 alçak bölme · 2. ocak yeri ve Kat 2 akışı açık → akış sayfası TUP2kGBiStuvSudKxAYigp · vitest 1987 · duman 77/77
   · 2026-11-13 (5.): ✅ Kat 2 akış turu (kod yok) — geniş kadraj adayları 3 turda: merdiven = Kat 1 pad'i · hazır masa + küçük mutfak · tek mutfak 2 ocak · sağ arka lavabo · bölme yok, sıva duvar açılınca kalkar · P3 perde · düzen N7 tam ayna · sıra okey→lavabo→tavla · D-191 · `tools/kat2-akis.tsx` · sayfa Xejd4pNeiebku7FsPmjM3T
+  · 2026-11-13 (6.): ✅ K2-6 — D-191 mantığı koda: N7 · geçitsiz duvar · 2. ocak bantta · hazır masa+ocak · lavabo Kat 1 gibi · merdiven pad'i 9.400 · zincir SB9-L1 4,90 sa · D-192 · bekçi 15 test, mutasyon 4/4 · vitest 2002 · duman 77/77 · sıradaki: görsel parça
 
 **v1 kapsam çizgisi:** prestij · Kat 2 · sipariş nesnesi · aktif WC döngüsü · dekor instancing
 **v1.1'e**; v1 = Kat 1 + elmas/Usta + offline tavan + reklam/IAP + mağaza.

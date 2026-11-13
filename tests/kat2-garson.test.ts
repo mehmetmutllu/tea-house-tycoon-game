@@ -44,7 +44,7 @@ const PR = LAYOUT.playerRadius;
 const A: Kat2Ayar = C.kat2;
 const GARSON = { hiz: 3, tepsi: 4 };
 const AG: Kat2Ayar = { ...A, garson: GARSON };
-const HEPSI = A.padler.map((p) => p.id);
+const HEPSI = [...C.kat2.hazir, ...A.padler.map((p) => p.id)]; // D-191: hazır pad'ler zincirin önünde
 const UZAK: [number, number] = [0, -1]; // hiçbir masaya/ocağa/pada/yığına yetişmez (mıknatıs 0,5)
 const OCAK2 = OCAKLAR[1];
 const T1 = KAT2_MASALAR.find((m) => m.tur === 'tavla')!;
