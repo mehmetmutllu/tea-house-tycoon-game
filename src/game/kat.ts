@@ -14,6 +14,7 @@
  * Kat 2'de bile olsa oyun Kat 1'de açılır — yayındaki sürüm kimseyi boş bir kata hapsedemez.
  */
 import { BAND, BAND_SHELL, FLOOR_HALF, LAYOUT, hitsSolid, type Solid } from './layout';
+import { buildNavGrid, type NavGrid } from './nav';
 import type { Vec3 } from './types';
 
 export type KatNo = 1 | 2;
@@ -235,9 +236,14 @@ export function masaGovdesi(m: Kat2MasaYeri): Solid {
   return m.tur === 'tavla' ? { c: [m.x, 0, m.z], h: [TAVLA_YARI[0], TAVLA_YARI[1]] } : { c: [m.x, 0, m.z], h: [OKEY_YARI, OKEY_YARI] };
 }
 
-/** Açık masaların (okey + tavla) katı gövdesi. Pad'i bitmemiş masa yok sayılır. */
+/**
+ * Açık masaların (okey + tavla) ve salonun içindeki açık ocakların katı gövdesi. Pad'i bitmemiş
+ * masa/ocak yok sayılır. Bandın ocağı (`OCAK`) yürüme alanının dışında durur, gövdesi gerekmez.
+ */
 export function kat2Engeller(padsDone: readonly string[]): Solid[] {
-  return KAT2_MASALAR.filter((m) => padsDone.includes(m.id)).map(masaGovdesi);
+  const out = KAT2_MASALAR.filter((m) => padsDone.includes(m.id)).map(masaGovdesi);
+  for (const o of OCAKLAR) if (o.govde && padsDone.includes(o.id)) out.push({ c: [o.x, 0, o.z], h: o.govde });
+  return out;
 }
 
 // ============================== MERDİVEN ==============================
@@ -372,3 +378,270 @@ export const KAT2_MASALAR: readonly Kat2MasaYeri[] = [
   ...[-12.5, -5].flatMap((x, i) => [4.5, 9.5, 14.5].map((z, j) => ({ id: `k2s2okey${i * 3 + j + 1}`, tur: 'okey' as const, alan: 1, x, z }))),
   ...[4, 8.5, 13].flatMap((x, i) => [3.8, 7.4, 11, 14.6].map((z, j) => ({ id: `k2tavla${i * 4 + j + 1}`, tur: 'tavla' as const, alan: 2, x, z }))),
 ];
+
+// ============================== S2: ÇOK OCAK + KAT 2 GARSONU (D-186) ==============================
+
+/** Bir cezve ocağı: gövde yeri, oyuncunun/garsonun kahve aldığı nokta (`al`) ve o noktanın payı. */
+export interface Kat2Ocak {
+  id: string;
+  x: number;
+  z: number;
+  al: readonly [number, number];
+  erisim: number;
+  /** Yürüme alanının İÇİNDEKİ ocağın gövde yarısı [x, z] (bandın ocağında yok: alanın dışında). */
+  govde?: readonly [number, number];
+}
+
+/** 2. ocağın gövde yarısı: tezgâh + cezve sırası, çizimin ayak izi (x [−6,3; −2,7] · z [0,09; 2,15]; sırtı bölmeye). */
+const OCAK2_YARI: readonly [number, number] = [1.8, 1.03];
+const OCAK2_Z = DUVAR_YARI + OCAK2_YARI[1];
+
+/**
+ * Kat 2'nin cezve ocakları, AÇILIŞ SIRASIYLA (D-186). `[0]` bandın ocağı (`OCAK`, aynı kimlik/yer).
+ * `[1]` okey salonunda: bölmenin (z = 0) salon yüzünde, iki geçidin TAM ortasında (x −4,5; geçitler
+ * [−10,5; −7,2] ve [−1,8; 0], gövde [−6,3; −2,7] → iki yana 0,9 pay). Neden burası: oyuncu geniş
+ * geçitten salona girince ocak önündedir; okey salonunun sağ sütunu (x −5) önünde, sol sütunu 7 br
+ * ötede — salonun altı masasının hepsine kısa yol. Bölme kameranın UZAK duvarı (ocak görünür) ve
+ * tavla köşesine açılan geçide (x = 0, z 7,2-10,2) en yakın ocak budur: Kat 2 garsonu buradan alır.
+ * Masa ayak izinden (z ≥ 3,25) gövde önü (2,15) 1,1 açık → oyuncu (çap 0,94) ocak ile masa arasından geçer.
+ */
+export const OCAKLAR: readonly Kat2Ocak[] = [
+  OCAK,
+  {
+    id: 'k2cezve2',
+    x: -4.5,
+    z: OCAK2_Z,
+    al: [-4.5, OCAK2_Z + OCAK2_YARI[1] + PR + 0.08],
+    erisim: OCAK.erisim,
+    govde: OCAK2_YARI,
+  },
+];
+
+/**
+ * Kat 2 garsonunun pad'i (D-186: tavla köşesi açılınca gelen ilk pad) ve garsonun EVİ (boştayken
+ * döndüğü yer). Köşenin İÇİNDE, bölmenin dibinde, 1. tavla sütununun (x 4) önü: pad çerçevesi
+ * (±0,89 × ±0,85) z [0,75; 2,45] — masanın ayak izine (z ≥ 3,2) ve geniş geçide (x ≥ 7,2) değmez.
+ * Neden salon pad'inin yeri (8,85; −1,6) değil: zincirde `k2salon3`ün hemen ardından geliyor, aynı
+ * yerde çıksaydı salonu yeni açan oyuncu durduğu yerde farkında olmadan garsonu doldurmaya başlardı.
+ */
+export const KAT2_GARSON_PAD = 'k2garson';
+export const KAT2_GARSON_YER: readonly [number, number] = [4, 1.6];
+
+// ---- YOL BULMA (Kat 2 garsonu + ölçüm botu). Kat 1'in `nav.ts` ızgarası, Kat 2'nin geometrisiyle:
+// katılar = kuyu + bölmeler (geçitler yalnız iki yanı açıksa) + açık masa/ocak gövdeleri, oyuncu
+// yarıçapıyla şişirilir; yürüme alanının dışı kapalı. Hedefe UZAKLIK ALANI (Dijkstra, çapraz √2,
+// köşe kesmez) hedef başına bir kez kurulur ve önbellekte durur; aktör her adımda alanın eğimini
+// izler, görüşü açık en uzak hücreye yönelir. Adımı yine `kat2Adim` atar (duvar her durumda katı).
+// `findNavPath` kullanılmaz: onun önbelleği tek ızgaraya bağlı, Kat 1 personeli her karede kendi
+// ızgarasıyla çağırdığı için iki kat dönüşümlü çağırınca önbellek her karede boşalırdı.
+
+const YOL_HUCRE = 0.3;
+/** Eğimin kaç hücre ilerisine kadar kestirme aranır. */
+const KESTIRME = 12;
+const SONSUZ = Number.POSITIVE_INFINITY;
+const KOMSU: readonly (readonly [number, number, number])[] = [
+  [1, 0, 1], [-1, 0, 1], [0, 1, 1], [0, -1, 1],
+  [1, 1, Math.SQRT2], [1, -1, Math.SQRT2], [-1, 1, Math.SQRT2], [-1, -1, Math.SQRT2],
+];
+
+/** Kat 2'nin bir açılış durumu için yol ağı (padsDone'dan türer, önbellekte). */
+export interface Kat2YolAgi {
+  acikAlan: number;
+  engeller: Solid[];
+  /** Hedefe giden yolda yönelinecek nokta (görüş açıksa hedefin kendisi). */
+  nokta(x: number, z: number, tx: number, tz: number): [number, number];
+  /** Hedefe yürüme uzunluğu (br; ulaşılamazsa sonsuz). */
+  uzunluk(x: number, z: number, tx: number, tz: number): number;
+}
+
+function izgaraKur(acikAlan: number, engeller: readonly Solid[]): NavGrid {
+  const alan = kat2YurumeAlani(acikAlan);
+  const g = buildNavGrid({ minX: -H, maxX: H, minZ: KOVA.z0, maxZ: H }, YOL_HUCRE, [KUYU, ...kat2Duvarlar(acikAlan), ...engeller], PR);
+  for (let r = 0; r < g.rows; r++) {
+    const z = g.minZ + (r + 0.5) * g.cell;
+    for (let c = 0; c < g.cols; c++) {
+      const x = g.minX + (c + 0.5) * g.cell;
+      const [cx, cz] = dikKelepce(x, z, alan);
+      if (cx !== x || cz !== z) g.blocked[r * g.cols + c] = 1;
+    }
+  }
+  return g;
+}
+
+function hucre(g: NavGrid, x: number, z: number): [number, number] {
+  const c = Math.max(0, Math.min(g.cols - 1, Math.floor((x - g.minX) / g.cell)));
+  const r = Math.max(0, Math.min(g.rows - 1, Math.floor((z - g.minZ) / g.cell)));
+  return [c, r];
+}
+
+/** Noktaya en yakın UYGUN hücre (varsayılan: açık), halka halka; yoksa −1. */
+function enYakin(g: NavGrid, x: number, z: number, uygun: (i: number) => boolean): number {
+  const [c0, r0] = hucre(g, x, z);
+  for (let k = 0; k <= 8; k++) {
+    let en = -1;
+    let enD = SONSUZ;
+    for (let dr = -k; dr <= k; dr++)
+      for (let dc = -k; dc <= k; dc++) {
+        if (Math.max(Math.abs(dr), Math.abs(dc)) !== k) continue;
+        const c = c0 + dc;
+        const r = r0 + dr;
+        if (c < 0 || r < 0 || c >= g.cols || r >= g.rows) continue;
+        const i = r * g.cols + c;
+        if (!uygun(i)) continue;
+        const d = (g.minX + (c + 0.5) * g.cell - x) ** 2 + (g.minZ + (r + 0.5) * g.cell - z) ** 2;
+        if (d < enD) {
+          enD = d;
+          en = i;
+        }
+      }
+    if (en >= 0) return en;
+  }
+  return -1;
+}
+
+/** Çapraz adım köşe kesmesin: iki dik komşu da açık olmalı. */
+function adimAcik(g: NavGrid, c: number, r: number, dc: number, dr: number): boolean {
+  const nc = c + dc;
+  const nr = r + dr;
+  if (nc < 0 || nr < 0 || nc >= g.cols || nr >= g.rows || g.blocked[nr * g.cols + nc]) return false;
+  return dc === 0 || dr === 0 || (!g.blocked[r * g.cols + nc] && !g.blocked[nr * g.cols + c]);
+}
+
+/** Hedef hücreden bütün açık hücrelere uzaklık (Dijkstra, ikili yığın; birim = hücre). */
+function uzaklikAlani(g: NavGrid, hedef: number): Float64Array {
+  const d = new Float64Array(g.cols * g.rows).fill(SONSUZ);
+  if (hedef < 0) return d;
+  const yi: number[] = [];
+  const yp: number[] = [];
+  const takas = (a: number, b: number) => {
+    [yi[a], yi[b]] = [yi[b], yi[a]];
+    [yp[a], yp[b]] = [yp[b], yp[a]];
+  };
+  const it = (i: number, p: number) => {
+    let k = yi.length;
+    yi.push(i);
+    yp.push(p);
+    while (k > 0) {
+      const u = (k - 1) >> 1;
+      if (yp[u] <= yp[k]) break;
+      takas(u, k);
+      k = u;
+    }
+  };
+  d[hedef] = 0;
+  it(hedef, 0);
+  while (yi.length) {
+    const i = yi[0];
+    const p = yp[0];
+    const si = yi.pop()!;
+    const sp = yp.pop()!;
+    if (yi.length) {
+      yi[0] = si;
+      yp[0] = sp;
+      for (let k = 0; ; ) {
+        const a = 2 * k + 1;
+        let m = k;
+        if (a < yi.length && yp[a] < yp[m]) m = a;
+        if (a + 1 < yi.length && yp[a + 1] < yp[m]) m = a + 1;
+        if (m === k) break;
+        takas(m, k);
+        k = m;
+      }
+    }
+    if (p > d[i]) continue;
+    const r = Math.floor(i / g.cols);
+    const c = i - r * g.cols;
+    for (const [dc, dr, w] of KOMSU) {
+      if (!adimAcik(g, c, r, dc, dr)) continue;
+      const j = (r + dr) * g.cols + c + dc;
+      if (p + w < d[j]) {
+        d[j] = p + w;
+        it(j, p + w);
+      }
+    }
+  }
+  return d;
+}
+
+/** Izgarada düz görüş: iki uç arasındaki örnekler açık hücrede mi (uçların bir hücre çevresi sayılmaz). */
+function gorusAcik(g: NavGrid, x0: number, z0: number, x1: number, z1: number): boolean {
+  const L = Math.hypot(x1 - x0, z1 - z0);
+  const n = Math.ceil(L / (g.cell * 0.5));
+  for (let k = 1; k < n; k++) {
+    const x = x0 + ((x1 - x0) * k) / n;
+    const z = z0 + ((z1 - z0) * k) / n;
+    if (Math.hypot(x - x0, z - z0) < g.cell || Math.hypot(x - x1, z - z1) < g.cell) continue;
+    const [c, r] = hucre(g, x, z);
+    if (g.blocked[r * g.cols + c]) return false;
+  }
+  return true;
+}
+
+function yolAgiKur(padsDone: readonly string[]): Kat2YolAgi {
+  const acikAlan = kat2AcikAlan(padsDone);
+  const engeller = kat2Engeller(padsDone);
+  const g = izgaraKur(acikAlan, engeller);
+  const alanlar = new Map<string, Float64Array>();
+  const alanOf = (tx: number, tz: number) => {
+    const k = `${tx},${tz}`;
+    let a = alanlar.get(k);
+    if (!a) {
+      a = uzaklikAlani(g, enYakin(g, tx, tz, (i) => !g.blocked[i]));
+      if (alanlar.size >= 256) alanlar.clear();
+      alanlar.set(k, a);
+    }
+    return a;
+  };
+  const merkez = (i: number): [number, number] => {
+    const r = Math.floor(i / g.cols);
+    return [g.minX + (i - r * g.cols + 0.5) * g.cell, g.minZ + (r + 0.5) * g.cell];
+  };
+  return {
+    acikAlan,
+    engeller,
+    nokta(x, z, tx, tz) {
+      if (gorusAcik(g, x, z, tx, tz)) return [tx, tz];
+      const a = alanOf(tx, tz);
+      let i = enYakin(g, x, z, (j) => a[j] < SONSUZ);
+      if (i < 0) return [tx, tz];
+      let sec = merkez(i);
+      for (let adim = 0; adim < KESTIRME && a[i] > 0; adim++) {
+        const r = Math.floor(i / g.cols);
+        const c = i - r * g.cols;
+        let j = -1;
+        for (const [dc, dr] of KOMSU) {
+          if (!adimAcik(g, c, r, dc, dr)) continue;
+          const k = (r + dr) * g.cols + c + dc;
+          if (a[k] < (j < 0 ? a[i] : a[j])) j = k;
+        }
+        if (j < 0) break;
+        i = j;
+        const m = merkez(i);
+        if (adim > 0 && !gorusAcik(g, x, z, m[0], m[1])) break;
+        sec = m;
+      }
+      return sec;
+    },
+    uzunluk(x, z, tx, tz) {
+      const a = alanOf(tx, tz);
+      const i = enYakin(g, x, z, (j) => a[j] < SONSUZ);
+      return i < 0 ? SONSUZ : a[i] * g.cell;
+    },
+  };
+}
+
+const yolAglari = new Map<string, Kat2YolAgi>();
+let sonYol: { padsDone: readonly string[]; ag: Kat2YolAgi } | null = null;
+/** padsDone'un yol ağı (aynı dizi ya da aynı açılış kümesi → önbellekteki ağ). */
+export function kat2YolAgi(padsDone: readonly string[]): Kat2YolAgi {
+  if (sonYol && sonYol.padsDone === padsDone) return sonYol.ag;
+  const k = [...padsDone].sort().join('|');
+  let ag = yolAglari.get(k);
+  if (!ag) {
+    ag = yolAgiKur(padsDone);
+    if (yolAglari.size >= 16) yolAglari.clear();
+    yolAglari.set(k, ag);
+  }
+  sonYol = { padsDone, ag };
+  return ag;
+}

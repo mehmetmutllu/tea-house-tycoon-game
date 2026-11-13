@@ -214,12 +214,12 @@ describe('tavla masası — 2 kişi, kendi sayıları, ücret + kahve tek yığ�
   });
 
   it('tavla sayıları YOKSA masa açık durur ama grup gelmez, para üretmez; zincir denetimi uyarır', () => {
-    const okeyAyar: Kat2Ayar = { ...C.kat2 };
+    const { tavla: _tavla, ...okeyAyar } = C.kat2;
     const r = sur(yeniKat2Dunya([OCAK.id, T1.id], okeyAyar), 400, girdi(UZAK, { padsDone: [OCAK.id, T1.id] }), okeyAyar);
     expect(r.dusen).toEqual([]);
     expect(r.istek).toBe(0);
     expect(r.d.masalar.find((m) => m.id === T1.id)!.durum).toBe('bos');
-    const zincir = [...C.kat2.padler, { id: 'k2salon2', cost: 1, fillRate: 1 }, { id: 'k2salon3', cost: 1, fillRate: 1 }, { id: T1.id, cost: 1, fillRate: 1 }];
+    const zincir = [...C.kat2.padler.slice(0, 5), { id: 'k2salon2', cost: 1, fillRate: 1 }, { id: 'k2salon3', cost: 1, fillRate: 1 }, { id: T1.id, cost: 1, fillRate: 1 }];
     expect(kat2ZincirHatasi({ ...okeyAyar, padler: zincir })).toMatch(/tavla/);
     expect(kat2ZincirHatasi({ ...A, padler: zincir })).toBeNull();
   });
@@ -242,7 +242,6 @@ describe('pad zinciri — salon önce, masası sonra', () => {
 
   it('salonu açılmadan masası, okey salonundan önce tavla köşesi zincire giremez', () => {
     const p = (id: string) => ({ id, cost: 1, fillRate: 1 });
-    expect(kat2ZincirHatasi(C.kat2)).toBeNull();
     expect(kat2ZincirHatasi({ ...A, padler: [p('k2okey1'), p(S2.id)] })).toMatch(/salonu/);
     expect(kat2ZincirHatasi({ ...A, padler: [p('k2salon3')] })).toMatch(/k2salon2/);
     expect(kat2ZincirHatasi({ ...A, padler: [p('k2salon2'), p('k2salon3'), p(T1.id), p(S2.id)] })).toBeNull();

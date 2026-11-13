@@ -2,22 +2,14 @@
  * kat2/Balon.tsx — KAHVE BALONU: oyunda olan masa kahve istediğinde (`istek > 0`) masanın
  * üstünde kaç fincan beklendiği okunur. Dil Kat 1'in sipariş balonu (`siparisBalonu.ts`): krem
  * gövde, kalın koyu kontur, aşağı kuyruk, kameraya dönen düz levha.
- *
- * GÖSTER-SEÇ (`?k2gorsel=balon:X`):
- *  A · fincan + "×2" sayısı
- *  B · istenen kadar fincan yan yana (sayı yok, adet gözle)
- *  C · cezve + kırmızı sayı rozeti
- *  D · fincan + sayı + çevresinde azalan SABIR halkası (istek düşmeden önce ne kadar vakit var)
- * Doku (aday, adet) başına bir kez çizilir ve paylaşılır.
+ Balonun içi: fincan + "×2" sayısı (D-187 balon A). Doku adet başına bir kez çizilir ve paylaşılır.
  */
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { CanvasTexture, DoubleSide, LinearFilter, MeshBasicMaterial, RingGeometry, SRGBColorSpace, type Group, type Mesh } from 'three';
+import { CanvasTexture, DoubleSide, LinearFilter, MeshBasicMaterial, SRGBColorSpace, type Group } from 'three';
 import { useGame } from '../../../game/store';
-import { economyConfig } from '../../../config/economy.config';
 import { PALETTE } from '../../../config/palette';
 import type { Kat2MasaYeri } from '../../../game/kat';
-import { K2_GORSEL, type BalonAday } from './gorselSecim';
 
 const BOY = 256;
 const KONTUR = 12;
@@ -88,45 +80,6 @@ function fincanCiz(c: CanvasRenderingContext2D, cx: number, cy: number, s: numbe
   c.restore();
 }
 
-function cezveCiz(c: CanvasRenderingContext2D, cx: number, cy: number, s: number) {
-  c.save();
-  c.translate(cx, cy);
-  c.scale(s, s);
-  c.lineWidth = 7;
-  c.lineJoin = 'round';
-  c.strokeStyle = PALETTE.outline;
-  // sap
-  c.beginPath();
-  c.moveTo(20, -14);
-  c.lineTo(62, -40);
-  c.lineWidth = 12;
-  c.stroke();
-  c.strokeStyle = '#5d4037';
-  c.lineWidth = 6;
-  c.stroke();
-  c.strokeStyle = PALETTE.outline;
-  c.lineWidth = 7;
-  // gövde (bakır, bel daralan)
-  c.beginPath();
-  c.moveTo(-26, -26);
-  c.lineTo(26, -26);
-  c.lineTo(20, -12);
-  c.lineTo(32, 34);
-  c.lineTo(-32, 34);
-  c.lineTo(-20, -12);
-  c.closePath();
-  c.fillStyle = '#c97a3a';
-  c.fill();
-  c.stroke();
-  // köpük
-  c.beginPath();
-  c.ellipse(0, -26, 26, 7, 0, 0, Math.PI * 2);
-  c.fillStyle = '#b07a4d';
-  c.fill();
-  c.stroke();
-  c.restore();
-}
-
 function yazi(c: CanvasRenderingContext2D, t: string, x: number, y: number, px: number, renk = '#3b2418') {
   c.font = `${px}px ${YAZI}`;
   c.textAlign = 'center';
@@ -138,11 +91,10 @@ function yazi(c: CanvasRenderingContext2D, t: string, x: number, y: number, px: 
   c.fillText(t, x, y);
 }
 
-const onbellek = new Map<string, CanvasTexture>();
+const onbellek = new Map<number, CanvasTexture>();
 
-function balonDokusu(aday: BalonAday, adet: number): CanvasTexture | null {
-  const k = `${aday}|${adet}`;
-  const once = onbellek.get(k);
+function balonDokusu(adet: number): CanvasTexture | null {
+  const once = onbellek.get(adet);
   if (once) return once;
   if (typeof document === 'undefined') return null;
   const cv = document.createElement('canvas');
@@ -161,34 +113,13 @@ function balonDokusu(aday: BalonAday, adet: number): CanvasTexture | null {
   c.fill();
   c.stroke();
   const orta = pay + y2 / 2;
-  if (aday === 'A' || aday === 'D') {
-    fincanCiz(c, BOY * 0.36, orta + 4, 1.15);
-    yazi(c, `×${adet}`, BOY * 0.73, orta + 6, 78);
-  } else if (aday === 'B') {
-    const n = Math.min(adet, 4);
-    const s = n <= 2 ? 1.05 : n === 3 ? 0.8 : 0.62;
-    const adim = 112 * s;
-    for (let i = 0; i < n; i++) fincanCiz(c, BOY / 2 + (i - (n - 1) / 2) * adim - 6 * s, orta + 4, s);
-  } else {
-    cezveCiz(c, BOY * 0.44, orta + 6, 1.15);
-    c.beginPath();
-    c.arc(BOY * 0.78, pay + 40, 34, 0, Math.PI * 2);
-    c.fillStyle = '#d23a2f';
-    c.fill();
-    c.lineWidth = 7;
-    c.strokeStyle = PALETTE.outline;
-    c.stroke();
-    c.font = `52px ${YAZI}`;
-    c.textAlign = 'center';
-    c.textBaseline = 'middle';
-    c.fillStyle = '#ffffff';
-    c.fillText(String(adet), BOY * 0.78, pay + 44);
-  }
+  fincanCiz(c, BOY * 0.36, orta + 4, 1.15);
+  yazi(c, `×${adet}`, BOY * 0.73, orta + 6, 78);
   const t = new CanvasTexture(cv);
   t.colorSpace = SRGBColorSpace;
   t.minFilter = LinearFilter;
   t.magFilter = LinearFilter;
-  onbellek.set(k, t);
+  onbellek.set(adet, t);
   return t;
 }
 
@@ -211,44 +142,17 @@ function useFontHazir(): boolean {
   return hazir;
 }
 
-/** Sabır halkası (aday D): kalan sabır oranı kadar yay. */
-function SabirHalkasi({ id }: { id: string }) {
-  const ref = useRef<Mesh>(null);
-  const geo = useRef<RingGeometry | null>(null);
-  const son = useRef(-1);
-  useFrame(() => {
-    const m = ref.current;
-    if (!m) return;
-    const masa = useGame.getState().kat2Dunya.masalar.find((x) => x.id === id);
-    const oran = masa && masa.istek > 0 ? Math.max(0, masa.sabir / economyConfig.kat2.kahveSabir) : 0;
-    const adim = Math.round(oran * 40) / 40;
-    if (adim === son.current) return;
-    son.current = adim;
-    geo.current?.dispose();
-    geo.current = new RingGeometry(0.5, 0.58, 40, 1, Math.PI / 2, Math.PI * 2 * adim);
-    m.geometry = geo.current;
-    (m.material as MeshBasicMaterial).color.set(adim > 0.35 ? '#43d17a' : '#e5533d');
-  });
-  useEffect(() => () => geo.current?.dispose(), []);
-  return (
-    <mesh ref={ref} position={[0, 0.1, -0.01]}>
-      <ringGeometry args={[0.5, 0.58, 4]} />
-      <meshBasicMaterial color="#43d17a" side={DoubleSide} toneMapped={false} depthWrite={false} transparent />
-    </mesh>
-  );
-}
-
 /** Masanın kahve balonu — `istek` 0'dan büyükken görünür, belirirken hafif zıplar. */
-export function KahveBalonu({ yer, aday = K2_GORSEL.balon }: { yer: Kat2MasaYeri; aday?: BalonAday }) {
+export function KahveBalonu({ yer }: { yer: Kat2MasaYeri }) {
   const istek = useGame((s) => s.kat2Dunya.masalar.find((m) => m.id === yer.id)?.istek ?? 0);
   const fontHazir = useFontHazir();
   const mat = useMemo(() => new MeshBasicMaterial({ transparent: true, depthWrite: false, toneMapped: false, side: DoubleSide }), []);
   useEffect(() => () => mat.dispose(), [mat]);
   useEffect(() => {
     if (istek <= 0) return;
-    mat.map = balonDokusu(aday, istek);
+    mat.map = balonDokusu(istek);
     mat.needsUpdate = true;
-  }, [istek, aday, mat, fontHazir]);
+  }, [istek, mat, fontHazir]);
   const ref = useRef<Group>(null);
   const t = useRef(0);
   useFrame((st, dt) => {
@@ -271,7 +175,6 @@ export function KahveBalonu({ yer, aday = K2_GORSEL.balon }: { yer: Kat2MasaYeri
       <mesh material={mat} renderOrder={5}>
         <planeGeometry args={[BALON_W, BALON_W]} />
       </mesh>
-      {aday === 'D' && <SabirHalkasi id={yer.id} />}
     </group>
   );
 }

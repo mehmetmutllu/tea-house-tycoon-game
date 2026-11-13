@@ -41,7 +41,9 @@ type Oyuncu = { ad: string; hiz: number; tepsi: number; miknatis: number };
 const GUCLU: Oyuncu = { ad: 'son kademe', hiz: playerSpeedFor(charMaxTier('speed')), tepsi: trayCapacityFor(charMaxTier('tray')), miknatis: attractRadiusFor(charMaxTier('magnet')) };
 const ZAYIF: Oyuncu = { ad: 'ilk kademe', hiz: playerSpeedFor(0), tepsi: trayCapacityFor(0), miknatis: attractRadiusFor(0) };
 
-const OKEY: Kat2Ayar = economyConfig.kat2;
+// Okey sayıları (D-184). Tavla sayıları kolların → config'teki seçilmiş kol (D-186) burada kullanılmaz.
+const { tavla: _tavla, ...OKEY_AYAR } = economyConfig.kat2;
+const OKEY: Kat2Ayar = OKEY_AYAR;
 
 // ---------------------------------------------------------------------------------------------
 // TAVLA KOLLARI — fiyatlar teorik tavana normalize (K2-3 kalıbı). Tavan KİŞİ BAŞINA okeyle eşit:
@@ -71,6 +73,11 @@ const KOLLAR: Kol[] = [60, 90, 120].flatMap((oturum) => [
   { ad: `T${oturum}U`, not: `oyun ${oturum} sn · ücret ağır (gelirin %20'si kahve)`, b: { oturum, kahveAralik: 25, istekAdet: 1, kahvePayi: 0.2 } },
 ]);
 const TABAN = 'T90K';
+// D-186: config'e yazılan tavla sayıları T120U kolunun kendisi mi? (stderr damgası; çıktıya dokunmaz)
+{
+  const t120u = tavlaFiyatla(KOLLAR.find((k) => k.ad === 'T120U')!.b);
+  damga('config.tavla = T120U', JSON.stringify(economyConfig.kat2.tavla) === JSON.stringify(t120u), JSON.stringify(t120u));
+}
 const ayarla = (kol: Kol, ocak?: Ocak): Kat2Ayar => ({ ...OKEY, ...(ocak ?? {}), tavla: tavlaFiyatla(kol.b) });
 
 /** Ocak kolları: tek cezve ocağının hızı bir varsayımdır (D-184'te 4 masa için seçildi). */

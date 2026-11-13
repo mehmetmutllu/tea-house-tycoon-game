@@ -1,0 +1,32 @@
+=== S2 — KAT 2 GARSONU: hız × tepsi × sayı (bütün zincir açık) ===
+Kip: tam · 20 dk koşu, ilk 4 dk ısınma sayılmaz · dt 0.1
+Bot: son kademe hız 4.95 · tepsi 6 · mıknatıs 5 | ilk kademe hız 4.5 · tepsi 2 · mıknatıs 2.6
+Masalar: 10 okey (4 kişi) + 12 tavla (2 kişi) · ocak 2 × 15.0 fincan/dk (kuyruk 4)
+Kahve talebi (teorik): okey 36.0 + tavla 20.6 fincan/dk · ocak tavanı 30.0
+Kat 1 garsonu: hız 1.5 → 2 · tepsi 2 → 4 ⇒ kollar hız 2.0 / 3.0 × tepsi 2 / 4 × garson 1 / 2
+Garson yalnız kahve, yalnız tavla; oyuncu garson varken yalnız okeye taşır, bütün yığınları toplar. "yok": oyuncu her şeyi yapar.
+meşgul (bot) = ocak önünde boş beklemediği süre · garson meşgul = bir hedefe (masa/ocak) gittiği süre · garson ocakta = ocağın önünde kahve beklediği süre
+₺/dk = oyuncunun TOPLADIĞI · okey/tavla ₺/dk = masalara DÜŞEN (toplanamayan yığın farkı açar) · kaçan = sayılan sürede düşen istek (fincan)
+ocak boş = iki ocakta da hazır fincan yok (talep > arz) · ocak dolu = iki ocak da kuyrukta dolu (arz boşta)
+
+--- SON KADEME OYUNCU ---
+kol          | ₺/dk  | okey ₺/dk | tavla ₺/dk | okey servis % | tavla servis % | kaçan | garson servis | garson meşgul | garson ocakta | ocak boş | ocak dolu | bot meşgul
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+yok          |   555 |       278 |        277 |           %39 |            %55 |   280 |             — |             — |             — |       %0 |       %12 | %100
+H2.0·T2·×1   |   589 |       313 |        276 |           %57 |            %52 |   239 |            75 |           %99 |            %3 |       %1 |        %3 | %100
+H2.0·T4·×1   |   584 |       309 |        275 |           %55 |            %50 |   252 |            78 |           %99 |            %3 |       %1 |        %6 | %100
+H3.0·T2·×1   |   582 |       302 |        280 |           %51 |            %60 |   245 |           106 |           %95 |            %4 |       %2 |        %3 | %100
+H3.0·T4·×1   |   589 |       306 |        283 |           %56 |            %68 |   214 |           118 |           %95 |            %5 |       %2 |        %2 | %100
+H2.0·T2·×2   |   593 |       309 |        284 |           %54 |            %69 |   226 |           118 |           %89 |            %4 |       %6 |        %3 | %100
+H2.0·T4·×2   |   584 |       295 |        286 |           %51 |            %72 |   229 |           128 |           %89 |            %3 |       %4 |        %3 | %100
+H3.0·T2·×2   |   591 |       302 |        289 |           %53 |            %79 |   208 |           159 |           %89 |            %7 |       %9 |        %1 | %100
+H3.0·T4·×2   |   591 |       302 |        289 |           %53 |            %79 |   208 |           159 |           %89 |            %7 |       %9 |        %1 | %100
+
+--- İLK KADEME OYUNCU ---
+kol          | ₺/dk  | okey ₺/dk | tavla ₺/dk | okey servis % | tavla servis % | kaçan | garson servis | garson meşgul | garson ocakta | ocak boş | ocak dolu | bot meşgul
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+yok          |   436 |       249 |        268 |           %22 |            %28 |   368 |             — |             — |             — |       %0 |       %55 | %100
+H2.0·T2·×1   |   556 |       277 |        275 |           %42 |            %50 |   283 |            86 |           %99 |            %1 |       %0 |       %19 | %100
+H2.0·T4·×1   |   558 |       277 |        278 |           %42 |            %57 |   274 |           101 |           %97 |            %1 |       %0 |       %15 | %100
+H3.0·T2·×1   |   561 |       276 |        282 |           %41 |            %67 |   258 |           123 |           %95 |            %2 |       %0 |       %10 | %100
+H3.0·T4·×1   |   561 |       267 |        284 |           %36 |            %69 |   263 |           126 |           %95 |            %3 |       %0 |       %11 | %100

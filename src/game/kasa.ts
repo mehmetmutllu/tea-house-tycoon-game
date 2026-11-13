@@ -64,3 +64,43 @@ export function kasaBosaltilir(
   if (kip === 'inis') return g.indi;
   return Math.hypot(g.x - yer[0], g.z - yer[1]) <= erisim;
 }
+
+// ============================== S2 (D-185): oyuna bağlantı ==============================
+
+/** Kasa Kat 1'de servis tezgâhının ucunda (garson istasyonunun sol başı; rapor Bulgu 6, aday 2). */
+export const KASA_YER: readonly [number, number] = [-10.8, -9.3];
+
+/**
+ * Kat 1'in ÖLÇÜLEN geliri: oyuncu Kat 2'deyken Kat 1'de düşen paranın üstel ortalaması. `para` ve
+ * `sn` aynı katsayıyla söner → oran = para / sn, ilk saniyelerde sıfıra çekilmez (yansız EMA).
+ */
+export interface KasaOlcum {
+  para: number;
+  sn: number;
+}
+export const bosKasaOlcum = (): KasaOlcum => ({ para: 0, sn: 0 });
+
+export interface KasaAyar {
+  dakika: number;
+  olcumPencereSn: number;
+  olcumMinSn: number;
+  tabanSinir: number;
+}
+
+export function kasaOlcumAdim(o: KasaOlcum, uretim: number, dt: number, pencereSn: number): KasaOlcum {
+  const k = Math.exp(-dt / pencereSn);
+  return { para: o.para * k + uretim, sn: o.sn * k + dt };
+}
+
+/** Ölçülen Kat 1 dakika geliri; yeterli ölçüm yoksa `null` (soğuk başlangıç). */
+export function kasaDakikaGeliri(o: KasaOlcum, minSn: number): number | null {
+  return o.sn >= minSn && o.sn > 0 ? (o.para / o.sn) * 60 : null;
+}
+
+/** Ölçümden kasa sınırı: dakika geliri × `dakika`, en az `tabanSinir`. Ölçüm yoksa sınırsız (`null`). */
+export function kasaSiniriOlcumden(o: KasaOlcum, a: KasaAyar): Decimal | null {
+  const dk = kasaDakikaGeliri(o, a.olcumMinSn);
+  if (dk === null) return null;
+  const s = kasaSiniri(dk, a.dakika);
+  return s === null ? null : s.lt(a.tabanSinir) ? D(a.tabanSinir) : s;
+}

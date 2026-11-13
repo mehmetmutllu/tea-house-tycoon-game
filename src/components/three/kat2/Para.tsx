@@ -4,12 +4,8 @@
  * kumar yok). Oyuncu mıknatıs yarıçapına girince toplanır: sikkeler oyuncuya uçar, başının
  * üstünde Kat 1'in "+para" yazısı (`.floater`) belirir.
  *
- * GÖSTER-SEÇ (`?k2gorsel=para:X`):
- *  A · sikke kuleleri (Kat 1'in sikkesi, 2-4 sütun üst üste)
- *  B · kese (bağcıklı bez kese, ağzından sikke taşar)
- *  C · banknot destesi + birkaç sikke
- *  D · sikke tepesi (sikkeler yere yayılmış küçük bir höyük)
- * Boy miktarla büyür (kademeli), ölçek düşerken zıplar.
+ * Yığın = sikke kuleleri (D-187 para A: Kat 1'in sikkesi, 2-4 sütun üst üste). Boy miktarla büyür
+ * (kademeli), düşerken zıplar.
  */
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -17,8 +13,6 @@ import { Html } from '@react-three/drei';
 import { CylinderGeometry, MeshStandardMaterial, Object3D, type Group, type InstancedMesh } from 'three';
 import { useGame } from '../../../game/store';
 import { fmt } from '../../../game/decimal';
-import { K2_GORSEL, type ParaAday } from './gorselSecim';
-import { Kutu, Silindir } from './parca';
 
 // Kat 1'in sikkesiyle aynı geometri/materyal (Coins.tsx) — iki katta para aynı görünür.
 const SIKKE_GEO = new CylinderGeometry(0.22, 0.22, 0.06, 16);
@@ -32,28 +26,18 @@ function kademe(miktar: number): number {
   return miktar < 90 ? 1 : miktar < 130 ? 2 : miktar < 180 ? 3 : 4;
 }
 
-/** Bir yığının sikke yerleri (yerel; aday A ve D). Kesir sabit tohumla dağılır, kare kare oynamaz. */
-function sikkeYerleri(aday: ParaAday, k: number): [number, number, number, number][] {
+/** Bir yığının sikke yerleri (yerel): kademe kadar sütun, sütun boyu kademeyle büyür. */
+function sikkeYerleri(k: number): [number, number, number, number][] {
   const out: [number, number, number, number][] = [];
-  if (aday === 'A') {
-    const sutun = [[0, 0], [0.34, 0.12], [-0.3, 0.16], [0.08, -0.32]].slice(0, Math.min(4, k + 1));
-    sutun.forEach(([x, z], i) => {
-      const boy = 3 + k * 2 - i * 2;
-      for (let j = 0; j < boy; j++) out.push([x + ((j * 7) % 3) * 0.01, 0.03 + j * 0.062, z, j * 0.7]);
-    });
-  } else {
-    const n = 8 + k * 7;
-    for (let i = 0; i < n; i++) {
-      const a = i * 2.39996;
-      const r = 0.06 * Math.sqrt(i) * (1.6 + k * 0.15);
-      const tepe = Math.max(0, 0.32 + k * 0.05 - r * 0.85);
-      out.push([Math.cos(a) * r, 0.03 + tepe * (0.35 + (i % 3) * 0.12), Math.sin(a) * r, a]);
-    }
-  }
+  const sutun = [[0, 0], [0.34, 0.12], [-0.3, 0.16], [0.08, -0.32]].slice(0, Math.min(4, k + 1));
+  sutun.forEach(([x, z], i) => {
+    const boy = 3 + k * 2 - i * 2;
+    for (let j = 0; j < boy; j++) out.push([x + ((j * 7) % 3) * 0.01, 0.03 + j * 0.062, z, j * 0.7]);
+  });
   return out;
 }
 
-function Sikkeler({ yerler, egik }: { yerler: [number, number, number, number][]; egik: boolean }) {
+function Sikkeler({ yerler }: { yerler: [number, number, number, number][] }) {
   const ref = useRef<InstancedMesh>(null);
   useEffect(() => {
     const m = ref.current;
@@ -61,51 +45,20 @@ function Sikkeler({ yerler, egik }: { yerler: [number, number, number, number][]
     const d = new Object3D();
     yerler.forEach(([x, y, z, a], i) => {
       d.position.set(x, y, z);
-      d.rotation.set(egik ? Math.sin(a) * 0.35 : 0, a, egik ? Math.cos(a) * 0.3 : 0);
+      d.rotation.set(0, a, 0);
       d.updateMatrix();
       m.setMatrixAt(i, d.matrix);
     });
     m.count = yerler.length;
     m.instanceMatrix.needsUpdate = true;
-  }, [yerler, egik]);
+  }, [yerler]);
   return <instancedMesh key={yerler.length} ref={ref} args={[SIKKE_GEO, SIKKE_MAT, yerler.length]} castShadow receiveShadow />;
 }
 
-function Kese({ k }: { k: number }) {
-  const s = 0.8 + k * 0.12;
-  return (
-    <group scale={s}>
-      <Silindir r1={0.2} r2={0.3} h={0.42} renk="#b58a55" pos={[0, 0.21, 0]} seg={9} />
-      <Silindir r1={0.12} r2={0.2} h={0.12} renk="#a77b48" pos={[0, 0.47, 0]} seg={9} />
-      <mesh position={[0, 0.42, 0]} rotation={[Math.PI / 2, 0, 0]} castShadow>
-        <torusGeometry args={[0.13, 0.025, 6, 14]} />
-        <meshStandardMaterial color="#7a3b1f" />
-      </mesh>
-      <Silindir r1={0.16} r2={0.13} h={0.14} renk="#b58a55" pos={[0, 0.58, 0]} seg={9} />
-      <Sikkeler yerler={[[0.28, 0.03, 0.12, 0.4], [0.18, 0.03, 0.3, 1.3], [0.36, 0.08, 0.26, 2.1], [-0.25, 0.03, 0.22, 0.9]]} egik />
-    </group>
-  );
-}
-
-function Deste({ k }: { k: number }) {
-  const n = 1 + k;
-  return (
-    <group>
-      {Array.from({ length: n }, (_, i) => (
-        <group key={i} position={[(i % 2) * 0.12 - 0.06, 0.05 + i * 0.1, (i % 2) * -0.05]} rotation={[0, i * 0.35 - 0.3, 0]}>
-          <Kutu w={0.56} h={0.09} d={0.3} renk="#5f9e5b" pos={[0, 0, 0]} />
-          <Kutu w={0.1} h={0.095} d={0.31} renk="#efe6c9" pos={[0, 0, 0]} golge={false} />
-        </group>
-      ))}
-      <Sikkeler yerler={[[0.4, 0.03, 0.15, 0.3], [-0.38, 0.03, 0.2, 1.1], [0.3, 0.03, -0.25, 2.2]]} egik />
-    </group>
-  );
-}
-
 /** Tek yığın: yerine düşer (yukarıdan, sekerek), sonra hafif parlar. */
-function Yigin({ x, z, miktar, aday }: { x: number; z: number; miktar: number; aday: ParaAday }) {
+function Yigin({ x, z, miktar }: { x: number; z: number; miktar: number }) {
   const k = kademe(miktar);
-  const yerler = useMemo(() => (aday === 'A' || aday === 'D' ? sikkeYerleri(aday, k) : []), [aday, k]);
+  const yerler = useMemo(() => sikkeYerleri(k), [k]);
   const ref = useRef<Group>(null);
   const t = useRef(0);
   useFrame((st, dt) => {
@@ -121,7 +74,7 @@ function Yigin({ x, z, miktar, aday }: { x: number; z: number; miktar: number; a
   return (
     <group position={[x, 0, z]}>
       <group ref={ref} position={[0, 1.6, 0]} scale={YIGIN_OLCEK}>
-        {aday === 'B' ? <Kese k={k} /> : aday === 'C' ? <Deste k={k} /> : <Sikkeler yerler={yerler} egik={aday === 'D'} />}
+        <Sikkeler yerler={yerler} />
       </group>
     </group>
   );
@@ -176,7 +129,7 @@ function Yazi({ x, z, deger, bitti }: { x: number; z: number; deger: number; bit
   );
 }
 
-export function ParaYiginlari({ aday = K2_GORSEL.para }: { aday?: ParaAday }) {
+export function ParaYiginlari() {
   // Liste kimliği her tick değişir; abonelik yalnız yığın KÜMESİ değişince render eder.
   const anahtar = useGame((s) => s.kat2Dunya.paralar.map((p) => p.id).join(','));
   const paralar = useMemo(() => {
@@ -207,7 +160,7 @@ export function ParaYiginlari({ aday = K2_GORSEL.para }: { aday?: ParaAday }) {
   return (
     <group>
       {paralar.map((p) => (
-        <Yigin key={p.id} x={p.x} z={p.z} miktar={p.miktar} aday={aday} />
+        <Yigin key={p.id} x={p.x} z={p.z} miktar={p.miktar} />
       ))}
       <UcanSikkeler ucuslar={ucuslar} />
       {yazilar.map((y) => (

@@ -29,7 +29,9 @@ const ON_Z = BAND.front + 0.6;
 export function grupYolu(m: Kat2MasaYeri, oturak: [number, number], sira: number): Nokta[] {
   const s = m.x < 0 ? -1 : 1;
   const serit = s * (0.6 + (sira % 2) * 0.9);
-  const koridor = m.z - (m.tur === 'okey' ? 2.5 : 1.8);
+  // Okey koridoru masa ayak izinin (±1,25) hemen önü: okey salonunda bölmeye yaslı 2. ocağın
+  // önünden (tezgâh ön yüzü z ≈ 2,15) değil, ocak ile masa arasından geçer.
+  const koridor = m.z - (m.tur === 'okey' ? 1.9 : 1.8);
   const [dx, dz] = oturak;
   const ox = m.x + dx;
   const oz = m.z + dz;

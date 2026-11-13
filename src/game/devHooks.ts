@@ -158,7 +158,8 @@ export function installDevHooks(): void {
       kat2: {
         padsDone: [...s.kat2.padsDone],
         masalar: s.kat2Dunya.masalar.map((m) => ({ id: m.id, durum: m.durum, istek: m.istek, birikim: m.birikim })),
-        ocakHazir: s.kat2Dunya.ocakHazir,
+        ocaklar: s.kat2Dunya.ocaklar.map((o) => ({ ...o })),
+        garson: s.kat2Dunya.garson ? { ...s.kat2Dunya.garson } : null,
         tepsi: s.kat2Dunya.tepsi,
         paralar: s.kat2Dunya.paralar.map((p) => ({ ...p })),
         padFill: { ...s.kat2Dunya.padFill },

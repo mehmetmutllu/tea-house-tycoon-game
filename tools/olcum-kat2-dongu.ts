@@ -186,7 +186,9 @@ for (const kol of KOLLAR) {
 
 // FİNAL (D-184): config'e yazılan kol V4'ün kendisi mi? Sayılar ve koşu birebir aynı olmalı.
 {
-  const secilen: Kat2Ayar = { ...economyConfig.kat2, padler: [] };
+  // Okey sayıları (S2'de config'e tavla sayıları ve uzun zincir geldi; okey kolu bunlardan bağımsız).
+  const { tavla: _tavla, ...okey } = economyConfig.kat2;
+  const secilen: Kat2Ayar = { ...okey, padler: [] };
   const v4 = { ...fiyatla(KOLLAR.find((k) => k.ad === 'V4')!.b), padler: [] };
   const sirali = (o: object) => JSON.stringify(Object.entries(o).sort(([x], [y]) => x.localeCompare(y)));
   damga('config = V4', sirali({ ...secilen, padler: [] }) === sirali(v4), sirali(secilen));

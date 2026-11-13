@@ -15,7 +15,22 @@
  *
  * Kumar YOK: masada para/jeton görünmez; ücret "masa ücreti"dir (kat2-plan §2).
  */
-import { KAT2_MASALAR, KAT2_SALON_PAD, KAT2_SALON_PAD_YER, OCAK, masaErisimde, paraDusmeYeri, type Kat2MasaYeri, type MasaTuru } from './kat';
+import {
+  KAT2_GARSON_PAD,
+  KAT2_GARSON_YER,
+  KAT2_MASALAR,
+  KAT2_SALON_PAD,
+  KAT2_SALON_PAD_YER,
+  OCAKLAR,
+  TAVLA_YARI,
+  kat2Adim,
+  kat2YolAgi,
+  masaErisimde,
+  paraDusmeYeri,
+  type Kat2MasaYeri,
+  type MasaTuru,
+} from './kat';
+import { LAYOUT } from './layout';
 import { inFrame, padCercevesi } from './markerFrame';
 import { t } from '../i18n';
 
@@ -49,6 +64,24 @@ export interface Kat2Ayar {
    * okey sayılarına düşmek 4 kişinin ücretini 2 kişiye yazmak olurdu). `kat2ZincirHatasi` bunu yakalar.
    */
   tavla?: Kat2TavlaAyar;
+  /**
+   * S2: Kat 2 GARSONUNUN sayıları (D-186; ölçüm `tools/olcum-kat2-garson.ts`). Tavla deseni: YOKSA
+   * `k2garson` pad'i açılsa bile garson gelmez; `kat2ZincirHatasi` uyarır (`kat2EksikSayi`).
+   */
+  garson?: Kat2GarsonAyar;
+}
+
+/**
+ * Kat 2 garsonu: YALNIZ kahve taşır, YALNIZ tavla masalarına (oyuncu okeyde taşır — aktif oynanış;
+ * yığınları her zaman oyuncu toplar, oto-toplayıcı yok).
+ */
+export interface Kat2GarsonAyar {
+  /** Yürüme hızı (br/sn). */
+  hiz: number;
+  /** Tepsisi (fincan). */
+  tepsi: number;
+  /** Kaç garson (yoksa 1). */
+  sayi?: number;
 }
 
 /** Tavla masasının döngü sayıları (anlamları `Kat2Ayar`ın aynı adlı alanlarıyla aynı). */
@@ -86,11 +119,31 @@ export interface ParaYigini {
   miktar: number;
 }
 
+/** Bir cezve ocağının anlık hâli (sıra `kat.OCAKLAR`; kapalı ocak hazir 0). */
+export interface Kat2OcakDurum {
+  id: string;
+  /** Ocakta bekleyen hazır fincan. */
+  hazir: number;
+  /** Pişmekte olan fincanın geçen süresi (sn; 0 = pişmiyor). */
+  demT: number;
+}
+
+/** Kat 2 garsonunun anlık hâli. `hedef`: gittiği masa ya da ocak kimliği; null = evine dönüyor/boşta. */
+export interface Kat2Garson {
+  x: number;
+  z: number;
+  tepsi: number;
+  hedef: string | null;
+}
+
 /** Kat 2'nin anlık dünyası. Kalıcı olan yalnız `padsDone` (kayıtta `kat2.padsDone`); gerisi transient. */
 export interface Kat2Dunya {
   masalar: OkeyMasa[];
-  ocakHazir: number;
-  demT: number;
+  ocaklar: Kat2OcakDurum[];
+  /** Kat 2 garsonu (pad'i yoksa ya da `Kat2Ayar.garson` yoksa null). */
+  garson: Kat2Garson | null;
+  /** `garson.sayi` > 1 ise ikinci ve sonraki garsonlar (S2'de yalnız ölçüm kolu; yoksa boş). */
+  garsonEk?: Kat2Garson[];
   /** Oyuncunun tepsisindeki kahve. */
   tepsi: number;
   paralar: ParaYigini[];
@@ -129,10 +182,18 @@ export interface Kat2Cikti {
     padBitti: string | null;
     /** Bu adımda masaya düşen yığınların ₺'si. */
     dusen: number[];
+    /** Bu adımda kalkan masaların kimlikleri (`dusen` ile aynı sırada). */
+    kalkan: string[];
+    /** `servis`in garsonun getirdiği kısmı. */
+    garsonServis: number;
+    /** Tavla masalarının payı (`servis`/`kacan` içinden). */
+    tavlaServis: number;
+    tavlaKacan: number;
   };
 }
 
-export const ocakAcik = (padsDone: readonly string[]): boolean => padsDone.includes(OCAK.id);
+/** En az bir cezve ocağı açık mı (kahve istekleri bununla başlar). */
+export const ocakAcik = (padsDone: readonly string[]): boolean => OCAKLAR.some((o) => padsDone.includes(o.id));
 
 const MASA_YERI: ReadonlyMap<string, Kat2MasaYeri> = new Map(KAT2_MASALAR.map((m) => [m.id, m]));
 export const kat2MasaYeri = (id: string): Kat2MasaYeri | undefined => MASA_YERI.get(id);
@@ -142,7 +203,9 @@ export const kat2MasaYeri = (id: string): Kat2MasaYeri | undefined => MASA_YERI.
  * pad'i merdiven salonu tarafında geçidin önünde.
  */
 export function kat2PadYeri(id: string): [number, number] {
-  if (id === OCAK.id) return OCAK.al;
+  const o = OCAKLAR.find((x) => x.id === id);
+  if (o) return [o.al[0], o.al[1]];
+  if (id === KAT2_GARSON_PAD) return [KAT2_GARSON_YER[0], KAT2_GARSON_YER[1]];
   const s = KAT2_SALON_PAD_YER[id];
   if (s) return s;
   const m = MASA_YERI.get(id);
@@ -150,12 +213,21 @@ export function kat2PadYeri(id: string): [number, number] {
   return [m.x, m.z];
 }
 
+/** Pad hangi alanda duruyor (salon pad'leri merdiven salonunda, ocak/garson/masa kendi yerinde). */
+function padAlani(id: string): number {
+  const m = MASA_YERI.get(id);
+  if (m) return m.alan;
+  if (id === KAT2_GARSON_PAD) return 2;
+  if (id === OCAKLAR[1].id) return 1;
+  return 0;
+}
+
 /**
- * Zincir tutarlı mı? Her pad'in yeri var · salon pad'leri sırayla · masa, salonu AÇILDIKTAN sonra
- * gelir (yoksa pad kapalı salonda kalır, oyuncu erişemez) · tavla masası varsa `tavla` sayıları var.
- * Hata metni döner (geliştirici için), tutarlıysa null.
+ * Zincirin YAPISI tutarlı mı? Her pad'in yeri var · tekrar yok · salon pad'leri sırayla · masa, ocak
+ * ve garson pad'i salonu AÇILDIKTAN sonra gelir (yoksa pad kapalı salonda kalır, oyuncu erişemez).
+ * Bu bir HATADIR: oyun bozuk demektir. Hata metni döner (geliştirici için), tutarlıysa null.
  */
-export function kat2ZincirHatasi(ayar: Kat2Ayar): string | null {
+export function kat2YapiHatasi(ayar: Kat2Ayar): string | null {
   const gorulen = new Set<string>();
   for (const p of ayar.padler) {
     if (gorulen.has(p.id)) return `tekrar: ${p.id}`;
@@ -166,14 +238,30 @@ export function kat2ZincirHatasi(ayar: Kat2Ayar): string | null {
     }
     const si = KAT2_SALON_PAD.indexOf(p.id);
     if (si > 0 && !gorulen.has(KAT2_SALON_PAD[si - 1])) return `${p.id} ${KAT2_SALON_PAD[si - 1]}'den önce`;
-    const m = MASA_YERI.get(p.id);
-    if (m) {
-      if (m.alan > 0 && !gorulen.has(KAT2_SALON_PAD[m.alan - 1])) return `${p.id} salonu (${KAT2_SALON_PAD[m.alan - 1]}) açılmadan`;
-      if (m.tur === 'tavla' && !ayar.tavla) return `${p.id}: tavla sayıları (Kat2Ayar.tavla) yok`;
-    }
+    const alan = padAlani(p.id);
+    if (alan > 0 && !gorulen.has(KAT2_SALON_PAD[alan - 1])) return `${p.id} salonu (${KAT2_SALON_PAD[alan - 1]}) açılmadan`;
     gorulen.add(p.id);
   }
   return null;
+}
+
+/**
+ * Zincirde açılan bir şeyin SAYILARI eksik mi? Tavla masası varsa `tavla`, garson pad'i varsa `garson`
+ * sayıları olmalı; yoksa pad açılır ama masaya grup / garson gelmez (ölçülmemiş sayıyla para üretmez).
+ * Yapı hatasından AYRI tutulur: S2'de config bilerek "garson sayısı yok" hâlindedir (ölçüldü, karar
+ * bekliyor) — config bekçisi yapıyı null, eksiği TAM bu listeyle çivi gibi tutar. Eksik yoksa null.
+ */
+export function kat2EksikSayi(ayar: Kat2Ayar): string | null {
+  const eksik: string[] = [];
+  const ilkTavla = ayar.padler.find((p) => MASA_YERI.get(p.id)?.tur === 'tavla');
+  if (ilkTavla && !ayar.tavla) eksik.push(`${ilkTavla.id}: tavla sayıları (Kat2Ayar.tavla) yok`);
+  if (ayar.padler.some((p) => p.id === KAT2_GARSON_PAD) && !ayar.garson) eksik.push(`${KAT2_GARSON_PAD}: garson sayıları (Kat2Ayar.garson) yok`);
+  return eksik.length ? eksik.join(' · ') : null;
+}
+
+/** Zincir oynanabilir mi: önce yapı, sonra eksik sayı. Tutarlıysa null. */
+export function kat2ZincirHatasi(ayar: Kat2Ayar): string | null {
+  return kat2YapiHatasi(ayar) ?? kat2EksikSayi(ayar);
 }
 
 /** Masanın döngü sayıları türüne göre (tavla sayıları yoksa null → masa işlemez). */
@@ -198,8 +286,8 @@ export function yeniKat2Dunya(padsDone: readonly string[], ayar: Kat2Ayar): Kat2
       sabir: 0,
       birikim: 0,
     })),
-    ocakHazir: 0,
-    demT: 0,
+    ocaklar: OCAKLAR.map((o) => ({ id: o.id, hazir: 0, demT: 0 })),
+    ...garsonAyir(garsonKur(padsDone, ayar, [])),
     tepsi: 0,
     paralar: [],
     padFill: {},
@@ -209,10 +297,105 @@ export function yeniKat2Dunya(padsDone: readonly string[], ayar: Kat2Ayar): Kat2
 
 /** Pad etiketi (çerçeve ölçüsü etikete bağlı — Kat 1'in `padCercevesi` dili). */
 export function kat2PadEtiket(id: string): string {
-  if (id === OCAK.id) return t('Cezve Ocağı');
+  if (OCAKLAR.some((o) => o.id === id)) return t('Cezve Ocağı');
+  if (id === KAT2_GARSON_PAD) return t('Garson');
   if (id === KAT2_SALON_PAD[0]) return t('Okey Salonu');
   if (id === KAT2_SALON_PAD[1]) return t('Tavla Köşesi');
   return MASA_YERI.get(id)?.tur === 'tavla' ? t('Tavla Masası') : t('Okey Masası');
+}
+
+// ---- KAT 2 GARSONU (S2) -------------------------------------------------------------------------
+
+/** i. garsonun evi (pad'in yeri; ikinci garson bir adım yanında). */
+const garsonEvi = (i: number): [number, number] => [KAT2_GARSON_YER[0] + i * 1.0, KAT2_GARSON_YER[1]];
+
+/** Garsonlar: pad'i açık + sayıları var → `sayi` kadar (mevcutlar korunur, yeniler evinde doğar). */
+function garsonKur(padsDone: readonly string[], ayar: Kat2Ayar, mevcut: readonly Kat2Garson[]): Kat2Garson[] {
+  if (!ayar.garson || !padsDone.includes(KAT2_GARSON_PAD)) return [];
+  const n = Math.max(1, Math.floor(ayar.garson.sayi ?? 1));
+  return Array.from({ length: n }, (_, i) => mevcut[i] ?? { x: garsonEvi(i)[0], z: garsonEvi(i)[1], tepsi: 0, hedef: null });
+}
+
+const garsonAyir = (gs: Kat2Garson[]): Pick<Kat2Dunya, 'garson' | 'garsonEk'> => ({ garson: gs[0] ?? null, garsonEk: gs.slice(1) });
+
+/**
+ * Garsonun tavla masasına yaklaşma noktası: masanın +z önü (yığının düştüğü yüz), ayak izinin
+ * şişkinliğinin (yarı + gövde yarıçapı) hemen dışı, kahve erişiminin içi.
+ */
+const garsonMasaNoktasi = (m: Kat2MasaYeri): [number, number] => [m.x, m.z + TAVLA_YARI[1] + LAYOUT.playerRadius + 0.13];
+
+/**
+ * Garsonların bir adımı: karar → yürüyüş → ocaktan alma. Servis masa döngüsünde (oyuncunun
+ * servisinden SONRA) yapılır. Kural (deterministik):
+ *  - Tepside kahve varsa: sabrı en az kalan açık tavla isteğine (önceki garsonun hedefi atlanır).
+ *    İstek yoksa kahveyle evine döner, sonraki isteğe oradan gider.
+ *  - Tepsi boşsa ve karşılanmamış tavla isteği varsa (açık istekler − öteki garsonların tepsisi):
+ *    YOL UZUNLUĞUNCA en yakın açık ocağa gider, önünde bekler; ihtiyaç kadar alır (tepsiyi
+ *    gereksiz doldurup oyuncunun kahvesini tüketmez).
+ *  - Ocak paylaşımı: oyuncu aynı adımda ÖNCE alır (`kat2Tick` sırası), sonra garsonlar dizi sırasıyla.
+ */
+function garsonlarAdim(d: Kat2Dunya, gs: Kat2Garson[], padsDone: readonly string[], acikOcak: readonly boolean[], ga: Kat2GarsonAyar, dt: number): void {
+  const ag = kat2YolAgi(padsDone);
+  const istekli = d.masalar
+    .filter((m) => m.tur === 'tavla' && m.durum === 'oyunda' && m.istek > 0)
+    .sort((a, b) => a.sabir - b.sabir);
+  const toplamIstek = istekli.reduce((a, m) => a + m.istek, 0);
+  const alinan = new Set<string>();
+  gs.forEach((g, i) => {
+    let hedef: string | null = null;
+    let nokta: [number, number] = garsonEvi(i);
+    let ihtiyac = 0;
+    if (g.tepsi > 0) {
+      const m = istekli.find((x) => !alinan.has(x.id)) ?? istekli[0];
+      if (m) {
+        hedef = m.id;
+        alinan.add(m.id);
+        nokta = garsonMasaNoktasi(MASA_YERI.get(m.id)!);
+      }
+    } else {
+      ihtiyac = toplamIstek - gs.reduce((a, o) => (o === g ? a : a + o.tepsi), 0);
+      if (ihtiyac > 0) {
+        let en = -1;
+        let enL = Infinity;
+        OCAKLAR.forEach((o, k) => {
+          if (!acikOcak[k]) return;
+          const L = ag.uzunluk(g.x, g.z, o.al[0], o.al[1]);
+          if (L < enL) {
+            enL = L;
+            en = k;
+          }
+        });
+        if (en >= 0) {
+          hedef = OCAKLAR[en].id;
+          nokta = [OCAKLAR[en].al[0], OCAKLAR[en].al[1]];
+        }
+      }
+    }
+    g.hedef = hedef;
+    // Yürüyüş: yol ağının gösterdiği noktaya, adımı `kat2Adim` atar (bölme + masa + ocak katı).
+    const kalan = Math.hypot(nokta[0] - g.x, nokta[1] - g.z);
+    if (kalan > 0.1) {
+      const [wx, wz] = ag.nokta(g.x, g.z, nokta[0], nokta[1]);
+      const L = Math.hypot(wx - g.x, wz - g.z);
+      if (L > 1e-6) {
+        const s = Math.min(ga.hiz * dt, L) / L;
+        [g.x, g.z] = kat2Adim(g.x, g.z, (wx - g.x) * s, (wz - g.z) * s, ag.acikAlan, ag.engeller);
+      }
+    }
+    // Ocaktan al (yalnız ocağa giderken; ihtiyaç kadar).
+    const k = OCAKLAR.findIndex((o) => o.id === hedef);
+    if (k >= 0) {
+      const o = OCAKLAR[k];
+      const od = d.ocaklar[k];
+      if (od.hazir > 0 && Math.hypot(g.x - o.al[0], g.z - o.al[1]) <= o.erisim) {
+        const al = Math.min(od.hazir, ga.tepsi - g.tepsi, ihtiyac);
+        if (al > 0) {
+          od.hazir -= al;
+          g.tepsi += al;
+        }
+      }
+    }
+  });
 }
 
 /** Bir adım. `d` değiştirilmez; yeni dünya döner. */
@@ -220,14 +403,29 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
   const d: Kat2Dunya = {
     ...d0,
     masalar: d0.masalar.map((m) => ({ ...m })),
+    ocaklar: d0.ocaklar.map((o) => ({ ...o })),
     paralar: d0.paralar.slice(),
     padFill: { ...d0.padFill },
   };
+  let garsonlar = [d0.garson, ...(d0.garsonEk ?? [])].filter((x): x is Kat2Garson => x !== null).map((x) => ({ ...x }));
   let padsDone = g.padsDone as string[];
-  const olay: Kat2Cikti['olay'] = { servis: 0, kacan: 0, kalkis: 0, istek: 0, padBitti: null, dusen: [] };
+  const olay: Kat2Cikti['olay'] = {
+    servis: 0,
+    kacan: 0,
+    kalkis: 0,
+    istek: 0,
+    padBitti: null,
+    dusen: [],
+    kalkan: [],
+    garsonServis: 0,
+    tavlaServis: 0,
+    tavlaKacan: 0,
+  };
   let kazanc = 0;
   let harcama = 0;
-  const ocak = ocakAcik(padsDone);
+  // Adımın başındaki açık ocaklar (bu adımda biten ocak pad'i bir sonraki adımda pişirmeye başlar).
+  const acikOcak = OCAKLAR.map((o) => padsDone.includes(o.id));
+  const ocak = acikOcak.some(Boolean);
 
   // ---- PAD: sıradaki pad'in çerçevesinde durunca cüzdandan dolar (Kat 1 `padFillSystem` deseni).
   const pad = kat2SiradakiPad(ayar, padsDone);
@@ -256,25 +454,32 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       }
     }
   }
+  garsonlar = garsonKur(padsDone, ayar, garsonlar);
 
-  // ---- CEZVE: hazır fincan kuyruğu dolana dek pişirir.
-  if (ocak && d.ocakHazir < ayar.ocakKuyruk) {
-    d.demT += dt;
-    while (d.demT >= ayar.demleme && d.ocakHazir < ayar.ocakKuyruk) {
-      d.demT -= ayar.demleme;
-      d.ocakHazir += 1;
+  // ---- CEZVE: her açık ocak kendi hazır fincan kuyruğu dolana dek pişirir.
+  d.ocaklar.forEach((o, k) => {
+    if (acikOcak[k] && o.hazir < ayar.ocakKuyruk) {
+      o.demT += dt;
+      while (o.demT >= ayar.demleme && o.hazir < ayar.ocakKuyruk) {
+        o.demT -= ayar.demleme;
+        o.hazir += 1;
+      }
+    } else {
+      o.demT = 0;
     }
-  } else {
-    d.demT = 0;
-  }
-  // Ocaktan al: önündeki noktada tepsi boşluğu kadar.
-  if (ocak && d.ocakHazir > 0 && Math.hypot(g.x - OCAK.al[0], g.z - OCAK.al[1]) <= OCAK.erisim) {
-    const al = Math.min(d.ocakHazir, g.tepsiKap - d.tepsi);
-    if (al > 0) {
-      d.ocakHazir -= al;
-      d.tepsi += al;
+  });
+  // Oyuncu ocaktan alır: önündeki noktada tepsi boşluğu kadar (garsonlardan ÖNCE).
+  d.ocaklar.forEach((o, k) => {
+    const yer = OCAKLAR[k];
+    if (acikOcak[k] && o.hazir > 0 && Math.hypot(g.x - yer.al[0], g.z - yer.al[1]) <= yer.erisim) {
+      const al = Math.min(o.hazir, g.tepsiKap - d.tepsi);
+      if (al > 0) {
+        o.hazir -= al;
+        d.tepsi += al;
+      }
     }
-  }
+  });
+  if (garsonlar.length && ayar.garson) garsonlarAdim(d, garsonlar, padsDone, acikOcak, ayar.garson, dt);
 
   // ---- MASALAR
   for (const m of d.masalar) {
@@ -282,6 +487,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     const yer = MASA_YERI.get(m.id);
     const a = masaAyari(m.tur, ayar);
     if (!yer || !a) continue; // tavla sayıları yok: masa açık ama grup gelmez
+    const tavla = m.tur === 'tavla';
     m.t -= dt;
     if (m.durum === 'bos') {
       if (m.t <= 0) {
@@ -303,19 +509,35 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     // oyunda
     if (ocak) {
       if (m.istek > 0) {
-        // Servis: tepside kahve + masanın erişiminde.
+        // Servis: tepside kahve + masanın erişiminde. Önce oyuncu, sonra (yalnız tavlada) garsonlar.
         if (d.tepsi > 0 && masaErisimde(yer, g.x, g.z)) {
           const n = Math.min(d.tepsi, m.istek);
           d.tepsi -= n;
           m.istek -= n;
           m.birikim += n * a.kahveFiyat;
           olay.servis += n;
+          if (tavla) olay.tavlaServis += n;
           if (m.istek === 0) m.kahveT = a.kahveAralik;
+        }
+        if (tavla) {
+          for (const gs of garsonlar) {
+            if (m.istek === 0) break;
+            if (gs.tepsi <= 0 || !masaErisimde(yer, gs.x, gs.z)) continue;
+            const n = Math.min(gs.tepsi, m.istek);
+            gs.tepsi -= n;
+            m.istek -= n;
+            m.birikim += n * a.kahveFiyat;
+            olay.servis += n;
+            olay.garsonServis += n;
+            olay.tavlaServis += n;
+            if (m.istek === 0) m.kahveT = a.kahveAralik;
+          }
         }
         if (m.istek > 0) {
           m.sabir -= dt;
           if (m.sabir <= 0) {
             olay.kacan += m.istek;
+            if (tavla) olay.tavlaKacan += m.istek;
             m.istek = 0;
             m.kahveT = a.kahveAralik;
           }
@@ -333,10 +555,12 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     if (m.t <= 0) {
       // Oyun bitti: ücret + kahve parası tek yığın, masa boşalır, yeni grup gelir.
       olay.kacan += m.istek;
+      if (tavla) olay.tavlaKacan += m.istek;
       const miktar = a.masaUcreti + m.birikim;
       const [px, pz] = paraDusmeYeri(yer);
       d.paralar.push({ id: d.nextId++, x: px, z: pz, miktar });
       olay.dusen.push(miktar);
+      olay.kalkan.push(m.id);
       olay.kalkis += 1;
       m.durum = 'bos';
       m.t += ayar.gelisAralik;
@@ -345,7 +569,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     }
   }
 
-  // ---- PARA: mıknatıs yarıçapına giren yığın toplanır.
+  // ---- PARA: mıknatıs yarıçapına giren yığın toplanır (yalnız oyuncu — garson para toplamaz).
   if (d.paralar.length) {
     d.paralar = d.paralar.filter((p) => {
       if (Math.hypot(g.x - p.x, g.z - p.z) <= g.miknatis) {
@@ -356,5 +580,6 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     });
   }
 
+  Object.assign(d, garsonAyir(garsonlar));
   return { dunya: d, padsDone, kazanc, harcama, olay };
 }

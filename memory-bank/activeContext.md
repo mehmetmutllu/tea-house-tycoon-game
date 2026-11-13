@@ -14,7 +14,7 @@ Play üretim erişimi formu (`TeaHouse-Uretim-Erisimi-Formu.txt`) gönderildi, c
 Add from library) · ret → e-postayı iste, cevaplar güçlendirilir. Mediation (D-173): Liftoff + Unity bidding'de.
 Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `geribildirim/deneme-…` elle silinecek.
 
-## 🆕 K2-2 — KAT ALTYAPISI ✅ (D-182 · D-183) — kod girdi, sürüme ÇIKMADI (üretimde kapı kapalı)
+## K2-2 — KAT ALTYAPISI ✅ (D-182 · D-183) — kod girdi, sürüme ÇIKMADI (üretimde kapı kapalı)
 - K2-2a: `src/game/kat.ts` (geometri · `kat2Adim` · `merdivenTetik` · `kat2Etkin()`), kayıt `kat` + `kat2` additive (sürüm 34),
   Kat 2'deyken Kat 1 işler (`KAT1_DISI`), `Kat2.tsx` boş merdiven salonu, `KatPerdesi`. Dev: `__kat2()` aç · `__kat2(2)` geç.
 - K2-2b: Kat 1'de `MerdivenTamir` (kırmızı yolluklu — kullanıcı onayladı, kareler artifact 5urr3ut2YGwzVNrwigG1MU) · Kat 2'de kat bandı
@@ -29,12 +29,25 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   geçit yürüyüşü store'a bağlı · `kasa.ts` saf modül (bağlı DEĞİL) · tavla mantığı (`Kat2Ayar.tavla?` yok → grup gelmez).
 - Raporlar: `docs/kat2-tavla-raporu-k2-3c.md` · `docs/kat2-kasa-raporu-k2-4.md` (§Karar dolu, final koşu S2'de).
 
-## ⏭️ SIRADAKİ ADIM — Kat 2 sprint S2: kararları koda + zincir ölçümü
-Önce `kat2-S2-plan.md` yaz (S1 planının S2 taslağı + defterin "S2'ye devreden"i), sonra paralel ajanlar:
-A kasa + çevrimdışı + Kat 2 arkada (tick/store/save/offline + HUD sayacı — store/tick orkestratörde kalabilir) ·
-B tavla config + 2. cezve ocağı + Kat 2 garsonu (mantık + görsel) · C K2-5 zincir ölçüm aracı (pad fiyat kolları, hedef 4-6 sa).
-Varyant kapısı: D-185/D-186 sayıları raporda var → uygulanır, final tam koşu. Pad fiyatları → S2 sonu karar paketi.
-Açık görsel soru S2 paketine: bölme arkasında oyuncu görünmüyor (bölme boyu / kesik duvar).
+## 🔧 Kat 2 sprint S2 — 4 ajan bitti, YARIM KAPANIŞ (2026-11-13 gece, kullanıcı uyudu)
+Plan `docs/sprintler/kat2-S2-plan.md` · ajan notları `docs/sprintler/kat2-S2/` (kasa · garson · zincir · gorsel).
+- A kasa (D-185) KODDA: kasa.ts ölçüm (EMA 600 sn, soğuk 120 sn = sınırsız, taban 300), tick/store/save (additive, sürüm 34),
+  Kat 1'deyken Kat 2 işler, çevrimdışı, `KasaSayaci.tsx`, `three/Kasa.tsx`, bekçi `tests/kasa-oyun.test.ts`.
+  **EKSİK:** final tam koşu yarıda kesildi (`docs/olcum-kat2-kasa-s2.txt` yalnız başlık) · rapor §Uygulama yazılmadı · A'nın
+  mutasyonlarını ben doğrulamadım.
+- B Kat 2 mantığı (D-186) KODDA: T120U, zincir config'te (yeni fiyatlar TASLAK), `OCAKLAR`/`ocaklar`, garson (yalnız tavla kahvesi,
+  config'te sayı YOK), `olay.kalkan`. Okey birebir. Mutasyon 2/2 (ben). Ben 2. ocak kutusunu çizime eşitledim ([1,8; 1,03], al z 2,70)
+  → **garson ölçümü (`docs/olcum-kat2-garson.txt`) bu değişiklikten önce; tam koşu yeniden alınmalı.**
+- C zincir ölçümü: öneri SB9 (5,02 sa, en uzun bekleyiş 13,3 dk) · `docs/kat2-zincir-raporu-k2-5.md` · birleşik ağaçta final koşu tekrar.
+- D görsel: 2 ocak, garson, kalkış, aday temizliği, bölme panosu `docs/sprintler/kat2-S2/kareler/pano-bolme.png` (`?k2bolme=A|B|C|D`).
+- Durum: vitest 1986/1986 · tsc temiz · EN duman 4/4 · ana duman sayısı görülmedi (koşu durduruldu) → yarın ilk iş.
+
+## ⏭️ SIRADAKİ ADIM (yarın)
+1. `npm run duman` (ana sayı) · A için 2 mutasyon · `OLCUM=tam` kasa (`tools/olcum-kat2-kasa.ts` → `-s2.txt`) + rapor §Uygulama.
+2. Garson + zincir tam koşuları yeniden (`tools/olcum-kat2-garson.ts`, `tools/olcum-kat2-zincir.ts`).
+3. `npm run build` → S2 commit #2 → S2 karar paketi (tek mesaj, sade): ① pad eğrisi (C öneri SB9) ② garson sayıları (B tablosu)
+   ③ bölme A/B/C/D (D panosu) + D'nin iki küçük sorusu (salondaki ocak davlumbazsız kalsın mı · 2. ocak açılmadan tadilat perdesi).
+4. Defter `docs/sprintler/kat2-S2-defter.md` + D-188…
 
 ## KULLANICIYA HATIRLAT
 - Play üretim erişimi sonucu ne oldu?

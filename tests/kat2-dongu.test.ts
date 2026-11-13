@@ -35,7 +35,8 @@ function withStorage(fn: () => void): void {
   };
   try { fn(); } finally { if (orig === undefined) delete g.localStorage; else g.localStorage = orig; }
 }
-const HEPSI = A.padler.map((p) => p.id);
+/** Merdiven salonunun zinciri (4 okey + ocak): K2-3'ün dünyası, okey davranışının bekçisi. */
+const HEPSI = A.padler.slice(0, 5).map((p) => p.id);
 const M1 = OKEY_YER[0];
 const MASA_ONU: [number, number] = [M1.x, M1.z + OKEY_ERISIM - 0.2];
 const UZAK: [number, number] = [0, -1]; // hiçbir masaya/ocağa/pada yetişmez
@@ -65,8 +66,14 @@ describe('config — D-184 kolu V4 (3 dk oyun · 25 sn\'de 2 kahve · gelirin %6
     expect([A.gelisAralik, A.yurume, A.kahveSabir, A.demleme, A.ocakKuyruk]).toEqual([15, 5, 25, 4, 4]);
   });
 
-  it('zincir: ilk masa ocaktan önce, sonra kalan üç masa; her pad bir yerde', () => {
+  it('zincir (D-186): ilk masa ocaktan önce → 3 masa → okey salonu → 2 masa → 2. ocak → 4 masa → tavla köşesi → garson → 12 tavla', () => {
     expect(HEPSI).toEqual(['k2okey1', 'k2cezve', 'k2okey2', 'k2okey3', 'k2okey4']);
+    expect(A.padler.map((p) => p.id)).toEqual([
+      ...HEPSI,
+      'k2salon2', 'k2s2okey1', 'k2s2okey2', 'k2cezve2', 'k2s2okey3', 'k2s2okey4', 'k2s2okey5', 'k2s2okey6',
+      'k2salon3', 'k2garson', ...Array.from({ length: 12 }, (_, i) => `k2tavla${i + 1}`),
+    ]);
+    for (let i = 1; i < A.padler.length; i++) expect(A.padler[i].cost).toBeGreaterThan(A.padler[i - 1].cost);
     for (const p of A.padler) {
       expect(p.cost).toBeGreaterThan(0);
       expect(p.cost / p.fillRate).toBeLessThanOrEqual(3.6); // Kat 1'in dolum tavanı
@@ -142,18 +149,19 @@ describe('cezve ocağı + tepsi', () => {
   it('ocak 4 sn\'de bir fincan pişirir, 4\'te durur; önünde durunca tepsi kapasitesi kadar alınır', () => {
     let d = yeniKat2Dunya(HEPSI, A);
     d = sur(d, A.demleme * 2 + 0.05, girdi(UZAK)).d;
-    expect(d.ocakHazir).toBe(2);
+    expect(d.ocaklar[0].hazir).toBe(2);
+    expect(d.ocaklar[1].hazir).toBe(0); // 2. ocak bu zincirde kapalı
     d = sur(d, 60, girdi(UZAK)).d;
-    expect(d.ocakHazir).toBe(A.ocakKuyruk);
+    expect(d.ocaklar[0].hazir).toBe(A.ocakKuyruk);
     const r = kat2Tick(d, girdi(OCAK.al, { tepsiKap: 3 }), 0.1, A);
     expect(r.dunya.tepsi).toBe(3);
-    expect(r.dunya.ocakHazir).toBe(A.ocakKuyruk - 3);
+    expect(r.dunya.ocaklar[0].hazir).toBe(A.ocakKuyruk - 3);
   });
 
   it('ocak açılmadan kahve pişmez ve istenmez', () => {
     const pd = { padsDone: ['k2okey1'] };
     const r = sur(yeniKat2Dunya(['k2okey1'], A), 120, girdi(OCAK.al, pd));
-    expect(r.d.ocakHazir).toBe(0);
+    expect(r.d.ocaklar.map((o) => o.hazir)).toEqual([0, 0]);
     expect(r.d.tepsi).toBe(0);
     expect(r.istek).toBe(0);
   });
@@ -269,11 +277,13 @@ describe('store — Kat 2 döngüsü oyunun cüzdanına bağlı', () => {
     expect(s.lifetime.sub(l0).toNumber()).toBeGreaterThanOrEqual(180);
   });
 
-  it('Kat 1\'deyken Kat 2 dünyası işlemez (K2-4\'e dek donuk)', () => {
+  it('Kat 1\'deyken Kat 2 dünyası da işler (D-185): masalar oynar', () => {
     kat2de(HEPSI, 0);
     useGame.setState({ kat: 1 });
     const d0 = useGame.getState().kat2Dunya;
     for (let t = 0; t < 30; t += 0.1) useGame.getState().tick(0.1);
-    expect(useGame.getState().kat2Dunya).toBe(d0);
+    const d = useGame.getState().kat2Dunya;
+    expect(d).not.toBe(d0);
+    expect(d.masalar.some((m) => m.durum === 'geliyor' || m.durum === 'oyunda')).toBe(true);
   });
 });

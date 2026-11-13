@@ -14,7 +14,6 @@ import { Model } from '../Model';
 import { STOOL_S } from '../tableLook';
 import { MaketCrates, MaketPlant, MaketWallShelf } from '../maketParts';
 import { BAND } from '../../../game/layout';
-import { OCAK } from '../../../game/kat';
 import { Fincan, Kutu, Silindir } from './parca';
 
 export const KAY_F = '/assets/models/kaykit-furniture-bits/';
@@ -47,8 +46,10 @@ function Tabure({ x, z }: { x: number; z: number }) {
 /**
  * Yeni açılan eşya "pat" diye belirmez: yerinde küçükten büyür (Kat 1 masa açılışının dili).
  * `dogus` yalnız oturum içinde açılan eşyaya verilir; kata girişte duran eşya doğrudan tam boy.
+ * Ölçek `pos` çevresinde (çocuklar dünya koordinatında çizilir): eşya dünyanın ortasından uçarak değil
+ * kendi yerinde büyür.
  */
-export function Dogus({ dogus, children }: { dogus: boolean; children: ReactNode }) {
+export function Dogus({ dogus, pos, children }: { dogus: boolean; pos: [number, number, number]; children: ReactNode }) {
   const ref = useRef<Group>(null);
   const t = useRef(dogus ? 0 : 1);
   useFrame((_, dt) => {
@@ -61,8 +62,8 @@ export function Dogus({ dogus, children }: { dogus: boolean; children: ReactNode
     g.scale.setScalar(Math.max(0.001, s));
   });
   return (
-    <group ref={ref} scale={dogus ? 0.001 : 1}>
-      {children}
+    <group ref={ref} position={pos} scale={dogus ? 0.001 : 1}>
+      <group position={[-pos[0], -pos[1], -pos[2]]}>{children}</group>
     </group>
   );
 }
@@ -225,16 +226,38 @@ export function TavlaMasa({ x, z, oyunda, faz = 0 }: { x: number; z: number; oyu
 }
 
 // ---- CEZVE OCAĞI 7 (KayKit restoran, Kat 1 mutfağının ölçeği 0,9) ----
+// Çizim ocağın YEREL ekseninde: merkez (0, 0), önü +z (oyuncunun aldığı `al` noktasına bakar).
 const KS = 0.9;
 const MODUL = 2.0 * KS;
-/** Tezgâh sırası `OCAK.z`de ortalı; arka yüzü buradan türer (aday aracının `kz` türetmesi). */
-const ARKA = OCAK.z - 1.0 * KS;
+/** Tezgâh sırasının arka yüzü (yerel z). */
+const ARKA = -1.0 * KS;
 const kz = (minZ: number) => ARKA - minZ * KS;
 const ASILI_Y = 3.2 - (2.0 + 2.0) * KS;
 const TEZGAH_UST = 1.0 * KS;
 const DAVLUMBAZ_GERI = 0.75;
-/** Hazır fincanların dizildiği yer: sol tezgâhın ön kenarı, oyuncunun aldığı noktaya bakar. */
-export const FINCAN_YERI = { x: OCAK.x - 1.2, z: OCAK.z + 0.5, adim: 0.22 } as const;
+/** Hazır fincanların dizildiği yer (yerel): sol tezgâhın ön kenarı, oyuncunun aldığı noktaya bakar. */
+const FINCAN_YERI = { x: -1.2, z: 0.5, adim: 0.22 } as const;
+
+export interface OcakYeri {
+  x: number;
+  z: number;
+  al: readonly [number, number];
+  /** Yürüme alanı içindeki ocağın gövde yarısı (yoksa bandın ocağı: alanın dışında, tam sıra). */
+  govde?: readonly [number, number];
+}
+
+/** Ocağın y dönüşü: yerel +z, `al` noktasına bakar (ocak sırtını duvara verir). */
+export const ocakAcisi = (o: OcakYeri): number => Math.atan2(o.al[0] - o.x, o.al[1] - o.z);
+
+/**
+ * Çizimin merkezi. Bandın ocağı `OCAK` noktasında (S1). Salondaki ocağın sırtı gövdesinin arka
+ * yüzüne (bölmeye) oturur: tezgâh çiziminin arkası `ARKA` (yerel −0,9) oraya denk gelir.
+ */
+function cizimMerkezi(o: OcakYeri, aci: number): [number, number] {
+  if (!o.govde) return [o.x, o.z];
+  const geri = o.govde[1] + ARKA;
+  return [o.x - Math.sin(aci) * geri, o.z - Math.cos(aci) * geri];
+}
 
 function Kay({ ad, x, z, y = 0 }: { ad: string; x: number; z: number; y?: number }) {
   return <Model src={`${KAY_R}${ad}.gltf`} scale={KS} position={[x, y, z]} fallback={null} />;
@@ -251,9 +274,15 @@ function Cezve({ x, y, z, s = 1.5 }: { x: number; y: number; z: number; s?: numb
 
 /**
  * Ocak — `hazir` kadar fincan tezgâhta bekler; `pisiyor` iken ocaktaki cezve köpürür (hafif
- * kabarma). Ocağın önü salona bakar: oyuncu kahveyi `OCAK.al`dan, ocağın tam önünden alır.
+ * kabarma). Ocağın önü `al` noktasına bakar: oyuncu kahveyi ocağın tam önünden alır. Her ocak
+ * (`OCAKLAR`) aynı bileşen; yalnız yeri ve yönü değişir.
  */
-export function CezveOcagi({ hazir, pisiyor }: { hazir: number; pisiyor: boolean }) {
+export function CezveOcagi({ ocak, hazir, pisiyor }: { ocak: OcakYeri; hazir: number; pisiyor: boolean }) {
+  // Salondaki ocak KISA sıra: sol tezgâh (fincanlar) + ocak; bandın ocağı üç modül (yedek cezveli sağ tezgâh).
+  const kisa = !!ocak.govde;
+  const aci = ocakAcisi(ocak);
+  const [cx, cz] = cizimMerkezi(ocak, aci);
+  const ox = kisa ? MODUL / 2 : 0;
   const kopuk = useRef<Group>(null);
   useFrame((st) => {
     const k = kopuk.current;
@@ -261,31 +290,32 @@ export function CezveOcagi({ hazir, pisiyor }: { hazir: number; pisiyor: boolean
     k.visible = pisiyor;
     if (pisiyor) k.scale.y = 0.6 + 0.4 * Math.abs(Math.sin(st.clock.elapsedTime * 2.6));
   });
-  const ox = OCAK.x;
   const stoveZ = kz(-1.03);
   return (
-    <group>
-      <Kay ad="kitchencounter_straight_A_backsplash" x={ox - MODUL} z={kz(-1.0)} />
-      <Kay ad="stove_single" x={ox} z={stoveZ} />
-      <Kay ad="kitchencounter_straight_B_backsplash" x={ox + MODUL} z={kz(-1.0)} />
-      {/* Davlumbaz tezgâhın arkasına kaydırılır: Kat 1'de duvardaki ünite kameraya önünü verir,
-          burada ocak kameraya en yakın sırada — yerinde dursa ocağın üstünü (cezveleri) örterdi. */}
-      <Kay ad="extractorhood" x={ox} z={ARKA - DAVLUMBAZ_GERI} y={ASILI_Y} />
-      {/* bacası tavana çıkar (arkada duvar yok — asılı durmasın) */}
-      <Silindir r1={0.13} r2={0.13} h={1.0} renk={BAKIR} pos={[ox, 2.75, ARKA - DAVLUMBAZ_GERI + 0.35]} seg={10} />
-      {[-0.24, 0.24].map((dx) => (
-        <Cezve key={dx} x={ox + dx} y={TEZGAH_UST + 0.16} z={stoveZ + 0.05} />
-      ))}
-      <group ref={kopuk} position={[ox - 0.24, TEZGAH_UST + 0.16 + 0.24, stoveZ + 0.05]} visible={false}>
-        <Silindir r1={0.1} r2={0.1} h={0.05} renk="#c9a27a" pos={[0, 0.025, 0]} seg={10} golge={false} />
+    <group position={[cx, 0, cz]} rotation={[0, aci, 0]}>
+      <group position={[ox, 0, 0]}>
+        <Kay ad="kitchencounter_straight_A_backsplash" x={-MODUL} z={kz(-1.0)} />
+        <Kay ad="stove_single" x={0} z={stoveZ} />
+        {!kisa && <Kay ad="kitchencounter_straight_B_backsplash" x={MODUL} z={kz(-1.0)} />}
+        {/* Davlumbaz tezgâhın arkasına kaydırılır: Kat 1'de duvardaki ünite kameraya önünü verir,
+            burada ocak kameraya en yakın sırada — yerinde dursa ocağın üstünü (cezveleri) örterdi.
+            Salondaki ocağın sırtı bölmede: geri kayan davlumbaz duvarın öbür yanına taşardı, yok. */}
+        {!kisa && <Kay ad="extractorhood" x={0} z={ARKA - DAVLUMBAZ_GERI} y={ASILI_Y} />}
+        {/* bacası tavana çıkar (asılı durmasın) */}
+        {!kisa && <Silindir r1={0.13} r2={0.13} h={1.0} renk={BAKIR} pos={[0, 2.75, ARKA - DAVLUMBAZ_GERI + 0.35]} seg={10} />}
+        {[-0.24, 0.24].map((dx) => (
+          <Cezve key={dx} x={dx} y={TEZGAH_UST + 0.16} z={stoveZ + 0.05} />
+        ))}
+        <group ref={kopuk} position={[-0.24, TEZGAH_UST + 0.16 + 0.24, stoveZ + 0.05]} visible={false}>
+          <Silindir r1={0.1} r2={0.1} h={0.05} renk="#c9a27a" pos={[0, 0.025, 0]} seg={10} golge={false} />
+        </group>
+        {/* sağ tezgâh: yedek cezveler */}
+        {!kisa &&
+          [0, 1, 2].map((i) => <Cezve key={`d${i}`} x={MODUL - 0.45 + i * 0.45} y={TEZGAH_UST} z={-0.2} />)}
+        {Array.from({ length: hazir }, (_, i) => (
+          <Fincan key={i} pos={[FINCAN_YERI.x + i * FINCAN_YERI.adim - ((hazir - 1) * FINCAN_YERI.adim) / 2, TEZGAH_UST, FINCAN_YERI.z]} s={1.6} />
+        ))}
       </group>
-      {/* sağ tezgâh: yedek cezveler */}
-      {[0, 1, 2].map((i) => (
-        <Cezve key={`d${i}`} x={ox + MODUL - 0.45 + i * 0.45} y={TEZGAH_UST} z={OCAK.z - 0.2} />
-      ))}
-      {Array.from({ length: hazir }, (_, i) => (
-        <Fincan key={i} pos={[FINCAN_YERI.x + i * FINCAN_YERI.adim - ((hazir - 1) * FINCAN_YERI.adim) / 2, TEZGAH_UST, FINCAN_YERI.z]} s={1.6} />
-      ))}
     </group>
   );
 }

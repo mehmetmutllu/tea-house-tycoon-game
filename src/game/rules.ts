@@ -29,6 +29,8 @@ import {
 import type { ReklamSayaci, SatinAlim, SaveStats } from './save';
 import { iapConfig } from '../config/iap.config';
 import { LAYOUT, LAVABO, servicePlace, type RVec3 } from './layout';
+import { KAT2_MASALAR, OCAK } from './kat';
+import type { Kat2Ayar } from './kat2Dongu';
 import { MAX_AREAS, THE_SERVICE, areaOfTable, areaTableStart, tostShare, isCounter } from './world';
 import { t } from '../i18n';
 
@@ -780,23 +782,79 @@ export function visiblePads(questIndex: number, g: GateState): PadDef[] {
 }
 
 /**
+ * D-185: Kat 2'nin çevrimdışı payı. `acik` = merdiven açık VE Kat 2 bu derlemede etkin (çağıran bakar).
+ * Verilmezse ya da kapalıysa çevrimdışı bugünkü gibi yalnız Kat 1'dir (birebir).
+ */
+export interface CevrimdisiKat2 {
+  acik: boolean;
+  padsDone: readonly string[];
+}
+
+/**
+ * Kat 2'nin idealize oranı (₺/sn): açık her masa döngüsünü (geliş + yürüme + oturum) tamamlar ve ocak
+ * açıksa her kahve isteği servis edilir. Kat 1'in `incomeRate`i gibi üst sınırdır; tavan kelepçeler.
+ * Tavla sayıları config'te yoksa tavla masası gelir üretmez (`kat2Dongu` ile aynı kural).
+ */
+export function kat2Oran(padsDone: readonly string[]): number {
+  const a: Kat2Ayar = C.kat2;
+  const ocak = padsDone.includes(OCAK.id);
+  let oran = 0;
+  for (const m of KAT2_MASALAR) {
+    if (!padsDone.includes(m.id)) continue;
+    const t = m.tur === 'tavla' ? a.tavla : a;
+    if (!t) continue;
+    const istek = ocak ? Math.max(0, Math.floor((t.oturum - a.kahveSabir * 0.5) / t.kahveAralik)) : 0;
+    oran += (t.masaUcreti + istek * t.istekAdet * t.kahveFiyat) / (a.gelisAralik + a.yurume + t.oturum);
+  }
+  return oran;
+}
+
+/**
+ * Çevrimdışının iki kelepçesinden önceki ham tutar ve PARA tavanı (sıradaki pad × oran).
+ * D-185: Kat 2 açıksa ham tutara Kat 2 payı eklenir; Kat 1 bitmişse tavanın referansı Kat 2'nin
+ * sıradaki pad'idir (yoksa bugünkü "en pahalı pad" — merdiveni açıp 1 sa kapatan oyuncu Kat 2'yi
+ * bitirmesin, `docs/kat2-kasa-raporu-k2-4.md` Bulgu 5). `raw1` = ham tutarın Kat 1 payı.
+ */
+function offlineRawCap(
+  rate: number,
+  elapsedSec: number,
+  padsDone: readonly string[],
+  kat2?: CevrimdisiKat2,
+): { raw: number; raw1: number; cap: number } {
+  const sure = Math.min(elapsedSec, C.offline.baseCapHours * 3600);
+  const raw1 = Math.floor(rate * C.offline.rateMult * sure);
+  const k2 = kat2?.acik ? kat2 : null;
+  const raw2 = k2 ? Math.floor(kat2Oran(k2.padsDone) * C.offline.rateMult * sure) : 0;
+  const pads = C.pads as readonly PadDef[];
+  const k2Pads: readonly { id: string; cost: number }[] = k2 ? C.kat2.padler : [];
+  const next = pads.find((p) => !p.optional && !padsDone.includes(p.id)) ?? k2Pads.find((p) => !k2!.padsDone.includes(p.id));
+  const refCost = next ? next.cost : Math.max(...pads.map((p) => p.cost), ...k2Pads.map((p) => p.cost));
+  return { raw: raw1 + raw2, raw1, cap: Math.floor(refCost * C.offline.capNextPadFrac) };
+}
+
+/**
  * Offline kazanç (saf — vitest edilebilir; 2026-06-11 nerf): oran × rateMult × min(süre, süre-tavanı),
  * SONRA PARA tavanı = sıradaki omurga pad maliyeti × capNextPadFrac (tüm pad'ler bittiyse en pahalı pad
  * referans alınır). İki kelepçe birlikte: kapa-aç ~7k verip zone'u tek girişte bitirme bug'ı kapanır.
  */
-/** Çevrimdışının iki kelepçesinden önceki ham tutar ve PARA tavanı (sıradaki omurga pad × oran). */
-function offlineRawCap(rate: number, elapsedSec: number, padsDone: readonly string[]): { raw: number; cap: number } {
-  const capSec = C.offline.baseCapHours * 3600;
-  const raw = Math.floor(rate * C.offline.rateMult * Math.min(elapsedSec, capSec));
-  const pads = C.pads as readonly PadDef[];
-  const next = pads.find((p) => !p.optional && !padsDone.includes(p.id));
-  const refCost = next ? next.cost : Math.max(...pads.map((p) => p.cost));
-  return { raw, cap: Math.floor(refCost * C.offline.capNextPadFrac) };
+export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone: readonly string[], kat2?: CevrimdisiKat2): number {
+  const { raw, cap } = offlineRawCap(rate, elapsedSec, padsDone, kat2);
+  return Math.min(raw, cap);
 }
 
-export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone: readonly string[]): number {
-  const { raw, cap } = offlineRawCap(rate, elapsedSec, padsDone);
-  return Math.min(raw, cap);
+/**
+ * D-185: çevrimdışı kazanç + içindeki Kat 1 payı (tavandan sonra, ham paylarla orantılı). Oyuncu Kat 2'de
+ * kapattıysa Kat 1 payı cüzdana değil kasaya girer (store; kasa sınırında kesilir).
+ */
+export function offlineEarnedSplit(
+  rate: number,
+  elapsedSec: number,
+  padsDone: readonly string[],
+  kat2?: CevrimdisiKat2,
+): { kazanc: number; kat1Pay: number } {
+  const { raw, raw1, cap } = offlineRawCap(rate, elapsedSec, padsDone, kat2);
+  const kazanc = Math.min(raw, cap);
+  return { kazanc, kat1Pay: raw > 0 ? Math.floor((kazanc * raw1) / raw) : 0 };
 }
 
 /**
@@ -804,8 +862,8 @@ export function computeOfflineEarned(rate: number, elapsedSec: number, padsDone:
  * bağlar, "alan açılır ama içi bitmez" kuralı korunur. 0 ise ekranda düğme çizilmez — 1 sa'lik
  * dönüşlerin %100'ü zaten tavanda (`odullu-raporu-f3b` §2), orada "2×" boş bir vaat olurdu.
  */
-export function offlineWatchExtra(rate: number, elapsedSec: number, padsDone: readonly string[]): number {
-  const { raw, cap } = offlineRawCap(rate, elapsedSec, padsDone);
+export function offlineWatchExtra(rate: number, elapsedSec: number, padsDone: readonly string[], kat2?: CevrimdisiKat2): number {
+  const { raw, cap } = offlineRawCap(rate, elapsedSec, padsDone, kat2);
   return Math.max(0, Math.min(raw * C.rewarded.claimMult, cap) - Math.min(raw, cap));
 }
 

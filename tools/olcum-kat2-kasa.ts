@@ -1,65 +1,50 @@
 /**
- * olcum-kat2-kasa.ts — K2-4 ÖLÇÜMÜ: Kat 2'deyken Kat 1'in parası (KASA) + çevrimdışı.
+ * olcum-kat2-kasa.ts — D-185 UYGULAMA ÖLÇÜMÜ: Kat 1'in kasası + çevrimdışı, GERÇEK mekanikle.
  *
- * Soru: D-174 ② "Kat 2'deyken Kat 1 çalışır, kasada birikir, kasa dolunca durur". Bugün Kat 1'in
- * parası 180 sn sonra kendiliğinden cüzdana akıyor (sınırsız). Kasa sınırı kaç dakikalık gelir olsun,
- * taşan ₺ ne olsun, Kat 2 oyuncu yokken dönsün mü, çevrimdışı Kat 2'yi saysın mı?
+ * K2-4'te (ölçüm turu, ham çıktı `docs/olcum-kat2-kasa.txt`) kasa araçta muhasebeydi. S2'de kasa oyunda:
+ * `tick.coinSystem` Kat 2'deyken oto-toplamayı kasaya yazar, `spawnSystem` kasa doluyken müşteri
+ * doğurmaz, Kat 1'de kasaya yürüyünce boşalır, `store.tick` Kat 1'deyken Kat 2'yi de işletir, sınır
+ * `kasa.kasaSiniriOlcumden` ile store'un kendi ölçümünden gelir. Bu araç YALNIZ store'u sürer ve
+ * sonucu okur — kasa kolu, sınır, ölçüm, doğum kapısı oyunun koduyla birebir aynı.
  *
- * GERÇEK OYUN: `useGame` store'u, bitmiş Kat 1 (bütün pad'ler) + Kat 2 iki durumda ("başı" = okey1 ·
- * "dolu" = 4 okey + ocak). Bot Kat 2'de T dk oynar (açgözlü: yığın → kahve → ocak), merdivene yürüyüp
- * iner, Kat 1'de 1 dk para toplar, merdivenden çıkar; 60 dk. `tick.ts`/`store.ts` DEĞİŞMEZ:
- * kasa MUHASEBEDİR — Kat 2'deyken Kat 1'de kaybolan (oto-toplanan) her para kasaya yazılır, kasanın
- * kolları aynı koşu üstünde paralel tutulur (kasa simülasyonu etkilemez; dünyayı yalnız
- * "Kat 2 arkada döner" kolu değiştirir, o ayrı koşudur).
+ * Kol: kasa sınırı `economy.kasa.dakika` (0 = sınırsız, karşılaştırma için; 20 = D-185). Çevrimdışı:
+ * `rules.computeOfflineEarned` / `offlineEarnedSplit` + kasa (`kasayaAt`), store'un yolu.
  *
  *   OLCUM=kisa npx tsx tools/olcum-kat2-kasa.ts
- *   OLCUM=tam  npx tsx tools/olcum-kat2-kasa.ts > docs/olcum-kat2-kasa.txt
+ *   OLCUM=tam  npx tsx tools/olcum-kat2-kasa.ts > docs/olcum-kat2-kasa-s2.txt
  */
 import { KISA, botDamgasi, damga, damgaOzeti, kipBandi, kisaDeger, korunumDamgasi, seedRandom, varyantDamgasi } from './olcum-lib';
-import { attractRadiusFor, charMaxTier, economyConfig as C, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
+import { charMaxTier, economyConfig as C, playerSpeedFor } from '../src/config/economy.config';
 import { useGame } from '../src/game/store';
 import { AGIZ, OCAK, OKEY_ERISIM, OKEY_YER, VARIS, type KatNo } from '../src/game/kat';
-import { kat2Tick, yeniKat2Dunya, type Kat2Ayar } from '../src/game/kat2Dongu';
-import { computeOfflineEarned, incomeRate } from '../src/game/rules';
+import { yeniKat2Dunya, type Kat2Ayar } from '../src/game/kat2Dongu';
+import { computeOfflineEarned, incomeRate, kat2Oran, offlineEarnedSplit } from '../src/game/rules';
 import { collectionMult } from '../src/game/goals';
 import { THE_SERVICE } from '../src/game/world';
-import { BAND, LAYOUT, entranceAt, getPlayerNavGrid, servicePlace } from '../src/game/layout';
+import { BAND, LAYOUT, getPlayerNavGrid } from '../src/game/layout';
 import { findNavPath } from '../src/game/nav';
-import { D, type Decimal } from '../src/game/decimal';
-import { kasaBosalt, kasaSiniri, kasayaAt } from '../src/game/kasa';
+import { D } from '../src/game/decimal';
+import { KASA_YER, kasaDakikaGeliri, kasaDolu, kasaSiniri, kasaSiniriOlcumden, kasayaAt } from '../src/game/kasa';
 import type { Vec3 } from '../src/game/types';
 
 kipBandi();
 
 const DT = 0.1;
-const SURE = kisaDeger(60 * 60, 25 * 60);
-const ISINMA = kisaDeger(5 * 60, 3 * 60); // Kat 1 boş dükkândan açılır: müşteri dalgası otursun
+const SURE = kisaDeger(65 * 60, 40 * 60);
+const ISINMA = kisaDeger(5 * 60, 3 * 60);
 const KAT1_KALIS = 60;
-const T_LISTE = KISA ? [20] : [5, 10, 20];
-const SINIR_DK = [null, 10, 20, 40] as const; // null = sınırsız (bugün)
-const AYAR: Kat2Ayar = C.kat2 as unknown as Kat2Ayar;
+const T_LISTE = KISA ? [10] : [5, 10, 20, 30];
+const DK_KOLLAR = [0, 20] as const; // 0 = sınırsız (karşılaştırma) · 20 = D-185
+const AYAR: Kat2Ayar = C.kat2;
 const KAT2_DURUM: Record<string, string[]> = {
   'Kat 2 başı': ['k2okey1'],
   'Kat 2 dolu': ['k2okey1', 'k2cezve', 'k2okey2', 'k2okey3', 'k2okey4'],
 };
 const DURUMLAR = KISA ? ['Kat 2 dolu'] : Object.keys(KAT2_DURUM);
+const kasaAyar = C.kasa as { dakika: number };
 
 const HIZ = playerSpeedFor(charMaxTier('speed'));
-const TEPSI = trayCapacityFor(charMaxTier('tray'));
-const MIKNATIS = attractRadiusFor(charMaxTier('magnet'));
 const g = () => useGame.getState();
-const UZAK = { x: 0, z: 400 }; // Kat 2 dönerken oyuncu Kat 1'de: hiçbir şeye yetişmez
-
-/** Kasa yeri adayları (Kat 1, 3 alan açık). */
-const sp = servicePlace(3);
-const giris = entranceAt(3);
-const ADAY: { ad: string; yer: [number, number] }[] = [
-  { ad: 'merdivenin dibi (ağzın sağı)', yer: [AGIZ.x + 1.2, BAND.front + 0.6] },
-  { ad: 'servis tezgâhının ucu', yer: [sp.pickup[0] + 2.2, sp.pickup[2]] },
-  { ad: 'giriş kapısının içi', yer: [giris[0] + 1.6, giris[2] - 1.2] },
-];
-const KASA_YER = ADAY[0].yer;
-const KASA_ERISIM = 1.0; // Kat 1 pad/obje erişimiyle aynı dil (yakına yürü, dur gerekmez)
 
 /** Kat 1'in idealize oranı (₺/sn) — çevrimdışının kullandığı formül (`store.cevrimdisiGelir`). */
 function kat1Oran(): number {
@@ -69,24 +54,13 @@ function kat1Oran(): number {
   return incomeRate(s.tables, s.stationLevels[THE_SERVICE], tip, s.lavaboLevel, collectionMult(s.goalsClaimed ?? []));
 }
 
-/** Kat 2'nin idealize oranı (₺/sn): her istek servis edilirse açık masaların döngü geliri. */
-function kat2Oran(pads: readonly string[], a: Kat2Ayar = AYAR): number {
-  const masa = OKEY_YER.filter((o) => pads.includes(o.id)).length;
-  const istek = pads.includes(OCAK.id) ? Math.floor((a.oturum - a.kahveSabir * 0.5) / a.kahveAralik) : 0;
-  return (masa * (a.masaUcreti + istek * a.istekAdet * a.kahveFiyat)) / (a.gelisAralik + a.yurume + a.oturum);
-}
-
-/**
- * Kat 2'de merdiven kovası ↔ salon arası yol: kova (z < BAND.front) ortasında kuyu var, tek geçit
- * kuyunun solundaki koridor (varış noktasının x'i). Düz çizgi kuyuya/kova duvarına takılır.
- */
+/** Kat 2'de merdiven kovası ↔ salon arası yol (K2-4 aracındaki bot, aynen). */
 const KX = VARIS[2][0];
 const KAPI_Z = BAND.front + 0.8;
 const kovada = (z: number) => z < BAND.front;
-/** Masaların önü/arkası: önde para yığını ve kahve servisi, arkada ocak ve merdiven kapısı. */
-const ON_SERIT = OKEY_YER[0].z + OKEY_ERISIM - 0.1; // masanın önünde, gövdeye değmeden erişim içinde
+const ON_SERIT = OKEY_YER[0].z + OKEY_ERISIM - 0.1;
 const ARKA_SERIT = OKEY_YER[0].z - OKEY_ERISIM - 1.6;
-const GECITLER = [-10.25, 0, 10.25]; // masa sütunlarının arası (okey x = ±7,5 · ±13)
+const GECITLER = [-10.25, 0, 10.25];
 const onde = (z: number) => z > OKEY_YER[0].z;
 function seritte(px: number, pz: number, t: readonly [number, number], serit: number): readonly [number, number] {
   if (Math.abs(px - t[0]) <= 0.3) return t;
@@ -105,114 +79,82 @@ function kat2Yol(px: number, pz: number, t: readonly [number, number]): readonly
   return [gx, onde(pz) ? ARKA_SERIT : ON_SERIT];
 }
 
+/** Bitmiş Kat 1 + Kat 2 durumu; kasa ve ölçüm SIFIR (soğuk başlangıç — oyuncunun ilk Kat 2 turu). */
 function bitmisKat1(pads: string[]): void {
   g().hardReset();
   useGame.setState({ padsDone: C.pads.map((p) => p.id) });
   g().saveNow();
   g().init();
   g().kat2Ac();
-  // Kat 1'i bitiren oyuncu karakter yükseltmelerini de bitirmiştir (store tepsi/mıknatıs/hızı buradan okur).
   useGame.setState({ charUpgrades: { ...g().charUpgrades, speed: charMaxTier('speed'), tray: charMaxTier('tray'), magnet: charMaxTier('magnet') } });
   const d = yeniKat2Dunya(pads, AYAR);
-  // Gerçekte masalar ayrı anlarda açılır: döngüleri eşit aralıkla kaydır (olcum-kat2-dongu deseni).
   const acik = d.masalar.filter((m) => m.durum === 'bos');
   const dongu = AYAR.gelisAralik + AYAR.yurume + AYAR.oturum;
   acik.forEach((m, i) => { m.t = AYAR.gelisAralik + (i * dongu) / acik.length; });
   useGame.setState({ kat: 2, player: [...VARIS[2]] as Vec3, kat2: { acik: true, padsDone: pads }, kat2Dunya: d });
 }
 
-/**
- * KALİBRASYON — oyuncu yokken Kat 1'in GERÇEK ₺/dk'sı (oyuncu Kat 2'de, kıpırdamıyor). Kasa sınırı
- * "Kat 1 gelirinin N dakikası" bu orana bağlanır: kasayı dolduran bu akıştır. (`incomeRate` idealize
- * çevrimdışı oranı bunun ~15 katı çıkıyor — §A başlığı; sınır ona bağlansa kasa hiç dolmazdı.)
- */
-function kalibre(): number {
-  seedRandom(7);
-  bitmisKat1(['k2okey1']);
-  const isinma = ISINMA, sure = kisaDeger(15 * 60, 5 * 60);
-  let once = new Set<number>();
-  let uret = 0;
-  for (let t = 0; t < isinma + sure; t += DT) {
-    g().tick(DT);
-    const cs = g().coins;
-    if (t >= isinma) for (const c of cs) if (!once.has(c.id)) uret += c.value;
-    once = new Set(cs.map((c) => c.id));
-  }
-  return (uret / sure) * 60;
-}
-
-/** Kasa kolu: sınır × taşma kipi. Muhasebe; koşuya dokunmaz. */
-interface KasaKol {
-  sinirDk: number | null;
-  sinir: Decimal | null;
-  kasa: Decimal;
-  bosalan: Decimal;
-  tasan: Decimal;
-  tasanAdet: number;
-  tasanAdetTepe: number; // 'yerde' kipinde aynı anda yerde bekleyecek en çok sikke
-  inisler: number[]; // iniş başına boşalan ₺
-  dolmaSn: number[]; // boşaldıktan sonra dolana kadar geçen sn
-  bosaldiT: number;
-  dolduMu: boolean;
-}
-
 interface Sonuc {
-  kat1Uretilen: number;
-  kat1Dogrudan: number; // Kat 1'deyken cüzdana (oyuncu + oto-toplama)
-  kasaAkis: number; // Kat 2'deyken oto-toplanan (bugün doğrudan cüzdana)
-  kat1Yerde: number;
+  kat1Uret: number;
+  kat1Cuzdana: number; // Kat 1'deyken yerden cüzdana
+  kasayaGiren: number;
+  bosalan: number;
+  inisler: number[];
+  kasaSon: number;
   kat2Net: number;
-  kat2Bekleyen: number; // koşu sonunda Kat 2'de yerde bekleyen yığın
-  kat2Kacan: number;
-  kasaVarisSn: number;
-  kat1Sn: number;
-  kollar: KasaKol[];
+  kat2SizanKat1de: number; // Kat 1'deyken cüzdana Kat 1 dışından giren (0 olmalı)
+  gorevOdulu: number;
+  anindaToplanan: number; // Kat 1'de aynı karede doğup toplanan sikke (bilgi)
+  dolSn: number; // kasa dolu + oyuncu Kat 2'de (Kat 1 durdu)
+  dolmaSn: number[];
+  ilkSinirSn: number; // soğuk başlangıç: ölçüm ilk ne zaman sınır verdi
+  olculenDk: number; // store'un ölçtüğü Kat 1 ₺/dk (son)
+  gercekDk: number; // Kat 2'deyken Kat 1'de gerçekten düşen ₺/dk
+  sinirSon: number;
+  yerdeTepe: number; // kasa doluyken yerde bekleyen sikke (tepe)
+  kat2Masa: number; // Kat 1'deyken Kat 2'de durum değiştiren masa adımı (döner mi)
   inisSay: number;
-  kat1DkOlculen: number; // oyuncu yokken Kat 1 ₺/dk (Kat 2 süresi içinde üretilen)
   yol2: number;
   yol1: number;
+  kat1Sn: number;
+  sapmaKasa: number;
+  sapmaKat1: number;
   iz: string;
-  korunumSapma: number;
 }
 
-function kos(durum: string, T: number, kat2Doner: boolean, seed = 1): Sonuc {
+function kos(durum: string, T: number, dk: number, seed = 1): Sonuc {
+  kasaAyar.dakika = dk;
   seedRandom(seed);
-  const pads = KAT2_DURUM[durum];
-  bitmisKat1(pads);
-  const kollar: KasaKol[] = SINIR_DK.map((dk) => ({
-    sinirDk: dk,
-    sinir: dk === null ? null : kasaSiniri(R1_OLC, dk),
-    kasa: D(0), bosalan: D(0), tasan: D(0), tasanAdet: 0, tasanAdetTepe: 0, inisler: [], dolmaSn: [], bosaldiT: 0, dolduMu: false,
-  }));
-
+  bitmisKat1(KAT2_DURUM[durum]);
   let faz: 'kat2' | 'inis' | 'kat1' | 'cikis' = 'kat2';
   let fazT = 0;
   let olcT = -ISINMA;
-  let yol2 = 0, yol1 = 0;
-  let kat1Uretilen = 0, kat1Dogrudan = 0, kasaAkis = 0, kat2Net = 0, kat2Kacan = 0;
-  let kat1UretKat2de = 0, kat2deSn = 0;
-  let inisSay = 0;
+  let tumT = 0;
+  const r: Sonuc = {
+    kat1Uret: 0, kat1Cuzdana: 0, kasayaGiren: 0, bosalan: 0, inisler: [], kasaSon: 0, kat2Net: 0, kat2SizanKat1de: 0, gorevOdulu: 0, anindaToplanan: 0,
+    dolSn: 0, dolmaSn: [], ilkSinirSn: NaN, olculenDk: NaN, gercekDk: NaN, sinirSon: NaN, yerdeTepe: 0, kat2Masa: 0,
+    inisSay: 0, yol2: 0, yol1: 0, kat1Sn: 0, sapmaKasa: 0, sapmaKat1: 0, iz: '',
+  };
+  let yerde0 = 0, kasa0 = 0;
+  let uretKat2de = 0, kat2deSn = 0;
+  let bosaldiT = 0, doldu = false;
   let iz = 0x811c9dc5;
-  let onceCoins = new Map<number, number>();
-  let baslangicYerde = 0;
   let kasaGitti = false;
-  const kasaVarisSn: number[] = [];
   const kara = new Set<number>();
   let takilId = -1, takilT = 0;
   let takilYer: [number, number] = [0, 0];
-  let kat1Sn = 0;
+  const kurtar = { x: 0, z: 0, t: 0 };
 
-  for (let i = 0; olcT < SURE; i++) {
+  while (olcT < SURE) {
     const s = g();
     const katOnce: KatNo = s.kat;
     const olc = olcT >= 0;
     if (olc && olcT - DT < 0) {
-      // ölçüm başlıyor: yerdeki Kat 1 parası başlangıç stoğu (korunum denklemine girer)
-      baslangicYerde = s.coins.reduce((a, c) => a + c.value, 0);
-      onceCoins = new Map(s.coins.map((c) => [c.id, c.value]));
+      yerde0 = s.coins.reduce((a, c) => a + c.value, 0);
+      kasa0 = s.kasa.toNumber();
     }
 
-    // ---- BOT
+    // ---- BOT (K2-4 kalıbı; Kat 1'de önce kasaya yürür — boşaltma artık oyunun kendisi)
     let hedef: readonly [number, number] | null = null;
     let it: readonly [number, number] | null = null;
     const px = s.player[0], pz = s.player[2];
@@ -230,12 +172,12 @@ function kos(durum: string, T: number, kat2Doner: boolean, seed = 1): Sonuc {
             const p = d.paralar.reduce((a, b) => (Math.hypot(a.x - px, a.z - pz) <= Math.hypot(b.x - px, b.z - pz) ? a : b));
             hedef = kat2Yol(px, pz, [p.x, ON_SERIT]);
           } else {
-            const bekleyen = d.masalar.map((m, k) => ({ m, yer: OKEY_YER[k] })).filter(({ m }) => m.durum === 'oyunda' && m.istek > 0);
+            const bekleyen = d.masalar.map((m, k) => ({ m, yer: OKEY_YER[k] })).filter(({ m, yer }) => yer && m.durum === 'oyunda' && m.istek > 0);
             if (d.tepsi > 0 && bekleyen.length) {
               const b = bekleyen.reduce((a, c) => (a.m.sabir <= c.m.sabir ? a : c));
               hedef = kat2Yol(px, pz, [b.yer.x, ON_SERIT]);
-            } else if (pads.includes(OCAK.id)) hedef = kat2Yol(px, pz, OCAK.al);
-            else hedef = kat2Yol(px, pz, [OKEY_YER[0].x, ON_SERIT]); // ocak pad'inin üstünde durma (harcar)
+            } else if (s.kat2.padsDone.includes(OCAK.id)) hedef = kat2Yol(px, pz, OCAK.al);
+            else hedef = kat2Yol(px, pz, [OKEY_YER[0].x, ON_SERIT]);
           }
         }
       } else {
@@ -246,15 +188,13 @@ function kos(durum: string, T: number, kat2Doner: boolean, seed = 1): Sonuc {
           if (Math.abs(px) < 0.3 && Math.abs(pz - z) < 0.3) it = [0, -1];
           else hedef = [0, z];
         } else if (!kasaGitti) {
-          // "kasaya yürü" kolu: önce kasaya (aday 1, merdiven dibi), sonra yerdeki paraya
-          if (Math.hypot(px - KASA_YER[0], pz - KASA_YER[1]) <= KASA_ERISIM) { kasaGitti = true; kasaVarisSn.push(fazT); }
-          else hedef = KASA_YER;
+          if (s.kasa.lte(0)) kasaGitti = true;
+          else hedef = [KASA_YER[0], KASA_YER[1] + 0.05];
         } else {
           const aday = s.coins.filter((c) => !kara.has(c.id));
           if (aday.length) {
             const c = aday.reduce((a, b) => (Math.hypot(a.pos[0] - px, a.pos[2] - pz) <= Math.hypot(b.pos[0] - px, b.pos[2] - pz) ? a : b));
             hedef = [c.pos[0], c.pos[2]];
-            // takılma: 1,5 sn yerinden kıpırdamadıysa bu sikkeyi bırak (Kat 1 mobilyası arkasında)
             if (c.id === takilId) { if (Math.hypot(px - takilYer[0], pz - takilYer[1]) < 0.2) { if (fazT - takilT > 1.5) kara.add(c.id); } else { takilT = fazT; takilYer = [px, pz]; } }
             else { takilId = c.id; takilT = fazT; takilYer = [px, pz]; }
           }
@@ -262,7 +202,6 @@ function kos(durum: string, T: number, kat2Doner: boolean, seed = 1): Sonuc {
       }
     }
     if (hedef && katOnce === 1) {
-      // Kat 1 mobilyalı: oyuncu ızgarasında BFS rotası (`getPlayerNavGrid` — sim botları için)
       const yolu = findNavPath(getPlayerNavGrid(s.tables, s.areasOpen), s.player, hedef[0], hedef[1], 0.2);
       if (yolu && yolu.length) hedef = [yolu[0][0], yolu[0][1]];
     }
@@ -271,155 +210,155 @@ function kos(durum: string, T: number, kat2Doner: boolean, seed = 1): Sonuc {
       const L = Math.hypot(dx, dz);
       it = L > 0.15 ? [dx / L, dz / L] : [0, 0];
     }
+    // Kat 2 takılma kurtarması: 2 sn yerinden kıpırdamadıysa 0,4 sn hedefe dik yönde yürü (S2'de Kat 2'ye
+    // yeni engeller geldi — ocak 2, garson — ve K2-4'ün serit botu bazı geçitlerde takılıyor).
+    if (katOnce === 2 && it && hedef && Math.hypot(hedef[0] - px, hedef[1] - pz) > 0.6) {
+      if (Math.hypot(px - kurtar.x, pz - kurtar.z) > 0.2) { kurtar.x = px; kurtar.z = pz; kurtar.t = tumT; }
+      else if (tumT - kurtar.t > 2) {
+        if (tumT - kurtar.t > 2.4) kurtar.t = tumT;
+        it = [-it[1], it[0]];
+      }
+    }
     g().setKeyboardInput(it ? it[0] : 0, it ? it[1] : 0);
 
-    const w0 = s.wallet;
+    // ---- ÖLÇÜLEN: store'un kendi karesi
+    const yerdeOnce = s.coins.reduce((a, c) => a + c.value, 0);
+    const masaOnce = s.kat2Dunya.masalar.map((m) => m.durum).join();
     g().tick(DT);
-    let s2 = g();
-    // Kat 2 arkada DÖNER kolu: oyuncu Kat 1'deyken Kat 2'nin dünyası da ilerler (oyuncu uzakta).
-    if (kat2Doner && katOnce === 1 && s2.kat === 1) {
-      const r = kat2Tick(s2.kat2Dunya, { x: UZAK.x, z: UZAK.z, durdu: true, cuzdan: 0, padsDone: s2.kat2.padsDone, tepsiKap: TEPSI, miknatis: MIKNATIS }, DT, AYAR);
-      useGame.setState({ kat2Dunya: r.dunya });
-      if (olc) { kat2Kacan += r.olay.kacan; }
-      s2 = g();
-    }
+    const s2 = g();
+    tumT += DT;
+    let yeni = 0;
+    for (const c of s2.coins) if (c.id >= s.nextId) yeni += c.value;
+    const yerdeSonra = s2.coins.reduce((a, c) => a + c.value, 0);
+    const alinan = yerdeOnce + yeni - yerdeSonra;
+    const kasaFark = s2.kasa.sub(s.kasa).toNumber();
+    const cuzdanFark = s2.wallet.sub(s.wallet).toNumber();
+    const sinir = kasaSiniriOlcumden(s2.kasaOlcum, C.kasa);
+    if (sinir && Number.isNaN(r.ilkSinirSn)) r.ilkSinirSn = tumT;
 
     const yol = Math.hypot(s2.player[0] - px, s2.player[2] - pz);
     if (katOnce === s2.kat && !s.katGecis) {
-      if (katOnce === 2) yol2 += yol; else { yol1 += yol; kat1Sn += DT; }
+      if (katOnce === 2) r.yol2 += yol; else { r.yol1 += yol; r.kat1Sn += DT; }
     }
-    if (s2.kat === 1 && katOnce === 2) inisSay += olc ? 1 : 0;
 
     if (olc) {
-      // ---- Kat 1 muhasebesi (sikke kimlikleri)
-      const simdi = new Map(s2.coins.map((c) => [c.id, c.value]));
-      let yeni = 0, giden = 0, gidenAdet = 0;
-      for (const [id, v] of simdi) if (!onceCoins.has(id)) yeni += v;
-      for (const [id, v] of onceCoins) if (!simdi.has(id)) { giden += v; gidenAdet++; }
-      onceCoins = simdi;
-      kat1Uretilen += yeni;
-      if (katOnce === 2) { kasaAkis += giden; kat1UretKat2de += yeni; kat2deSn += DT; } else kat1Dogrudan += giden;
-      // Kat 2'nin net kazancı = cüzdan farkı − Kat 1'den gelen
-      kat2Net += s2.wallet.sub(w0).toNumber() - giden;
-
-      // ---- KASA kolları
-      const indi = katOnce === 2 && s2.kat === 1;
-      for (const k of kollar) {
-        if (katOnce === 2 && giden > 0) {
-          const r = kasayaAt(k.kasa, giden, k.sinir);
-          k.kasa = r.kasa;
-          if (r.tasan.gt(0)) {
-            k.tasan = k.tasan.add(r.tasan);
-            const adet = Math.round((gidenAdet * r.tasan.toNumber()) / giden);
-            k.tasanAdet += adet;
-            k.tasanAdetTepe = Math.max(k.tasanAdetTepe, k.tasanAdet);
-          }
-          if (!k.dolduMu && k.sinir && k.kasa.gte(k.sinir)) { k.dolduMu = true; k.dolmaSn.push(olcT - k.bosaldiT); }
+      r.kat1Uret += yeni;
+      if (katOnce === 2 && s2.kat === 2) {
+        r.kasayaGiren += kasaFark;
+        r.kat2Net += cuzdanFark; // Kat 2'deyken Kat 1 cüzdana dokunmaz
+        r.sapmaKasa += alinan - kasaFark; // Kat 2'deyken yerden alınan = kasaya giren
+        uretKat2de += yeni;
+        kat2deSn += DT;
+        if (kasaDolu(s2.kasa, sinir)) {
+          r.dolSn += DT;
+          r.yerdeTepe = Math.max(r.yerdeTepe, s2.coins.length);
+          if (!doldu) { doldu = true; r.dolmaSn.push(olcT - bosaldiT); }
         }
-        if (indi) {
-          const b = kasaBosalt(k.kasa, D(0));
-          k.kasa = b.kasa;
-          k.bosalan = k.bosalan.add(b.bosalan);
-          k.inisler.push(b.bosalan.toNumber());
-          k.bosaldiT = olcT;
-          k.dolduMu = false;
-          k.tasanAdet = 0; // 'yerde' kipinde oyuncu inince yerdekini toplar
-        }
+      } else if (katOnce === 1 && s2.kat === 1) {
+        const bos = kasaFark < 0 ? -kasaFark : 0;
+        if (bos > 0) { r.bosalan += bos; r.inisler.push(bos); bosaldiT = olcT; doldu = false; }
+        r.kat1Cuzdana += alinan;
+        // görev hattının ödülü (`questSystem`) Kat 1'in kendi geliridir — sızıntı sayılmaz
+        let gorev = 0;
+        for (const id of s2.questsDone) if (!s.questsDone.includes(id)) gorev += C.quests.find((q) => q.id === id)?.reward ?? 0;
+        r.gorevOdulu += gorev;
+        // Kat 2 sızıntısı Kat 2 tarafından okunur: oyuncu Kat 1'deyken yığın azalamaz, pad dolamaz/açılamaz.
+        // (Cüzdan farkından okunamaz: aynı karede doğup oyuncunun ayağında toplanan sikke yerde hiç görünmez.)
+        const yigin = (d: typeof s.kat2Dunya) => d.paralar.reduce((t, p) => t + p.miktar, 0);
+        r.kat2SizanKat1de += Math.max(0, yigin(s.kat2Dunya) - yigin(s2.kat2Dunya));
+        if (s2.kat2.padsDone.length !== s.kat2.padsDone.length || JSON.stringify(s2.kat2Dunya.padFill) !== JSON.stringify(s.kat2Dunya.padFill)) r.kat2SizanKat1de += 1;
+        r.anindaToplanan += cuzdanFark - alinan - bos - gorev;
+        if (s2.kat2Dunya.masalar.map((m) => m.durum).join() !== masaOnce) r.kat2Masa++;
+      } else {
+        // geçiş karesi (perde): Kat 1 bu karede kimin katında işledi, ona yaz
+        if (katOnce === 2) { r.kasayaGiren += kasaFark; r.sapmaKasa += alinan - kasaFark; r.kat2Net += cuzdanFark; }
+        else { r.kat1Cuzdana += alinan; r.kat2Net += cuzdanFark - alinan; }
       }
-      iz = Math.imul(iz ^ (Math.round(kat2Net) * 31 + Math.round(kasaAkis) * 7 + s2.kat2Dunya.paralar.length), 16777619) >>> 0;
+      if (s2.kat === 1 && katOnce === 2) r.inisSay++;
+      iz = Math.imul(iz ^ (Math.round(s2.kasa.toNumber()) * 31 + s2.npcCount * 7 + Math.round(r.kat2Net)), 16777619) >>> 0;
     }
     if (!s2.katGecis) fazT += DT;
     olcT += DT;
   }
   g().setKeyboardInput(0, 0);
-  const sSon = g();
-  const kat1Yerde = sSon.coins.reduce((a, c) => a + c.value, 0);
-  const kat2Bekleyen = sSon.kat2Dunya.paralar.reduce((a, p) => a + p.miktar, 0);
-  // korunum: başlangıç yerde + üretilen = cüzdana (Kat 1'deyken) + kasaya akan + yerde
-  const sapma = Math.round(baslangicYerde + kat1Uretilen - kat1Dogrudan - kasaAkis - kat1Yerde);
-  return {
-    kat1Uretilen, kat1Dogrudan, kasaAkis, kat1Yerde, kat2Net, kat2Bekleyen, kat2Kacan, kollar, inisSay,
-    kasaVarisSn: kasaVarisSn.length ? kasaVarisSn.reduce((a, b) => a + b, 0) / kasaVarisSn.length : NaN, kat1Sn,
-    kat1DkOlculen: kat2deSn > 0 ? (kat1UretKat2de / kat2deSn) * 60 : NaN,
-    yol2, yol1, iz: iz.toString(16), korunumSapma: sapma,
-  };
+  const son = g();
+  r.kasaSon = son.kasa.toNumber();
+  r.olculenDk = kasaDakikaGeliri(son.kasaOlcum, C.kasa.olcumMinSn) ?? NaN;
+  r.gercekDk = kat2deSn > 0 ? (uretKat2de / kat2deSn) * 60 : NaN;
+  r.sinirSon = kasaSiniriOlcumden(son.kasaOlcum, C.kasa)?.toNumber() ?? NaN;
+  const yerdeSon = son.coins.reduce((a, c) => a + c.value, 0);
+  // Kat 1 ₺ korunumu: başta yerde + başta kasada + üretilen = Kat 1'deyken cüzdana + boşalan + kasada + yerde
+  r.sapmaKat1 = Math.round(yerde0 + kasa0 + r.kat1Uret - r.kat1Cuzdana - r.bosalan - r.kasaSon - yerdeSon);
+  r.sapmaKasa = Math.round(r.sapmaKasa);
+  r.kat2SizanKat1de = Math.round(r.kat2SizanKat1de);
+  r.iz = iz.toString(16);
+  return r;
 }
 
 const f0 = (v: number) => (Number.isFinite(v) ? Math.round(v).toLocaleString('tr-TR') : '—');
-const n = (v: Decimal): number => v.toNumber();
-const sinirAd = (dk: number | null) => (dk === null ? 'yok (bugün)' : `${dk} dk`);
+const ort = (xs: number[]) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN);
+const kolAd = (dk: number) => (dk === 0 ? 'sınırsız' : `${dk} dk`);
 
 // ---------------------------------------------------------------------------
-console.log('=== K2-4 — KAT 1 KASASI + ÇEVRİMDIŞI (kollar) ===');
+console.log('=== D-185 — KAT 1 KASASI + ÇEVRİMDIŞI · GERÇEK MEKANİK (store + tick) ===');
 console.log(`Kip: ${KISA ? 'kisa' : 'tam'} · senaryo ${SURE / 60} dk (önce ${ISINMA / 60} dk ısınma, Kat 2'de) · dt ${DT} · Kat 1'de kalış ${KAT1_KALIS} sn`);
-console.log(`Bot: son kademe hız ${HIZ} · tepsi ${TEPSI} · mıknatıs ${MIKNATIS} · Kat 1 = bütün pad'ler, yükseltmesiz (tests/kat2-altyapi bitmisKat1)`);
+console.log(`Bot: son kademe hız ${HIZ} · Kat 1 bitmiş, yükseltmesiz · kasa + ölçüm SIFIRDAN (soğuk başlangıç = oyuncunun ilk Kat 2 turu)`);
+console.log(`Kasa ayarı: dakika ${C.kasa.dakika} · ölçüm penceresi ${C.kasa.olcumPencereSn} sn · soğuk başlangıç ${C.kasa.olcumMinSn} sn · taban ${C.kasa.tabanSinir} ₺ · erişim ${C.kasa.erisim} br · yer (${KASA_YER.join(', ')})`);
+console.log('');
+
+const dkVarsayilan = kasaAyar.dakika;
+const sonuclar: { durum: string; T: number; dk: number; r: Sonuc }[] = [];
+try {
+  for (const durum of DURUMLAR)
+    for (const T of T_LISTE)
+      for (const dk of DK_KOLLAR) {
+        const r = kos(durum, T, dk);
+        const ad = `${durum} T${T} ${kolAd(dk)}`;
+        botDamgasi(`${ad} Kat 2`, r.yol2, SURE / 60, 30);
+        botDamgasi(`${ad} Kat 1`, r.yol1, r.kat1Sn / 60, 30);
+        damga(`iniş oldu (${ad})`, r.inisSay >= Math.max(1, Math.floor(SURE / ((T + 1.2) * 60)) - 1), `${r.inisSay} iniş`);
+        damga(`kasa boşaldı (${ad})`, r.inisler.length >= r.inisSay - 1, `${r.inisler.length}/${r.inisSay}`);
+        korunumDamgasi(`Kat 1 ₺ ${ad}`, r.sapmaKat1);
+        korunumDamgasi(`Kat 2'deyken yerden alınan = kasaya giren ${ad}`, r.sapmaKasa);
+        korunumDamgasi(`Kat 1'deyken Kat 2'nin yığını/pad'i oyuncuya geçmedi ${ad}`, r.kat2SizanKat1de);
+        damga(`Kat 1'deyken Kat 2 döner (${ad})`, r.kat2Masa > 0, 'masa durumu hiç değişmedi');
+        damga(`ölçüm gerçeği izler ±%15 (${ad})`, Math.abs(r.olculenDk / r.gercekDk - 1) <= 0.15, `${f0(r.olculenDk)} vs ${f0(r.gercekDk)}`);
+        if (dk > 0) damga(`kasa sınırı aşılmadı (${ad})`, r.kasaSon <= r.sinirSon + 1e-6 || r.dolSn === 0, `${r.kasaSon} > ${r.sinirSon}`);
+        sonuclar.push({ durum, T, dk, r });
+      }
+} finally {
+  kasaAyar.dakika = dkVarsayilan;
+}
+for (const durum of DURUMLAR) {
+  const Tmax = Math.max(...T_LISTE);
+  const a = sonuclar.find((x) => x.durum === durum && x.T === Tmax && x.dk === 0)!;
+  const b = sonuclar.find((x) => x.durum === durum && x.T === Tmax && x.dk === 20)!;
+  varyantDamgasi(`kasa 20 dk ${durum} T${Tmax}`, a.r.iz, b.r.iz);
+  damga(`20 dk sınır T${Tmax}'da bağladı (${durum})`, b.r.dolSn > 0, 'kasa hiç dolmadı');
+}
+
+console.log(`--- A · ${SURE / 60} dk: Kat 2'de T dk → in, Kat 1'de önce kasaya yürü, ${KAT1_KALIS} sn → çık ---`);
+console.log('Kat 1 ₺/dk = Kat 1\'deyken yerden + kasadan boşalan + koşu sonunda kasada · "durdu" = kasa dolu, oyuncu Kat 2\'de (Kat 1\'e müşteri gelmedi)');
+console.log('durum       | T  | kasa     | toplam ₺/dk | Kat 1 ₺/dk | Kat 2 ₺/dk | iniş | iniş başı kasa ₺ | durdu sn (%) | dolma sn | yerde sikke tepe (dolu) | sınır (son) ₺ | ölçülen / gerçek Kat 1 ₺/dk | ilk sınır sn');
+console.log('-'.repeat(190));
+const dkS = SURE / 60;
+for (const { durum, T, dk, r } of sonuclar) {
+  const kat1 = r.kat1Cuzdana + r.anindaToplanan + r.bosalan + r.kasaSon;
+  const kat2deDk = Math.max(1e-9, SURE - r.kat1Sn);
+  console.log(
+    `${durum.padEnd(11)} | ${String(T).padStart(2)} | ${kolAd(dk).padEnd(8)} | ${f0((kat1 + r.kat2Net) / dkS).padStart(11)} | ${f0(kat1 / dkS).padStart(10)} | ${f0(r.kat2Net / dkS).padStart(10)} | ${String(r.inisSay).padStart(4)} | ${f0(ort(r.inisler)).padStart(16)} | ${`${f0(r.dolSn)} (%${((100 * r.dolSn) / kat2deDk).toFixed(0)})`.padStart(12)} | ${f0(ort(r.dolmaSn)).padStart(8)} | ${String(r.yerdeTepe).padStart(23)} | ${f0(r.sinirSon).padStart(13)} | ${`${f0(r.olculenDk)} / ${f0(r.gercekDk)}`.padStart(27)} | ${f0(r.ilkSinirSn).padStart(12)}`,
+  );
+}
+
+// ---------------------------------------------------------------------------
+// B · ÇEVRİMDIŞI — store'un fonksiyonları (`computeOfflineEarned` · `offlineEarnedSplit` · `kasayaAt`)
+console.log('');
+console.log(`--- B · ÇEVRİMDIŞI · rateMult ${C.offline.rateMult} · süre tavanı ${C.offline.baseCapHours} sa · tavan = sıradaki pad × ${C.offline.capNextPadFrac} (Kat 1 bitmişse Kat 2'nin sıradaki pad'i) ---`);
 bitmisKat1(KAT2_DURUM['Kat 2 dolu']);
 const R1 = kat1Oran();
-const R1_OLC = Math.round(kalibre());
-console.log(`Kat 1 idealize oran (incomeRate, çevrimdışı formülü): ${(R1 * 60).toFixed(1)} ₺/dk`);
-console.log(`Kat 1 GERÇEK oran, oyuncu yokken (kalibrasyon ${kisaDeger(15, 5)} dk, tohum 7): ${R1_OLC} ₺/dk → kasa sınırı 10/20/40 dk = ${SINIR_DK.slice(1).map((d) => f0(R1_OLC * (d as number))).join(' / ')} ₺`);
-console.log(`Kat 2 idealize oran: başı ${(kat2Oran(KAT2_DURUM['Kat 2 başı']) * 60).toFixed(1)} ₺/dk · dolu ${(kat2Oran(KAT2_DURUM['Kat 2 dolu']) * 60).toFixed(1)} ₺/dk`);
-console.log('');
-
-const sonuclar: { durum: string; T: number; doner: boolean; r: Sonuc }[] = [];
-for (const durum of DURUMLAR) {
-  for (const T of T_LISTE) {
-    for (const doner of [false, true]) {
-      const r = kos(durum, T, doner);
-      const ad = `${durum} T${T} ${doner ? 'döner' : 'donuk'}`;
-      botDamgasi(`${ad} Kat 2`, r.yol2, SURE / 60, 30);
-      botDamgasi(`${ad} Kat 1`, r.yol1, r.kat1Sn / 60, 30);
-      damga(`iniş oldu (${ad})`, r.inisSay >= Math.floor(SURE / ((T + 1.2) * 60)) - 1, `${r.inisSay} iniş`);
-      korunumDamgasi(`Kat 1 ₺ ${ad}`, r.korunumSapma);
-      for (const k of r.kollar) {
-        const s = Math.round(r.kasaAkis - n(k.bosalan) - n(k.kasa) - n(k.tasan));
-        korunumDamgasi(`kasa ${sinirAd(k.sinirDk)} ${ad}`, s); // Kat 2'de oto-toplanan = boşalan + kasada + taşan
-      }
-      sonuclar.push({ durum, T, doner, r });
-    }
-  }
-}
-// varyant etkili: döner ↔ donuk aynı dünyayı mı üretti; kasa sınırı kolları bugünden ayrıştı mı
-for (const durum of DURUMLAR)
-  for (const T of T_LISTE) {
-    const a = sonuclar.find((x) => x.durum === durum && x.T === T && !x.doner)!;
-    const b = sonuclar.find((x) => x.durum === durum && x.T === T && x.doner)!;
-    varyantDamgasi(`Kat 2 döner ${durum} T${T}`, a.r.iz, b.r.iz);
-  }
-{
-  const enUzun = sonuclar.filter((x) => x.T === Math.max(...T_LISTE));
-  const kirpan = enUzun.some((x) => n(x.r.kollar[1].tasan) > 0);
-  damga('varyant etkili (kasa 10 dk en uzun T\'de taşırdı)', kirpan, 'hiç taşma yok');
-}
-
-console.log(`--- A · ${SURE / 60} dk SENARYO: Kat 2'de T dk → in, Kat 1'de ${KAT1_KALIS} sn → çık ---`);
-console.log('kazanç = cüzdana giren + koşu sonunda kasada bekleyen (bir sonraki inişte alınır); kasa kolu bugünden YALNIZ taşan ₺ kadar ayrışır.');
-console.log('taşan: "kaybolur" kipinde kayıp ₺ · "yerde" kipinde Kat 1 zemininde bekleyen ₺ (sikke tepe = aynı anda yerde en çok sikke; FPS eşiği m.13: ~115).');
-console.log('durum       | T  | Kat 2 arkada | kasa sınırı | toplam ₺/dk | Kat 1 ₺/dk | Kat 2 ₺/dk | taşan ₺ | taşan % (Kat 1 kasa akışı) | iniş başı kasa ₺ | iniş başı Kat 1 ₺ | dolma sn | sikke tepe');
-console.log('-'.repeat(175));
-const dk = SURE / 60;
-for (const { durum, T, doner, r } of sonuclar) {
-  for (const k of r.kollar) {
-    // sınırsız kol = bugün (kasa yok: Kat 2'deyken oto-toplanan doğrudan cüzdana)
-    const kat1 = r.kat1Dogrudan + n(k.bosalan) + n(k.kasa);
-    const inisKasa = k.inisler.length ? k.inisler.reduce((a, b) => a + b, 0) / k.inisler.length : NaN;
-    const inisKat1 = r.inisSay ? (r.kat1Dogrudan + n(k.bosalan)) / r.inisSay : NaN;
-    const dolma = k.dolmaSn.length ? k.dolmaSn.reduce((a, b) => a + b, 0) / k.dolmaSn.length : NaN;
-    console.log(
-      `${durum.padEnd(11)} | ${String(T).padStart(2)} | ${(doner ? 'döner' : 'donuk').padEnd(12)} | ${sinirAd(k.sinirDk).padEnd(11)} | ${f0((kat1 + r.kat2Net) / dk).padStart(11)} | ${f0(kat1 / dk).padStart(10)} | ${f0(r.kat2Net / dk).padStart(10)} | ${f0(n(k.tasan)).padStart(7)} | ${(r.kasaAkis ? `%${((100 * n(k.tasan)) / r.kasaAkis).toFixed(0)}` : '—').padStart(26)} | ${f0(inisKasa).padStart(16)} | ${f0(inisKat1).padStart(17)} | ${f0(dolma).padStart(8)} | ${String(k.tasanAdetTepe).padStart(10)}`,
-    );
-  }
-  console.log(`            ↳ Kat 1 oyuncu yokken ${f0(r.kat1DkOlculen)} ₺/dk · iniş ${r.inisSay} · Kat 1'de kasaya varış ${r.kasaVarisSn.toFixed(1)} sn (aday 1) · Kat 2 yerde bekleyen (son) ${f0(r.kat2Bekleyen)} ₺ · Kat 2 kaçan kahve (arkada) ${r.kat2Kacan} · yol Kat 2 ${f0(r.yol2)} br / Kat 1 ${f0(r.yol1)} br`);
-}
-
-// ---------------------------------------------------------------------------
-// B · ÇEVRİMDIŞI (analitik — store'un formülü: oran × rateMult × min(süre, tavan saat), PARA tavanı)
-console.log('');
-console.log(`--- B · ÇEVRİMDIŞI · rateMult ${C.offline.rateMult} · süre tavanı ${C.offline.baseCapHours} sa · para tavanı = sıradaki pad × ${C.offline.capNextPadFrac} ---`);
-const K2PADLER = AYAR.padler;
 const kat1Pads = C.pads.map((p) => p.id);
+const K2PADLER = AYAR.padler;
 const kat2Durumlari = K2PADLER.map((_, i) => K2PADLER.slice(0, i).map((p) => p.id)).concat([K2PADLER.map((p) => p.id)]);
-/** Çevrimdışı tutarla sırayla kaç Kat 2 pad'i alınır (cüzdan 0'dan). */
 function aldigiPad(tutar: number, pads: string[]): number {
   let kalan = tutar, say = 0;
   for (const p of K2PADLER) {
@@ -430,23 +369,24 @@ function aldigiPad(tutar: number, pads: string[]): number {
   }
   return say;
 }
-const k2Tavan = (pads: string[]) => {
-  const next = K2PADLER.find((p) => !pads.includes(p.id));
-  return Math.floor((next ? next.cost : Math.max(...K2PADLER.map((p) => p.cost))) * C.offline.capNextPadFrac);
-};
-const capSn = C.offline.baseCapHours * 3600;
-const ham = (oran: number, sn: number) => Math.floor(oran * C.offline.rateMult * Math.min(sn, capSn));
+// Kasa sınırı: A'nın 20 dk kolunun son ölçümü (gerçek store ölçümü).
+const olcDk = ort(sonuclar.filter((x) => x.dk === 20).map((x) => x.r.olculenDk));
+const KASA_SINIR = kasaSiniri(olcDk, dkVarsayilan)!;
+console.log(`Kat 1 idealize oran ${(R1 * 60).toFixed(1)} ₺/dk · kasa sınırı (A'nın ölçümü ${f0(olcDk)} ₺/dk × ${dkVarsayilan}) ${f0(KASA_SINIR.toNumber())} ₺`);
 type OffKol = { ad: string; f: (pads: string[], sn: number) => number };
 const OFF_KOLLAR: OffKol[] = [
-  { ad: 'bugün: yalnız Kat 1, Kat 1 tavanı', f: (_p, sn) => computeOfflineEarned(R1, sn, kat1Pads) },
-  { ad: 'Kat 2 payı + TEK tavan Kat 1 (en pahalı Kat 1 pad)', f: (p, sn) => Math.min(ham(R1, sn) + ham(kat2Oran(p), sn), computeOfflineEarned(1e12, sn, kat1Pads)) },
-  { ad: 'Kat 2 payı + TEK tavan Kat 2 (sıradaki Kat 2 pad)', f: (p, sn) => Math.min(ham(R1, sn) + ham(kat2Oran(p), sn), k2Tavan(p)) },
-  { ad: 'yalnız Kat 1, tavan Kat 2 (sıradaki Kat 2 pad)', f: (p, sn) => Math.min(ham(R1, sn), k2Tavan(p)) },
-  ...[10, 20, 40].map((dk) => ({ ad: `Kat 1 → kasaya (${dk} dk) · Kat 2 yok`, f: (_p: string[], sn: number) => Math.min(ham(R1, sn), R1_OLC * dk) })),
-  ...[10, 20, 40].map((dk) => ({ ad: `Kat 1 → kasaya (${dk} dk) + Kat 2 payı, tavan Kat 2`, f: (p: string[], sn: number) => Math.min(ham(R1, sn), R1_OLC * dk) + Math.min(ham(kat2Oran(p), sn), k2Tavan(p)) })),
+  { ad: 'S2 öncesi: yalnız Kat 1, Kat 1 tavanı', f: (_p, sn) => computeOfflineEarned(R1, sn, kat1Pads) },
+  { ad: 'D-185: Kat 1\'de kapattı (iki kat, cüzdana)', f: (p, sn) => computeOfflineEarned(R1, sn, kat1Pads, { acik: true, padsDone: p }) },
+  {
+    ad: 'D-185: Kat 2\'de kapattı (Kat 1 payı kasaya, sınırda kesilir)',
+    f: (p, sn) => {
+      const r = offlineEarnedSplit(R1, sn, kat1Pads, { acik: true, padsDone: p });
+      return r.kazanc - r.kat1Pay + kasayaAt(D(0), r.kat1Pay, KASA_SINIR).giren.toNumber();
+    },
+  },
 ];
-console.log('kol                                                    | Kat 2 durumu (açık pad)             | 1 sa ₺ | 4 sa ₺ | 8 sa ₺ | 1/4/8 sa alınan Kat 2 pad | ihlal (≥ 2 pad)');
-console.log('-'.repeat(160));
+console.log('kol                                                        | Kat 2 durumu (açık pad)             | Kat 2 oran ₺/dk | 1 sa ₺ | 4 sa ₺ | 8 sa ₺ | 1/4/8 sa alınan Kat 2 pad | ihlal (≥ 2 pad)');
+console.log('-'.repeat(170));
 const offIzler: string[] = [];
 for (const kol of OFF_KOLLAR) {
   let ihlal = 0;
@@ -458,23 +398,37 @@ for (const kol of OFF_KOLLAR) {
     const ih = bitmedi ? al.filter((a) => a >= 2).length : 0;
     ihlal += ih;
     izS += t.join(',') + ';';
-    console.log(`${kol.ad.padEnd(54)} | ${(pads.length ? pads.join('+') : '(hiç)').padEnd(35)} | ${f0(t[0]).padStart(6)} | ${f0(t[1]).padStart(6)} | ${f0(t[2]).padStart(6)} | ${al.join(' / ').padStart(25)} | ${bitmedi ? ih : '— (bitti)'}`);
+    console.log(`${kol.ad.padEnd(58)} | ${(pads.length ? `${pads.length} · son ${pads[pads.length - 1]}` : '(hiç)').padEnd(35)} | ${(kat2Oran(pads) * 60).toFixed(1).padStart(15)} | ${f0(t[0]).padStart(6)} | ${f0(t[1]).padStart(6)} | ${f0(t[2]).padStart(6)} | ${al.join(' / ').padStart(25)} | ${bitmedi ? ih : '— (bitti)'}`);
   }
   offIzler.push(izS);
   console.log(`  ↳ ${kol.ad}: ihlal ${ihlal} / ${3 * (kat2Durumlari.length - 1)}`);
+  if (kol.ad.startsWith('D-185')) damga(`çevrimdışı ihlal 0 (${kol.ad})`, ihlal === 0, `${ihlal} ihlal`);
 }
-varyantDamgasi('çevrimdışı Kat 2 payı (tavan Kat 2)', offIzler[0], offIzler[2]);
-console.log(`not: kol 2 ${offIzler[0] === offIzler[1] ? 'BİREBİR kol 1 (bugün)' : 'bugünden farklı'} — Kat 1'in tavanı (en pahalı Kat 1 pad × ${C.offline.capNextPadFrac}) Kat 2 payını yutuyor.`);
+varyantDamgasi('çevrimdışı D-185 tavanı', offIzler[0], offIzler[1]);
 
-// ---------------------------------------------------------------------------
-// C · KASANIN YERİ (aday — yalnız ölçü; Kat 1 varış noktası merdivenin önü)
-console.log('');
-console.log('--- C · KASA YERİ ADAYLARI (Kat 1, 3 alan açık) · yürüme = varıştan gidiş-dönüş düz çizgi, son kademe hız ---');
-const v1 = VARIS[1];
-for (const a of ADAY) {
-  const d = Math.hypot(a.yer[0] - v1[0], a.yer[1] - v1[2]);
-  console.log(`${a.ad.padEnd(30)} | (${a.yer[0].toFixed(1)}, ${a.yer[1].toFixed(1)}) | varıştan ${d.toFixed(1)} br | gidiş-dönüş ${((2 * d) / HIZ).toFixed(1)} sn`);
+// Store yolu: Kat 2'de kapatılmış kayıt, 1 sa sonra açılır (init) — kasa sınırında kesilir mi.
+{
+  const mem: Record<string, string> = {};
+  const gl = globalThis as Record<string, unknown>;
+  const eski = gl.localStorage;
+  gl.localStorage = { getItem: (k: string) => mem[k] ?? null, setItem: (k: string, v: string) => { mem[k] = v; }, removeItem: (k: string) => { delete mem[k]; } };
+  try {
+    bitmisKat1(['k2okey1']);
+    const olcum = { para: (olcDk / 60) * 600, sn: 600 };
+    useGame.setState({ kasa: D(0), wallet: D(0), kasaOlcum: olcum });
+    g().saveNow();
+    const k = JSON.parse(mem['kiraathane.save']);
+    k.lastSaved = Date.now() - 3600_000;
+    delete k.zarf;
+    mem['kiraathane.save'] = JSON.stringify(k);
+    g().init();
+    const s = g();
+    const sinir = kasaSiniriOlcumden(olcum, C.kasa)!.toNumber();
+    console.log(`store init (Kat 2'de kapatıldı, 1 sa, Kat 2 başı): kat ${s.kat} · kasa ${f0(s.kasa.toNumber())} ₺ (sınır ${f0(sinir)}) · cüzdana ${f0(s.wallet.toNumber())} ₺ (ekran ${f0(s.offlineEarned)})`);
+    damga('store çevrimdışı: Kat 1 payı kasaya, sınırda', s.kat === 2 && s.kasa.toNumber() <= sinir && s.kasa.toNumber() > 0, `kasa ${s.kasa.toNumber()}`);
+  } finally {
+    if (eski === undefined) delete gl.localStorage; else gl.localStorage = eski;
+  }
 }
-console.log(`(varış ${v1[0]}, ${v1[2].toFixed(1)} · servis alma ${sp.pickup[0].toFixed(1)}, ${sp.pickup[2].toFixed(1)} · giriş ${giris[0]}, ${giris[2]})`);
 
 damgaOzeti();

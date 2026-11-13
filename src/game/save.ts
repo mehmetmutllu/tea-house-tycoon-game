@@ -13,6 +13,7 @@ import type { LevelUpOdul } from './rules';
 import { D } from './decimal';
 import { kaliciOku, kaliciSil, kaliciYaz, kaliciYerelOku } from './kalicilik';
 import { defaultKat2, type Kat2Kayit } from './kat';
+import { bosKasaOlcum, type KasaOlcum } from './kasa';
 
 /**
  * KAYIT ŞEMASI SÜRÜMÜ. Bir denge sayısı değil, bu dosyanın kendi kavramı — bu yüzden
@@ -304,6 +305,13 @@ export interface SaveData {
   kat: number;
   /** K2-2: Kat 2'nin kendi ilerlemesi (`kat.ts` · `Kat2Kayit`). Additive — eksik alan varsayılanla dolar. */
   kat2: Kat2Kayit;
+  /**
+   * D-185: Kat 1'in kasası (Decimal dizgesi) + kasa sınırının kaynağı olan gelir ölçümü. Additive →
+   * sürüm ARTMADI (`kat`/`kat2` deseni): eski kayıtta yok → kasa '0', ölçüm boş (soğuk başlangıç).
+   * Bozuk değer kaydı reddettirmez, sıfırlanır (kasa ilerleme değil, yolda bekleyen para).
+   */
+  kasa: string;
+  kasaOlcum: KasaOlcum;
   lastSaved: number; // epoch ms
 }
 
@@ -360,6 +368,8 @@ export function defaultSave(): SaveData {
     sifirlamaNo,
     kat: 1,
     kat2: defaultKat2(),
+    kasa: '0',
+    kasaOlcum: bosKasaOlcum(),
     lastSaved: Date.now(),
   };
 }
@@ -606,6 +616,8 @@ export function kayitDogrula(d: SaveData): { data: SaveData; red: string[] } {
     sifirlamaNo: Math.floor(negatifsiz(d.sifirlamaNo)),
     kat: d.kat === 2 ? 2 : 1,
     kat2: { ...d.kat2, acik: d.kat2.acik === true, padsDone: metinKumesi(d.kat2.padsDone) },
+    kasa: gecerliTutar(d.kasa) ? d.kasa : '0',
+    kasaOlcum: { para: negatifsiz(d.kasaOlcum.para), sn: negatifsiz(d.kasaOlcum.sn) },
   };
   return { data, red };
 }

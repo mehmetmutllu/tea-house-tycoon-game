@@ -7,13 +7,15 @@
  *  · bos (son saniyeler) : grup merdivenden erken çıkmaya başlar — `yurume` (5 sn) uzak masaya
  *    yürümek için kısa; görsel süre `ONCE_EN_COK` kadar öne uzar, mantık değişmez.
  *  · oyunda : oturur, oynar (baş sallar, gövde hafif döner; masada taş/zar oynar — `Esya`).
- *  · oyun biter (oyunda → bos geçişi): KISA ÇIKIŞ — kalkar, geldiği yoldan döner; merdivene
+ *  · oyun biter (oyunda → başka durum): KISA ÇIKIŞ — kalkar, geldiği yoldan döner; merdivene
  *    yetişemeyecek kadar uzaksa yolda söner. Durumda yok, yalnız görsel (rapora yazıldı).
+ *    Geçiş KAREDE değil store aboneliğinde yakalanır (`useKalkisIzle`): her durum yazımı görülür,
+ *    kare atlansa, gövde henüz yüklenmese ya da birkaç tick tek karede koşsa da kalkış kaçmaz.
  *
  * Gövdeler Kat 1 müşterisinin gövdeleri (KayKit, `Customers.yuvaKur`un sade hâli): baş dokulu +
  * gövde köşe renkli = gövde başına İKİ çizim. Masa başına bir kez, ilk geliş anında kurulur.
  */
-import { useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import {
@@ -127,6 +129,26 @@ function klipSec(g: Govde, ad: string, oran = 1) {
 
 const _p: Nokta = [0, 0, 0];
 
+/** Masa kimliği → son kalkışın anı (`performance.now`, ms). Abonelik yazar, `MasaGrubu` okur. */
+const kalkisAni = new Map<string, number>();
+
+/**
+ * Kalkışı store'un HER yazımında yakalar: önceki durumda `oyunda` olup şimdi olmayan masa kalktı.
+ * Kat 2 sahnesi açıkken bir kez takılır.
+ */
+export function useKalkisIzle() {
+  useEffect(
+    () =>
+      useGame.subscribe((s, o) => {
+        if (s.kat2Dunya === o.kat2Dunya) return;
+        const once = new Map(o.kat2Dunya.masalar.map((m) => [m.id, m.durum]));
+        const simdi = performance.now();
+        for (const m of s.kat2Dunya.masalar) if (m.durum !== 'oyunda' && once.get(m.id) === 'oyunda') kalkisAni.set(m.id, simdi);
+      }),
+    [],
+  );
+}
+
 /** Bir masanın grubu. Masa açık olduğu sürece takılı; gövdeler ilk gelişte kurulur. */
 export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
   const yollar = useMemo<Yol[]>(() => oturakYerleri(yer.tur).map((o, k) => yolKur(grupYolu(yer, o, k))), [yer]);
@@ -137,15 +159,25 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
 
   const kaynaklar = useGLTF(useMemo(() => KAY_MUSTERI_GOVDE.map((g) => `${KAY_KOK}${g}.glb`), []));
   const klipler = useKayKlipler();
-  const kap = useMemo(() => new Group(), []);
+  const kap = useMemo(() => {
+    const g = new Group();
+    g.userData.k2npc = true; // oyuncu silüeti (bölme adayı D) bu gövdeleri atlar
+    return g;
+  }, []);
   const govdeler = useRef<Govde[] | null>(null);
-  const hal = useRef({ onceki: 'kapali', kip: 'yok', cikisT: -1, ziyaret: sira * 3 });
+  const hal = useRef({ onceki: 'kapali', kip: 'yok', cikisT: -1, ziyaret: sira * 3, kalkis: kalkisAni.get(yer.id) ?? 0 });
 
   useFrame((st, dt) => {
     const m = useGame.getState().kat2Dunya.masalar.find((x) => x.id === yer.id);
     const durum = m?.durum ?? 'kapali';
     const h = hal.current;
-    if (h.onceki === 'oyunda' && durum === 'bos') h.cikisT = 0;
+    const ani = kalkisAni.get(yer.id) ?? 0;
+    if (ani !== h.kalkis) {
+      // Yeni kalkış: aradan geçen süre kadar ileriden başlar (gövde geç yüklendiyse yetişir).
+      h.kalkis = ani;
+      const gecti = (performance.now() - ani) / 1000;
+      h.cikisT = gecti < CIKIS_SN ? Math.max(0, gecti - dt) : -1;
+    }
     if (durum === 'geliyor' && h.onceki !== 'geliyor') h.cikisT = -1;
     h.onceki = durum;
     if (h.cikisT >= 0) h.cikisT += dt;

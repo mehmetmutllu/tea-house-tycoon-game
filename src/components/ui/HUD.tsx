@@ -60,6 +60,7 @@ import { baslangicTeklifiGoster, dekorAcik, dekorSalonu, vitrinSahip, vitrinUrun
 import { kiyafetPulu } from '../../config/kozmetik';
 import './hud.css';
 import { KafeAdiKutusu } from './KafeAdiKutusu';
+import { KasaSayaci } from './KasaSayaci';
 import { GeriBildirimKutusu } from './GeriBildirimKutusu';
 
 /* ── 3D ÖNİZLEMELER AYRI PARÇADA (Faz F kod-bölme) ──────────────────────────────────────────
@@ -371,6 +372,7 @@ export function HUD() {
             <GemIcon size={26} />
             <span className="cur-val">{elmasMetni}</span>
           </div>
+          <KasaSayaci />
         </div>
 
         <button className="round-btn gear" data-testid="gear" title={t('Ayarlar')} onClick={() => setSheet('settings')}>

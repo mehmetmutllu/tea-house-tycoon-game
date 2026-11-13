@@ -1177,6 +1177,23 @@ export const economyConfig = {
   },
 
   /**
+   * KAT 1'İN KASASI (D-185, `game/kasa.ts` · `docs/kat2-kasa-raporu-k2-4.md`). Oyuncu Kat 2'deyken Kat 1'de
+   * kendiliğinden toplanan para kasaya girer; kasa dolunca Kat 1'e müşteri gelmez. Sınır = Kat 1'in
+   * ÖLÇÜLEN gelirinin `dakika` katı — oran `incomeRate` DEĞİL (14× şişkin, Bulgu 1): oyuncu Kat 2'deyken
+   * Kat 1'de düşen paranın üstel ortalaması (`olcumPencereSn` zaman sabiti; kasa doluyken ölçülmez).
+   */
+  kasa: {
+    dakika: 20,
+    olcumPencereSn: 600,
+    /** Soğuk başlangıç: ölçüm bu kadar sn birikmeden sınır YOK (kasa bu sürede dolamaz: para yerde 180 sn yaşlanır). */
+    olcumMinSn: 120,
+    /** Sınırın tabanı (₺) — oyuncu yokken Kat 1 neredeyse hiç kazanmıyorsa kasa anında dolmasın. Ölçülmedi, güvenlik ağı. */
+    tabanSinir: 300,
+    /** Kat 1'de kasaya erişim yarıçapı (yürüyünce boşalır). */
+    erisim: 0.8,
+  },
+
+  /**
    * KAT 2 — OKEY + TÜRK KAHVESİ (K2-3, D-184; `game/kat2Dongu.ts`). Dörtlü grup okey masasında 3 dk
    * oynar, 25 sn'de bir 2 fincan kahve ister; kalkarken masa ücreti + kahve parası TEK yığın düşer.
    * Kol V4 (`docs/kat2-dongu-raporu-k2-3.md`): fiyatlar teorik 54 ₺/dk/masa tavanına normalize,
@@ -1196,6 +1213,9 @@ export const economyConfig = {
     /**
      * Açılış zinciri — ilk masa ocaktan ÖNCE (ilk grup kahvesiz oynar, ocak açılınca istekler başlar).
      * Fiyatlar TASLAK (ölçülmedi, K2-5): dolum ~3,5 sn (Kat 1'in pad tavanı).
+     * S2 (D-186 sırası): okey salonu → 2 masa → 2. ocak → 4 masa → tavla köşesi → garson → 12 tavla.
+     * `k2salon2`den sonraki fiyatların HEPSİ TASLAK, K2-5 (zincir ölçümü) sonunda karar paketinde değişir.
+     * `k2garson` pad'i açılır ama garson sayıları (`garson`) S2 kararına dek YOK → garson gelmez.
      */
     padler: [
       { id: 'k2okey1', cost: 500, fillRate: 143 },
@@ -1203,7 +1223,28 @@ export const economyConfig = {
       { id: 'k2okey2', cost: 1_500, fillRate: 429 },
       { id: 'k2okey3', cost: 2_500, fillRate: 714 },
       { id: 'k2okey4', cost: 4_000, fillRate: 1_143 },
+      // ---- TASLAK, K2-5
+      { id: 'k2salon2', cost: 6_000, fillRate: 1_714 },
+      { id: 'k2s2okey1', cost: 7_500, fillRate: 2_143 },
+      { id: 'k2s2okey2', cost: 9_000, fillRate: 2_571 },
+      { id: 'k2cezve2', cost: 11_000, fillRate: 3_143 },
+      { id: 'k2s2okey3', cost: 13_000, fillRate: 3_714 },
+      { id: 'k2s2okey4', cost: 15_500, fillRate: 4_429 },
+      { id: 'k2s2okey5', cost: 18_000, fillRate: 5_143 },
+      { id: 'k2s2okey6', cost: 21_000, fillRate: 6_000 },
+      { id: 'k2salon3', cost: 25_000, fillRate: 7_143 },
+      { id: 'k2garson', cost: 30_000, fillRate: 8_571 },
+      ...Array.from({ length: 12 }, (_, i) => {
+        const cost = 33_000 + i * 3_000;
+        return { id: `k2tavla${i + 1}`, cost, fillRate: Math.round(cost / 3.5) };
+      }),
     ],
+    /**
+     * TAVLA (D-186, kol T120U — `docs/kat2-tavla-raporu-k2-3c.md`): 2 kişi 2 dk oynar, 25 sn'de 1 fincan;
+     * para masa ücretinden (gelirin %20'si kahve). Tavan kişi başına okeyle eşit (27 ₺/dk/masa).
+     * Geliş/yürüme/kahve sabrı okeyle ortak. Bekçi: `tools/olcum-kat2-tavla.ts` "config = T120U".
+     */
+    tavla: { oturum: 120, kahveAralik: 25, istekAdet: 1, kahveFiyat: 3, masaUcreti: 51 },
   },
 
   /**
