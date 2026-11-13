@@ -196,10 +196,11 @@ export {
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
-import { GECIS_SN, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
+import { GECIS_SN, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo } from './kat';
 import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
-import { kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
+import { kat2Tick, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
+import { kat2GorevHizala, kat2GorevIlerlet, type Kat2GorevOlay } from './kat2Gorev';
 import { bosKasaOlcum, kasaSiniriOlcumden, kasayaAt, type KasaOlcum } from './kasa';
 import { t } from '../i18n';
 
@@ -300,7 +301,7 @@ export function kayitVerisi(s: GameState): SaveData {
     levelUp: s.levelUp && s.levelUp.amount > 0 ? { ...s.levelUp } : null,
     // Geçiş sürerken kayıt HEDEF katı yazar (perde inerken kapanırsa oyuncu vardığı katta açılır).
     kat: s.katGecis?.hedef ?? s.kat,
-    kat2: { ...s.kat2, padsDone: [...s.kat2.padsDone] },
+    kat2: { ...s.kat2, padsDone: [...s.kat2.padsDone], masaSv: { ...s.kat2.masaSv } },
     lastSaved: Date.now(),
   };
 }
@@ -705,6 +706,20 @@ function ustaAcilabilir(s: { mastersOwned?: string[]; tables: number; tableLevel
   return masterUnlockedForTable(s.tableLevels[masaIdx] ?? 0);
 }
 
+/** S3: Sv tetiği dolan masaları bir seviye artırır (tavan `KAT2_SV_MAX`); yeni sözlük döner. */
+/** S3-D: açık katın görev hattı kayıttaki pad/Sv'ye hizalanır (ödülsüz) — yükleme, kat açılışı. */
+function kat2Hizali(k: Kat2Kayit): Kat2Kayit {
+  if (!k.acik) return k;
+  const gorev = kat2GorevHizala(k.gorev, k, C.kat2Gorevler, KAT2_AYAR);
+  return gorev === k.gorev ? k : { ...k, gorev };
+}
+
+export function kat2SvAtla(masaSv: Readonly<Record<string, number>> | undefined, ids: readonly string[]): Record<string, number> {
+  const out = { ...masaSv };
+  for (const id of ids) out[id] = Math.min(KAT2_SV_MAX, masaSvOku(out, id) + 1);
+  return out;
+}
+
 /** K2-3: Kat 2 döngüsünün denge sayıları — tek kaynak `economy.config.kat2` (D-184). */
 const KAT2_AYAR: Kat2Ayar = economyConfig.kat2;
 const KAT2_HAZIR: readonly string[] = economyConfig.kat2.hazir;
@@ -807,7 +822,7 @@ export const useGame = create<GameState>((set, get) => ({
   init: () => {
     const save: SaveData = loadSave();
     // D-191: açık katın hazır pad'leri (eski kayıtta yoksa) birleşir.
-    const kat2Kayit = kat2HazirEkle({ ...save.kat2, padsDone: [...save.kat2.padsDone] }, KAT2_HAZIR);
+    const kat2Kayit = kat2Hizali(kat2HazirEkle({ ...save.kat2, padsDone: [...save.kat2.padsDone] }, KAT2_HAZIR));
     const ilkKat = baslangicKati(save.kat, save.kat2);
     // D-015: masa/servis/personel padsDone'dan TÜRETİLİR (ayrı saklanmaz).
     const world: World = deriveWorld(save.padsDone);
@@ -1043,6 +1058,8 @@ export const useGame = create<GameState>((set, get) => ({
     let lifetime = c.lifetime;
     let kat2 = s.kat2;
     let kat2Dunya = s.kat2Dunya;
+    let xp = c.xp;
+    let k2olay: Kat2GorevOlay | null = null;
     if (kat === 2) {
       const j = s.inputJoystick;
       girdi = gecis ? [0, 0] : Math.hypot(j[0], j[1]) > 0.05 ? j : s.inputKeyboard;
@@ -1061,28 +1078,47 @@ export const useGame = create<GameState>((set, get) => ({
           padsDone: kat2.padsDone,
           tepsiKap: trayCapacityFor(s.charUpgrades.tray),
           miknatis: attractRadiusFor(s.charUpgrades.magnet),
+          masaSv: kat2.masaSv,
         },
         dt,
         KAT2_AYAR,
       );
       kat2Dunya = r.dunya;
+      k2olay = { ...r.olay, kazanc: r.kazanc };
       if (r.harcama > 0) wallet = wallet.sub(r.harcama);
       if (r.kazanc > 0) {
         wallet = wallet.add(r.kazanc);
         lifetime = lifetime.add(r.kazanc);
       }
       if (r.padsDone !== kat2.padsDone) kat2 = { ...kat2, padsDone: r.padsDone };
+      // S3: dolan Sv tetiği → masa bir seviye (parası `harcama`yla yukarıda düştü; pad tamamlanma deseni).
+      if (r.olay.svAtlayan.length) kat2 = { ...kat2, masaSv: kat2SvAtla(kat2.masaSv, r.olay.svAtlayan) };
     } else if (kat2.acik && kat2Etkin() && kat2.padsDone.length > 0) {
       // D-185: oyuncu Kat 1'deyken Kat 2 de işler — masalar oynar, yığınlar masanın önünde bekler.
       // Oyuncu Kat 2'den UZAKTA (pad dolmaz, servis olmaz, para toplanmaz); cüzdan 0 verilir ve
       // çıktının parası okunmaz: Kat 2 buradan cüzdana hiçbir şey sızdıramaz.
-      kat2Dunya = kat2Tick(
+      const r = kat2Tick(
         kat2Dunya,
         { x: KAT2_DISI[0], z: KAT2_DISI[1], durdu: true, cuzdan: 0, padsDone: kat2.padsDone,
-          tepsiKap: trayCapacityFor(s.charUpgrades.tray), miknatis: attractRadiusFor(s.charUpgrades.magnet) },
+          tepsiKap: trayCapacityFor(s.charUpgrades.tray), miknatis: attractRadiusFor(s.charUpgrades.magnet), masaSv: kat2.masaSv },
         dt,
         KAT2_AYAR,
-      ).dunya;
+      );
+      kat2Dunya = r.dunya;
+      k2olay = { ...r.olay, kazanc: 0 };
+    }
+    // S3-D: Kat 2 görev hattı (Kat 2'de VE arka planda) — durum bu adımın GÜNCEL pad/Sv'si.
+    if (k2olay) {
+      const g = kat2GorevIlerlet(kat2.gorev, k2olay, kat2, C.kat2Gorevler, KAT2_AYAR);
+      if (g.kayit !== kat2.gorev) kat2 = { ...kat2, gorev: g.kayit };
+      if (g.odul > 0) {
+        wallet = wallet.add(g.odul);
+        lifetime = lifetime.add(g.odul);
+      }
+      for (const b of g.biten) {
+        c.noticeQueue.push({ text: t(b.title), ttl: 3.5, kind: 'quest', reward: b.reward > 0 ? b.reward : undefined });
+        xp += C.xp.perQuest;
+      }
     }
     // D-192: Kat 1'in MERDİVEN PAD'i — omurga bitince merdivenin önünde; durunca cüzdandan dolar,
     // dolunca kat açılır (hazır masa + ocak ile). Kat 1'in pad'leri gibi `padFills`te birikir.
@@ -1102,7 +1138,7 @@ export const useGame = create<GameState>((set, get) => ({
           const { [MERDIVEN_PAD]: _bitti, ...kalan } = padFills;
           padFills = kalan;
           activeSpot = null;
-          kat2 = kat2HazirEkle({ ...kat2, acik: true }, KAT2_HAZIR);
+          kat2 = kat2Hizali(kat2HazirEkle({ ...kat2, acik: true }, KAT2_HAZIR));
           kat2Dunya = yeniKat2Dunya(kat2.padsDone, KAT2_AYAR);
         } else {
           padFills = { ...padFills, [MERDIVEN_PAD]: fill };
@@ -1187,7 +1223,7 @@ export const useGame = create<GameState>((set, get) => ({
         questPhase: c.questPhase,
         questPhaseT: c.questPhaseT,
         questDoneIndex: c.questDoneIndex,
-        xp: c.xp,
+        xp,
         quest: c.quest,
         camFocus,
         camBekleyen: c.camBekleyen,
@@ -1704,7 +1740,7 @@ export const useGame = create<GameState>((set, get) => ({
 
   kat2Ac: () => {
     set((s) => {
-      const kat2 = kat2HazirEkle({ ...s.kat2, acik: true }, KAT2_HAZIR);
+      const kat2 = kat2Hizali(kat2HazirEkle({ ...s.kat2, acik: true }, KAT2_HAZIR));
       return { kat2, kat2Dunya: yeniKat2Dunya(kat2.padsDone, KAT2_AYAR) };
     });
     get().saveNow();

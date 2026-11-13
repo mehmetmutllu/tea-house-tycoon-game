@@ -46,6 +46,8 @@ declare global {
     __kat2?: (kat?: 1 | 2) => { kat: number; acik: boolean; gecis: boolean };
     /** Kat 2 pad'ini parasız tamamlar (görsel kare/duman: duvar kalkışı, perde → obje). */
     __kat2Pad?: (id: string) => readonly string[];
+    /** S3: Kat 2 masasının seviyesini parasız ayarla (1..5). */
+    __kat2Sv?: (id: string, sv: number) => Record<string, number>;
     /** Mağaza videosu (D-170): joystick girdisi + hafif konum okuma (`__game` her karede ağır). */
     __girdi?: (x: number, z: number) => [number, number];
     __sinema?: (k: { pos: [number, number, number]; bak: [number, number, number]; fov: number; gok?: string } | null) => void;
@@ -159,6 +161,8 @@ export function installDevHooks(): void {
       // K2-3: Kat 2 döngüsü (salt-okunur özet).
       kat2: {
         padsDone: [...s.kat2.padsDone],
+        masaSv: { ...(s.kat2.masaSv ?? {}) },
+        gorev: s.kat2.gorev ? { idx: s.kat2.gorev.idx, sayac: { ...s.kat2.gorev.sayac } } : null,
         masalar: s.kat2Dunya.masalar.map((m) => ({ id: m.id, durum: m.durum, istek: m.istek, birikim: m.birikim })),
         ocaklar: s.kat2Dunya.ocaklar.map((o) => ({ ...o })),
         garson: s.kat2Dunya.garson ? { ...s.kat2Dunya.garson } : null,
@@ -384,6 +388,12 @@ export function installDevHooks(): void {
     const k = useGame.getState().kat2;
     if (!k.padsDone.includes(id)) useGame.setState({ kat2: { ...k, padsDone: [...k.padsDone, id] } });
     return useGame.getState().kat2.padsDone;
+  };
+
+  window.__kat2Sv = (id, sv) => {
+    const k = useGame.getState().kat2;
+    useGame.setState({ kat2: { ...k, masaSv: { ...(k.masaSv ?? {}), [id]: Math.max(1, Math.min(5, Math.floor(sv))) } } });
+    return { ...(useGame.getState().kat2.masaSv ?? {}) };
   };
 
   window.__teleport = (x: number, z: number) => {

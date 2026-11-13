@@ -279,9 +279,20 @@ export interface Kat2Kayit {
   acik: boolean;
   /** Kat 2'de açılmış pad kimlikleri (Kat 1'in `padsDone` deseni; K2-3'te dolar). */
   padsDone: string[];
+  /**
+   * S3: masa id → Sv (2..`KAT2_SV_MAX`; listede olmayan masa Sv1). Additive (D-182): eski kayıtta yok →
+   * bütün masalar Sv1, `saveVersion` artmaz. Store, `kat2Tick`in `olay.svAtlayan`ıyla artırır.
+   */
+  masaSv?: Record<string, number>;
+  /** S3: Kat 2 görev hattının ilerlemesi (`kat2Gorev.ts`; sıradaki görev + sayaçlar). Additive, eski kayıtta baştan. */
+  gorev?: { idx: number; sayac: Record<string, number> };
 }
 
-export const defaultKat2 = (): Kat2Kayit => ({ acik: false, padsDone: [] });
+/** Masa seviyesinin tavanı (Sv1-5, D-181 görselleri). Oyun kuralı: tetik Sv5'te kalkar. */
+export const KAT2_SV_MAX = 5;
+
+export const defaultKat2Gorev = (): NonNullable<Kat2Kayit['gorev']> => ({ idx: 0, sayac: {} });
+export const defaultKat2 = (): Kat2Kayit => ({ acik: false, padsDone: [], masaSv: {}, gorev: defaultKat2Gorev() });
 
 /**
  * D-191: açık katın HAZIR pad'leri (`kat2.hazir`) `padsDone`da olmalı. Merdiven açılınca da, eski bir

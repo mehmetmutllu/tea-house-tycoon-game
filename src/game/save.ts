@@ -12,7 +12,7 @@ import { activeQuestIndex, completedQuestIds } from './questProgress';
 import type { LevelUpOdul } from './rules';
 import { D } from './decimal';
 import { kaliciOku, kaliciSil, kaliciYaz, kaliciYerelOku } from './kalicilik';
-import { defaultKat2, type Kat2Kayit } from './kat';
+import { KAT2_SV_MAX, defaultKat2, defaultKat2Gorev, type Kat2Kayit } from './kat';
 import { bosKasaOlcum, type KasaOlcum } from './kasa';
 
 /**
@@ -522,6 +522,22 @@ function sozluk<T>(v: unknown, eleman: (x: unknown) => x is T): Record<string, T
 const negatifsizSayiMi = (x: unknown): x is number => sayiMi(x) && x >= 0;
 const metinMi = (x: unknown): x is string => typeof x === 'string';
 
+/** S3: Kat 2 masa Sv sözlüğü — tam sayı 2..KAT2_SV_MAX tutulur (Sv1 = kayıt dışı varsayılan); bozuk/≤ 1 düşer. */
+function kat2SvSozluk(v: unknown): Record<string, number> {
+  const out: Record<string, number> = {};
+  for (const [k, x] of Object.entries(sozluk(v, sayiMi))) {
+    const sv = Math.min(KAT2_SV_MAX, Math.floor(x));
+    if (sv >= 2) out[k] = sv;
+  }
+  return out;
+}
+/** S3: Kat 2 görev hattı kaydı (D'nin `kat2Gorev.ts`i okur) — eksik/bozuk → baştan. */
+function kat2GorevKaydi(v: unknown): NonNullable<Kat2Kayit['gorev']> {
+  if (!v || typeof v !== 'object' || Array.isArray(v)) return defaultKat2Gorev();
+  const g = v as Record<string, unknown>;
+  return { idx: Math.floor(negatifsiz(g.idx)), sayac: sozluk(g.sayac, negatifsizSayiMi) };
+}
+
 /**
  * KAYIT DOĞRULAMA (Sprint A). `derinBirlestir` türü tutturur ama İÇERİĞİ denetlemez: dizi olduğu
  * gibi geçer (`[-500, 'bozuk', null]`), Decimal dizgesi `'NaN'` olabilir — NaN cüzdan her işlemde
@@ -615,7 +631,14 @@ export function kayitDogrula(d: SaveData): { data: SaveData; red: string[] } {
     levelUp,
     sifirlamaNo: Math.floor(negatifsiz(d.sifirlamaNo)),
     kat: d.kat === 2 ? 2 : 1,
-    kat2: { ...d.kat2, acik: d.kat2.acik === true, padsDone: metinKumesi(d.kat2.padsDone) },
+    kat2: {
+      ...d.kat2,
+      acik: d.kat2.acik === true,
+      padsDone: metinKumesi(d.kat2.padsDone),
+      // S3 (additive, D-182): eski kayıt → bütün masalar Sv1 · görev hattı baştan. Bozuk Sv düşer (Sv1), taşan kırpılır.
+      masaSv: kat2SvSozluk(d.kat2.masaSv),
+      gorev: kat2GorevKaydi(d.kat2.gorev),
+    },
     kasa: gecerliTutar(d.kasa) ? d.kasa : '0',
     kasaOlcum: { para: negatifsiz(d.kasaOlcum.para), sn: negatifsiz(d.kasaOlcum.sn) },
   };

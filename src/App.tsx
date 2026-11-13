@@ -7,6 +7,7 @@ import { SplashScreen } from './components/ui/SplashScreen';
 import { KatPerdesi } from './components/ui/KatPerdesi';
 import { kayitVerisi, useGame } from './game/store';
 import { sesiBagla } from './game/audioBridge';
+import { kat2SesBaslat } from './game/kat2Ses';
 import { analitigiBagla } from './game/analitik';
 import { reklamAbone, reklamBaslat, reklamEkranda, reklamYenidenKur } from './game/ads';
 import { sesDuraklat } from './game/audioWeb';
@@ -115,6 +116,7 @@ export default function App() {
     // bağlanır — ilk kesit kıyas noktasıdır ve hiçbir ses çalmaz, yoksa açılışta yüklenen
     // kaydın bütün geçmişi bir anda çalardı.
     const sesiCoz = sesiBagla();
+    const kat2SesCoz = kat2SesBaslat();
     // Analitik (1.0.7): aynı desen — ilk kesit kıyas noktası, yalnız yerel uygulamada gönderir.
     const analitigiCoz = analitigiBagla();
 
@@ -166,6 +168,7 @@ export default function App() {
       document.removeEventListener('visibilitychange', onVisibility);
       void durumDinleyici?.then((d) => d.remove());
       sesiCoz();
+      kat2SesCoz();
       analitigiCoz();
       bulutCoz();
       reklamSesCoz();

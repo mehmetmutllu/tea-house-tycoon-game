@@ -24,7 +24,9 @@ import {
   KAT2_MASALAR,
   KAT2_SALON_PAD,
   KAT2_SALON_PAD_YER,
+  KAT2_SV_MAX,
   OCAKLAR,
+  OKEY_YARI,
   TAVLA_YARI,
   kat2Adim,
   kat2YolAgi,
@@ -34,7 +36,7 @@ import {
   type MasaTuru,
 } from './kat';
 import { LAYOUT } from './layout';
-import { inFrame, padCercevesi } from './markerFrame';
+import { inFrame, masaCercevesi, masaEtiketi, padCercevesi } from './markerFrame';
 import { t } from '../i18n';
 
 /** Denge sayıları (K2-3: varyant; seçilen kol `economy.config.kat2`ye yazılır). */
@@ -79,7 +81,35 @@ export interface Kat2Ayar {
    * YOKSA lavabo süs: pad açılır, para getirmez.
    */
   lavabo?: { ugrama: number; ucret: number };
+  /**
+   * S3: MASA SEVİYESİ (Sv1-5) kolları, masa türüne göre. Garson deseni: YOKSA Sv tetiği çizilmez,
+   * `Kat2Girdi.masaSv` okunmaz, oyun bugünküyle BİREBİR (bütün çarpanlar 1). Ölçüm `tools/olcum-kat2-masasv.ts`.
+   */
+  masaSv?: { okey: Kat2SvKol; tavla: Kat2SvKol };
 }
+
+/**
+ * Bir masa türünün Sv kolu. Diziler Sv sırasıyla (indeks 0 = Sv1, uzunluk `KAT2_SV_MAX`); çarpanların
+ * indeks 0'ı 1,0 (Sv1 = bugünkü masa). `fiyat[i]` = Sv(i+1)'e ÇIKIŞIN fiyatı → `fiyat[0]` kullanılmaz (0).
+ */
+export interface Kat2SvKol {
+  fiyat: number[];
+  /** Masa ücreti × (₺/müşteri). */
+  ucretCarpan: number[];
+  /** Kahve isteme aralığı × (< 1 = daha sık kahve → daha çok servis). */
+  kahveAralikCarpan: number[];
+  /** Boş masaya grubun gelme aralığı × (< 1 = masa daha az boş kalır). */
+  gelisAralikCarpan: number[];
+  /** Opsiyonel (ölçüm kolu): kahve fiyatı × (yoksa 1). */
+  kahveFiyatCarpan?: number[];
+  /** Opsiyonel (ölçüm kolu): oyun süresi × (< 1 = grup daha çabuk kalkar; yoksa 1). */
+  oturumCarpan?: number[];
+  /** Sv tetiğinin TAM dolum süresi (sn; yoksa `SV_DOLUM_SN`). */
+  dolumSn?: number;
+}
+
+/** Sv dolumu, pad'lerin dolum kuralıyla aynı: tam fiyat ~3,5 sn'de akar (D-192 `fillRate = cost / 3,5`). */
+export const SV_DOLUM_SN = 3.5;
 
 /**
  * Kat 2 garsonu: YALNIZ kahve taşır, YALNIZ tavla masalarına (oyuncu okeyde taşır — aktif oynanış;
@@ -176,6 +206,8 @@ export interface Kat2Girdi {
   tepsiKap: number;
   /** Para mıknatısı yarıçapı (aynı karakter yükseltmesi). */
   miknatis: number;
+  /** S3: masa id → Sv (1..5; yok = 1). Yalnız `Kat2Ayar.masaSv` varken etkili. */
+  masaSv?: Readonly<Record<string, number>>;
 }
 
 export interface Kat2Cikti {
@@ -203,6 +235,11 @@ export interface Kat2Cikti {
     tavlaKacan: number;
     /** D-192: bu adımda lavabonun önündeki yığına düşen ₺ (`dusen`e girmez — masa yığını değil). */
     lavabo: number;
+    /**
+     * S3: Sv tetiği bu adımda dolan masalar (id). `kat2Tick` Sv'yi ARTIRMAZ — çağıran (store / ölçüm)
+     * `kat2.masaSv[id]`yi bir artırır (pad tamamlanma deseni). Sv'nin parası `harcama`ya girer.
+     */
+    svAtlayan: string[];
   };
 }
 
@@ -337,6 +374,69 @@ export function kat2PadEtiket(id: string): string {
   return MASA_YERI.get(id)?.tur === 'tavla' ? t('Tavla Masası') : t('Okey Masası');
 }
 
+// ---- MASA SEVİYESİ (S3) -----------------------------------------------------------------------
+
+/** Sv tetiği ile masanın ayak izi (oturaklar dahil) arasındaki boşluk (br) — çerçeve masaya yapışmasın. */
+const SV_BOSLUK = 0.2;
+
+/** Masanın Sv'si (1..KAT2_SV_MAX; kayıtta yoksa 1). */
+export const masaSvOku = (masaSv: Readonly<Record<string, number>> | undefined, id: string): number =>
+  Math.min(KAT2_SV_MAX, Math.max(1, Math.floor(masaSv?.[id] ?? 1)));
+
+/** Kolun bu Sv'deki çarpanı (kol/dizi yoksa 1 → ayar.masaSv yokken aritmetik birebir aynı). */
+const svCarpan = (dizi: readonly number[] | undefined, sv: number): number => dizi?.[sv - 1] ?? 1;
+
+/** Bir Sv tetiği: çizilen çerçeve = dolum testi (D-121). `w`/`d` TAM genişlik/derinlik (yarısı `inFrame`e). */
+export interface Kat2SvTetik {
+  /** `'sv:' + masaId` — dolum `Kat2Dunya.padFill[id]`de birikir. */
+  id: string;
+  masaId: string;
+  tur: MasaTuru;
+  /** Masanın ŞİMDİKİ Sv'si (etiket bunu yazar, Kat 1 `masaEtiketi` gibi). */
+  sv: number;
+  /** Sv+1'e çıkışın fiyatı (₺). */
+  fiyat: number;
+  x: number;
+  z: number;
+  w: number;
+  d: number;
+  /** Çerçevenin etiketi (`masaEtiketi(sv - 1)`; çizen `MASA_ISARET_R` + ok ile aynı kutuyu çizer). */
+  etiket: string;
+}
+
+/**
+ * Sv tetikleri: açık masalar, Sv < 5, yalnız `ayar.masaSv` varsa. Çerçeve Kat 1 masa yükseltme noktasının
+ * kutusu (`masaCercevesi`, ok + `MASA_ISARET_R`) ve masanın YANINDA, salonun ortasından (x = 0) UZAK yanda
+ * (N7 tam ayna): ayak izinin (oturak dahil) `SV_BOSLUK` dışı, z masanın hizası. Önü yığına, arkası grubun
+ * koridoruna ayrılmış; sıralar arası (tavla 1,2 br) çerçeveye yetmez. Çakışmazlık bekçisi `tests/kat2-masasv`.
+ */
+export function kat2SvTetikleri(ayar: Kat2Ayar, padsDone: readonly string[], masaSv: Readonly<Record<string, number>>): Kat2SvTetik[] {
+  const kollar = ayar.masaSv;
+  if (!kollar) return [];
+  const out: Kat2SvTetik[] = [];
+  for (const m of KAT2_MASALAR) {
+    if (!padsDone.includes(m.id)) continue;
+    const sv = masaSvOku(masaSv, m.id);
+    if (sv >= KAT2_SV_MAX) continue;
+    const c = masaCercevesi(sv - 1);
+    const yari = m.tur === 'tavla' ? TAVLA_YARI[0] : OKEY_YARI;
+    const s = m.x < 0 ? -1 : 1;
+    out.push({
+      id: 'sv:' + m.id,
+      masaId: m.id,
+      tur: m.tur,
+      sv,
+      fiyat: kollar[m.tur].fiyat[sv] ?? 0,
+      x: m.x + s * (yari + SV_BOSLUK + c.hw),
+      z: m.z,
+      w: 2 * c.hw,
+      d: 2 * c.hh,
+      etiket: masaEtiketi(sv - 1),
+    });
+  }
+  return out;
+}
+
 // ---- KAT 2 GARSONU (S2) -------------------------------------------------------------------------
 
 /** i. garsonun evi (pad'in yeri; ikinci garson bir adım SOLUNDA — sağı iç tavla sütunu). */
@@ -454,6 +554,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     tavlaServis: 0,
     tavlaKacan: 0,
     lavabo: 0,
+    svAtlayan: [],
   };
   let kazanc = 0;
   let harcama = 0;
@@ -490,6 +591,30 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
   }
   garsonlar = garsonKur(padsDone, ayar, garsonlar);
 
+  // ---- MASA Sv (S3): oyuncunun durduğu Sv çerçevesi cüzdandan dolar (pad deseni); dolunca masa olaya
+  // yazılır, Sv'yi çağıran artırır. Çerçeveler birbirine değmez → en fazla biri.
+  if (ayar.masaSv) {
+    for (const tt of kat2SvTetikleri(ayar, padsDone, g.masaSv ?? {})) {
+      if (!inFrame(g.x, g.z, [tt.x, 0, tt.z], { hw: tt.w / 2, hh: tt.d / 2 })) continue;
+      let fill = d.padFill[tt.id] ?? 0;
+      if (g.durdu) {
+        const hiz = tt.fiyat / (ayar.masaSv[tt.tur].dolumSn ?? SV_DOLUM_SN);
+        const amt = Math.min(hiz * dt, g.cuzdan - harcama, tt.fiyat - fill);
+        if (amt > 0) {
+          fill += amt;
+          harcama += amt;
+        }
+      }
+      if (fill >= tt.fiyat - 1e-9) {
+        delete d.padFill[tt.id];
+        olay.svAtlayan.push(tt.masaId);
+      } else {
+        d.padFill[tt.id] = fill;
+      }
+      break;
+    }
+  }
+
   // ---- CEZVE: her açık ocak kendi hazır fincan kuyruğu dolana dek pişirir.
   d.ocaklar.forEach((o, k) => {
     if (acikOcak[k] && o.hazir < ayar.ocakKuyruk) {
@@ -522,6 +647,11 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     const a = masaAyari(m.tur, ayar);
     if (!yer || !a) continue; // tavla sayıları yok: masa açık ama grup gelmez
     const tavla = m.tur === 'tavla';
+    // S3: Sv çarpanları (`ayar.masaSv` yoksa hepsi 1 → bugünküyle birebir).
+    const sv = masaSvOku(g.masaSv, m.id);
+    const kol = ayar.masaSv?.[m.tur];
+    const kahveAralik = a.kahveAralik * svCarpan(kol?.kahveAralikCarpan, sv);
+    const kahveFiyat = a.kahveFiyat * svCarpan(kol?.kahveFiyatCarpan, sv);
     m.t -= dt;
     if (m.durum === 'bos') {
       if (m.t <= 0) {
@@ -533,8 +663,8 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     if (m.durum === 'geliyor') {
       if (m.t <= 0) {
         m.durum = 'oyunda';
-        m.t += a.oturum;
-        m.kahveT = a.kahveAralik;
+        m.t += a.oturum * svCarpan(kol?.oturumCarpan, sv);
+        m.kahveT = kahveAralik;
         m.istek = 0;
         m.birikim = 0;
       }
@@ -548,10 +678,10 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
           const n = Math.min(d.tepsi, m.istek);
           d.tepsi -= n;
           m.istek -= n;
-          m.birikim += n * a.kahveFiyat;
+          m.birikim += n * kahveFiyat;
           olay.servis += n;
           if (tavla) olay.tavlaServis += n;
-          if (m.istek === 0) m.kahveT = a.kahveAralik;
+          if (m.istek === 0) m.kahveT = kahveAralik;
         }
         if (tavla) {
           for (const gs of garsonlar) {
@@ -560,11 +690,11 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
             const n = Math.min(gs.tepsi, m.istek);
             gs.tepsi -= n;
             m.istek -= n;
-            m.birikim += n * a.kahveFiyat;
+            m.birikim += n * kahveFiyat;
             olay.servis += n;
             olay.garsonServis += n;
             olay.tavlaServis += n;
-            if (m.istek === 0) m.kahveT = a.kahveAralik;
+            if (m.istek === 0) m.kahveT = kahveAralik;
           }
         }
         if (m.istek > 0) {
@@ -573,7 +703,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
             olay.kacan += m.istek;
             if (tavla) olay.tavlaKacan += m.istek;
             m.istek = 0;
-            m.kahveT = a.kahveAralik;
+            m.kahveT = kahveAralik;
           }
         }
       } else {
@@ -590,7 +720,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       // Oyun bitti: ücret + kahve parası tek yığın, masa boşalır, yeni grup gelir.
       olay.kacan += m.istek;
       if (tavla) olay.tavlaKacan += m.istek;
-      const miktar = a.masaUcreti + m.birikim;
+      const miktar = a.masaUcreti * svCarpan(kol?.ucretCarpan, sv) + m.birikim;
       const [px, pz] = paraDusmeYeri(yer);
       d.paralar.push({ id: d.nextId++, x: px, z: pz, miktar });
       olay.dusen.push(miktar);
@@ -598,7 +728,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       olay.kalkis += 1;
       if (ayar.lavabo && padsDone.includes(KAT2_LAVABO_PAD)) lavaboyaUgra(d, KAT2_KISI[m.tur], ayar.lavabo, olay);
       m.durum = 'bos';
-      m.t += ayar.gelisAralik;
+      m.t += ayar.gelisAralik * svCarpan(kol?.gelisAralikCarpan, sv);
       m.istek = 0;
       m.birikim = 0;
     }

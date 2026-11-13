@@ -16,10 +16,12 @@ export type Nokta = [number, number, number];
 /** Oturakların masa merkezine uzaklığı (saf sayı — çizim `Esya`, yol ve bekçi aynı yerden okur). */
 export const OKEY_OTURAK_R = 1.0;
 export const TAVLA_OTURAK_R = 0.82;
-export const oturakYerleri = (tur: 'okey' | 'tavla'): [number, number][] =>
-  tur === 'okey'
-    ? [[0, -OKEY_OTURAK_R], [OKEY_OTURAK_R, 0], [0, OKEY_OTURAK_R], [-OKEY_OTURAK_R, 0]]
-    : [[TAVLA_OTURAK_R, 0], [-TAVLA_OTURAK_R, 0]];
+/** Sv4'te masa büyür (okey ×1,15 · tavla ×1,2, D-181): oturaklar bu kadar dışarı açılır (`kat2-esya` yolu). */
+export const SV4_ACILMA = 0.09;
+export const oturakYerleri = (tur: 'okey' | 'tavla', sv = 1): [number, number][] => {
+  const r = (tur === 'okey' ? OKEY_OTURAK_R : TAVLA_OTURAK_R) + (sv >= 4 ? SV4_ACILMA : 0);
+  return tur === 'okey' ? [[0, -r], [r, 0], [0, r], [-r, 0]] : [[r, 0], [-r, 0]];
+};
 
 /** Kuyunun içinde merdivenin basamak yüksekliği (z'ye göre). Kuyu dışı 0. */
 export function merdivenY(x: number, z: number): number {
@@ -43,7 +45,8 @@ export function grupYolu(m: Kat2MasaYeri, oturak: [number, number], sira: number
   const ox = m.x + dx;
   const oz = m.z + dz;
   // Arka (kuzey) oturağa masanın yanından dolaşılır; öbürlerine doğrudan hizadan girilir.
-  const ax = dz > 0.01 ? m.x + 1.9 : ox;
+  // Yan dolaşma salonun ortasına bakan yandan (S3: dış yanda Sv çerçevesi durur — `kat2SvTetikleri`).
+  const ax = dz > 0.01 ? m.x - s * 1.9 : ox;
   const xz: [number, number][] = [
     [serit, AGIZ.on - 0.25],
     [serit, AGIZ.sahanlik - 0.55],

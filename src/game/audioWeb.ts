@@ -82,7 +82,7 @@ export function sesDuraklat(neden: SusturmaNedeni, aktif: boolean): void {
   }
 }
 
-export function webSesArkaUcu(): SesArkaUc {
+export function webSesArkaUcu<K extends string = SesId>(): SesArkaUc<K> {
   const baglam = sesBaglami;
 
   /**
@@ -142,7 +142,7 @@ export function webSesArkaUcu(): SesArkaUc {
       return true;
     },
 
-    sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number, gain: number) {
+    sentezCal(id: K, katmanlar: readonly Katman[], yarimSes: number, gain: number) {
       if (sesDuraklatildi()) return;
       const c = baglam();
       if (!c) return;

@@ -5,6 +5,7 @@ import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '
 import { dailyCountersOf } from '../../game/store';
 import { adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
 import { ogreticiAdimi, ogreticiMetni, yurudu } from '../../game/onboarding';
+import { kat2GorevGorunumu } from '../../game/kat2Gorev';
 import { LAYOUT } from '../../game/layout';
 import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
@@ -161,6 +162,9 @@ export function HUD() {
   const quest = useGame((s) => s.quest);
   // K2-2b: Kat 2'deyken Kat 1'in görev bandı ve Kat 1'e bağlı ipuçları susar (Kat 2'nin görevleri K2-3'te).
   const kat2de = useGame((s) => s.kat === 2);
+  // S3: Kat 2 görev şeridi — kayıt nesnesi yalnız pad/görev değişince yenilenir, görünüm ondan türer.
+  const kat2Kayit = useGame((s) => s.kat2);
+  const kat2Gorev = kat2de ? kat2GorevGorunumu(kat2Kayit, economyConfig.kat2Gorevler, economyConfig.kat2) : null;
   const [bitisGorunur, setBitisGorunur] = useState(true);
   const questBitti = quest == null;
   // Hat yeniden uzarsa (yeni görev eklenirse) bant tekrar hak eder — render sırasında düzeltilir.
@@ -476,7 +480,29 @@ export function HUD() {
       )}
 
       {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
-      {kat2de ? (
+      {kat2de && kat2Gorev ? (
+        // S3 (ajan D): Kat 2'deyken şerit Kat 2'nin görevini aynı hap diliyle gösterir (D-175). Kamera
+        // odağı Kat 2'de yok (`focusQuest` Kat 1'in) — dokunma bağlanana dek şerit düğme değil.
+        <div className="band" data-testid="kat-bandi" data-gorev={kat2Gorev.id} key={kat2Gorev.id}>
+          <span className="band-photo">
+            <QuestPhoto target={kat2Gorev.foto} size={38} />
+          </span>
+          <span className="band-body">
+            <span className="band-title">{t(kat2Gorev.title)}</span>
+            {kat2Gorev.total != null && (
+              <span className="band-track">
+                <span className="band-fill" style={{ width: `${Math.min(100, ((kat2Gorev.cur ?? 0) / kat2Gorev.total) * 100)}%` }} />
+                <span className="band-count" data-testid="kat2-quest-prog">
+                  {kat2Gorev.cur}/{kat2Gorev.total}
+                </span>
+              </span>
+            )}
+          </span>
+          <span className="band-reward" data-testid="kat2-quest-reward">
+            <CoinIcon size={14} />+{fmt(kat2Gorev.reward)}
+          </span>
+        </div>
+      ) : kat2de ? (
         <div className="band idle" data-testid="kat-bandi">
           <span className="band-body">
             <span className="band-title">{t('Kat 2 — Oyun Salonu')}</span>

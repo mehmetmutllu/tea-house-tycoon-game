@@ -10,6 +10,8 @@ import { AGIZ, KAT2_LAVABO_PAD, KAT2_MASALAR, KAT2_SALON_PAD, KOVA, KUYU, OCAKLA
 import { BAND, FLOOR_HALF } from '../src/game/layout';
 import { grupYolu, oturakYerleri } from '../src/components/three/kat2/yol';
 import type { Solid } from '../src/game/layout';
+import { kat2SvTetikleri, type Kat2Ayar } from '../src/game/kat2Dongu';
+import { economyConfig } from '../src/config/economy.config';
 
 const HEPSI = [...KAT2_SALON_PAD, ...KAT2_MASALAR.map((m) => m.id), ...OCAKLAR.map((o) => o.id), KAT2_LAVABO_PAD];
 const PAY = 0.05;
@@ -67,5 +69,24 @@ describe('Kat 2 grup yolu (N7)', () => {
 
   it('yol kuyunun yanında korkuluğun dışından geçer', () => {
     for (const { n } of yollar) expect(Math.abs(n[2][0])).toBeGreaterThan(AGIZ.x);
+  });
+});
+
+describe('Kat 2 grup yolu ↔ Sv çerçevesi (S3)', () => {
+  const kol = { fiyat: [0, 1, 2, 3, 4], ucretCarpan: [1, 1, 1, 1, 1], kahveAralikCarpan: [1, 1, 1, 1, 1], gelisAralikCarpan: [1, 1, 1, 1, 1] };
+  const ayar: Kat2Ayar = { ...(economyConfig.kat2 as Kat2Ayar), masaSv: { okey: kol, tavla: kol } };
+  const tetikler = kat2SvTetikleri(ayar, HEPSI, {});
+  it('bütün masaların çerçevesi var', () => {
+    expect(tetikler.length).toBe(KAT2_MASALAR.length);
+  });
+  it('hiçbir grubun yolu bir Sv çerçevesinin içinden geçmez', () => {
+    const ihlal: string[] = [];
+    for (const { m, k, n } of yollar) {
+      for (const p of ornekle(n)) {
+        const t = tetikler.find((r) => Math.abs(p.x - r.x) < r.w / 2 - PAY && Math.abs(p.z - r.z) < r.d / 2 - PAY);
+        if (t) { ihlal.push(`${m.id}#${k} → ${t.id}`); break; }
+      }
+    }
+    expect(ihlal).toEqual([]);
   });
 });

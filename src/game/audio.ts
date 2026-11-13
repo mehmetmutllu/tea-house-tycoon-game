@@ -255,7 +255,7 @@ export function sesOlaylari(onceki: SesKesit | null, simdiki: SesKesit): SesId[]
  * Motorun tarayıcıya bakan yüzü. Testlerde sahtesi verilir — `jsdom`da gerçek WebAudio yok ve
  * olsaydı bile "duyuldu mu" doğrulanamazdı; doğrulanan şey motorun ne ÇALMAYA ÇALIŞTIĞI.
  */
-export interface SesArkaUc {
+export interface SesArkaUc<K extends string = SesId> {
   /**
    * Dosyayı çal. Dosya yoksa/çalamazsa `false` döner → motor sentezi çalar.
    * `yarimSes` seri ivmesinin basamağıdır; dosya tarafında `playbackRate` ile uygulanır.
@@ -265,15 +265,16 @@ export interface SesArkaUc {
    * Sentezi çal. Arka uç katmanları bir kez tampona çevirip önbellekler.
    * Önbellek anahtarı `id` DEĞİL `id + yarimSes`: aynı sesin her basamağı ayrı tampondur.
    */
-  sentezCal(id: SesId, katmanlar: readonly Katman[], yarimSes: number, gain: number): void;
+  sentezCal(id: K, katmanlar: readonly Katman[], yarimSes: number, gain: number): void;
   /** Tarayıcı ses kilidini açar (mobilde ilk dokunuşta). */
   kilidiAc(): void;
   /** Şu anki zaman (sn) — aralık kelepçesi bunu kullanır (testte sahte saat). */
   simdi(): number;
 }
 
-export interface SesMotoru {
-  cal(id: SesId): boolean;
+export interface SesMotoru<K extends string = SesId> {
+  /** `kazanc` (0..1) çağrı başına çarpan — Kat 2'nin yakınlık kısması (`kat2Ses.ts`). Varsayılan 1. */
+  cal(id: K, kazanc?: number): boolean;
   kilidiAc(): void;
   /** Ayar ve SEVİYE birlikte yansıtılır — ikisi de kayıttan gelir ve panelden değişebilir. */
   ayarla(acik: boolean, seviye?: number): void;
@@ -297,15 +298,21 @@ export interface SesMotoru {
  * Sayaç motorda durur, arka uçta değil — basamak "hangi tampon" sorusunun cevabı değil,
  * OYUNUN durumu: aynı hesap dosya yoluna da sentez yoluna da aynı sayıyı veriyor.
  */
-export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean, seviye = 1): SesMotoru {
+export function sesMotoruKur<K extends string = SesId>(
+  arkaUc: SesArkaUc<K>,
+  acik: boolean,
+  seviye = 1,
+  /** Katalog verilmezse Kat 1'inki. Kat 2 kendi kataloğuyla AYRI bir motor kurar (`audioKat2.ts`). */
+  katalog: Readonly<Record<K, SesTanim>> = SES_KATALOG as unknown as Record<K, SesTanim>,
+): SesMotoru<K> {
   let aktif = acik;
   // 0..1 arası kazanç. ANAHTARDAN AYRI: "kapat" ile "kıs" farklı isteklerdir — seviye 0'a
   // inse bile anahtar açık kalır ve oyuncu kaldığı yerden geri açar (D-122).
   let ses = Math.min(1, Math.max(0, seviye));
   let kilitli = true;
-  const sonCalma = new Map<SesId, number>();
+  const sonCalma = new Map<K, number>();
   /** Sesin o anki seri adımı (kaç basamak yukarıda). Seri kesilince 0'a döner. */
-  const seriAdim = new Map<SesId, number>();
+  const seriAdim = new Map<K, number>();
 
   return {
     get acik() { return aktif; },
@@ -319,11 +326,12 @@ export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean, seviye = 1): SesM
       kilitli = false;
       arkaUc.kilidiAc();
     },
-    cal(id: SesId): boolean {
+    cal(id: K, kazanc = 1): boolean {
       // Seviye 0 = sessiz. Kelepçe ve seri sayacı da ÇALIŞMAZ: çalınmayan ses ne yığılır ne
       // basamak yer — kısık sesle oynayıp açan oyuncu merdivenin ortasında bulmaz kendini.
-      if (!aktif || kilitli || ses <= 0) return false;
-      const tanim = SES_KATALOG[id];
+      const g = ses * Math.min(1, Math.max(0, kazanc));
+      if (!aktif || kilitli || g <= 0) return false;
+      const tanim = katalog[id];
       const t = arkaUc.simdi();
       const son = sonCalma.get(id);
       if (son != null && t - son < tanim.aralik) return false;
@@ -341,8 +349,8 @@ export function sesMotoruKur(arkaUc: SesArkaUc, acik: boolean, seviye = 1): SesM
       sonCalma.set(id, t);
       // Dosya bırakılmışsa o üstüne yazar; yoksa NİHAİ ses olan sentez çalar (E4 · karar 3).
       // D-122'de K1 seçildi (sentez kalır) ama dosya yolu basamağı taşımaya devam ediyor.
-      if (!arkaUc.dosyaCal(tanim.dosya, ses, yarimSes)) {
-        arkaUc.sentezCal(id, tanim.katmanlar, yarimSes, ses);
+      if (!arkaUc.dosyaCal(tanim.dosya, g, yarimSes)) {
+        arkaUc.sentezCal(id, tanim.katmanlar, yarimSes, g);
       }
       return true;
     },

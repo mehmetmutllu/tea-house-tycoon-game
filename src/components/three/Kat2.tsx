@@ -14,6 +14,9 @@
  * K2-S2: ocaklar `OCAKLAR`dan (2. cezve okey salonunda, açılınca yerinde büyür) · Kat 2 garsonu
  * (`kat2/Garson`, konum `kat2Dunya.garson`dan) · kalkış store aboneliğiyle (`useKalkisIzle`) ·
  * duvarlar `kat2/Bolme` (D-191 tam sıva duvar, açılınca kalkar).
+ *
+ * K2-S3: masa görünüşü `kat2.masaSv`den türer (okey G · tavla A Sv1-5, `kat2/Esya`), Sv atlayınca
+ * masa yerinde seker + toz (`SvSekme`); masanın yanında Sv işareti (`kat2/SvIsaret`, Kat 1 dili).
  */
 import { Suspense, useLayoutEffect, useRef } from 'react';
 import { CylinderGeometry, MeshStandardMaterial, Object3D, type InstancedMesh } from 'three';
@@ -26,7 +29,10 @@ import { BAND, FLOOR_HALF } from '../../game/layout';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
 import { AGIZ, KAT2_ALANLAR, KAT2_LAVABO_PAD, KAT2_MASALAR, KOVA, OCAKLAR, kat2AcikAlan, type Dik } from '../../game/kat';
 import { useGame } from '../../game/store';
-import { CezveOcagi, Dogus, OcakKosesi, OkeyMasa, TavlaMasa } from './kat2/Esya';
+import { CezveOcagi, Dogus, OcakKosesi, OkeyMasa, SvSekme, TavlaMasa } from './kat2/Esya';
+import { Kat2SvIsaretleri } from './kat2/SvIsaret';
+import { useMasaSvleri } from './kat2/masaSv';
+import { masaSvOku } from '../../game/kat2Dongu';
 import { MasaGrubu, useKalkisIzle } from './kat2/Grup';
 import { Bolmeler } from './kat2/Bolme';
 import { Kat2Garson } from './kat2/Garson';
@@ -373,15 +379,19 @@ export function MerdivenTamir({ pos }: { pos: [number, number, number] }) {
 function Masalar({ padsDone, ilk }: { padsDone: readonly string[]; ilk: ReadonlySet<string> }) {
   const oyunda = useGame((s) => s.kat2Dunya.masalar.filter((m) => m.durum === 'oyunda').map((m) => m.id).join(','));
   const oynayan = new Set(oyunda.split(','));
+  const masaSv = useMasaSvleri();
   return (
     <group>
       {KAT2_MASALAR.map((yer, i) => {
         if (!padsDone.includes(yer.id)) return null;
         const oyn = oynayan.has(yer.id);
+        const sv = masaSvOku(masaSv, yer.id);
         return (
           <group key={yer.id}>
             <Dogus dogus={!ilk.has(yer.id)} pos={[yer.x, 0, yer.z]}>
-              {yer.tur === 'okey' ? <OkeyMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} /> : <TavlaMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} />}
+              <SvSekme sv={sv} pos={[yer.x, 0, yer.z]}>
+                {yer.tur === 'okey' ? <OkeyMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} /> : <TavlaMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} />}
+              </SvSekme>
             </Dogus>
             <MasaGrubu yer={yer} sira={i} />
             <KahveBalonu yer={yer} />
@@ -458,6 +468,7 @@ export function Kat2Sahne() {
         <Masalar padsDone={padsDone} ilk={ilk.current} />
         <ParaYiginlari />
         <Kat2PadIsareti />
+        <Kat2SvIsaretleri />
         <Kat2Garson />
       </Suspense>
     </group>

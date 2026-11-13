@@ -1275,6 +1275,37 @@ export const economyConfig = {
   },
 
   /**
+   * KAT 2 GÖREV HATTI (S3 · ajan D; mantık `game/kat2Gorev.ts`). Kat 1 hattının dili: tek aktif görev, sayaç
+   * hedefi görev başından DELTA, pad/Sv hedefi durumdan. Sıra D-191 akışı: ilk kahve → merdiven salonu →
+   * okey salonu → 2. ocak → lavabo → tavla köşesi + garson → tavla masaları → (masa Sv). Pad görevi zincirin
+   * aradaki pad'lerini adım sayar ("Okey salonunu doldur" 0/4). Sv görevleri yalnız `kat2.masaSv` varken
+   * (kuyrukta). ÖDÜL TASLAK (kapı kapalı): Kat 1 M1 bandı — referans pad'in ~%15'i, 50'ye yuvarlı; Sv
+   * ödülleri Sv fiyatı seçilince aynı kuralla yeniden yazılır. Bekçi `tests/kat2-gorev.test.ts`.
+   */
+  kat2Gorevler: [
+    { id: 'k2_kahve1', kicker: 'İLK KAHVE', title: 'Okey masasına kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 1 }, reward: 200 },
+    { id: 'k2_okey1', kicker: 'OKEY', title: 'Yeni okey masası aç', hedef: { tip: 'pad', id: 'k2okey1' }, reward: 200 },
+    { id: 'k2_topla', kicker: 'MASA ÜCRETİ', title: 'Masanın bıraktığı parayı topla', hedef: { tip: 'sayac', sayac: 'kazanc', adet: 1 }, reward: 250 },
+    { id: 'k2_kahve10', kicker: 'KAHVECİ', title: '10 kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 10 }, reward: 250 },
+    { id: 'k2_okey4', kicker: 'MERDİVEN SALONU', title: 'Merdiven salonunu doldur', hedef: { tip: 'pad', id: 'k2okey4' }, reward: 350 },
+    { id: 'k2_salon2', kicker: 'OKEY SALONU', title: 'Okey salonunu aç', hedef: { tip: 'pad', id: 'k2salon2' }, reward: 400 },
+    { id: 'k2_grup5', kicker: 'MİSAFİR', title: '5 grubu ağırla', hedef: { tip: 'sayac', sayac: 'kalkis', adet: 5 }, reward: 400 },
+    { id: 'k2_s2okey2', kicker: 'OKEY SALONU', title: 'Okey salonu: 2 masa aç', hedef: { tip: 'pad', id: 'k2s2okey2' }, reward: 500 },
+    { id: 'k2_cezve2', kicker: 'İKİNCİ OCAK', title: '2. ocağı kur', hedef: { tip: 'pad', id: 'k2cezve2' }, reward: 550 },
+    { id: 'k2_kahve40', kicker: 'KAHVECİ', title: '40 kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 40 }, reward: 550 },
+    { id: 'k2_s2okey6', kicker: 'SALON DOLDU', title: 'Okey salonunu doldur', hedef: { tip: 'pad', id: 'k2s2okey6' }, reward: 750 },
+    { id: 'k2_lavabo', kicker: 'LAVABO', title: 'Lavaboyu aç', hedef: { tip: 'pad', id: 'k2lavabo' }, reward: 850 },
+    { id: 'k2_salon3', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesini aç', hedef: { tip: 'pad', id: 'k2salon3' }, reward: 950 },
+    { id: 'k2_garson', kicker: 'GARSON', title: 'Garson tut', hedef: { tip: 'pad', id: 'k2garson' }, reward: 950 },
+    { id: 'k2_tavla1', kicker: 'TAVLA', title: 'İlk tavla masasını aç', hedef: { tip: 'pad', id: 'k2tavla1' }, reward: 950 },
+    { id: 'k2_tavlaKahve', kicker: 'TAVLA', title: 'Tavlacılara 10 kahve', hedef: { tip: 'sayac', sayac: 'tavlaKahve', adet: 10 }, reward: 1_000 },
+    { id: 'k2_tavla6', kicker: 'TAVLA KÖŞESİ', title: 'Tavla: 6 masaya çık', hedef: { tip: 'pad', id: 'k2tavla6' }, reward: 1_150 },
+    { id: 'k2_tavla12', kicker: 'KAT 2 TAMAM', title: 'Tavla köşesini doldur', hedef: { tip: 'pad', id: 'k2tavla12' }, reward: 1_400 },
+    { id: 'k2_sv2', kicker: 'MASA SEVİYESİ', title: "Bir okey masasını Seviye 2'ye çıkar", hedef: { tip: 'masaSv', tur: 'okey', sv: 2, adet: 1 }, reward: 1_000 },
+    { id: 'k2_sv5', kicker: 'GÖZDE MASA', title: "Bir masayı Seviye 5'e çıkar", hedef: { tip: 'masaSv', sv: 5, adet: 1 }, reward: 1_500 },
+  ],
+
+  /**
    * KOZMETİK MAĞAZA (WP6, 2026-06-11; feedback §D19): zemin + duvar temaları ZONE-BAŞINA ₺ ile
    * satın alınır — PAHALI (geç oyun para biriktirme hedefi; "tek alan için 10k+"). Satın alınan
    * tema o ALAN için kalıcı sahipliktir (ownedCosmetics); tekrar seçmek ücretsiz. Görsel karşılıklar

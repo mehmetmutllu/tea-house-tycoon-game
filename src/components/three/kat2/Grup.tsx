@@ -31,6 +31,7 @@ import { PALETTE } from '../../../config/palette';
 import { KLIP, LOKOMOSYON_YURUYUS, basMi, ekipmanMi, kafaKucult, lokomosyonSec, useKayKlipler } from '../KayActor';
 import type { Kat2MasaYeri } from '../../../game/kat';
 import { grupYolu, oturakYerleri, yolKur, yolNoktasi, type Nokta, type Yol } from './yol';
+import { useMasaSv } from './masaSv';
 
 const AYAR = economyConfig.kat2;
 /** Grup en çok bu kadar sn önce merdivenden çıkmaya başlar (mantıktaki `bos` süresinin sonu). */
@@ -150,7 +151,10 @@ export function useKalkisIzle() {
 
 /** Bir masanın grubu. Masa açık olduğu sürece takılı; gövdeler ilk gelişte kurulur. */
 export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
-  const yollar = useMemo<Yol[]>(() => oturakYerleri(yer.tur).map((o, k) => yolKur(grupYolu(yer, o, k))), [yer]);
+  // Sv4'te masa büyür, oturaklar açılır: grup yeni oturağa yürür ve oturur (`oturakYerleri(tur, sv)`).
+  const sv = useMasaSv(yer.id);
+  const oturaklar = useMemo(() => oturakYerleri(yer.tur, sv), [yer.tur, sv]);
+  const yollar = useMemo<Yol[]>(() => oturaklar.map((o, k) => yolKur(grupYolu(yer, o, k))), [yer, oturaklar]);
   const enUzun = Math.max(...yollar.map((y) => y.boy));
   // Görsel geliş süresi: mantığın `yurume`si + merdivenden erken çıkış (çıkışla çakışmasın diye sınırlı).
   const once = MathUtils.clamp(enUzun / HIZ - AYAR.yurume, 0, Math.min(ONCE_EN_COK, AYAR.gelisAralik - CIKIS_SN - SONME_SN - 0.5));
@@ -213,7 +217,7 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
     govdeler.current.forEach((g, k) => {
       g.mat.color.set(GOMLEK[(h.ziyaret * 4 + k * 3) % GOMLEK.length]);
       const yol = yollar[k];
-      const [dx, dz] = oturakYerleri(yer.tur)[k];
+      const [dx, dz] = oturaklar[k];
       const aciOtur = Math.atan2(-dx, -dz);
       let olcek = 1;
       if (kip === 'otur') {

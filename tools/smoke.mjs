@@ -816,6 +816,24 @@ try {
     else fail(`Kat 2 görünüşü bozuk (merdiven ${once}→${sonra}, Kat 2'de görev bandı ${!!gorevKat2de})`);
   }
 
+  // S3: Kat 2 görev hattı bantta + pad görevi bitince sıradakine geçer · masa Sv dev kancası kayda yazılır.
+  {
+    await page.waitForFunction(() => window.__game().katGecis == null && window.__game().kat === 1, null, { timeout: 8000 });
+    await page.evaluate(() => window.__kat2(2));
+    await page.waitForSelector('[data-testid="kat-bandi"][data-gorev]', { timeout: 8000 });
+    const g0 = await page.$eval('[data-testid="kat-bandi"]', (e) => e.getAttribute('data-gorev'));
+    // 2. görev pad görevi (k2okey1): hattı ona koy, pad'i bitir → sıradakine geçmeli.
+    await page.evaluate(() => { const k = window.__game().kat2; window.__setState({ kat2: { acik: true, padsDone: k.padsDone, masaSv: k.masaSv, gorev: { idx: 1, sayac: {} } } }); });
+    await page.evaluate(() => window.__kat2Pad('k2okey1'));
+    await page.waitForFunction(() => (window.__game().kat2.gorev?.idx ?? 0) >= 2, null, { timeout: 8000 }).catch(() => null);
+    const g1 = await page.evaluate(() => window.__game().kat2.gorev);
+    const sv = await page.evaluate(() => { window.__kat2Sv('k2okey2', 3); return window.__game().kat2.masaSv; });
+    await page.evaluate(() => window.__kat2(1));
+    await page.waitForSelector('[data-testid="kat-bandi"]', { state: 'detached', timeout: 5000 });
+    if (g0 && g1 && g1.idx >= 2 && sv.k2okey2 === 3) pass(`Kat 2 görev hattı: bantta ${g0} → hat ${g1.idx}. görevde · masa Sv kaydı`);
+    else fail(`Kat 2 görev/Sv bozuk (bant ${g0}, görev ${JSON.stringify(g1)}, Sv ${JSON.stringify(sv)})`);
+  }
+
   if (consoleErrors.length === 0) pass('Konsol hatası yok');
   else fail(`Konsol hataları: ${consoleErrors.slice(0, 5).join(' | ')}`);
 } catch (e) {

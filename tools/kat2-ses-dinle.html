@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kat 2 sesleri — dinle ve seç</title>
+<style>
+  :root { --zemin: #2b2233; --kart: #3a2f45; --yazi: #f4ead8; --soluk: #b9a9c4; --vurgu: #f2b33d; --ikinci: #6cc3b5; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 24px 16px 48px; background: var(--zemin); color: var(--yazi); font: 15px/1.45 system-ui, sans-serif; }
+  main { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 15px; margin: 28px 0 10px; color: var(--soluk); font-weight: 600; letter-spacing: .02em; }
+  p.not { color: var(--soluk); margin: 0 0 16px; }
+  .kart { background: var(--kart); border-radius: 12px; padding: 12px 14px; margin-bottom: 10px; }
+  .ust { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .ad { font-weight: 700; }
+  .kod { color: var(--soluk); font: 12px ui-monospace, monospace; }
+  .satir { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
+  button { font: inherit; color: #241b2c; border: 0; border-radius: 10px; padding: 10px 12px; cursor: pointer; text-align: left; }
+  button.a1 { background: var(--vurgu); }
+  button.a2 { background: var(--ikinci); }
+  button.tek { background: #d9cbe3; }
+  button:active { transform: translateY(1px); }
+  button b { display: block; }
+  button span { font-size: 13px; opacity: .85; }
+  .bagli { font-size: 12px; color: var(--vurgu); }
+  .yakin { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
+  .yakin button { padding: 6px 10px; font-size: 13px; background: #d9cbe3; }
+  @media (max-width: 520px) { .satir { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<main>
+  <h1>Kat 2 sesleri</h1>
+  <p class="not">Her ses için iki aday var. Oyunda şu an <b>Aday 1</b> çalıyor. Beğendiğini söyle, yalnız seçim değişir.
+    Bu sayfa oyunun ses kataloğunu ve sentez kodunu birebir kullanır (<span class="kod">src/game/audioKat2.ts</span> +
+    <span class="kod">audioSynth.ts</span>); burada duyduğun, oyunda çalandır. Açmak için: <span class="kod">npm run dev</span> →
+    <span class="kod">/tools/kat2-ses-dinle.html</span></p>
+  <h2>YENİ SESLER — iki aday</h2>
+  <div id="yeni"></div>
+  <h2>KAT 1'DEN AYNEN KULLANILANLAR — aday yok</h2>
+  <div id="eski"></div>
+</main>
+<script type="module">
+  import { KAT2_SES_ADAYLARI, KAT2_SECIM, yakinlik, YAKIN, UZAK } from '/src/game/audioKat2.ts';
+  import { SES_KATALOG } from '/src/game/audio.ts';
+  import { ORNEKLEME, seslendir } from '/src/game/audioSynth.ts';
+
+  let ctx = null;
+  const tamponlar = new Map();
+  /** Oyunun web arka ucuyla aynı yol: saf sentezden tampon, ORNEKLEME hızında, kazanç ayrı düğümde. */
+  function cal(anahtar, katmanlar, gain = 1) {
+    ctx ??= new AudioContext();
+    if (ctx.state !== 'running') void ctx.resume();
+    let t = tamponlar.get(anahtar);
+    if (!t) {
+      const o = seslendir(katmanlar);
+      t = ctx.createBuffer(1, o.length, ORNEKLEME);
+      t.getChannelData(0).set(o);
+      tamponlar.set(anahtar, t);
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = t;
+    const g = ctx.createGain();
+    g.gain.value = gain;
+    src.connect(g).connect(ctx.destination);
+    src.start();
+  }
+
+  const el = (etiket, sinif, html) => { const e = document.createElement(etiket); if (sinif) e.className = sinif; if (html) e.innerHTML = html; return e; };
+  const ORTAM = new Set(['k2takirti', 'k2zar', 'k2cezve']);
+
+  const yeni = document.getElementById('yeni');
+  for (const [id, s] of Object.entries(KAT2_SES_ADAYLARI)) {
+    const k = el('div', 'kart');
+    k.append(el('div', 'ust', `<span class="ad">${s.ad}</span><span class="kod">${id}</span>`));
+    const satir = el('div', 'satir');
+    s.adaylar.forEach((aday, i) => {
+      const b = el('button', i === 0 ? 'a1' : 'a2',
+        `<b>Aday ${i + 1}${KAT2_SECIM[id] === i ? ' <span class="bagli">· oyunda</span>' : ''}</b><span>${s.tarif[i]}</span>`);
+      b.onclick = () => cal(`${id}:${i}`, aday.katmanlar);
+      satir.append(b);
+    });
+    k.append(satir);
+    if (ORTAM.has(id)) {
+      // Oyunda bu ses masaya/ocağa uzaklıkla kısılır — aynı `yakinlik` fonksiyonu.
+      const y = el('div', 'yakin');
+      for (const m of [YAKIN, (YAKIN + UZAK) / 2, UZAK - 2]) {
+        for (let i = 0; i < 2; i++) {
+          const b = el('button', '', `Aday ${i + 1} · ${m.toFixed(1)} m uzaktan`);
+          b.onclick = () => cal(`${id}:${i}`, s.adaylar[i].katmanlar, yakinlik(m));
+          y.append(b);
+        }
+      }
+      k.append(y);
+    }
+    yeni.append(k);
+  }
+
+  const ESKI = [
+    ['coin', 'Para yığını toplama', 'Kat 1 ile aynı (art arda toplayınca perde yükselir)'],
+    ['serve', 'Kahveyi masaya bırakma', 'Kat 1 çay servisi'],
+    ['pour', 'Ocaktan kahve alma', 'Kat 1 ocaktan çay alma'],
+    ['padFill', 'Pad açıldı', 'Kat 1 pad açılışı'],
+  ];
+  const eski = document.getElementById('eski');
+  for (const [id, ad, not] of ESKI) {
+    const k = el('div', 'kart');
+    k.append(el('div', 'ust', `<span class="ad">${ad}</span><span class="kod">${id}</span>`));
+    const b = el('button', 'tek', `<b>Dinle</b><span>${not}</span>`);
+    b.onclick = () => cal(id, SES_KATALOG[id].katmanlar);
+    const satir = el('div', 'satir');
+    satir.append(b);
+    k.append(satir);
+    eski.append(k);
+  }
+</script>
+</body>
+</html>
