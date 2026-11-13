@@ -25,9 +25,6 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Kodda: kasa + çevrimdışı (D-185) · tavla/2. ocak/garson mantığı (D-186) · **pad fiyatları SB9** (D-188, config, bekçi
   "config = SB9") · **garson hız 3 · tepsi 2 · tek** (D-189) · **alçak bölme 1,2** (D-190; B/C/D silindi, perde `h` parametreli).
 - Hata bulundu/düzeldi: yol ağı görüşü kapı pervazındaki yürüyeni "açık" sayıyordu → bot/garson geçit ucunda itip kalıyordu.
-  `kat.ts gorusAcik` gerçek katılarla sınıyor · bekçi (geçit uçları) · araçlarda "bot takılmadı" damgası. Eski "garson zayıf
-  oyuncuya +%28" bulgusu bu hatanın eseriydi (doğrusu +%7-8).
-- Raporlar tamam: kasa §Uygulama · garson §Karar · zincir §Karar. Ajan notları `docs/sprintler/kat2-S2/`.
 
 ## ✅ KAT 2 AKIŞ TURU (D-191) + K2-6 MANTIK (D-192) + GÖRSEL (D-193) — kodda, üretimde kapı kapalı
 - Akış sayfası https://claude.ai/artifact/Xejd4pNeiebku7FsPmjM3T (`tools/kat2-akis.tsx`).
