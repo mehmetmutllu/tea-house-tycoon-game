@@ -30,8 +30,7 @@ import { KAY_KOK, KAY_MUSTERI_GOVDE, KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, KAY_
 import { PALETTE } from '../../../config/palette';
 import { KLIP, LOKOMOSYON_YURUYUS, basMi, ekipmanMi, kafaKucult, lokomosyonSec, useKayKlipler } from '../KayActor';
 import type { Kat2MasaYeri } from '../../../game/kat';
-import { oturakYerleri } from './Esya';
-import { grupYolu, yolKur, yolNoktasi, type Nokta, type Yol } from './yol';
+import { grupYolu, oturakYerleri, yolKur, yolNoktasi, type Nokta, type Yol } from './yol';
 
 const AYAR = economyConfig.kat2;
 /** Grup en çok bu kadar sn önce merdivenden çıkmaya başlar (mantıktaki `bos` süresinin sonu). */

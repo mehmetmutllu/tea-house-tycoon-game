@@ -44,6 +44,8 @@ declare global {
     __teleport?: (x: number, z: number) => Record<string, unknown>;
     /** K2-2: merdiveni aç (tamir pad'i K2-5'te) · `kat` verilirse oraya geç (perdeli). */
     __kat2?: (kat?: 1 | 2) => { kat: number; acik: boolean; gecis: boolean };
+    /** Kat 2 pad'ini parasız tamamlar (görsel kare/duman: duvar kalkışı, perde → obje). */
+    __kat2Pad?: (id: string) => readonly string[];
     /** Mağaza videosu (D-170): joystick girdisi + hafif konum okuma (`__game` her karede ağır). */
     __girdi?: (x: number, z: number) => [number, number];
     __sinema?: (k: { pos: [number, number, number]; bak: [number, number, number]; fov: number; gok?: string } | null) => void;
@@ -376,6 +378,12 @@ export function installDevHooks(): void {
     if (!g.kat2.acik) g.kat2Ac();
     const gecis = kat ? useGame.getState().katDegistir(kat) : false;
     return { kat: useGame.getState().kat, acik: useGame.getState().kat2.acik, gecis };
+  };
+
+  window.__kat2Pad = (id) => {
+    const k = useGame.getState().kat2;
+    if (!k.padsDone.includes(id)) useGame.setState({ kat2: { ...k, padsDone: [...k.padsDone, id] } });
+    return useGame.getState().kat2.padsDone;
   };
 
   window.__teleport = (x: number, z: number) => {

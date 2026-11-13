@@ -5196,3 +5196,12 @@ Rapor `docs/kat2-akis-zincir-raporu-k2-6.md` (araç `tools/olcum-kat2-akis.ts`).
 - **Lavabo Kat 1 gibi** (L1: %30 × 18 coin/kişi, seviyesiz); yığın lavabonun önünde. Rastgele değil: uğrayan pay birikir.
 - **Merdiven pad'i 9.400 coin**, Kat 1'in omurgası bitince merdivenin önünde (aktif oyuncuya ~9 dk).
 - Sonuç: Kat 2 4,90 sa (önce 5,03), en uzun bekleyiş ~13 dk. Para birimi kullanıcıya "coin" diye söylenir.
+
+## D-193 · Kat 2 görsel parça (D-191'in görünüşü koda, 2026-11-13) — denge değişmedi
+- **Sıva duvar:** alanlar arası hat tam boy (`WALL_H` 3,2) `MaketWall`; alan açılınca titreyip yere gömülür, sıradaki
+  kapalı alanın duvarı yerden yükselir (`kat2/Bolme.tsx`). Katı gövde anında değişir, animasyon yalnız görüntü.
+- **P3 perde her yerde:** sarı-siyah bant kalktı; ortada yuvarlak levha, simgesi arkadakini söyler (`simge`: okey taşı ·
+  lavabo damlası · mutfak çay bardağı). Kat 1 WC perdesi de damlalı.
+- **Kat 2 lavabosu:** kapalıyken perde + iskele/moloz/kasa; açılınca Kat 1'in lavabo odası seviye 2 sabit (akış t4) yerinde büyür.
+- **Merdiven dönüşümü:** pad dolunca yıkık takım gömülür + toz, tamir merdiveni yerinde büyür (`kat2/MerdivenDonusum.tsx`).
+- Oturak yerleri three'siz `kat2/yol.ts`e taşındı; yol bekçisi `tests/kat2-yol.test.ts` (N7'de engel/kuyu/kova). Dev: `__kat2Pad(id)`.

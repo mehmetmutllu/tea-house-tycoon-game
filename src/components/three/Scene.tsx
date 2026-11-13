@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Kat2Sahne, MerdivenTamir } from './Kat2';
+import { Kat2Sahne } from './Kat2';
+import { MerdivenKovasi } from './kat2/MerdivenDonusum';
 import { merdivenTamirli } from '../../game/kat';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
 import { Color, Fog, Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
@@ -63,13 +64,10 @@ import { FRONT_TOP_Y } from './kitchenLook';
 import { CAYCI_TEMPO, cayBekleyenSayisi, cayciHali, cayciHizCarpani, sinirBolmeleri } from './kitchenLook';
 import {
   MaketCrates,
-  MaketDuba,
   MaketIskele,
   MaketLavaboBlock,
-  MaketMerdivenHarap,
   MaketMoloz,
   MaketTadilatPerde,
-  MaketUyariSeridi,
   MaketWall,
 } from './maketParts';
 import { banketKademe, banketSutunlari, type BanketSutun } from './banketLook';
@@ -1149,17 +1147,7 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
       {/* MERDİVEN KOVASI — yıkık merdiven + uyarı şeridi + dubalar (hepsi bandın İÇİNDE:
           oyuncu z = −9,8'de duruyor, salona taşan hiçbir parça olmasın diye maketin
           salon tarafındaki dubaları kovanın içine alındı). */}
-      {merdivenAcik ? (
-        <MerdivenTamir pos={[0, 0, stairZ]} />
-      ) : (
-        <>
-          <MaketMerdivenHarap pos={[0, 0, stairZ]} />
-          <MaketUyariSeridi x1={-4.2} x2={4.2} z={zf - 0.1} />
-          {[-3.6, 0, 3.6].map((x) => (
-            <MaketDuba key={x} pos={[x, 0, zf - 0.25]} />
-          ))}
-        </>
-      )}
+      <MerdivenKovasi acik={merdivenAcik} stairZ={stairZ} zf={zf} />
 
       {/* LAVABO — açıkken oda, kapalıyken TADİLAT (kilitli obje çizilmez değil, yıkık durur) */}
       {lavaboOpen ? (
@@ -1169,7 +1157,7 @@ function BackBand({ areasOpen }: { areasOpen: number }) {
           {/* Maketin `s === 3` bloğu: perdenin ARKASI boş kalmaz — tadilat sürüyor.
               Perde 2,4, kabuk 3,2 → kamera perdenin üstünden içeriyi görüyor; iskele ve moloz
               olmasaydı "kapalı oda" değil "boş oda" okunurdu. */}
-          <MaketTadilatPerde x1={BAND.wc.minX} x2={BAND_SHELL.innerRight} z={zf} />
+          <MaketTadilatPerde x1={BAND.wc.minX} x2={BAND_SHELL.innerRight} z={zf} simge="lavabo" />
           <MaketIskele len={4.4} pos={[12.0, 0, -12.4]} />
           <MaketMoloz pos={[7.0, 0, -13.6]} />
           <MaketCrates pos={[BAND_SHELL.innerRight - 1.27, 0, sz0 + 1.07]} />

@@ -15,6 +15,7 @@ import { STOOL_S } from '../tableLook';
 import { MaketCrates, MaketPlant, MaketWallShelf } from '../maketParts';
 import { BAND } from '../../../game/layout';
 import { Fincan, Kutu, Silindir } from './parca';
+import { oturakYerleri } from './yol';
 
 export const KAY_F = '/assets/models/kaykit-furniture-bits/';
 export const KAY_R = '/assets/models/kaykit-restaurant-bits/';
@@ -28,12 +29,6 @@ const BAKIR = '#b87333';
 const KOYU = '#5d4037';
 
 /** Oturak yarıçapları: okeyde dört yan (±1,0), tavlada iki yan ±x (0,82). Grup da buradan oturur. */
-export const OKEY_OTURAK_R = 1.0;
-export const TAVLA_OTURAK_R = 0.82;
-export const oturakYerleri = (tur: 'okey' | 'tavla'): [number, number][] =>
-  tur === 'okey'
-    ? [[0, -OKEY_OTURAK_R], [OKEY_OTURAK_R, 0], [0, OKEY_OTURAK_R], [-OKEY_OTURAK_R, 0]]
-    : [[TAVLA_OTURAK_R, 0], [-TAVLA_OTURAK_R, 0]];
 
 function Tabure({ x, z }: { x: number; z: number }) {
   return (

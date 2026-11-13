@@ -286,9 +286,11 @@ export function MaketPlant({ pos, big = false }: { pos: [number, number, number]
  * dış duvarı kat kenarından 0,5 dışarıda durduğu için oda maketinkinden ~0,5 daha geniş/derin;
  * mobilya duvara yaslı kalsın diye ölçü duvardan okunur, maketten kopyalanmaz.
  */
-export function MaketLavaboBlock() {
+/** `seviye`: verilirse store yerine bu seviye çizilir (Kat 2 lavabosu seviyesiz — D-192). */
+export function MaketLavaboBlock({ seviye }: { seviye?: number } = {}) {
   // Oda yalnız pad bitince ÇİZİLİYOR; etkin seviye o yüzden `wcSeviye`den türer (gerekçe orada).
-  const level = useGame((st) => wcSeviye(st.lavaboLevel, st.padsDone.includes('lavabo')));
+  const kat1 = useGame((st) => wcSeviye(st.lavaboLevel, st.padsDone.includes('lavabo')));
+  const level = seviye ?? kat1;
   const H = ROOM_H; // maketin lavaboBlock'undaki sabit (2,2)
   const x1 = BAND.wc.minX; // 4,6 — maketle aynı
   const x2 = BAND_SHELL.innerRight; // doğu duvarının İÇ yüzü (maketin 16,9'unun oyundaki karşılığı)
@@ -562,18 +564,95 @@ export function MaketUyariSeridi({ x1, x2, z }: { x1: number; x2: number; z: num
 }
 
 /**
- * Maketin `tadilatPerde(x1, x2, z)` — kilitli OBJENİN önünde tahta perde + uyarı bandı.
- * Kural (maketin kendi yorumu): *"kilitli ALAN hiç çizilmez; açık alanın içindeki kilitli obje
- * tadilat hâlinde durur."* Perde 2,40 — eski 1,2'lik bandın düz düzlemlerinin yerini alır.
+ * Kilitli OBJENİN önünde tahta perde (D-191 P3): bantsız tahta + ortada yuvarlak levha — levhadaki simge
+ * arkada ne olduğunu söyler. Kural (maketin kendi yorumu): *"kilitli ALAN hiç çizilmez; açık alanın içindeki
+ * kilitli obje tadilat hâlinde durur."* Sarı-siyah bant beğenilmedi (2026-11-13), kalktı.
  */
-/** `h`: perde boyu (varsayılan 2,4 tam duvar; Kat 2 alçak bölmesinde dikmenin altında kalır — D-190). */
-export function MaketTadilatPerde({ x1, x2, z, h = 2.4 }: { x1: number; x2: number; z: number; h?: number }) {
+export type PerdeSimge = 'okey' | 'lavabo' | 'mutfak';
+
+const LEVHA_ZEMIN = '#f1e6cc';
+const SU = '#3d8fd1';
+const CAY = '#b3322b';
+
+/** Levha düzlemi XY'de (perde yüzü +z'ye bakar); simgeler levhanın önünde ince kabartma. */
+function PerdeLevhasi({ r, simge }: { r: number; simge: PerdeSimge }) {
+  const on = 0.06;
+  return (
+    <group>
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <cylinderGeometry args={[r + 0.05, r + 0.05, 0.03, 20]} />
+        <meshStandardMaterial color={MC.doorWood} />
+      </mesh>
+      <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.02]}>
+        <cylinderGeometry args={[r, r, 0.04, 20]} />
+        <meshStandardMaterial color={LEVHA_ZEMIN} />
+      </mesh>
+      {simge === 'okey' && (
+        <>
+          <mesh position={[0, 0, on - 0.015]}>
+            <boxGeometry args={[r * 0.75, r * 1.05, 0.02]} />
+            <meshStandardMaterial color="#fffaf0" />
+          </mesh>
+          <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, r * 0.1, on]}>
+            <cylinderGeometry args={[r * 0.17, r * 0.17, 0.02, 12]} />
+            <meshStandardMaterial color={CAY} />
+          </mesh>
+        </>
+      )}
+      {simge === 'lavabo' && (
+        <>
+          {/* su damlası: alt yuvarlak + yukarı sivrilen koni */}
+          <mesh position={[0, -r * 0.16, on - 0.01]} scale={[1, 1, 0.25]}>
+            <sphereGeometry args={[r * 0.36, 16, 10]} />
+            <meshStandardMaterial color={SU} />
+          </mesh>
+          <mesh position={[0, r * 0.26, on - 0.01]} scale={[1, 1, 0.25]}>
+            <coneGeometry args={[r * 0.31, r * 0.52, 16]} />
+            <meshStandardMaterial color={SU} />
+          </mesh>
+        </>
+      )}
+      {simge === 'mutfak' && (
+        <>
+          {/* ince belli çay bardağı (iki kesik koni) + tabak */}
+          <mesh position={[0, r * 0.2, on - 0.01]} scale={[1, 1, 0.25]}>
+            <cylinderGeometry args={[r * 0.3, r * 0.17, r * 0.42, 14]} />
+            <meshStandardMaterial color={CAY} />
+          </mesh>
+          <mesh position={[0, -r * 0.2, on - 0.01]} scale={[1, 1, 0.25]}>
+            <cylinderGeometry args={[r * 0.17, r * 0.28, r * 0.4, 14]} />
+            <meshStandardMaterial color={CAY} />
+          </mesh>
+          <mesh position={[0, -r * 0.46, on - 0.01]}>
+            <boxGeometry args={[r * 0.75, r * 0.08, 0.02]} />
+            <meshStandardMaterial color={MC.doorWood} />
+          </mesh>
+        </>
+      )}
+    </group>
+  );
+}
+
+/** `h`: perde boyu (varsayılan 2,4) · `simge`: levhadaki işaret (arkadaki obje). */
+export function MaketTadilatPerde({
+  x1,
+  x2,
+  z,
+  h = 2.4,
+  simge = 'okey',
+}: {
+  x1: number;
+  x2: number;
+  z: number;
+  h?: number;
+  simge?: PerdeSimge;
+}) {
   const k = h / 2.4;
   const len = x2 - x1;
   const cx = (x1 + x2) / 2;
   const n = Math.max(1, Math.round(len / 0.62));
   const st = len / n;
-  const bantSayisi = Math.max(1, Math.ceil((len - 0.5) / 0.86));
+  const r = Math.min(0.42, h * 0.22);
   return (
     <group>
       {Array.from({ length: n }, (_, i) => (
@@ -582,18 +661,15 @@ export function MaketTadilatPerde({ x1, x2, z, h = 2.4 }: { x1: number; x2: numb
           <meshStandardMaterial color={['#8a6242', '#9c6f4a', '#7d5b40'][i % 3]} flatShading />
         </mesh>
       ))}
-      {[0.55, 2.05].map((y) => (
-        <mesh key={y} position={[cx, y * k, z + 0.02]}>
-          <boxGeometry args={[len, 0.13, 0.18]} />
+      {[0.4, 2.05].map((y) => (
+        <mesh key={y} position={[cx, y * k, z + 0.03]}>
+          <boxGeometry args={[len, 0.13, 0.16]} />
           <meshStandardMaterial color={MC.doorWood} />
         </mesh>
       ))}
-      {Array.from({ length: bantSayisi }, (_, i) => (
-        <mesh key={`s${i}`} position={[x1 + 0.35 + i * 0.86, 1.35 * k, z + 0.07]} rotation={[0, 0, 0.5]}>
-          <boxGeometry args={[0.5, 0.17, 0.03]} />
-          <meshStandardMaterial color={i % 2 ? '#e0b13a' : '#2f2a24'} />
-        </mesh>
-      ))}
+      <group position={[cx, h * 0.6, z + 0.08]}>
+        <PerdeLevhasi r={r} simge={simge} />
+      </group>
     </group>
   );
 }

@@ -3,7 +3,7 @@
  * nerede olduğunu bilmez, yalnız `geliyor` süresini sayar — `kat2Dongu`).
  *
  * Yol köşeli (Manhattan) çizilir ki masaların ve kuyunun İÇİNDEN geçmesin:
- *   merdiven dibi (kuyu içi, y −3,2) → sahanlık → kuyunun yanı → kuyunun önü → [geçit] →
+ *   merdiven dibi (kuyu içi, y −3,2) → sahanlık → kuyunun yanı → kuyunun önü → [orta yol] →
  *   masanın arka koridoru → oturağın hizası → oturak.
  * Koridorlar masa dizilerinin arasından geçer (okey sıraları 5 br, tavla 3,6 br aralıklı).
  * Sayılar sahne ölçüsüdür (oyun kuralı değil); masa yerleri `KAT2_MASALAR`dan, kuyu `AGIZ`tan.
@@ -12,6 +12,14 @@ import { AGIZ, type Kat2MasaYeri } from '../../../game/kat';
 import { BAND } from '../../../game/layout';
 
 export type Nokta = [number, number, number];
+
+/** Oturakların masa merkezine uzaklığı (saf sayı — çizim `Esya`, yol ve bekçi aynı yerden okur). */
+export const OKEY_OTURAK_R = 1.0;
+export const TAVLA_OTURAK_R = 0.82;
+export const oturakYerleri = (tur: 'okey' | 'tavla'): [number, number][] =>
+  tur === 'okey'
+    ? [[0, -OKEY_OTURAK_R], [OKEY_OTURAK_R, 0], [0, OKEY_OTURAK_R], [-OKEY_OTURAK_R, 0]]
+    : [[TAVLA_OTURAK_R, 0], [-TAVLA_OTURAK_R, 0]];
 
 /** Kuyunun içinde merdivenin basamak yüksekliği (z'ye göre). Kuyu dışı 0. */
 export function merdivenY(x: number, z: number): number {
@@ -29,8 +37,7 @@ const ON_Z = BAND.front + 0.6;
 export function grupYolu(m: Kat2MasaYeri, oturak: [number, number], sira: number): Nokta[] {
   const s = m.x < 0 ? -1 : 1;
   const serit = s * (0.6 + (sira % 2) * 0.9);
-  // Okey koridoru masa ayak izinin (±1,25) hemen önü: okey salonunda bölmeye yaslı 2. ocağın
-  // önünden (tezgâh ön yüzü z ≈ 2,15) değil, ocak ile masa arasından geçer.
+  // Koridor masa ayak izinin (okey ±1,25) hemen önü: sıralar arasından yana geçilir (bekçi `kat2-yol`).
   const koridor = m.z - (m.tur === 'okey' ? 1.9 : 1.8);
   const [dx, dz] = oturak;
   const ox = m.x + dx;

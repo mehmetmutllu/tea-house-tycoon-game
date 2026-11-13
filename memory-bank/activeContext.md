@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-13 — K2-6 mantık kodda D-192 · sırada D-191'in GÖRSEL parçası · iOS 1.0.7 incelemede)
+## ŞU AN (2026-11-13 — K2-6 mantık D-192 + görsel D-193 kodda · sırada Kat 2 metinleri · iOS 1.0.7 incelemede)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -31,21 +31,21 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   oyuncuya +%28" bulgusu bu hatanın eseriydi (doğrusu +%7-8).
 - Raporlar tamam: kasa §Uygulama · garson §Karar · zincir §Karar. Ajan notları `docs/sprintler/kat2-S2/`.
 
-## ✅ KAT 2 AKIŞ TURU (D-191) + K2-6 MANTIK (D-192) — kodda, üretimde kapı kapalı
+## ✅ KAT 2 AKIŞ TURU (D-191) + K2-6 MANTIK (D-192) + GÖRSEL (D-193) — kodda, üretimde kapı kapalı
 - Akış sayfası https://claude.ai/artifact/Xejd4pNeiebku7FsPmjM3T (`tools/kat2-akis.tsx`).
-- K2-6 kodda: `kat.ts` N7 masa yerleri · duvar yalnız kapalı alanın önünde (`kat2DuvarVar`, geçit yok) · salon pad'leri
-  x ±9,75 · 2. ocak bantta x −13,2 · `KAT2_LAVABO_YER` (13,4; −8,6) · `MERDIVEN_PAD_YER` (0; −8,2).
-- Config: `kat2.hazir` (okey2 + cezve) · zincir D-191 sırası SB9-L1 · `kat2.lavabo` Kat 1 L1 · `kat2.merdiven` 9.400.
-- Rapor `docs/kat2-akis-zincir-raporu-k2-6.md` · araç `tools/olcum-kat2-akis.ts` (final CONFIG 4,90 sa) · bekçi
-  `tests/kat2-akis.test.ts`. Dev: `__kat2()` kat açar (hazır pad'lerle).
-- Merdiven pad'i şimdilik düz zemin işareti (`Pad.tsx` `MerdivenPad`); `kat2/Bolme.tsx` alçak duvar (D-190 boyu) — görselde değişecek.
+- Mantık: `kat.ts` N7 · geçitsiz duvar · 2. ocak x −13,2 · `KAT2_LAVABO_YER` · `MERDIVEN_PAD_YER` · config `kat2.hazir`,
+  zincir SB9-L1 (4,90 sa), lavabo L1, merdiven 9.400 · rapor `docs/kat2-akis-zincir-raporu-k2-6.md`.
+- Görsel (D-193): `kat2/Bolme.tsx` tam boy duvar gömülür/yükselir · `MaketTadilatPerde` P3 + `simge` (okey/lavabo/mutfak) ·
+  `Kat2Lavabo` (perde+kaba inşaat ↔ `MaketLavaboBlock seviye=2`) · `kat2/MerdivenDonusum.tsx` (yıkık → toz → tamir).
+- Bekçiler: `tests/kat2-akis.test.ts` · `tests/kat2-yol.test.ts` (oturak yerleri artık `kat2/yol.ts`te).
+- Dev: `__kat2()` kat açar · `__kat2Pad(id)` Kat 2 pad'ini parasız bitirir · geniş kare `__devCam({distMul:2.2})`.
 
-## ⏭️ SIRADAKİ ADIM (yeni chat) — D-191'in GÖRSEL parçası
-1. Sıva duvar (tam boy) + alan açılınca kalkış anı (`kat2/Bolme.tsx`) · P3 perde (`MaketTadilatPerde` bantsız + levha;
-   Kat 1'deki kullanımlar da) · kaba inşaat arkada.
-2. Kat 2'de lavabo bloğu (`MaketLavaboBlock`) + yığını · 2. ocak bantta mutfağın büyümesi (`OcakKosesi`).
-3. Merdiven pad'i + dönüşüm anı (yıkık → düzgün merdiven) · grup yürüyüş yolu N7'ye göre gözden (`kat2/yol.ts`).
-4. Kat 2 metinleri (EN dahil; yeni: "Merdiven"/"Stairs") ChatGPT mikrometin turuna.
+## ⏭️ SIRADAKİ ADIM (yeni chat)
+1. Kat 2 metinleri ChatGPT mikrometin turu (EN hepsi var, ton denetimi): "Kat 2 — oyun salonu hazırlanıyor" · Merdiven/Stairs ·
+   Cezve Ocağı/Coffee Stove · Okey Salonu/Okey Hall · Tavla Köşesi/Backgammon Corner · Okey Masası · Tavla Masası · Garson · Lavabo.
+2. Kullanıcıya göster: levha simgeleri (damla · çay bardağı · okey taşı) ve duvar gömülme anı beğenildi mi (kareler bu
+   oturumda çekildi, artifact'e konmadı — gerekirse `node tools/_kat-kare.mjs` ile yeniden).
+3. `docs/kat2-plan.md`'de K2 kalan kalemler (balkon? · yayın kapısı) → sonraki tur seçimi.
 Göz aracı: `node tools/_kat-kare.mjs` · geniş kadraj karşılaştırma (feedback_show_dont_ask).
 
 ## KULLANICIYA HATIRLAT
