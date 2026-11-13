@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-13 — Kat 2 sprint S2 kapandı · Kat 2 akış turu sırada · iOS 1.0.7 incelemede)
+## ŞU AN (2026-11-13 — Kat 2 akış turu kapandı D-191 · sırada D-191'in kodu · iOS 1.0.7 incelemede)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -31,26 +31,24 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   oyuncuya +%28" bulgusu bu hatanın eseriydi (doğrusu +%7-8).
 - Raporlar tamam: kasa §Uygulama · garson §Karar · zincir §Karar. Ajan notları `docs/sprintler/kat2-S2/`.
 
-## ⏸ KAT 2 AKIŞ TURU — kullanıcı 2026-11-13: "çok karmaşık, anlaşılmıyor; sonraki chatte netleştirelim"
-Akış sayfası (ilk deneme, YETERSİZ bulundu — kareler dar): https://claude.ai/artifact/TUP2kGBiStuvSudKxAYigp
-Kullanıcının istediği mantık (kendi cümleleri özetle):
-- Kata ilk çıkınca oyunun en başı gibi olmalı: **hazır bir masa + en kötü hâlde bir tezgâh/ocak (mutfak)** — servis
-  hemen yapılabilsin. Sonra yükseltme ve yeni yerler açma. ("ortada tezgâh kötü duruyor" → ocak salon ortasında olmasın)
-- Netleşmesi gerekenler: **hangi sırayla** açılıyor · **nereler açık, nereler kapalı** · kapalı yer **duvarla mı, şeritle
-  mi** ayrılır · tadilat perdesi iyi ama **sarı-siyah çizgiler çok kötü duruyor**.
-- Sunum şartı: **seçenekleri GÖRSEL ve GENİŞ AÇIDAN** göster (bütün kat kadrajda, neresi açık/kapalı okunur). Karar → sonra kod.
+## ✅ KAT 2 AKIŞ TURU KAPANDI (2026-11-13) · D-191 — kod YOK, karar tamam
+Sayfa https://claude.ai/artifact/Xejd4pNeiebku7FsPmjM3T (3 tur: B/O/K/P → N/W → ızgara + sıra) · araç `tools/kat2-akis.tsx`
+(`?s=b1…t6`, çekim `node tools/kat2-akis-cek.mjs`). Özet: merdiven = Kat 1'de pad · hazır masa + küçük mutfak sol arkada ·
+tek mutfak 2 ocağa büyür · sağ arka = Kat 2 lavabosu · bölme yok, kapalı alan sıva duvar + kaba inşaat, açılınca duvar kalkar ·
+perde P3 bantsız · düzen N7 tam ayna · sıra: merdiven salonu → okey salonu → 2. ocak → lavabo → tavla + garson.
 
-## ⏭️ SIRADAKİ ADIM (yeni chat)
-1. Kat 2 akış turu — kod yok, göster-seç: geniş kadraj (üstten/eğik, bütün kat) aday kareler:
-   ① başlangıç hâli (hazır masa + en kötü mutfak nerede; arka şerit = Kat 1 mutfağının üstü adayı) ② açılış sırası
-   ③ kapalı alan dili: duvar / zemin şeridi / perde (çizgisiz) ④ perdenin sarı-siyah bantsız hâli. Her biri aynı kadrajda.
-2. Açık kalanlar: merdiven tamiri ne zaman/kaça (bugün yalnız `__kat2()` dev kancası) · Kat 2'den sonra ne.
-3. Akış kararından sonra: 2. ocak yerleşimi + başlangıç masası/mutfak (config zinciri + kat.ts) → garson/zincir tam koşu.
-4. Kat 2 metinleri (EN dahil) ChatGPT mikrometin turuna.
+## ⏭️ SIRADAKİ ADIM (yeni chat) — D-191'i koda indirmek (iki parça, mantık ≠ görsel)
+1. **Mantık + ölçüm (varyant kapısı):** `kat.ts` masa yerleri N7 · `OCAKLAR[1]` → x −13,2 bant · bölme/geçit → tam duvar
+   (açık alanlar arası çarpışma yok) · başlangıçta `k2okey2`(N7 −6,5) + `k2cezve` bedava (kayıt migrasyonu: mevcut Kat 2
+   kayıtları) · zincire `k2lavabo` (2. ocaktan sonra) · Kat 1'de merdiven pad'i (tetik: Kat 1'in son pad'i). Önce zincir/merdiven
+   fiyat kolları ÖLÇÜLÜR → karar paketi → kod. Kat 2 lavabosunun mekaniği (Kat 1 gibi mi?) pakete soru.
+2. **Görsel:** sıva duvar kalkışı · P3 perde (`MaketTadilatPerde` bantsız + levha; Kat 1'deki kullanımlar da) · lavabo bloğu
+   Kat 2'de · merdiven pad'i + dönüşüm anı · bölme kodu (`kat2/Bolme`) silinir.
+3. Kat 2 metinleri (EN dahil) ChatGPT mikrometin turuna.
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
-  reklam iş ortağı olarak ekle" kutusu **BOŞ (yapılmamış)** — kullanıcı yapacak · b) Unity: Chrome'da oturum kapalı, kontrol
+  reklam iş ortağı olarak ekle" kutusu — kullanıcı izin verdi, Claude 2026-11-13 oturum sonunda işaretliyor · b) Unity: Chrome'da oturum kapalı, kontrol
   edilemedi (Monetization → Settings → Developer website = `https://mehmetmutllu.github.io`).
 - Play üretim erişimi: 2026-11-13 hâlâ ses yok; kullanıcı haber verecek.
 - Play'de yayına girince: Liftoff + Unity Android uygulamalarına Play bağlantısı; AdMob Android'i bağla.

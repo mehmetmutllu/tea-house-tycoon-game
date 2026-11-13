@@ -5176,3 +5176,15 @@ yok; oyuncu ve masalar bölme arkasında da görünür. Kilitli salonun geçit p
 arkasında kalan salon pad'i artık okunuyor. Çarpışma değişmedi. B/C/D kodu silindi.
 **2. ocağın yeri AÇIK:** kullanıcı "ortada tezgâh kötü duruyor; önce Kat 2'nin akışını sırayla görmek istiyorum" → akış netleşmeden
 ocak/yerleşim değişmez.
+
+## D-191 · Kat 2 akışı + nihai düzen (akış turu, 2026-11-13) — D-190'ı ve D-186 2. ocak yerini GEÇERSİZ kılar
+Sayfa https://claude.ai/artifact/Xejd4pNeiebku7FsPmjM3T (`tools/kat2-akis.tsx`, kareler `docs/tasarim/kat2-akis/`). Kullanıcı seçti:
+- **Merdiven:** tamir sahnesi yok; Kat 1 bitince merdiven önünde PAD → parası dolunca düzgün merdiven (tetik/fiyat ölçülecek).
+- **Başlangıç (B1):** hazır okey masası + en kötü mutfak (tek tezgâh + ocak) sol arka köşede; servis ilk dakikada başlar.
+- **Mutfak (O1):** tek mutfak yerinde büyür, 2. ocak ilkinin yanına (x −13,2). Sağ arka köşe = **Kat 2 lavabosu**.
+- **Bölme YOK:** kapalı alan TAM SIVA duvar (W1) arkasında kaba inşaat; alan açılınca duvar kalkar.
+- **Perde (P3):** bantsız tahta + yuvarlak levha (arkadaki salonun işareti). Sarı-siyah bant kalkar.
+- **Düzen (N7 tam ayna):** okey 2 sütun solda (x −13/−6,5), tavla 2 sütun sağda (x 6,5/13); arka sıra z −3,5 ·
+  okey satırları 2,5/8,5/14,5 · tavla 6 satır 2,5…14,5; merdiven önü yol açık.
+- **Sıra:** varış → merdiven salonu (mutfak büyür) → okey salonu → 2. ocak → lavabo → tavla köşesi + garson → bitti.
+Ekonomi etkisi (varyant kapısı): ilk iki pad bedava + lavabo pad'i + merdiven pad'i → zincir YENİDEN ölçülür.
