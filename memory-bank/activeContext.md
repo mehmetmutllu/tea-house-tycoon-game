@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-13 — Kat 2 sprint S2 kapandı · akış turu bekliyor · iOS 1.0.7 incelemede)
+## ŞU AN (2026-11-13 — Kat 2 sprint S2 kapandı · Kat 2 akış turu sırada · iOS 1.0.7 incelemede)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -31,17 +31,22 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   oyuncuya +%28" bulgusu bu hatanın eseriydi (doğrusu +%7-8).
 - Raporlar tamam: kasa §Uygulama · garson §Karar · zincir §Karar. Ajan notları `docs/sprintler/kat2-S2/`.
 
-## ⏸ 2. OCAĞIN YERİ — AKIŞ NETLEŞMEDEN DOKUNMA
-Kullanıcı: "akışı sırayla görmek istiyorum, o netleşmeden bir şey yapmak istemiyorum · ortada tezgâh kötü duruyor · kat
-nereden başlıyor anlamadım". Akış sayfası yayında: https://claude.ai/artifact/TUP2kGBiStuvSudKxAYigp
-(`docs/sprintler/kat2-S2/kat2-akis.html`, kareler `node tools/kat2-s2-kare.mjs <klasör> akis`). Aday (kullanıcı ilk cümlesi):
-2. ocak arka şeritte 1. ocağın yanında, mutfak yerinde büyür; okey salonu duvarı boş.
+## ⏸ KAT 2 AKIŞ TURU — kullanıcı 2026-11-13: "çok karmaşık, anlaşılmıyor; sonraki chatte netleştirelim"
+Akış sayfası (ilk deneme, YETERSİZ bulundu — kareler dar): https://claude.ai/artifact/TUP2kGBiStuvSudKxAYigp
+Kullanıcının istediği mantık (kendi cümleleri özetle):
+- Kata ilk çıkınca oyunun en başı gibi olmalı: **hazır bir masa + en kötü hâlde bir tezgâh/ocak (mutfak)** — servis
+  hemen yapılabilsin. Sonra yükseltme ve yeni yerler açma. ("ortada tezgâh kötü duruyor" → ocak salon ortasında olmasın)
+- Netleşmesi gerekenler: **hangi sırayla** açılıyor · **nereler açık, nereler kapalı** · kapalı yer **duvarla mı, şeritle
+  mi** ayrılır · tadilat perdesi iyi ama **sarı-siyah çizgiler çok kötü duruyor**.
+- Sunum şartı: **seçenekleri GÖRSEL ve GENİŞ AÇIDAN** göster (bütün kat kadrajda, neresi açık/kapalı okunur). Karar → sonra kod.
 
-## ⏭️ SIRADAKİ ADIM
-1. Kullanıcı akış sayfasını okusun → Kat 2 akış turu: sayfadaki 3 açık soru — ① merdiven tamiri ne zaman/kaça (bugün yalnız
-   `__kat2()` dev kancası, D-182 "K2-5'te" demişti, yapılmadı) ② 2. ocağın yeri ③ Kat 2'den sonra ne.
-2. Akış kararlarından sonra: 2. ocak yerleşimi (kat.ts geometri + garson yolu → garson/zincir tam koşu yeniden).
-3. Kat 2 metinleri (EN dahil) ChatGPT mikrometin turuna · `docs/sprintler/kat2-S2-defter.md` yazılmadı (kararlar decisions'ta).
+## ⏭️ SIRADAKİ ADIM (yeni chat)
+1. Kat 2 akış turu — kod yok, göster-seç: geniş kadraj (üstten/eğik, bütün kat) aday kareler:
+   ① başlangıç hâli (hazır masa + en kötü mutfak nerede; arka şerit = Kat 1 mutfağının üstü adayı) ② açılış sırası
+   ③ kapalı alan dili: duvar / zemin şeridi / perde (çizgisiz) ④ perdenin sarı-siyah bantsız hâli. Her biri aynı kadrajda.
+2. Açık kalanlar: merdiven tamiri ne zaman/kaça (bugün yalnız `__kat2()` dev kancası) · Kat 2'den sonra ne.
+3. Akış kararından sonra: 2. ocak yerleşimi + başlangıç masası/mutfak (config zinciri + kat.ts) → garson/zincir tam koşu.
+4. Kat 2 metinleri (EN dahil) ChatGPT mikrometin turuna.
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
