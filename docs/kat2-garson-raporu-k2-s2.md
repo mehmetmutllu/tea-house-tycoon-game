@@ -1,6 +1,6 @@
 # K2-S2 — KAT 2 GARSONU: hız · tepsi · kaç garson
 
-> Araç: `tools/olcum-kat2-garson.ts` → `docs/olcum-kat2-garson.txt` (tam koşu ~6 sn; damgalar temiz: bot yürüdü · garson yürüdü ·
+> Araç: `tools/olcum-kat2-garson.ts` → `docs/olcum-kat2-garson.txt` (tam koşu ~6 sn; damgalar temiz: bot yürüdü · bot takılmadı · garson yürüdü ·
 > ₺ korunumu · kalkış = yığın · varyant etkili · zincir yapısı tutarlı). Mantık: `src/game/kat2Dongu.ts` (garson) + `src/game/kat.ts`
 > (`OCAKLAR`, `KAT2_GARSON_PAD`, yol ağı). `economy.config.ts`te garson sayısı YOK (`Kat2Ayar.garson` opsiyonel; yoksa garson gelmez).
 > Okey davranışı birebir: `OLCUM=tam npx tsx tools/olcum-kat2-dongu.ts | diff - docs/olcum-kat2-dongu-final.txt` boş.
@@ -30,48 +30,53 @@ tek başına yetmiyor**.
 
 ### Son kademe oyuncu (₺/dk = toplanan · servis % = getirilen ÷ istenen)
 
+> Tam koşu S2 kapanışı (2026-11-13), yol ağı düzeltmesinden sonra: ızgara görüşü kapı pervazındaki yürüyeni "açık" sayıyordu,
+> bot/garson duvara itip kalıyordu (ilk ölçümde iki kolda ₺/dk 0, garsonsuz kolda da gizli takılma). Araca "bot takılmadı" damgası
+> eklendi (≥ 10 sn kesintisiz itme kırar). Eski tablo git'te; aşağıdaki sayılar düzeltilmiş ağla.
+
 | kol | ₺/dk | okey ₺/dk | tavla ₺/dk | okey servis % | tavla servis % | kaçan fincan | garson servis | garson meşgul | ocak boş | ocak dolu |
 |---|---|---|---|---|---|---|---|---|---|---|
-| garson yok | 555 | 278 | 277 | %39 | %55 | 280 | — | — | %0 | %12 |
-| hız 2,0 · tepsi 2 · 1 garson | 589 | 313 | 276 | %57 | %52 | 239 | 75 | %99 | %1 | %3 |
-| hız 2,0 · tepsi 4 · 1 garson | 584 | 309 | 275 | %55 | %50 | 252 | 78 | %99 | %1 | %6 |
-| hız 3,0 · tepsi 2 · 1 garson | 582 | 302 | 280 | %51 | %60 | 245 | 106 | %95 | %2 | %3 |
-| hız 3,0 · tepsi 4 · 1 garson | 589 | 306 | 283 | %56 | %68 | 214 | 118 | %95 | %2 | %2 |
-| hız 2,0 · tepsi 2 · 2 garson | 593 | 309 | 284 | %54 | %69 | 226 | 118 | %89 | %6 | %3 |
-| hız 2,0 · tepsi 4 · 2 garson | 584 | 295 | 286 | %51 | %72 | 229 | 128 | %89 | %4 | %3 |
-| hız 3,0 · tepsi 2 · 2 garson | 591 | 302 | 289 | %53 | %79 | 208 | 159 | %89 | %9 | %1 |
-| hız 3,0 · tepsi 4 · 2 garson | 591 | 302 | 289 | %53 | %79 | 208 | 159 | %89 | %9 | %1 |
+| garson yok | 550 | 273 | 277 | %41 | %55 | 278 | — | — | %0 | %11 |
+| hız 2,0 · tepsi 2 · 1 garson | 594 | 313 | 278 | %58 | %56 | 233 | 88 | %98 | %1 | %5 |
+| hız 2,0 · tepsi 4 · 1 garson | 591 | 314 | 277 | %56 | %53 | 248 | 90 | %99 | %2 | %4 |
+| hız 3,0 · tepsi 2 · 1 garson | 589 | 307 | 282 | %53 | %68 | 226 | 118 | %96 | %2 | %2 |
+| hız 3,0 · tepsi 4 · 1 garson | 586 | 304 | 282 | %54 | %65 | 234 | 116 | %96 | %2 | %3 |
+| hız 2,0 · tepsi 2 · 2 garson | 597 | 305 | 284 | %56 | %71 | 212 | 130 | %92 | %5 | %2 |
+| hız 2,0 · tepsi 4 · 2 garson | 597 | 305 | 284 | %56 | %71 | 212 | 130 | %91 | %5 | %2 |
+| hız 3,0 · tepsi 2 · 2 garson | 584 | 290 | 290 | %47 | %83 | 214 | 168 | %89 | %7 | %2 |
+| hız 3,0 · tepsi 4 · 2 garson | 584 | 290 | 290 | %47 | %83 | 214 | 168 | %89 | %7 | %2 |
 
 ### İlk kademe oyuncu
 
 | kol | ₺/dk | okey ₺/dk | tavla ₺/dk | okey servis % | tavla servis % | kaçan fincan | garson servis | ocak dolu |
 |---|---|---|---|---|---|---|---|---|
-| garson yok | 436 | 249 | 268 | %22 | %28 | 368 | — | %55 |
-| hız 2,0 · tepsi 2 · 1 garson | 556 | 277 | 275 | %42 | %50 | 283 | 86 | %19 |
-| hız 2,0 · tepsi 4 · 1 garson | 558 | 277 | 278 | %42 | %57 | 274 | 101 | %15 |
-| hız 3,0 · tepsi 2 · 1 garson | 561 | 276 | 282 | %41 | %67 | 258 | 123 | %10 |
-| hız 3,0 · tepsi 4 · 1 garson | 561 | 267 | 284 | %36 | %69 | 263 | 126 | %11 |
+| garson yok | 527 | 250 | 272 | %26 | %39 | 339 | — | %39 |
+| hız 2,0 · tepsi 2 · 1 garson | 569 | 283 | 278 | %43 | %56 | 273 | 99 | %16 |
+| hız 2,0 · tepsi 4 · 1 garson | 565 | 282 | 280 | %44 | %61 | 262 | 106 | %13 |
+| hız 3,0 · tepsi 2 · 1 garson | 564 | 278 | 282 | %42 | %69 | 252 | 123 | %10 |
+| hız 3,0 · tepsi 4 · 1 garson | 566 | 277 | 285 | %43 | %72 | 242 | 137 | %10 |
 
 - **Bulgu 1: garsonun parası tavladan değil, oyuncuyu serbest bırakmasından geliyor.** Tavla kahvesi 3 ₺ (T120U ücret ağırlıklı). Garson
-  tavla servisini %55'ten %79'a çıkarsa bile tavla ₺/dk yalnız 277 → 289 oluyor. Asıl kazanç okeyde: oyuncu artık tavlaya koşmuyor,
-  okey servisi %39 → %51-57. Son kademede toplam kazanç **+27…+38 ₺/dk (%5-7)**.
-- **Bulgu 2: zayıf oyuncuda garson çok daha değerli: +120…+125 ₺/dk (%28).** Garsonsuz ilk kademe oyuncu yığınları bile toplayamıyor
-  (masalara 517 ₺/dk düşüyor, 436'sı toplanıyor). Garson gelince yığınların hepsi toplanıyor.
-- **Bulgu 3: hız ve sayı tavla servisini belirliyor, toplam parayı değil.** 1 yavaş garson tavlanın %52'sini, 2 hızlı garson %79'unu
-  karşılıyor. Toplam ₺/dk ise bütün kollarda 582-593 arasında, çünkü **ocak darboğaz**: iki garson ocakta daha sık kahve bekliyor
-  (ocak boş %6-9) ve oyuncunun okey kahvesini azaltıyor (okey servisi %57 → %53).
-- **Bulgu 4: tepsi 4 neredeyse fark etmiyor.** Garson ihtiyaç kadar aldığı ve tavlada aynı anda nadiren 2'den fazla istek açık olduğu için
-  tepsi 4 ile 2 aynı sonucu veriyor (2 hızlı garsonda kollar birebir aynı). 1 garsonda tepsi 4 hızlı garsona +7 pt tavla servisi kazandırıyor.
+  tavla servisini %55'ten %83'e çıkarsa bile tavla ₺/dk yalnız 277 → 290. Asıl kazanç okeyde: oyuncu tavlaya koşmuyor, okey servisi
+  %41 → %53-58 (1 garson). Son kademede toplam kazanç **+34…+47 ₺/dk (%6-9)**.
+- **Bulgu 2: zayıf oyuncuda da kazanç benzer: +37…+42 ₺/dk (%7-8).** İlk ölçümdeki "+%28" takılan botun eseriydi (garsonsuz bot da
+  pervazda itiyordu); düzeltilmiş ağla garsonsuz ilk kademe de yığınların hepsini topluyor. Garsonun zayıf oyuncuya asıl katkısı
+  tavla servisi: %39 → %56-72.
+- **Bulgu 3: hız ve sayı tavla servisini belirliyor, toplam parayı değil.** 1 yavaş garson tavlanın %56'sını, 1 hızlı %68'ini, 2 hızlı
+  %83'ünü karşılıyor. Toplam ₺/dk bütün kollarda 584-597, çünkü **ocak darboğaz**: iki hızlı garson ocakta daha sık bekliyor (ocak boş
+  %7) ve oyuncunun okey kahvesini azaltıyor (okey servisi %58 → %47; toplam 594 → 584).
+- **Bulgu 4: tepsi 4 hiçbir kolda kazandırmıyor.** Garson ihtiyaç kadar alıyor, tavlada aynı anda nadiren 2'den fazla istek açık:
+  2 garsonda tepsi 2 ile 4 birebir aynı, 1 hızlı garsonda tepsi 4 %68 → %65 (gürültü).
 - **Bulgu 5: 2. ocak açıkken bile okey salonları kahve sıkıntısında.** Okey talebi 36 fincan/dk, iki ocak 30 pişiriyor. Garsonsuz oyuncu
-  okeyin %39'unu getiriyor. Bu garsonun sorusu değil (ocak sayısı / pişme hızı), ama garson geldikçe görünür oluyor.
+  okeyin %41'ini getiriyor. Bu garsonun sorusu değil (ocak sayısı / pişme hızı), ama garson geldikçe görünür oluyor.
 
 ## §Kullanıcıya gidecek sorular (sade · öneri: en kaliteli)
 
 1. **Tavla köşesinin garsonu ne kadar hızlı olsun?** Öneri: **Kat 1 garsonunun en hızlısından biraz hızlı (3,0).** Örnek: tavla köşesinde
-   12 masada kahve istenirken yavaş garson (2,0) yarısına yetişiyor, hızlı garson üçte ikisine. Oyuncu yine okeyde koşturuyor.
+   12 masada kahve istenirken yavaş garson (2,0) yarısından biraz fazlasına yetişiyor, hızlı garson üçte ikisine. Oyuncu yine okeyde koşturuyor.
    Hızlı garson daha çok iş görüyor ama oyuncunun yerine geçmiyor.
 2. **Bir garson mu, iki garson mu?** Öneri: **önce bir garson, ikincisi sonra bir yükseltme olarak.** Örnek: iki garsonla tavla
-   müşterilerinin beşte dördü kahvesini alıyor, birle üçte ikisi. Kasaya giren para hemen hemen aynı (591'e 589 ₺/dk), çünkü iki garson
+   müşterilerinin beşte dördü kahvesini alıyor, birle üçte ikisi. Kasaya giren para hemen hemen aynı (584'e 589 ₺/dk), çünkü iki garson
    ocağın önünde sıra bekliyor. İkinci garson parayı değil köşenin "dolu ve canlı" görünmesini artırıyor. Bu yüzden ilerideki bir
    yükseltme olarak daha anlamlı.
 3. **Garsonun tepsisi:** Öneri: **2 fincan.** Tavla müşterisi bir seferde tek fincan istiyor, 4'lük tepsi neredeyse hiç dolmuyor.

@@ -158,3 +158,20 @@ bekliyor. Oyuncu Kat 2'ye dönünce yığınları topluyor (koşu sonunda yerde 
 - **Kat 1'deyken Kat 2 de işler** (masalar oynar, yığınlar masa önünde bekler).
 - **Çevrimdışında iki kat da kazandırır**; Kat 1 bitmişse tavan referansı sıradaki **Kat 2 pad'i** (bugünkü 12/15 ihlal kapanır).
 Uygulama S2 (tick/store/save/offline + HUD sayacı); final tam koşu o turda.
+
+## §Uygulama (S2 · final tam koşu 2026-11-13, `docs/olcum-kat2-kasa-s2.txt`, damgalar temiz)
+Kod: `kasa.ts` ölçüm (EMA 600 sn · soğuk 120 sn = sınırsız · taban 300 ₺) · `tick.ts` kasaya atma + dolu kasada doğum kapısı ·
+store/save additive (sürüm 34) · çevrimdışı iki kat · `KasaSayaci.tsx` + `three/Kasa.tsx`. Bekçi `tests/kasa-oyun.test.ts` 17 test.
+Mutasyon 2/2: sınır yok sayılır → 2 test düşer · dolu kasada doğum kapısı kalkar → 1 test düşer.
+
+| senaryo (65 dk, oyuncu T dk'da bir iner) | T | iniş başı kasa | Kat 1 durdu | ölçülen / gerçek Kat 1 ₺/dk | sınır |
+|---|---|---|---|---|---|
+| Kat 2 başı | 10 | 596 ₺ | %0 | 77 / 79 | 1.547 ₺ |
+| Kat 2 başı | 20 | 1.304 ₺ | %0 (9 sn) | 76 / 73 | 1.521 ₺ |
+| Kat 2 başı | 30 | 1.560 ₺ | **%17** | 71 / 62 | 1.420 ₺ |
+| Kat 2 dolu | 20 | 1.395 ₺ | %1 | 73 / 79 | 1.467 ₺ |
+
+- Rapor önerisinin dediği gibi: 20 dk'da bir inen oyuncu neredeyse hiç kaybetmez, 30 dk yukarıda kalan Kat 1'in %17'sini durdurur.
+- Ölçülen oran gerçeğe ±%15 içinde; ilk sınır 134. saniyede kuruluyor (öncesi sınırsız, para 180 sn yaşlanmadan kasaya girmez).
+- Çevrimdışı: Kat 1'de kapatan **0/81**, Kat 2'de kapatan **0/81** ihlal (S2 öncesi 15/81). Kat 2'de kapatılan kayıt: kasa 900 ₺
+  (sınır 1.513), cüzdana 19 ₺.

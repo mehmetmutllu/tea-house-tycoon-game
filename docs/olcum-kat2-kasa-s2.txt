@@ -15,17 +15,17 @@ Kat 2 başı  | 20 | sınırsız |         102 |         80 |         22 |    3 
 Kat 2 başı  | 20 | 20 dk    |          97 |         75 |         22 |    3 |            1.304 |       9 (%0) |    1.257 |                      20 |         1.521 |                     76 / 73 |          134
 Kat 2 başı  | 30 | sınırsız |         102 |         80 |         22 |    2 |            2.137 |       0 (%0) |        — |                       0 |             — |                     74 / 79 |            —
 Kat 2 başı  | 30 | 20 dk    |          86 |         64 |         22 |    2 |            1.560 |    656 (%17) |    1.358 |                      44 |         1.420 |                     71 / 62 |          134
-Kat 2 dolu  |  5 | sınırsız |         269 |         83 |        186 |   11 |              195 |       0 (%0) |        — |                       0 |             — |                     77 / 80 |            —
-Kat 2 dolu  |  5 | 20 dk    |         269 |         83 |        186 |   11 |              195 |       0 (%0) |        — |                       0 |         1.533 |                     77 / 80 |          134
-Kat 2 dolu  | 10 | sınırsız |         128 |         76 |         52 |    2 |              524 |       0 (%0) |        — |                       0 |             — |                     72 / 69 |            —
-Kat 2 dolu  | 10 | 20 dk    |         128 |         76 |         52 |    2 |              524 |       0 (%0) |        — |                       0 |         1.447 |                     72 / 69 |          134
-Kat 2 dolu  | 20 | sınırsız |         285 |         81 |        204 |    3 |            1.409 |       0 (%0) |        — |                       0 |             — |                     70 / 79 |            —
-Kat 2 dolu  | 20 | 20 dk    |         286 |         82 |        204 |    3 |            1.395 |      36 (%1) |    1.229 |                      31 |         1.467 |                     73 / 79 |          134
-Kat 2 dolu  | 30 | sınırsız |         283 |         77 |        206 |    2 |            2.036 |       0 (%0) |        — |                       0 |             — |                     83 / 77 |            —
-Kat 2 dolu  | 30 | 20 dk    |         270 |         64 |        206 |    2 |            1.560 |    655 (%17) |    1.358 |                      44 |         1.417 |                     71 / 62 |          134
+Kat 2 dolu  |  5 | sınırsız |         263 |         78 |        185 |   11 |              181 |       0 (%0) |        — |                       0 |             — |                     82 / 76 |            —
+Kat 2 dolu  |  5 | 20 dk    |         263 |         78 |        185 |   11 |              181 |       0 (%0) |        — |                       0 |         1.641 |                     82 / 76 |          134
+Kat 2 dolu  | 10 | sınırsız |         275 |         79 |        196 |    6 |              585 |       0 (%0) |        — |                       0 |             — |                     78 / 77 |            —
+Kat 2 dolu  | 10 | 20 dk    |         275 |         79 |        196 |    6 |              585 |       0 (%0) |        — |                       0 |         1.560 |                     78 / 77 |          134
+Kat 2 dolu  | 20 | sınırsız |         284 |         81 |        203 |    3 |            1.409 |       0 (%0) |        — |                       0 |             — |                     70 / 79 |            —
+Kat 2 dolu  | 20 | 20 dk    |         285 |         82 |        202 |    3 |            1.395 |      36 (%1) |    1.229 |                      31 |         1.467 |                     73 / 79 |          134
+Kat 2 dolu  | 30 | sınırsız |         282 |         77 |        205 |    2 |            2.036 |       0 (%0) |        — |                       0 |             — |                     83 / 77 |            —
+Kat 2 dolu  | 30 | 20 dk    |         269 |         64 |        205 |    2 |            1.560 |    655 (%17) |    1.358 |                      44 |         1.417 |                     71 / 62 |          134
 
 --- B · ÇEVRİMDIŞI · rateMult 0.5 · süre tavanı 1 sa · tavan = sıradaki pad × 1.15 (Kat 1 bitmişse Kat 2'nin sıradaki pad'i) ---
-Kat 1 idealize oran 1040.0 ₺/dk · kasa sınırı (A'nın ölçümü 74 ₺/dk × 20) 1.485 ₺
+Kat 1 idealize oran 1040.0 ₺/dk · kasa sınırı (A'nın ölçümü 76 ₺/dk × 20) 1.513 ₺
 kol                                                        | Kat 2 durumu (açık pad)             | Kat 2 oran ₺/dk | 1 sa ₺ | 4 sa ₺ | 8 sa ₺ | 1/4/8 sa alınan Kat 2 pad | ihlal (≥ 2 pad)
 --------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 S2 öncesi: yalnız Kat 1, Kat 1 tavanı                      | (hiç)                               |             0.0 | 11.442 | 11.442 | 11.442 |                 5 / 5 / 5 | 3
@@ -88,31 +88,33 @@ D-185: Kat 1'de kapattı (iki kat, cüzdana)                 | 27 · son k2tavla
   ↳ D-185: Kat 1'de kapattı (iki kat, cüzdana): ihlal 0 / 81
 D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | (hiç)                               |             0.0 |    575 |    575 |    575 |                 1 / 1 / 1 | 0
 D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 1 · son k2okey1                     |            21.6 |    919 |    919 |    919 |                 1 / 1 / 1 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 2 · son k2cezve                     |            54.0 |  1.571 |  1.571 |  1.571 |                 1 / 1 / 1 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 3 · son k2okey2                     |           108.0 |  1.756 |  1.756 |  1.756 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 4 · son k2okey3                     |           162.0 |  2.105 |  2.105 |  2.105 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 5 · son k2okey4                     |           216.0 |  2.672 |  2.672 |  2.672 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 6 · son k2salon2                    |           216.0 |  2.969 |  2.969 |  2.969 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 7 · son k2s2okey1                   |           270.0 |  3.619 |  3.619 |  3.619 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 8 · son k2s2okey2                   |           324.0 |  4.490 |  4.490 |  4.490 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 9 · son k2cezve2                    |           324.0 |  5.037 |  5.037 |  5.037 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 10 · son k2s2okey3                  |           378.0 |  6.237 |  6.237 |  6.237 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 11 · son k2s2okey4                  |           432.0 |  7.561 |  7.561 |  7.561 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 12 · son k2s2okey5                  |           486.0 |  9.177 |  9.177 |  9.177 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 13 · son k2s2okey6                  |           540.0 | 11.311 | 11.311 | 11.311 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 14 · son k2salon3                   |           540.0 | 13.277 | 13.277 | 13.277 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 15 · son k2garson                   |           540.0 | 14.456 | 14.456 | 14.456 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 16 · son k2tavla1                   |           567.0 | 16.093 | 16.093 | 16.093 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 17 · son k2tavla2                   |           594.0 | 17.790 | 17.790 | 17.790 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 18 · son k2tavla3                   |           621.0 | 19.543 | 19.543 | 19.543 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 19 · son k2tavla4                   |           648.0 | 20.924 | 20.924 | 20.924 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 20 · son k2tavla5                   |           675.0 | 21.734 | 21.734 | 21.734 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 21 · son k2tavla6                   |           702.0 | 22.544 | 22.544 | 22.544 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 22 · son k2tavla7                   |           729.0 | 23.354 | 23.354 | 23.354 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 23 · son k2tavla8                   |           756.0 | 24.164 | 24.164 | 24.164 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 24 · son k2tavla9                   |           783.0 | 24.974 | 24.974 | 24.974 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 25 · son k2tavla10                  |           810.0 | 25.784 | 25.784 | 25.784 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 26 · son k2tavla11                  |           837.0 | 26.594 | 26.594 | 26.594 |                 0 / 0 / 0 | 0
-D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 27 · son k2tavla12                  |           864.0 | 27.404 | 27.404 | 27.404 |                 0 / 0 / 0 | — (bitti)
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 2 · son k2cezve                     |            54.0 |  1.599 |  1.599 |  1.599 |                 1 / 1 / 1 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 3 · son k2okey2                     |           108.0 |  1.784 |  1.784 |  1.784 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 4 · son k2okey3                     |           162.0 |  2.133 |  2.133 |  2.133 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 5 · son k2okey4                     |           216.0 |  2.700 |  2.700 |  2.700 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 6 · son k2salon2                    |           216.0 |  2.997 |  2.997 |  2.997 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 7 · son k2s2okey1                   |           270.0 |  3.647 |  3.647 |  3.647 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 8 · son k2s2okey2                   |           324.0 |  4.518 |  4.518 |  4.518 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 9 · son k2cezve2                    |           324.0 |  5.065 |  5.065 |  5.065 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 10 · son k2s2okey3                  |           378.0 |  6.265 |  6.265 |  6.265 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 11 · son k2s2okey4                  |           432.0 |  7.589 |  7.589 |  7.589 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 12 · son k2s2okey5                  |           486.0 |  9.205 |  9.205 |  9.205 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 13 · son k2s2okey6                  |           540.0 | 11.339 | 11.339 | 11.339 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 14 · son k2salon3                   |           540.0 | 13.305 | 13.305 | 13.305 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 15 · son k2garson                   |           540.0 | 14.484 | 14.484 | 14.484 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 16 · son k2tavla1                   |           567.0 | 16.121 | 16.121 | 16.121 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 17 · son k2tavla2                   |           594.0 | 17.818 | 17.818 | 17.818 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 18 · son k2tavla3                   |           621.0 | 19.571 | 19.571 | 19.571 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 19 · son k2tavla4                   |           648.0 | 20.952 | 20.952 | 20.952 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 20 · son k2tavla5                   |           675.0 | 21.762 | 21.762 | 21.762 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 21 · son k2tavla6                   |           702.0 | 22.572 | 22.572 | 22.572 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 22 · son k2tavla7                   |           729.0 | 23.382 | 23.382 | 23.382 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 23 · son k2tavla8                   |           756.0 | 24.192 | 24.192 | 24.192 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 24 · son k2tavla9                   |           783.0 | 25.002 | 25.002 | 25.002 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 25 · son k2tavla10                  |           810.0 | 25.812 | 25.812 | 25.812 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 26 · son k2tavla11                  |           837.0 | 26.622 | 26.622 | 26.622 |                 0 / 0 / 0 | 0
+D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir) | 27 · son k2tavla12                  |           864.0 | 27.432 | 27.432 | 27.432 |                 0 / 0 / 0 | — (bitti)
   ↳ D-185: Kat 2'de kapattı (Kat 1 payı kasaya, sınırda kesilir): ihlal 0 / 81
-store init (Kat 2'de kapatıldı, 1 sa, Kat 2 başı): kat 2 · kasa 900 ₺ (sınır 1.485) · cüzdana 19 ₺ (ekran 19)
+store init (Kat 2'de kapatıldı, 1 sa, Kat 2 başı): kat 2 · kasa 900 ₺ (sınır 1.513) · cüzdana 19 ₺ (ekran 19)
+
+✓ Damgalar temiz (tam koşu).

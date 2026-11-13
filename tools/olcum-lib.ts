@@ -122,6 +122,14 @@ export function botDamgasi(ad: string, yol: number, dakika: number, esik = 30): 
 /**
  * KORUNUM — kapalı sistemde (bardak gibi) toplam sabit kalmalı. Sapma varsa ölçüm değil KOD hatası.
  */
+/**
+ * TAKILMA — bot yürümek isteyip yerinden kıpırdamadığı EN UZUN kesintisiz süre. "bot yürüdü" toplam yola
+ * bakar: 5 dk yürüyüp 15 dk duvara iten bot onu geçer (S2 garson ölçümü: iki kol ₺/dk 0).
+ */
+export function takilmaDamgasi(ad: string, enUzunSn: number, esikSn = 10): boolean {
+  return damga(`bot takılmadı (${ad})`, enUzunSn < esikSn, `${enUzunSn.toFixed(1)} sn kesintisiz itti`);
+}
+
 export function korunumDamgasi(ad: string, sapma: number): boolean {
   return damga(`korunum (${ad})`, sapma === 0, `${sapma} birim sapma`);
 }

@@ -23,6 +23,7 @@ import {
   kat2Duvarlar,
   kat2Engeller,
   kat2YurumeAlani,
+  kat2YolAgi,
   dikKelepce,
 } from '../src/game/kat';
 import {
@@ -257,5 +258,47 @@ describe('Kat 2 garsonu', () => {
     const r2 = kat2Tick({ ...d, masalar, garson: g }, girdi(UZAK), 0.1, AG);
     expect(r2.dunya.garson!.tepsi).toBe(1); // ihtiyaç kadar (1 istek → 1 fincan), tepsiyi doldurmaz
     expect(r2.dunya.garson!.hedef).toBe(OCAK2.id);
+  });
+});
+
+describe('yol ağı — geçit pervazında takılmaz (S2 kapanışı: ölçüm botu kapı ucunda 15 dk itti)', () => {
+  // Izgara kaba: pervazın yarıçap kadar yakınındaki yürüyene düz hedef verilirse `kat2Adim` onu duvarda
+  // tutar. Garson da aynı ağla yürür. Her geçidin iki ucunda, iki yandan, karşı yana yürü → varmalı.
+  it('her geçidin her ucundan karşı yana yürüyen 400 adımda varır', () => {
+    const ag = kat2YolAgi(HEPSI);
+    const PR = LAYOUT.playerRadius;
+    const katilar = [KUYU, ...kat2Duvarlar(ag.acikAlan), ...ag.engeller];
+    const bos = (x: number, z: number) => !hitsSolid(x, z, katilar, PR) && ag.uzunluk(x, z, x, z) < 1e9;
+    let denenen = 0;
+    const takilan: string[] = [];
+    for (const b of KAT2_BOLMELER) {
+      const yatay = b.z1 === b.z2;
+      for (const [p, q] of b.kapilar) {
+        for (const u of [p - 0.3, p, p + PR - 0.05, p + PR + 0.05, q - PR - 0.05, q - PR + 0.05, q, q + 0.3]) {
+          for (const yan of [-1, 1]) {
+            for (const ara of [0.7, 0.9, 1.2]) {
+              const bas: [number, number] = yatay ? [u, b.z1 + yan * ara] : [b.x1 + yan * ara, u];
+              const hed: [number, number] = yatay ? [u, b.z1 - yan * 3.3] : [b.x1 - yan * 3.3, u];
+              if (!bos(...bas) || !bos(...hed)) continue;
+              let [x, z] = bas;
+              let vardi = false;
+              for (let i = 0; i < 400 && !vardi; i++) {
+                const w = ag.nokta(x, z, hed[0], hed[1]);
+                const L = Math.hypot(w[0] - x, w[1] - z);
+                if (L > 1e-6) {
+                  const k = Math.min(1, 0.45 / L);
+                  [x, z] = kat2Adim(x, z, (w[0] - x) * k, (w[1] - z) * k, ag.acikAlan, ag.engeller);
+                }
+                vardi = Math.hypot(hed[0] - x, hed[1] - z) < 0.2;
+              }
+              denenen++;
+              if (!vardi) takilan.push(`(${bas.map((v) => v.toFixed(2))}) → (${hed.map((v) => v.toFixed(2))}) kaldı (${x.toFixed(2)}, ${z.toFixed(2)})`);
+            }
+          }
+        }
+      }
+    }
+    expect(denenen).toBeGreaterThan(60);
+    expect(takilan).toEqual([]);
   });
 });

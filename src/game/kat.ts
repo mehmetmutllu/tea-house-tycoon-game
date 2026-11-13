@@ -564,13 +564,21 @@ function uzaklikAlani(g: NavGrid, hedef: number): Float64Array {
 }
 
 /** Izgarada düz görüş: iki uç arasındaki örnekler açık hücrede mi (uçların bir hücre çevresi sayılmaz). */
-function gorusAcik(g: NavGrid, x0: number, z0: number, x1: number, z1: number): boolean {
+/**
+ * Düz yol açık mı? Izgara kaba (hücre merkezi): duvar ucunun yarıçap kadar yakınındaki yürüyen, hücresi
+ * açık görünse de `kat2Adim`de duvara takılır ve düz hedefe sonsuza dek iter. Bu yüzden segment gerçek
+ * katılarla da sınanır (başlangıç zaten bir gövdedeyse ya da hedefin dibinde — para masaya yakın düşer — atlanır).
+ */
+function gorusAcik(g: NavGrid, katilar: Solid[], x0: number, z0: number, x1: number, z1: number): boolean {
   const L = Math.hypot(x1 - x0, z1 - z0);
   const n = Math.ceil(L / (g.cell * 0.5));
+  const kesin = !hitsSolid(x0, z0, katilar, PR);
   for (let k = 1; k < n; k++) {
     const x = x0 + ((x1 - x0) * k) / n;
     const z = z0 + ((z1 - z0) * k) / n;
-    if (Math.hypot(x - x0, z - z0) < g.cell || Math.hypot(x - x1, z - z1) < g.cell) continue;
+    if (Math.hypot(x - x1, z - z1) < g.cell) continue;
+    if (kesin && hitsSolid(x, z, katilar, PR)) return false;
+    if (Math.hypot(x - x0, z - z0) < g.cell) continue;
     const [c, r] = hucre(g, x, z);
     if (g.blocked[r * g.cols + c]) return false;
   }
@@ -581,6 +589,7 @@ function yolAgiKur(padsDone: readonly string[]): Kat2YolAgi {
   const acikAlan = kat2AcikAlan(padsDone);
   const engeller = kat2Engeller(padsDone);
   const g = izgaraKur(acikAlan, engeller);
+  const katilar: Solid[] = [KUYU, ...kat2Duvarlar(acikAlan), ...engeller];
   const alanlar = new Map<string, Float64Array>();
   const alanOf = (tx: number, tz: number) => {
     const k = `${tx},${tz}`;
@@ -600,7 +609,7 @@ function yolAgiKur(padsDone: readonly string[]): Kat2YolAgi {
     acikAlan,
     engeller,
     nokta(x, z, tx, tz) {
-      if (gorusAcik(g, x, z, tx, tz)) return [tx, tz];
+      if (gorusAcik(g, katilar, x, z, tx, tz)) return [tx, tz];
       const a = alanOf(tx, tz);
       let i = enYakin(g, x, z, (j) => a[j] < SONSUZ);
       if (i < 0) return [tx, tz];
@@ -617,7 +626,7 @@ function yolAgiKur(padsDone: readonly string[]): Kat2YolAgi {
         if (j < 0) break;
         i = j;
         const m = merkez(i);
-        if (adim > 0 && !gorusAcik(g, x, z, m[0], m[1])) break;
+        if (adim > 0 && !gorusAcik(g, katilar, x, z, m[0], m[1])) break;
         sec = m;
       }
       return sec;

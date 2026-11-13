@@ -18,7 +18,7 @@
  *   OLCUM=kisa npx tsx tools/olcum-kat2-garson.ts
  *   OLCUM=tam  npx tsx tools/olcum-kat2-garson.ts > docs/olcum-kat2-garson.txt
  */
-import { KISA, botDamgasi, damga, damgaOzeti, kipBandi, kisaDeger, korunumDamgasi, varyantDamgasi } from './olcum-lib';
+import { KISA, botDamgasi, damga, takilmaDamgasi, damgaOzeti, kipBandi, kisaDeger, korunumDamgasi, varyantDamgasi } from './olcum-lib';
 import { attractRadiusFor, charMaxTier, economyConfig, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
 import { KAT2_KISI, KAT2_MASALAR, OCAKLAR, OKEY_YARI, TAVLA_YARI, VARIS, kat2Adim, kat2YolAgi } from '../src/game/kat';
 import { LAYOUT } from '../src/game/layout';
@@ -74,6 +74,7 @@ interface Sonuc {
   ocakBos: number;
   ocakDolu: number;
   botYol: number;
+  enUzunItme: number;
   garsonYol: number;
   iz: string;
 }
@@ -100,6 +101,8 @@ function kos(kol: Kol, o: Oyuncu, ad: string): Sonuc {
   let ocakBosT = 0;
   let ocakDoluT = 0;
   let botYol = 0;
+  let itme = 0;
+  let enUzunItme = 0;
   let garsonYol = 0;
   let iz = 0x811c9dc5;
 
@@ -131,7 +134,10 @@ function kos(kol: Kol, o: Oyuncu, ad: string): Sonuc {
         durdu = false;
         const k = Math.min(1, (o.hiz * DT) / L);
         const [nx, nz] = kat2Adim(x, z, (w[0] - x) * k, (w[1] - z) * k, ag.acikAlan, ag.engeller);
-        botYol += Math.hypot(nx - x, nz - z);
+        const adim = Math.hypot(nx - x, nz - z);
+        botYol += adim;
+        itme = adim < 1e-4 ? itme + DT : 0;
+        enUzunItme = Math.max(enUzunItme, itme);
         x = nx;
         z = nz;
       }
@@ -187,6 +193,7 @@ function kos(kol: Kol, o: Oyuncu, ad: string): Sonuc {
     ocakBos: ocakBosT / sayilan,
     ocakDolu: ocakDoluT / sayilan,
     botYol,
+    enUzunItme,
     garsonYol,
     iz: iz.toString(16),
   };
@@ -228,6 +235,7 @@ for (const o of KISA ? [GUCLU] : [GUCLU, ZAYIF]) {
     const ad = `${o.ad} ${kol.ad}`;
     const r = kos(kol, o, ad);
     botDamgasi(ad, r.botYol, SURE / 60, 30);
+    takilmaDamgasi(ad, r.enUzunItme);
     if (kol.g) {
       botDamgasi(`garson ${ad}`, r.garsonYol, SURE / 60, 30);
       varyantDamgasi(ad, tabanIz, r.iz);

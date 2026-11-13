@@ -29,7 +29,7 @@
  *   OLCUM=tam  npx tsx tools/olcum-kat2-zincir.ts > docs/olcum-kat2-zincir.txt
  * Mutasyon (doğrulama): ZINCIR_MUT=fiyat2 (bütün fiyatlar ×2) · ZINCIR_MUT=kahvesiz (bot kahve taşımaz).
  */
-import { KISA, botDamgasi, damga, damgaOzeti, izOlustur, kipBandi, kisaDeger, korunumDamgasi, seedRandom, varyantDamgasi, yuzdelik } from './olcum-lib';
+import { KISA, botDamgasi, damga, takilmaDamgasi, damgaOzeti, izOlustur, kipBandi, kisaDeger, korunumDamgasi, seedRandom, varyantDamgasi, yuzdelik } from './olcum-lib';
 import { attractRadiusFor, charMaxTier, economyConfig as C, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
 import { useGame } from '../src/game/store';
 import * as KatMod from '../src/game/kat';
@@ -257,6 +257,7 @@ interface Sonuc {
   tasan: number;
   saatlik: { kat1: number; kat2: number }[]; // saat başına ₺
   yol: number;
+  enUzunItme: number;
   iz: string;
   yedekPad: number; // araçta düşülen (tanınmayan) pad sayısı
   servis: number; // oyuncunun servis ettiği fincan
@@ -288,6 +289,8 @@ function kos(ad: string, ayar: Kat2Ayar, iz1: Float64Array, sinir: Decimal | nul
   let inis = 0;
   let kasaDoluSn = 0;
   let yolT = 0;
+  let itme = 0;
+  let enUzunItme = 0;
   let yedekFill = 0;
   let yedekPad = 0;
   let servis = 0, garsonServis = 0, kacan = 0;
@@ -391,7 +394,10 @@ function kos(ad: string, ayar: Kat2Ayar, iz1: Float64Array, sinir: Decimal | nul
       durdu = false;
       const k = Math.min(1, (HIZ * DT) / L);
       const [nx, nz] = kat2Adim(x, z, dx * k, dz * k, acik);
-      yolT += Math.hypot(nx - x, nz - z);
+      const adim = Math.hypot(nx - x, nz - z);
+      yolT += adim;
+      itme = adim < 1e-4 ? itme + DT : 0;
+      enUzunItme = Math.max(enUzunItme, itme);
       x = nx;
       z = nz;
     }
@@ -445,6 +451,7 @@ function kos(ad: string, ayar: Kat2Ayar, iz1: Float64Array, sinir: Decimal | nul
     tasan,
     saatlik,
     yol: yolT,
+    enUzunItme,
     iz: izT.deger,
     yedekPad,
     servis,
@@ -517,6 +524,7 @@ let tabanIz = '';
 for (const kol of KOLLAR) {
   const r = kos(kol.ad, ayarKur(kol.fiyat, false), IZ1, SINIR, 'KARMA');
   botDamgasi(kol.ad, r.yol, (Number.isFinite(r.bitis) ? r.bitis : UFUK) / 60, 30);
+  takilmaDamgasi(kol.ad, r.enUzunItme);
   if (kol === KOLLAR[0]) tabanIz = r.iz;
   else varyantDamgasi(kol.ad, tabanIz, r.iz);
   satirlar.push({ kol, pol: 'KARMA', garson: false, r });

@@ -51,32 +51,35 @@ dakikası: çıktı §B.
 
 ## §Bulgular
 
+> Tam koşu S2 kapanışı (2026-11-13, birleşik ağaç + yol ağı pervaz düzeltmesi, "bot takılmadı" damgası temiz). İlk koşudan
+> sapma ≤ %2; fiyatlar ve öneri değişmedi. Eski sayılar git'te.
+
 ### Bulgu 1 — Kollar (tam koşu, 10 sa ufuk, politika KARMA, garsonsuz)
 | kol | zincir ₺ | toplam | en uzun bekleyiş (pad) | medyan bekleyiş | Kat 1'e iniş | çevrimdışı ihlal |
 |---|---|---|---|---|---|---|
-| G1.15-500 (taban) | 142.350 | **4,72 sa** | **29,6 dk** (tavla12) | 7,0 dk | 32 | 9/27 |
-| G1.10-500 | 60.700 | 2,29 sa | 9,4 dk (tavla12) | 4,5 dk | 27 | 13/27 |
-| G1.10-1500 | 182.000 | 6,71 sa | 28,3 dk (tavla12) | 13,4 dk | 38 | 0/27 |
-| G1.15-1500 | 425.300 | bitmedi 23/27 | 56,4 dk (tavla8) | 17,1 dk | 46 | 0/27 |
-| G1.20-500 | 339.750 | bitmedi 26/27 | 75,4 dk (tavla11) | 10,6 dk | 50 | 7/27 |
-| G1.35-500 | 4.715.200 | bitmedi 17/27 | 122,6 dk (tavla2) | 15,0 dk | 45 | 4/27 |
-| G1.50-500 | 56.821.050 | bitmedi 13/27 | 140,0 dk (s2okey6) | 20,0 dk | 43 | 3/27 |
-| G1.70-500 | 1.191.218.550 | bitmedi 10/27 | 154,1 dk (s2okey3) | 26,0 dk | 41 | 2/27 |
-| T1.15-500 | 153.100 | 5,16 sa | 29,6 dk (tavla12) | 9,5 dk | 32 | 7/27 |
-| T1.12-500 | 92.700 | 3,39 sa | 15,5 dk (tavla12) | 6,8 dk | 27 | 9/27 |
-| SB8 | 116.150 | 4,40 sa | 11,8 dk (tavla7) | 9,9 dk | 27 | 3/27 |
-| **SB9** | **130.800** | **5,02 sa** | **13,3 dk** (tavla11) | **11,3 dk** | 27 | **2/27** |
-| SB10 | 145.400 | 5,52 sa | 14,7 dk (tavla9) | 13,0 dk | 27 | 0/27 |
-| SB12 | 174.500 | 6,58 sa | 16,9 dk (tavla9) | 14,1 dk | 32 | 0/27 |
-| DUZ3000 | 81.000 | 4,46 sa | 37,4 dk (okey1) | 6,7 dk | 31 | 0/27 |
+| G1.15-500 (taban) | 142.350 | **4,64 sa** | **28,9 dk** (tavla12) | 6,9 dk | 32 | 9/27 |
+| G1.10-500 | 60.700 | 2,29 sa | 9,5 dk (tavla12) | 4,6 dk | 27 | 13/27 |
+| G1.10-1500 | 182.000 | 6,62 sa | 27,5 dk (tavla12) | 13,4 dk | 38 | 0/27 |
+| G1.15-1500 | 425.300 | bitmedi 24/27 | 62,3 dk (tavla9) | 18,8 dk | 46 | 0/27 |
+| G1.20-500 | 339.750 | bitmedi 26/27 | 72,9 dk (tavla11) | 10,4 dk | 50 | 7/27 |
+| G1.35-500 | 4.715.200 | bitmedi 17/27 | 122,1 dk (tavla2) | 15,0 dk | 45 | 4/27 |
+| G1.50-500 | 56.821.050 | bitmedi 13/27 | 139,7 dk (s2okey6) | 20,0 dk | 43 | 3/27 |
+| G1.70-500 | 1.191.218.550 | bitmedi 10/27 | 153,7 dk (s2okey3) | 26,0 dk | 41 | 2/27 |
+| T1.15-500 | 153.100 | 5,08 sa | 28,2 dk (tavla12) | 9,2 dk | 33 | 7/27 |
+| T1.12-500 | 92.700 | 3,33 sa | 15,2 dk (tavla12) | 6,9 dk | 27 | 9/27 |
+| SB8 | 116.150 | 4,37 sa | 11,8 dk (tavla8) | 9,9 dk | 27 | 3/27 |
+| **SB9** | **130.800** | **4,95 sa** | **13,1 dk** (tavla11) | **11,0 dk** | 27 | **2/27** |
+| SB10 | 145.400 | 5,46 sa | 14,5 dk (tavla11) | 12,9 dk | 27 | 0/27 |
+| SB12 | 174.500 | 6,52 sa | 16,8 dk (tavla11) | 14,0 dk | 31 | 0/27 |
+| DUZ3000 | 81.000 | 4,43 sa | 37,4 dk (okey1) | 6,3 dk | 31 | 0/27 |
 
 - **Dik geometrik eğriler (×1,35 / ×1,5 / ×1,7) 10 saatte bitmiyor.** 27 pad'lik zincirde gelir masa sayısıyla
   doğrusal büyüyor (Bulgu 4), fiyat ise katlanarak. ×1,35'te tavla2 61.000 ₺, tavla12 1,2 milyon ₺. Kat 1'in kısa
   zincirlerinde işleyen oranlar burada çalışmıyor.
-- **Geometrik ×1,15 süreyi tutturuyor (4,72 sa) ama bekleyiş sona yığılıyor.** İlk pad'ler 4-5 dk, son tavlalar
-  20-30 dk. Medyan 7 dk iken en uzun bekleyiş bunun 4 katı.
-- **Sabit bekleyiş eğrisi düz bir tempo veriyor.** SB9'da en uzun bekleyiş (13,3 dk) medyanın (11,3 dk) yalnız
-  1,2 katı. Süre N ile neredeyse doğrusal: 8 → 4,40 · 9 → 5,02 · 10 → 5,52 · 12 → 6,58 sa.
+- **Geometrik ×1,15 süreyi tutturuyor (4,64 sa) ama bekleyiş sona yığılıyor.** İlk pad'ler 4-5 dk, son tavlalar
+  20-29 dk. Medyan 7 dk iken en uzun bekleyiş bunun 4 katı.
+- **Sabit bekleyiş eğrisi düz bir tempo veriyor.** SB9'da en uzun bekleyiş (13,1 dk) medyanın (11,0 dk) yalnız
+  1,2 katı. Süre N ile neredeyse doğrusal: 8 → 4,37 · 9 → 4,95 · 10 → 5,46 · 12 → 6,52 sa.
 - **İlk fiyat 1.500 olunca ilk masa 18,8 dk sonra açılıyor.** Cüzdan 0'da ilk para yalnız kasadan gelir (81 ₺/dk;
   para 3 dk yerde bekledikten sonra kasaya akar). 500 ₺ → 6,3 dk · SB9'un 750 ₺'si → 10,2 dk · düz 3.000 → 37,4 dk.
 - **Tür çarpanı** (salon ×2,5) toplamı az değiştiriyor. Salon önündeki bekleyişi uzatıyor (T1.15: salon3 7.700 ₺)
@@ -85,20 +88,20 @@ dakikası: çıktı §B.
 ### Bulgu 2 — Önerilen eğri SB9: pad fiyatları ve açılış dakikası (tam koşu)
 | pad | ₺ | açılış dk | | pad | ₺ | açılış dk |
 |---|---|---|---|---|---|---|
-| okey1 | 750 | 10,2 | | salon3 | 5.600 | 140,9 |
-| cezve | 950 | 19,5 | | garson | 5.600 | 152,2 |
-| okey2 | 1.200 | 28,4 | | tavla1 | 5.600 | 164,2 |
-| okey3 | 1.700 | 38,6 | | tavla2 | 5.800 | 175,6 |
-| okey4 | 2.200 | 48,5 | | tavla3 | 6.100 | 187,9 |
-| salon2 | 2.700 | 57,1 | | tavla4 | 6.300 | 200,5 |
-| s2okey1 | 2.700 | 67,0 | | tavla5 | 6.600 | 212,0 |
-| s2okey2 | 3.200 | 77,2 | | tavla6 | 6.800 | 224,6 |
-| cezve2 | 3.600 | 87,5 | | tavla7 | 7.100 | 237,2 |
-| s2okey3 | 3.600 | 97,4 | | tavla8 | 7.300 | 249,1 |
-| s2okey4 | 4.100 | 107,6 | | tavla9 | 7.500 | 261,6 |
-| s2okey5 | 4.600 | 117,9 | | tavla10 | 7.800 | 274,6 |
-| s2okey6 | 5.100 | 129,0 | | tavla11 | 8.000 | 287,9 |
-| | | | | tavla12 | 8.300 | 300,9 |
+| okey1 | 750 | 10,2 | | salon3 | 5.600 | 140,1 |
+| cezve | 950 | 19,5 | | garson | 5.600 | 151,2 |
+| okey2 | 1.200 | 28,4 | | tavla1 | 5.600 | 162,5 |
+| okey3 | 1.700 | 38,6 | | tavla2 | 5.800 | 174,5 |
+| okey4 | 2.200 | 48,5 | | tavla3 | 6.100 | 185,7 |
+| salon2 | 2.700 | 57,1 | | tavla4 | 6.300 | 197,9 |
+| s2okey1 | 2.700 | 67,0 | | tavla5 | 6.600 | 209,8 |
+| s2okey2 | 3.200 | 77,2 | | tavla6 | 6.800 | 221,9 |
+| cezve2 | 3.600 | 87,5 | | tavla7 | 7.100 | 234,4 |
+| s2okey3 | 3.600 | 97,4 | | tavla8 | 7.300 | 247,2 |
+| s2okey4 | 4.100 | 107,5 | | tavla9 | 7.500 | 258,9 |
+| s2okey5 | 4.600 | 117,8 | | tavla10 | 7.800 | 271,2 |
+| s2okey6 | 5.100 | 128,7 | | tavla11 | 8.000 | 284,3 |
+| | | | | tavla12 | 8.300 | 297,2 |
 
 Salon, ocak ve garson pad'i SB'de masadan pahalı değil: fiyat yalnız o anki gelire bakıyor. Salon2 2.700 ₺ =
 s2okey1 2.700 ₺. Salonların pahalı olduğu kol T1.12/T1.15. Bu kollar süreyi tutturuyor ama tempoyu zikzaklatıyor (Bulgu 1).
@@ -106,9 +109,9 @@ s2okey1 2.700 ₺. Salonların pahalı olduğu kol T1.12/T1.15. Bu kollar sürey
 ### Bulgu 3 — Kasaya iniş politikası (SB9)
 | politika | toplam | iniş | en uzun bekleyiş | Kat 1 durdu | kasa taşan |
 |---|---|---|---|---|---|
-| **KARMA** (taban) = IHT | 5,02 sa | 27 | 13,3 dk | 0 dk | 0 ₺ |
-| P80 (yalnız %80'de) | 5,10 sa | 19 | 17,0 dk (okey1) | 0 dk | 0 ₺ |
-| P100 (yalnız dolunca) | 5,23 sa | 15 | 20,1 dk (okey1) | 1,0 dk | 90 ₺ |
+| **KARMA** (taban) = IHT | 4,95 sa | 27 | 13,1 dk | 0 dk | 0 ₺ |
+| P80 (yalnız %80'de) | 5,09 sa | 18 | 17,0 dk (okey1) | 0 dk | 0 ₺ |
+| P100 (yalnız dolunca) | 5,17 sa | 15 | 20,1 dk (okey1) | 1,1 dk | 90 ₺ |
 
 - KARMA ile IHT birebir aynı çıktı. Kasa hiç %80'e varmıyor, çünkü oyuncu her pad için zaten iniyor.
   **27 iniş / 5 sa ≈ 11 dk'da bir.** Her pad'in son parası kasadan geliyor.
@@ -118,23 +121,23 @@ s2okey1 2.700 ₺. Salonların pahalı olduğu kol T1.12/T1.15. Bu kollar sürey
 ### Bulgu 4 — ₺/dk eğrisi: Kat 1 payı / Kat 2 payı (SB9, saat başına)
 | saat | 1 | 2 | 3 | 4 | 5 |
 |---|---|---|---|---|---|
-| toplam ₺/dk | 171 | 362 | 484 | 545 | 611 |
-| Kat 1 · Kat 2 | 81 · 89 | 81 · 281 | 81 · 402 | 81 · 464 | 81 · 530 |
-| Kat 1 payı | %47 | %22 | %17 | %15 | %13 |
+| toplam ₺/dk | 171 | 365 | 495 | 557 | 625 |
+| Kat 1 · Kat 2 | 81 · 89 | 81 · 283 | 81 · 413 | 81 · 475 | 81 · 543 |
+| Kat 1 payı | %47 | %22 | %16 | %15 | %13 |
 
-- Tam zincirin teorik tavanı 864 ₺/dk. Tek oyuncu garsonsuz son saatte ~530 alıyor (%61). Kaçan kahve 1.588
-  fincan, servis edilen 4.753 (SB9). Masa ücreti kaçmıyor, eksik kalan kahve parası.
+- Tam zincirin teorik tavanı 864 ₺/dk. Tek oyuncu garsonsuz son saatte ~543 alıyor (%63). Kaçan kahve 1.452
+  fincan, servis edilen 4.903 (SB9). Masa ücreti kaçmıyor, eksik kalan kahve parası.
 
 ### Bulgu 5 — Garson kolu (SB9, örnek sayılar `{ hiz 2, tepsi 2, sayi 1 }`)
 | kip | toplam | en uzun bekleyiş | servis oyuncu / garson | kaçan |
 |---|---|---|---|---|
-| garsonsuz | 5,02 sa | 13,3 dk | 4.753 / 0 | 1.588 |
-| garson, oyuncu her isteğe koşar | 4,96 sa | 12,8 dk | 4.648 / 449 | 1.319 |
-| garson tavlada, oyuncu okeyde | 4,91 sa | 11,9 dk | 4.691 / 369 | 1.291 |
+| garsonsuz | 4,95 sa | 13,1 dk | 4.903 / 0 | 1.452 |
+| garson, oyuncu her isteğe koşar | 4,91 sa | 12,6 dk | 4.734 / 489 | 1.181 |
+| garson tavlada, oyuncu okeyde | 4,89 sa | 12,7 dk | 4.719 / 441 | 1.138 |
 
-- Garson zinciri %1-2 kısaltıyor. Sebep: tavla T120U ücret ağırlıklı (kahve 3 ₺) ve garson 150. dakikada geliyor.
-  Garsonun asıl etkisi kaçan kahvede (−%17-19), sürede değil. Garson sayıları B'nin ölçümünden seçilince
-  **garsonlu final koşu birleştirmeden sonra** alınır.
+- Garson zinciri ~%1 kısaltıyor. Sebep: tavla T120U ücret ağırlıklı (kahve 3 ₺) ve garson 150. dakikada geliyor.
+  Garsonun asıl etkisi kaçan kahvede (−%19-22), sürede değil. Garson sayıları seçilince (S2 karar paketi)
+  garsonlu koşu o sayılarla tekrarlanır.
 
 ### Bulgu 6 — Çevrimdışı (D-185 kuralı: Kat 1 → kasa ≤ 1.620 ₺ + Kat 2 payı ≤ sıradaki Kat 2 pad'i × 1,15)
 - Tavan kuralı Kat 2 payını tutuyor. İhlalin kaynağı **kasaya giren Kat 1 payı (1.620 ₺)**: bu para ucuz ilk pad'leri tek
