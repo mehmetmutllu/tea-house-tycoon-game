@@ -43,13 +43,14 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Kareler `tools/kat2-s3-kare.mjs` · ses sayfası paketleme: esbuild ile `tools/kat2-ses-dinle.html` tek dosyaya.
 
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
+0. **2026-11-14 geri bildirimi** (`docs/geribildirim-oyun-testi-2026-11-14.md`): G1-G4 KODDA (D-198). Bekleyen: **G5 okey kolu**
+   (rapor `docs/kat2-g5-okey-raporu-d198.md`, G0-G4 · karar BOŞ) + **ön set** (6 aday, `__kat2OnSet(id)`) → seçim → commit #2 → yeni deneme APK.
 1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
    bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
    Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).
    Beklerken yayınsız işler (kullanıcıya 2026-11-13 sunuldu, seçim bekliyor): Puanla özelliği (aşağıda) · küçük kusurlar (AÇIK KALEMLER).
 2. **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (kullanıcı 2026-11-13). Kullanıcı derse 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım (ASC) · Play listesi + zip arkadaşa · "Yenilikler".
-3. Not: Kat 1'deki yıkık merdivende sarı-siyah bant var (hafıza: bantlar beğenilmemişti) — kullanıcı denemede söylerse ele al.
-Göz aracı: `node tools/_kat-kare.mjs` · geniş kadraj karşılaştırma (feedback_show_dont_ask).
+3. Not: Kat 1'deki yıkık merdivende sarı-siyah bant var (hafıza: bantlar beğenilmemişti) — kullanıcı denemede söylerse ele al. Göz aracı: `node tools/_kat-kare.mjs`.
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
@@ -58,7 +59,6 @@ Göz aracı: `node tools/_kat-kare.mjs` · geniş kadraj karşılaştırma (feed
 - Play üretim erişimi: 2026-11-13 hâlâ ses yok; kullanıcı haber verecek.
 - Play'de yayına girince: Liftoff + Unity Android uygulamalarına Play bağlantısı; AdMob Android'i bağla.
 - 1.0.7 iOS yayında (2026-11-13): AdMob iOS "Güncellemeleri kontrol edin"; ~2026-11-16 Liftoff/Unity dolum oranı; Firebase olayları.
-- Yayında Firebase olayları geliyor mu (DebugView/Realtime).
 
 ## SONRAKİ ÖZELLİK — Puanla (BEKLİYOR: kullanıcı "uygulama daha güzelken ekleyelim")
 Kalıp: Wordmaster `js/puan.js` + `@capacitor-community/in-app-review` ~8.0.0. Sistem penceresi yalnız güzel anda (bölge/görev

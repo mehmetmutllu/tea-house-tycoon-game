@@ -12,13 +12,12 @@ import {
 import {
   kat2SesBaslat, kat2SesOlaylari, ortamZamanlayici, yeniBellek, type Kat2CalId, type Kat2SesKesit,
 } from '../src/game/kat2Ses';
-import { D } from '../src/game/decimal';
 import { OCAKLAR } from '../src/game/kat';
 import { useGame } from '../src/game/store';
 
 const TABAN: Kat2SesKesit = {
   kat: 2, gecis: false, acik: true, hazirda: false, padSayisi: 3, acikAlan: 1, svToplam: 0, nextId: 10,
-  tepsi: 2, birikimToplam: 0, istekToplam: 2, paraIdleri: [5, 6], ocakHazir: [1, 0], kasa: D(0), cuzdan: D(100),
+  tepsi: 2, birikimToplam: 0, istekToplam: 2, paraIdleri: [5, 6], ocakHazir: [1, 0],
   x: 0, z: 0, oynayan: [],
 };
 const ile = (y: Partial<Kat2SesKesit>): Kat2SesKesit => ({ ...TABAN, ...y });
@@ -52,11 +51,6 @@ describe('durum farkı → doğru ses kimliği', () => {
   });
   it('dünya yeniden kuruldu (nextId geri) → para/servis sesi yok', () => {
     expect(idler(TABAN, ile({ nextId: 1, paraIdleri: [], tepsi: 0, birikimToplam: 9 }))).toEqual([]);
-  });
-  it('kasa: Kat 1de boşalıp cüzdana geçince çalar; sıfırlamada (cüzdan artmadan) çalmaz', () => {
-    const a = ile({ kat: 1, kasa: D(500), cuzdan: D(100) });
-    expect(idler(a, ile({ kat: 1, kasa: D(0), cuzdan: D(600) }))).toEqual(['k2kasa']);
-    expect(idler(a, ile({ kat: 1, kasa: D(0), cuzdan: D(0) }))).toEqual([]);
   });
   it('yeni kat: geçişle varışta oturumda BİR kez (merdiven açıldıysa ya da yalnız hazır pad varsa)', () => {
     const b = yeniBellek();
@@ -212,8 +206,8 @@ describe('bağlama: store aboneliği (sessiz kip, arka plan, Kat 1)', () => {
 
 describe('katalog: her yeni ses için iki çalınabilir aday', () => {
   const idsiz = Object.keys(KAT2_SES_ADAYLARI) as Kat2SesId[];
-  it('sekiz yeni ses; oyuna kullanıcının seçtiği aday bağlı (D-195: takırtı + ilk çıkış Aday 2)', () => {
-    expect(idsiz).toHaveLength(8);
+  it('yedi yeni ses (D-198: kasa sesi kasayla kalktı); oyuna kullanıcının seçtiği aday bağlı (D-195: takırtı + ilk çıkış Aday 2)', () => {
+    expect(idsiz).toHaveLength(7);
     for (const id of idsiz) {
       expect(KAT2_SECIM[id]).toBe(id === 'k2takirti' || id === 'k2yeniKat' ? 1 : 0);
       expect(KAT2_SES_KATALOG[id]).toBe(KAT2_SES_ADAYLARI[id].adaylar[KAT2_SECIM[id]]);

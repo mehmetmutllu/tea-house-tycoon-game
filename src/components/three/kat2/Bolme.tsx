@@ -7,8 +7,8 @@
 import { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
-import { KAT2_BOLMELER, kat2DuvarVar } from '../../../game/kat';
-import { MaketWall } from '../maketParts';
+import { KAT2_BOLMELER, ON_BOLME_H, kameraBakanBolme, kat2DuvarVar } from '../../../game/kat';
+import { MC, MaketWall } from '../maketParts';
 import { WALL_H } from '../wallOlcu';
 
 /** Kalkış: titreşim + gömülme süresi (sn). */
@@ -46,7 +46,24 @@ function Duvar({ i, hal, bitti }: { i: number; hal: Hal; bitti: (i: number) => v
   });
   return (
     <group ref={ref} scale={[1, hal === 'cik' ? 0.001 : 1, 1]}>
-      <MaketWall x1={b.x1} z1={b.z1} x2={b.x2} z2={b.z2} h={WALL_H} />
+      {kameraBakanBolme(b) ? <AlcakBolme x1={b.x1} x2={b.x2} z={b.z1} /> : <MaketWall x1={b.x1} z1={b.z1} x2={b.x2} z2={b.z2} h={WALL_H} />}
+    </group>
+  );
+}
+
+/** Alçak bölme: duvarın lambri kuşağı + üst çıtası, `ON_BOLME_H` boyunda (MaketWall lambriyi hep 0,9 çizer). */
+function AlcakBolme({ x1, x2, z }: { x1: number; x2: number; z: number }) {
+  const len = x2 - x1;
+  return (
+    <group position={[(x1 + x2) / 2, 0, z]}>
+      <mesh position={[0, ON_BOLME_H / 2, 0]} castShadow receiveShadow>
+        <boxGeometry args={[len, ON_BOLME_H, 0.22]} />
+        <meshStandardMaterial color={MC.wain} />
+      </mesh>
+      <mesh position={[0, ON_BOLME_H + 0.04, 0]} receiveShadow>
+        <boxGeometry args={[len, 0.08, 0.28]} />
+        <meshStandardMaterial color={MC.doorWood} />
+      </mesh>
     </group>
   );
 }

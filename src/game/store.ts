@@ -201,7 +201,7 @@ import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
 import { kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2Tick, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
 import { kat2Gorevleri, kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
-import { bosKasaOlcum, kasaSiniriOlcumden, kasayaAt, type KasaOlcum } from './kasa';
+import { bosKasaOlcum, kasaSiniriOlcumden, type KasaOlcum } from './kasa';
 import { t } from '../i18n';
 
 
@@ -249,13 +249,10 @@ export function kayitVerisi(s: GameState): SaveData {
   // yüklenince yerde para yoktur → çift sayım olmaz.
   let yerde = 0;
   for (const c of s.coins) yerde += c.value;
-  // D-185: oyuncu Kat 2'deyken yerdeki Kat 1 parası kasaya yazılır (oyunda da oraya gidecekti).
-  const kat2de = s.kat === 2;
   // D-015: tables/stations/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
   return {
     ...defaultSave(),
-    wallet: (kat2de ? s.wallet : s.wallet.add(yerde)).toString(),
-    kasa: (kat2de ? s.kasa.add(yerde) : s.kasa).toString(),
+    wallet: s.wallet.add(yerde).toString(),
     kasaOlcum: { ...s.kasaOlcum },
     diamonds: s.diamonds.toString(),
     lifetime: s.lifetime.add(yerde).toString(),
@@ -541,9 +538,9 @@ export interface GameState {
   katGecis: KatGecis | null;
   /** K2-3: Kat 2'nin anlık dünyası (masalar, ocak, tepsi, yığınlar — transient; kalıcı olan `kat2.padsDone`). */
   kat2Dunya: Kat2Dunya;
-  /** D-185: Kat 1'in kasası — oyuncu Kat 2'deyken Kat 1'in oto-toplanan parası (Kat 1'de yanına yürüyünce cüzdana). */
-  kasa: Decimal;
-  /** D-185: Kat 1'in ölçülen geliri (kasa sınırının kaynağı, `kasa.ts`). */
+  /** D-198: Kat 2'deyken Kat 1'den cüzdana akan paranın birikimi (HUD "Kat 1 +X" sayacı okuyup sıfırlar; kaydedilmez). */
+  kat1Akis: number;
+  /** D-185: Kat 1'in ölçülen geliri (çevrimdışı Kat 1 tavanının kaynağı, `kasa.ts`). */
   kasaOlcum: KasaOlcum;
   // Aksiyonlar
   init: () => void;
@@ -679,19 +676,21 @@ function cevrimdisiGelir(
 }
 
 /**
- * D-185: çevrimdışı kazancı dağıtır. Oyuncu Kat 2'de kapattıysa Kat 1 payı KASAYA girer ve kasa
- * sınırında kesilir (oyunda da kasa dolunca Kat 1 durur); geri kalanı cüzdana. `cuzdana` ekranda
- * gösterilen çevrimdışı ödül (`offlineEarned`) olur.
+ * D-185 → D-198: çevrimdışı kazancı dağıtır. Oyuncu Kat 2'de kapattıysa Kat 1 payı ölçülen Kat 1
+ * gelirinin `kasa.dakika` katında kesilir (D-185 tavanı aynen; kasa artık yok, pay cüzdana). `cuzdana`
+ * ekranda gösterilen çevrimdışı ödül (`offlineEarned`) olur.
  */
 function cevrimdisiDagit(
-  g: { wallet: Decimal; lifetime: Decimal; kasa: Decimal; kasaOlcum: KasaOlcum; kat: KatNo },
+  g: { wallet: Decimal; lifetime: Decimal; kasaOlcum: KasaOlcum; kat: KatNo },
   r: { kazanc: number; kat1Pay: number },
-): { wallet: Decimal; lifetime: Decimal; kasa: Decimal; cuzdana: number } {
-  if (g.kat !== 2 || r.kat1Pay <= 0)
-    return { wallet: g.wallet.add(r.kazanc), lifetime: g.lifetime.add(r.kazanc), kasa: g.kasa, cuzdana: r.kazanc };
-  const k = kasayaAt(g.kasa, r.kat1Pay, kasaSiniriOlcumden(g.kasaOlcum, economyConfig.kasa));
-  const cuzdana = r.kazanc - r.kat1Pay;
-  return { wallet: g.wallet.add(cuzdana), lifetime: g.lifetime.add(cuzdana).add(k.giren), kasa: k.kasa, cuzdana };
+): { wallet: Decimal; lifetime: Decimal; cuzdana: number } {
+  let cuzdana = r.kazanc;
+  if (g.kat === 2 && r.kat1Pay > 0) {
+    const sinir = kasaSiniriOlcumden(g.kasaOlcum, economyConfig.kasa);
+    const kat1 = sinir === null ? r.kat1Pay : Math.min(r.kat1Pay, sinir.toNumber());
+    cuzdana = r.kazanc - r.kat1Pay + Math.floor(kat1);
+  }
+  return { wallet: g.wallet.add(cuzdana), lifetime: g.lifetime.add(cuzdana), cuzdana };
 }
 
 /**
@@ -820,7 +819,7 @@ export const useGame = create<GameState>((set, get) => ({
   kat2: defaultKat2(),
   katGecis: null,
   kat2Dunya: yeniKat2Dunya([], KAT2_AYAR),
-  kasa: D(0),
+  kat1Akis: 0,
   kasaOlcum: bosKasaOlcum(),
 
   init: () => {
@@ -865,7 +864,8 @@ export const useGame = create<GameState>((set, get) => ({
     const elapsed = Math.max(0, (Date.now() - save.lastSaved) / 1000);
     let wallet = D(save.wallet);
     let lifetime = D(save.lifetime);
-    let kasa = D(save.kasa);
+    // D-198: kasa kalktı — eski kayıtta kasada bekleyen para cüzdana geçer (ömür boyu kazanca girdiği an sayılmıştı).
+    if (D(save.kasa).gt(0)) wallet = wallet.add(D(save.kasa));
     const kasaOlcum: KasaOlcum = { ...save.kasaOlcum };
     let offlineEarned = 0;
     let offlineIzleEki = 0;
@@ -878,7 +878,7 @@ export const useGame = create<GameState>((set, get) => ({
         elapsed,
       );
       offlineIzleEki = r.izleEki;
-      ({ wallet, lifetime, kasa, cuzdana: offlineEarned } = cevrimdisiDagit({ wallet, lifetime, kasa, kasaOlcum, kat: ilkKat }, r));
+      ({ wallet, lifetime, cuzdana: offlineEarned } = cevrimdisiDagit({ wallet, lifetime, kasaOlcum, kat: ilkKat }, r));
     }
     // GÜN DÖNÜMÜ (D8): gece kapalıyken gün değiştiyse görevler BURADA yenilenir — çevrimdışı
     // gelir eklendikten SONRA. Sıra ölçülen arzın parçası: taban offline'dan önce alınsaydı
@@ -1031,7 +1031,7 @@ export const useGame = create<GameState>((set, get) => ({
       kat2: kat2Kayit,
       katGecis: null,
       kat2Dunya: yeniKat2Dunya(kat2Kayit.padsDone, KAT2_AYAR),
-      kasa,
+      kat1Akis: 0,
       kasaOlcum,
     });
     reklamsizAyarla(save.satin.reklamsiz);
@@ -1198,8 +1198,8 @@ export const useGame = create<GameState>((set, get) => ({
         dishes: c.dishes,
         wallet,
         lifetime,
-        kasa: c.kasa,
         kasaOlcum: c.kasaOlcum,
+        kat1Akis: c.kat1Akis,
         kat2,
         kat2Dunya,
         tables: c.out.tables.length,
@@ -1736,7 +1736,7 @@ export const useGame = create<GameState>((set, get) => ({
     if (elapsed <= CEVRIMDISI_ESIK_SN) return;
     const r = cevrimdisiGelir({ ...s, goalsClaimed: s.goalsClaimed ?? [] }, elapsed);
     if (r.kazanc <= 0) return;
-    const { wallet, lifetime, kasa, cuzdana: kazanc } = cevrimdisiDagit(s, r);
+    const { wallet, lifetime, cuzdana: kazanc } = cevrimdisiDagit(s, r);
     const izleEki = r.izleEki;
     // D8 sırası (init ile aynı): gün dönümü çevrimdışı gelirden SONRA — gece kazanılan ₺ bugünün
     // "kazan" görevini bedavaya doldurmasın. Gün değişmediyse `tick` zaten dokunmaz.
@@ -1744,7 +1744,7 @@ export const useGame = create<GameState>((set, get) => ({
     const daily = s.daily.day === gun
       ? s.daily
       : rollDaily(s.daily, gun, dailyContextOf(s), dailyCountersOf({ stats: s.stats, lifetime }));
-    set({ wallet, lifetime, kasa, offlineEarned: kazanc, offlineIzleEki: izleEki, daily,
+    set({ wallet, lifetime, offlineEarned: kazanc, offlineIzleEki: izleEki, daily,
       gelirIzi: izKaydir(s.gelirIzi, lifetime.sub(s.lifetime).toNumber()) });
     get().saveNow();
   },

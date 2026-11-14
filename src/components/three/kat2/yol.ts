@@ -69,6 +69,23 @@ export function grupYolu(m: Kat2MasaYeri, oturak: [number, number], sira: number
   return out;
 }
 
+/** Grubun yürüme hızı (Kat 1 müşterisi `NPC_SPEED` 1,4); uzak masada süre yetmezse hızlanır. */
+export const GRUP_HIZ = 1.5;
+/**
+ * Grup üyeleri arka arkaya çıkar (sn). D-198 (oyun testi G4 "iç içe giriyorlar"): herkes AYNI hızla
+ * yürür → aradaki mesafe ARA × hız (≈ 1 m; şeritlerin birleştiği yerde ≥ 0,8 — bekçi `kat2-g-turu`) yol boyunca korunur; eskiden her kişi kendi süresine
+ * sığdırıldığı için sonra çıkan hızlanıp öndekine biniyordu. Çıkış da aynı aralıkla.
+ */
+export const GRUP_ARA = 0.7;
+
+/** Ortak geliş hızı: en geç çıkan da `T`de oturağında olsun (kısa yolda `GRUP_HIZ`ın altına inmez). */
+export const gelisHizi = (boylar: readonly number[], T: number): number =>
+  Math.max(GRUP_HIZ, ...boylar.map((b, k) => b / Math.max(0.5, T - k * GRUP_ARA)));
+
+/** k. üyenin geliş yolundaki oranı (0 = henüz çıkmadı, 1 = oturakta); `gecen` gelişin başından sn. */
+export const gelisOrani = (boy: number, k: number, gecen: number, hiz: number): number =>
+  Math.max(0, Math.min(1, ((gecen - k * GRUP_ARA) * hiz) / boy));
+
 export interface Yol {
   n: Nokta[];
   /** Kümülatif uzunluk (yatay). */

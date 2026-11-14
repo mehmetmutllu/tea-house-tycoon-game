@@ -90,6 +90,14 @@ export const KAT2_BOLMELER: readonly { x1: number; z1: number; x2: number; z2: n
   { x1: 0, z1: 0, x2: 0, z2: FLOOR_HALF, alanlar: [1, 2] },
 ];
 
+/**
+ * D-198 (oyun testi G3 "duvara yaklaşınca map'in yarısı kayboluyor"): KAMERAYA BAKAN bölme — z sabit,
+ * kapalı alan önde (kameraya yakın) — alçak çizilir (`ON_BOLME_H`); tam boy (3,2) oyuncuyu ve salonun
+ * yarısını örtüyordu. Yan bölme (x sabit) tam boy kalır. Yalnız görüntü: çarpışma `kat2Duvarlar`.
+ */
+export const ON_BOLME_H = 0.6;
+export const kameraBakanBolme = (b: (typeof KAT2_BOLMELER)[number]): boolean => b.z1 === b.z2;
+
 export type MasaTuru = 'okey' | 'tavla';
 export interface Kat2MasaYeri {
   id: string;
@@ -222,11 +230,16 @@ export function masaGovdesi(m: Kat2MasaYeri): Solid {
 }
 
 /**
- * Açık masaların (okey + tavla) ve salonun içindeki açık ocakların katı gövdesi. Pad'i bitmemiş
- * masa/ocak yok sayılır. Bandın ocağı (`OCAK`) yürüme alanının dışında durur, gövdesi gerekmez.
+ * Açık masaların (okey + tavla), mutfağın ön tezgâhının (ilk ocak açıksa) ve salonun içindeki açık
+ * ocakların katı gövdesi. Pad'i bitmemiş masa/ocak yok sayılır. D-198: tezgâh bandın içinde ama
+ * yürüme alanı bandın hattında bitiyor — gövde olmadan oyuncunun yarısı tezgâhın içine giriyordu.
  */
 export function kat2Engeller(padsDone: readonly string[]): Solid[] {
   const out = KAT2_MASALAR.filter((m) => padsDone.includes(m.id)).map(masaGovdesi);
+  if (padsDone.includes(OCAK.id)) {
+    const t = KAT2_ON_TEZGAH;
+    out.push({ c: [(t.x0 + t.x1) / 2, 0, (t.z0 + t.z1) / 2], h: [(t.x1 - t.x0) / 2, (t.z1 - t.z0) / 2] });
+  }
   for (const o of OCAKLAR) if (o.govde && padsDone.includes(o.id)) out.push({ c: [o.x, 0, o.z], h: o.govde });
   return out;
 }
@@ -392,10 +405,17 @@ export const KAT2_SALON_PAD_YER: Readonly<Record<string, [number, number]>> = Ob
 );
 
 /**
- * Cezve ocağı (D-181 cezve 7): bandın solunda, sırtı arka duvara değil SALONA bakar (maket
- * `CayOcagi` −7,4). Oyuncu salondan, ocağın önündeki noktadan kahve alır.
+ * KAT 2 MUTFAĞININ ÖN TEZGÂHI (D-198, oyun testi G2: "aşağıyı kopyala; önde tezgâh, arkada ocak"). Kat 1
+ * gibi: tezgâhın ÖN YÜZÜ bandın hattında, arkasında Kat 1'in mutfak odası. Bandın solunu boydan boya
+ * kapatır (sol duvar → merdiven kovası); katı gövdedir — oyuncu içine giremez.
  */
-export const OCAK = { id: 'k2cezve', x: -7.4, z: BAND.front - 0.55, al: [-7.4, BAND.front + 0.6] as [number, number], erisim: 0.9 } as const;
+export const KAT2_ON_TEZGAH = { x0: -H - 0.3, x1: BAND.stairs.minX, z0: BAND.front - 0.8, z1: BAND.front } as const;
+
+/**
+ * Cezve ocağı (D-181 → D-198): ön tezgâhın ÜSTÜNDEKİ kahve seti (`kat2/Mutfak`). Oyuncu salondan,
+ * setin önündeki noktadan kahve alır (`al` aynı kaldı — erişim ve garson yolu değişmedi).
+ */
+export const OCAK = { id: 'k2cezve', x: -7.4, z: (KAT2_ON_TEZGAH.z0 + KAT2_ON_TEZGAH.z1) / 2, al: [-7.4, BAND.front + 0.6] as [number, number], erisim: 0.9 } as const;
 
 /**
  * Kat 2'nin BÜTÜN masa yerleri (N7): merdiven salonu 4 okey (yukarıdaki `OKEY_YER`, sıra korunur) ·

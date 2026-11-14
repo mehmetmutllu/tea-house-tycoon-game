@@ -388,8 +388,6 @@ export const en: Record<string, string> = {
   "Tavla Masası": "Backgammon Table",
   "Okey Salonu": "Okey Room",
   "Kat 1:": "Floor 1:",
-  "Kat 1 dolu:": "Floor 1 full:",
-  "Kasadan alındı": "Collected!",
   "Tavla Köşesi": "Backgammon Corner",
   "Yükselt": "Upgrade",
   "Lavaboyu Büyüt": "Expand Restroom",

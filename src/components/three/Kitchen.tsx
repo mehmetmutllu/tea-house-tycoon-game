@@ -142,8 +142,7 @@ function Unite({ u, i, level }: { u: KitchenUnit; i: number; level: number }) {
  * (kilitli ALAN çizilmez kuralı — burada kilitli bir OBJE değil, henüz var olmayan bir şey).
  * Konum `kitchenLook`tan: x modül ritminden, z çaycının koridorundan türüyor.
  */
-function Adalar({ level }: { level: number }) {
-  const areasOpen = useGame((s) => s.areasOpen);
+function Adalar({ level, areasOpen }: { level: number; areasOpen: number }) {
   const z = adaZ(areasOpen);
   return (
     <group>
@@ -282,15 +281,25 @@ export function Kitchen() {
    * Okuma SALT GÖRSEL: mutfak hiçbir sayı üretmez, hiçbir sayı tüketmez.
    */
   const level = useGame((s) => mutfakSeviyesi(s.stationLevels[THE_SERVICE] ?? 0));
+  const areasOpen = useGame((s) => s.areasOpen);
+  return <MutfakOdasi level={level} areasOpen={areasOpen} />;
+}
+
+/**
+ * Mutfak odası (zemin + arka hat + adalar + raflar) — seviyesi ve yerleşimi DIŞARIDAN. Kat 1 servis
+ * seviyesinden, Kat 2 (D-198, oyun testi G2 "aşağıyı kopyala direkt") kendi ilerlemesinden besler;
+ * iki kat aynı odayı aynı koordinatta çizer (Kat 2'nin bandı Kat 1'inkinin tam üstü).
+ */
+export function MutfakOdasi({ level, areasOpen, aspiratorsuz = false }: { level: number; areasOpen: number; aspiratorsuz?: boolean }) {
   return (
     <group>
       {/* Zemin DUVAR KİPİNDEN BAĞIMSIZ: duvar denemesi reddedildi ama karo zemin kullanıcı
           tarafından beğenildi (2026-09-09) — ikisi ayrı karar, ayrı anahtar. */}
       <Fayans />
-      {KITCHEN_UNITS.map((u, i) => (
-        <Unite key={`${u.key}-${i}`} u={u} i={i} level={level} />
-      ))}
-      <Adalar level={level} />
+      {KITCHEN_UNITS.map((u, i) =>
+        aspiratorsuz && u.key === 'extractorhood' ? null : <Unite key={`${u.key}-${i}`} u={u} i={i} level={level} />,
+      )}
+      <Adalar level={level} areasOpen={areasOpen} />
       <Raflar />
     </group>
   );

@@ -20,7 +20,6 @@ import {
   KAT2_SES_KATALOG, MASA_ARALIK, ORTAM_ARALIK, yakinlik, type Kat2SesId,
 } from './audioKat2';
 import { sesDuraklatildi, webSesArkaUcu } from './audioWeb';
-import type { Decimal } from './decimal';
 import { KAT2_MASALAR, OCAKLAR, kat2AcikAlan, type KatNo, type MasaTuru } from './kat';
 import { useGame } from './store';
 
@@ -51,8 +50,6 @@ export interface Kat2SesKesit {
   istekToplam: number;
   paraIdleri: readonly number[];
   ocakHazir: readonly number[];
-  kasa: Decimal;
-  cuzdan: Decimal;
   x: number;
   z: number;
   /** Oyunda olan masalar (ortam zamanlayıcısı için). */
@@ -94,8 +91,6 @@ export function kat2KesitAl(s: Durum): Kat2SesKesit {
     istekToplam,
     paraIdleri: d.paralar.map((p) => p.id),
     ocakHazir: d.ocaklar.map((o) => o.hazir),
-    kasa: s.kasa,
-    cuzdan: s.wallet,
     x: s.player[0],
     z: s.player[2],
     oynayan,
@@ -126,8 +121,6 @@ export function kat2SesOlaylari(onceki: Kat2SesKesit | null, s: Kat2SesKesit, be
     bellek.yeniKatCalindi = true;
     cal('k2yeniKat');
   }
-  // Kat 1 kasası cüzdana boşaldı (sıfırlamada kasa da düşer ama cüzdan artmaz → sessiz).
-  if (s.kat === 1 && s.kasa.lt(onceki.kasa) && s.cuzdan.gt(onceki.cuzdan)) cal('k2kasa');
 
   if (s.kat !== 2 || onceki.kat !== 2 || s.nextId < onceki.nextId) return o;
   if (s.svToplam > onceki.svToplam) cal('k2sv');

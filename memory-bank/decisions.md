@@ -5237,3 +5237,12 @@ ChatGPT "2. kat" önerdi → oyunun her yerdeki adı **Kat 2** korundu. "Dolu Sa
 - Kullanıcı yayından önce tüm oyunu (Kat 1 + Kat 2) Android'de deneyecek: debug APK `applicationIdSuffix ".deneme"` (mağaza
   sürümünün yanına kurulur), `VITE_KAT2=1 VITE_DENEME=1 npm run apk`; derlemede google-services.json'a geçici `.deneme`
   istemcisi eklenip geri alınır. Ayarlar'da yalnız deneme derlemesinde "Deneme: Kat 1'i bitir" (merdiven önü + 9.400 coin).
+
+## D-198 · Oyun testi 2026-11-14 G1-G4: kasa yok · Kat 1 mutfağı Kat 2'de · ön bölme alçak · tek sıra grup
+Kullanıcı seçti (`docs/geribildirim-oyun-testi-2026-11-14.md`). **G1:** D-185 kasası + barı KALKTI — Kat 2'deyken Kat 1 parası
+`kasa.akisSn` (2 sn) sonra doğrudan cüzdana, oyun açıkken sınır yok; HUD "Kat 1: +X" belirip söner; eski kayıttaki kasa cüzdana
+geçer; çevrimdışı Kat 1 tavanı (ölçülen gelir × 20 dk) aynen; `k2kasa` sesi silindi. **G2:** Kat 2 mutfağı = Kat 1 odası
+(`Kitchen.MutfakOdasi`, aspiratörsüz, Kat 2 ilerlemesiyle Sv1→6) + boydan boya KATI ön tezgâh (`KAT2_ON_TEZGAH`); kahve seti
+tezgâhın üstünde ×1,5; ön set biçimi 6 adaydan seçilecek (`ON_SETLER`, varsayılan kum ocağı). **G3:** kameraya bakan bölme
+0,6 (yan bölme 3,2). **G4:** grup aynı hızla 0,7 sn arayla tek sıra (yolda ≥ 0,8 m). Bekçi `kat2-g-turu` + `kasa-oyun`,
+mutasyon 4/4. G5 (okey ilk dakikalar) ölçüldü, karar bekliyor: `docs/kat2-g5-okey-raporu-d198.md`.

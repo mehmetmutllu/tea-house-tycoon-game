@@ -11,7 +11,7 @@
  * `set()` ile yazar. Bu ayrım sayesinde sistemler saf, tek tek okunabilir ve test edilebilir kalır.
  */
 import { KAT1_DISI } from './kat';
-import { KASA_YER, kasaBosalt, kasaBosaltilir, kasaDolu, kasaOlcumAdim, kasaSiniriOlcumden, kasayaAt, type KasaOlcum } from './kasa';
+import { kasaOlcumAdim, type KasaOlcum } from './kasa';
 import { activeQuestIndex, eksikPadGorevi } from './questProgress';
 import { olcKoş, olcumAcik } from './olcum';
 import type { Decimal } from './decimal';
@@ -143,12 +143,10 @@ export interface TickCtx {
   dishes: Dish[];
   wallet: Decimal;
   lifetime: Decimal;
-  /** D-185: Kat 1'in kasası — oyuncu Kat 2'deyken oto-toplanan para buraya girer. */
-  kasa: Decimal;
-  /** D-185: Kat 1'in ölçülen geliri (oyuncu Kat 2'deyken düşen para, üstel ortalama). */
+  /** D-185: Kat 1'in ölçülen geliri (oyuncu Kat 2'deyken düşen para, üstel ortalama) — çevrimdışı tavanının kaynağı. */
   kasaOlcum: KasaOlcum;
-  /** Kare başındaki ölçümden kasa sınırı (`null` = henüz ölçüm yok, sınırsız). */
-  readonly kasaSinir: Decimal | null;
+  /** D-198: oyuncu Kat 2'deyken Kat 1'den cüzdana akan para (HUD "Kat 1 +X" sayacı). */
+  kat1Akis: number;
   padsDone: string[];
   padFills: Record<string, number>;
   readonly world: World;
@@ -255,9 +253,8 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     dishes: s.dishes.map((d) => ({ ...d, pos: [...d.pos] as Vec3 })),
     wallet: s.wallet,
     lifetime: s.lifetime,
-    kasa: s.kasa,
     kasaOlcum: s.kasaOlcum,
-    kasaSinir: kasaSiniriOlcumden(s.kasaOlcum, C.kasa),
+    kat1Akis: s.kat1Akis,
     padsDone: s.padsDone,
     padFills: s.padFills,
     // D-015: masa/servis/personel padsDone'dan TÜRETİLİR (kare anlık görüntüsü; kare içinde
@@ -414,12 +411,6 @@ function brewSystem(c: TickCtx): void {
  * Spawn (Y2 GRUP sistemi, plan §2)
  */
 function spawnSystem(c: TickCtx): void {
-  // D-185: oyuncu Kat 2'de ve kasa dolu → Kat 1'e müşteri gelmez (para yanmaz). Sayaç sıfırda
-  // bekler: kasa boşalınca ilk grup hemen gelir, birikmiş negatif sayaç art arda doğurmaz.
-  if (c.s.kat === 2 && kasaDolu(c.kasa, c.kasaSinir)) {
-    c.spawnTimer = Math.max(c.spawnTimer, 0);
-    return;
-  }
   const { npcs, tables, areasOpen, tableLevels, dirty, stationLevels } = c;
   // B2: müşteri ÜRÜNÜNÜ gelirken seçer; tost payı servis SEVİYESİNDEN gelir (L5 öncesi 0 → herkes
   // çay ister, eski davranışla birebir). Sipariş nesnesi `{çay:1, tost:2}` Faz C'de.
@@ -790,14 +781,12 @@ function coinSystem(c: TickCtx): void {
   let coins = c.coins;
   let wallet = c.wallet;
   let lifetime = c.lifetime;
-  let kasa = c.kasa;
-  const kasaSinir = c.kasaSinir;
+  let kat1Akis = c.kat1Akis;
   const kat2de = s.kat === 2;
   let autoCollectSum = s.autoCollectSum;
   let autoCollectToastCooldown = Math.max(0, s.autoCollectToastCooldown - dt);
-  if (kat2de && !kasaDolu(kasa, kasaSinir)) {
-    // D-185 ölçümü: bu karede düşen Kat 1 parası (yeni kimlikler sonda). Kasa doluyken ölçülmez —
-    // müşteri gelmediği için oran sıfıra çekilir, sınır da onunla küçülürdü.
+  if (kat2de) {
+    // D-185 ölçümü: bu karede düşen Kat 1 parası (yeni kimlikler sonda) — çevrimdışı Kat 1 tavanı.
     let uretim = 0;
     for (let i = coins.length - 1; i >= 0 && coins[i].id >= s.nextId; i--) uretim += coins[i].value;
     c.kasaOlcum = kasaOlcumAdim(c.kasaOlcum, uretim, dt, C.kasa.olcumPencereSn);
@@ -820,18 +809,14 @@ function coinSystem(c: TickCtx): void {
       // Mıknatıs alanındaki coin'e dokunulmaz (zaten oyuncuya akıyor — manuel toplama hissi korunur).
       // stats.coinsCollected ARTMAZ (o sayaç manuel toplamanın quest/öğretici ölçüsü).
       c.age = (c.age ?? 0) + dt;
+      if (kat2de && c.age >= C.kasa.akisSn) {
+        // D-198: oyuncu Kat 2'de → Kat 1'in parası kısa gecikmeyle DOĞRUDAN cüzdana akar (kasa yok, sınır yok).
+        wallet = wallet.add(c.value);
+        lifetime = lifetime.add(c.value);
+        kat1Akis += c.value;
+        continue;
+      }
       if (!inMagnet && C.money.autoCollectAfter > 0 && c.age >= C.money.autoCollectAfter) {
-        if (kat2de) {
-          // D-185: oyuncu Kat 2'de → cüzdana değil KASAYA. Sığmayan kısım yerde bekler (yanmaz);
-          // kazanç kasaya girdiği an sayılır (`lifetime`), boşaltma yalnız yer değiştirir.
-          const r = kasayaAt(kasa, c.value, kasaSinir);
-          kasa = r.kasa;
-          lifetime = lifetime.add(r.giren);
-          if (r.tasan.lte(0)) continue;
-          c.value = r.tasan.toNumber();
-          keep.push(c);
-          continue;
-        }
         wallet = wallet.add(c.value);
         lifetime = lifetime.add(c.value);
         autoCollectSum += c.value;
@@ -840,11 +825,6 @@ function coinSystem(c: TickCtx): void {
       keep.push(c);
     }
     coins = keep;
-  }
-  // D-185: Kat 1'de kasanın yanına yürüyünce kasa cüzdana boşalır (hareket temelli).
-  if (!kat2de && kasa.gt(0) && kasaBosaltilir('yurume', { kat: 1, indi: false, x: player[0], z: player[2] }, KASA_YER, C.kasa.erisim)) {
-    enqueueNotice({ text: t('Kasadan alındı'), ttl: 3, kind: 'reveal', reward: Math.floor(kasa.toNumber()) });
-    ({ cuzdan: wallet, kasa } = kasaBosalt(kasa, wallet));
   }
   // Oto-toplama bildirimi TOPLU çıkar (en sık autoCollectToastEvery sn'de bir) — kullanıcı
   // paranın kendiliğinden toplandığını GÖRSÜN ama toast spam'ı olmasın.
@@ -856,7 +836,7 @@ function coinSystem(c: TickCtx): void {
   c.coins = coins;
   c.wallet = wallet;
   c.lifetime = lifetime;
-  c.kasa = kasa;
+  c.kat1Akis = kat1Akis;
   c.autoCollectSum = autoCollectSum;
   c.autoCollectToastCooldown = autoCollectToastCooldown;
 }

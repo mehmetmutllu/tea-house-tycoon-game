@@ -30,16 +30,12 @@ import { KAY_KOK, KAY_MUSTERI_GOVDE, KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, KAY_
 import { PALETTE } from '../../../config/palette';
 import { KLIP, LOKOMOSYON_YURUYUS, basMi, ekipmanMi, kafaKucult, lokomosyonSec, useKayKlipler } from '../KayActor';
 import type { Kat2MasaYeri } from '../../../game/kat';
-import { grupYolu, oturakYerleri, yolKur, yolNoktasi, type Nokta, type Yol } from './yol';
+import { GRUP_ARA, GRUP_HIZ, gelisHizi, gelisOrani, grupYolu, oturakYerleri, yolKur, yolNoktasi, type Nokta, type Yol } from './yol';
 import { useMasaSv } from './masaSv';
 
 const AYAR = economyConfig.kat2;
 /** Grup en çok bu kadar sn önce merdivenden çıkmaya başlar (mantıktaki `bos` süresinin sonu). */
 const ONCE_EN_COK = 8;
-/** Yürüyüş hızı (Kat 1 müşterisi `NPC_SPEED` 1,4); uzak masada süre yetmezse hızlanır. */
-const HIZ = 1.5;
-/** Grup üyeleri arka arkaya çıkar (sn). */
-const ARA = 0.45;
 /** Kısa çıkış: en çok bu kadar sn yürür, sonra (merdivene yetişmediyse) söner. */
 const CIKIS_SN = 5.5;
 const SONME_SN = 0.35;
@@ -157,8 +153,9 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
   const yollar = useMemo<Yol[]>(() => oturaklar.map((o, k) => yolKur(grupYolu(yer, o, k))), [yer, oturaklar]);
   const enUzun = Math.max(...yollar.map((y) => y.boy));
   // Görsel geliş süresi: mantığın `yurume`si + merdivenden erken çıkış (çıkışla çakışmasın diye sınırlı).
-  const once = MathUtils.clamp(enUzun / HIZ - AYAR.yurume, 0, Math.min(ONCE_EN_COK, AYAR.gelisAralik - CIKIS_SN - SONME_SN - 0.5));
+  const once = MathUtils.clamp(enUzun / GRUP_HIZ - AYAR.yurume, 0, Math.max(0, Math.min(ONCE_EN_COK, AYAR.gelisAralik - CIKIS_SN - SONME_SN - 0.5)));
   const T = AYAR.yurume + once;
+  const gelHiz = gelisHizi(yollar.map((y) => y.boy), T);
 
   const kaynaklar = useGLTF(useMemo(() => KAY_MUSTERI_GOVDE.map((g) => `${KAY_KOK}${g}.glb`), []));
   const klipler = useKayKlipler();
@@ -229,19 +226,17 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
         let u: number;
         let hiz: number;
         if (kip === 'gel') {
-          const bas = k * ARA;
-          const sure = Math.max(0.5, T - bas);
-          u = MathUtils.clamp((gecen - bas) / sure, 0, 1);
-          hiz = yol.boy / sure;
+          u = gelisOrani(yol.boy, k, gecen, gelHiz);
+          hiz = u < 1 ? gelHiz : 0;
           if (u <= 0) {
             g.kok.visible = false;
             return;
           }
         } else {
           // çıkış: oturaktan geldiği yola, merdivene doğru (ters yön)
-          const yuruyen = Math.max(0, h.cikisT - k * 0.25);
-          hiz = HIZ;
-          u = 1 - (yuruyen * HIZ) / yol.boy;
+          const yuruyen = Math.max(0, h.cikisT - k * GRUP_ARA);
+          hiz = GRUP_HIZ;
+          u = 1 - (yuruyen * GRUP_HIZ) / yol.boy;
           if (u <= 0) {
             g.kok.visible = false;
             return;

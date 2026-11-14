@@ -18,7 +18,6 @@ export type Kat2SesId =
   | 'k2takirti'  // okey taşı — oynayan okey masasından ara ara, yakınlığa göre kısık
   | 'k2zar'      // tavla zarı — oynayan tavla masasından ara ara, yakınlığa göre kısık
   | 'k2cezve'    // cezvede kahve hazır (fokurtu) — ocağa yakınlığa göre kısık
-  | 'k2kasa'     // Kat 1 kasası cüzdana boşaldı
   | 'k2merdiven' // kat geçişi başladı
   | 'k2duvar'    // alanlar arası duvar gömüldü (salon açıldı)
   | 'k2sv'       // masa seviye atladı
@@ -48,10 +47,6 @@ const adim = (gecikme: number, hz: number): Katman[] => [
   { kaynak: 'ton', hz: [hz], dalga: 'sine', gecikme, atak: 0.002, sonme: 0.08, gain: 0.08 },
   { kaynak: 'gurultu', hz: [520], q: 2, gecikme, atak: 0.001, sonme: 0.04, gain: 0.03 },
 ];
-
-/** Madenî tık (Kat 1 `coin` tınısının alçak/kısa akrabası) — kasa adayı 2'nin dökülen paraları. */
-const sikke = (gecikme: number, hz: number, gain: number): Katman =>
-  ({ kaynak: 'ton', hz: [hz], kismi: [1, 2.76, 5.4], gecikme, atak: 0.001, sonme: 0.07, gain });
 
 export const KAT2_SES_ADAYLARI: Record<Kat2SesId, Kat2Aday> = {
   k2takirti: {
@@ -99,28 +94,6 @@ export const KAT2_SES_ADAYLARI: Record<Kat2SesId, Kat2Aday> = {
         katmanlar: [
           kabarcik(0, 320, 0.06), kabarcik(0.1, 380, 0.05),
           { kaynak: 'ton', hz: [1320], kismi: [1, 2.76], gecikme: 0.2, atak: 0.002, sonme: 0.25, gain: 0.035 },
-        ],
-      },
-    ],
-  },
-  k2kasa: {
-    ad: 'Kat 1 kasası boşaldı',
-    tarif: ['çekmece tok + çift çan (ding-ding)', 'çekmece + dökülen beş sikke'],
-    adaylar: [
-      {
-        dosya: yok('k2_kasa'), aralik: 0.5,
-        katmanlar: [
-          { kaynak: 'gurultu', hz: [700], q: 3, atak: 0.002, sonme: 0.06, gain: 0.07 },
-          { kaynak: 'ton', hz: [1568], kismi: [1, 2.76, 5.4], gecikme: 0.05, atak: 0.002, sonme: 0.3, gain: 0.09 },
-          { kaynak: 'ton', hz: [2093], kismi: [1, 2.76, 5.4], gecikme: 0.14, atak: 0.002, sonme: 0.35, gain: 0.08 },
-        ],
-      },
-      {
-        dosya: yok('k2_kasa'), aralik: 0.5,
-        katmanlar: [
-          { kaynak: 'gurultu', hz: [700], q: 3, atak: 0.002, sonme: 0.06, gain: 0.06 },
-          sikke(0.04, 2600, 0.08), sikke(0.09, 2900, 0.07), sikke(0.13, 2700, 0.06),
-          sikke(0.18, 3000, 0.05), sikke(0.24, 2800, 0.04),
         ],
       },
     ],
@@ -210,7 +183,7 @@ export const KAT2_SES_ADAYLARI: Record<Kat2SesId, Kat2Aday> = {
 /** Oyuna bağlı aday (0 = Aday 1). Kullanıcı dinleme sayfasından seçince YALNIZ burası değişir. */
 export const KAT2_SECIM: Record<Kat2SesId, 0 | 1> = {
   // Kullanıcı 2026-11-13 (D-195): "1. ve sonuncu aday 2, diğerleri aday 1" — takırtı + ilk çıkış Aday 2.
-  k2takirti: 1, k2zar: 0, k2cezve: 0, k2kasa: 0, k2merdiven: 0, k2duvar: 0, k2sv: 0, k2yeniKat: 1,
+  k2takirti: 1, k2zar: 0, k2cezve: 0, k2merdiven: 0, k2duvar: 0, k2sv: 0, k2yeniKat: 1,
 };
 
 /** Oyunun çaldığı Kat 2 kataloğu — adaylardan TÜRER. */

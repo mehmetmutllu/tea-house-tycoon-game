@@ -29,7 +29,9 @@ import { BAND, FLOOR_HALF } from '../../game/layout';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
 import { AGIZ, KAT2_ALANLAR, KAT2_LAVABO_PAD, KAT2_MASALAR, KOVA, OCAKLAR, kat2AcikAlan, type Dik } from '../../game/kat';
 import { useGame } from '../../game/store';
-import { CezveOcagi, Dogus, OcakKosesi, OkeyMasa, SvSekme, TavlaMasa } from './kat2/Esya';
+import { Dogus, OkeyMasa, SvSekme, TavlaMasa } from './kat2/Esya';
+import { KahveSeti, Kat2Mutfak } from './kat2/Mutfak';
+import { FRONT_TOP_Y } from './kitchenLook';
 import { Kat2SvIsaretleri } from './kat2/SvIsaret';
 import { useMasaSvleri } from './kat2/masaSv';
 import { masaSvOku } from '../../game/kat2Dongu';
@@ -408,8 +410,8 @@ function Ocak({ i, ilk }: { i: number; ilk: ReadonlySet<string> }) {
   const hazir = useGame((s) => s.kat2Dunya.ocaklar[i]?.hazir ?? 0);
   const pisiyor = useGame((s) => (s.kat2Dunya.ocaklar[i]?.demT ?? 0) > 0);
   return (
-    <Dogus dogus={!ilk.has(yer.id)} pos={[yer.x, 0, yer.z]}>
-      <CezveOcagi ocak={yer} hazir={hazir} pisiyor={pisiyor} />
+    <Dogus dogus={!ilk.has(yer.id)} pos={[yer.x, FRONT_TOP_Y, yer.z]}>
+      <KahveSeti ocak={yer} hazir={hazir} pisiyor={pisiyor} />
     </Dogus>
   );
 }
@@ -455,7 +457,7 @@ export function Kat2Sahne() {
       <ArkaDuvarUstu />
       {OCAKLAR.map((o, i) => (padsDone.includes(o.id) ? <Ocak key={o.id} i={i} ilk={ilk.current} /> : null))}
       {ocak ? (
-        <OcakKosesi />
+        <Kat2Mutfak padsDone={padsDone} />
       ) : (
         <MaketTadilatPerde x1={-H} x2={KOVA.x0 - 0.2} z={BAND.front} simge="mutfak" />
       )}

@@ -32,7 +32,7 @@ const KAY_REST = '/assets/models/kaykit-restaurant-bits/';
 const KAY_FURN = '/assets/models/kaykit-furniture-bits/';
 
 /** Maketin `C` paleti — yalnız bu dosyanın kullandığı girdiler, maketteki hex değerleriyle. */
-const MC = {
+export const MC = {
   wallCream: '#e6d7b8',
   wain: '#6d4c41',
   doorWood: '#5d4037',

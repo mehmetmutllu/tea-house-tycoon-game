@@ -51,7 +51,6 @@ import { Tables } from './Tables';
 import { ServicePoint } from './ServicePoint';
 import { Customers } from './Customers';
 import { Coins } from './Coins';
-import { Kasa } from './Kasa';
 import { Pad } from './Pad';
 import { Decor } from './Decor';
 import { VitrinDekor } from './VitrinDekor';
@@ -1461,7 +1460,6 @@ export function Scene() {
       <DekorCekimi />
       <BanketIslands />
       <WaiterStation />
-      <Kasa />
       <Stations />
       <KitchenStaff />
       <DishStation />

@@ -1177,20 +1177,21 @@ export const economyConfig = {
   },
 
   /**
-   * KAT 1'İN KASASI (D-185, `game/kasa.ts` · `docs/kat2-kasa-raporu-k2-4.md`). Oyuncu Kat 2'deyken Kat 1'de
-   * kendiliğinden toplanan para kasaya girer; kasa dolunca Kat 1'e müşteri gelmez. Sınır = Kat 1'in
-   * ÖLÇÜLEN gelirinin `dakika` katı — oran `incomeRate` DEĞİL (14× şişkin, Bulgu 1): oyuncu Kat 2'deyken
-   * Kat 1'de düşen paranın üstel ortalaması (`olcumPencereSn` zaman sabiti; kasa doluyken ölçülmez).
+   * KAT 1 PARASI KAT 2'DEYKEN. D-198 (oyun testi G1, 2026-11-14): kasa KALKTI — oyuncu Kat 2'deyken Kat 1'de
+   * düşen para `akisSn` sonra doğrudan cüzdana akar, oyun açıkken sınır yok. Kalan tek iş D-185'in çevrimdışı
+   * tavanı (`game/kasa.ts` · `docs/kat2-kasa-raporu-k2-4.md`): Kat 2'de kapatılınca Kat 1 payı, Kat 1'in
+   * ÖLÇÜLEN gelirinin `dakika` katında kesilir — oran `incomeRate` DEĞİL (14× şişkin, Bulgu 1): oyuncu Kat 2'deyken
+   * Kat 1'de düşen paranın üstel ortalaması (`olcumPencereSn` zaman sabiti).
    */
   kasa: {
+    /** D-198: Kat 1 parasının düştükten kaç sn sonra cüzdana aktığı (görsel ritim; gelir oranını değiştirmez). */
+    akisSn: 2,
     dakika: 20,
     olcumPencereSn: 600,
     /** Soğuk başlangıç: ölçüm bu kadar sn birikmeden sınır YOK (kasa bu sürede dolamaz: para yerde 180 sn yaşlanır). */
     olcumMinSn: 120,
     /** Sınırın tabanı (₺) — oyuncu yokken Kat 1 neredeyse hiç kazanmıyorsa kasa anında dolmasın. Ölçülmedi, güvenlik ağı. */
     tabanSinir: 300,
-    /** Kat 1'de kasaya erişim yarıçapı (yürüyünce boşalır). */
-    erisim: 0.8,
   },
 
   /**

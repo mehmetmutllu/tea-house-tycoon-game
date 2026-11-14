@@ -39,6 +39,8 @@ interface SandboxState {
    */
   fayansKaro: 'kucuk' | 'buyuk';
   fayansRenk: 'siyahbeyaz' | 'kahve';
+  /** D-198 KAT 2 ÖN SET KARŞILAŞTIRMA KOLU (`kat2/Mutfak.ON_SETLER`). `null` = varsayılan. Seçim kesinleşince silinir. */
+  kat2OnSet: string | null;
   set: (patch: Partial<SandboxState>) => void;
 }
 
@@ -55,6 +57,7 @@ export const useSandbox = create<SandboxState>((set) => ({
   camFov: 0,
   camDistMul: 0,
   sinema: null,
+  kat2OnSet: null,
   set: (patch) => set(patch),
 }));
 

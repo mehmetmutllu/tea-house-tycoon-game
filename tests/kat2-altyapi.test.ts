@@ -196,9 +196,9 @@ describe('Kat 2\'deyken Kat 1 kendi başına işler, oyuncunun eli değmez', () 
     withStorage(() => {
       bitmisKat1();
       useGame.setState({ kat: 2 });
-      // Kat 2 salonundaki nokta Kat 1'in arka salonunun TAM üstü.
+      // Kat 2 salonundaki nokta Kat 1'in arka salonunun TAM üstü. Yaş 0: D-198 akışından (akisSn) önce bakılır.
       koy(-8, -5);
-      useGame.setState({ coins: [{ id: 99999, pos: [-8, 0.1, -5] as Vec3, value: 50, age: 5 } as never] });
+      useGame.setState({ coins: [{ id: 99999, pos: [-8, 0.1, -5] as Vec3, value: 50, age: 0 } as never] });
       const toplanan = useGame.getState().stats.coinsCollected;
       useGame.getState().focusQuest();
       useGame.getState().tick(0.05);

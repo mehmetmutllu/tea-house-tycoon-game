@@ -2397,3 +2397,9 @@
   pointer-events: none;
   z-index: 5;
 }
+
+/* D-198: Kat 2'deyken Kat 1'den akan para — belirip söner. */
+.kat1-akis {
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
