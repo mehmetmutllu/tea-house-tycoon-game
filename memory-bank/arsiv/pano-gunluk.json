@@ -5,6 +5,18 @@
  "kart": 94,
  "gunluk": [
   {
+   "tarih": "20.10.2026",
+   "etiket": "Yayın sonrası — 1.0.3 (D-169)",
+   "baslik": "Oyun <b>kendi ikonuyla</b> açılıyor",
+   "govde": "iOS 1.0.0 App Store'da yayına girdi. Kullanıcı Android'de ikonun Capacitor logosu olduğunu fark etti: ikon ve açılış görseli hiç değiştirilmemişti. iOS asıllarından yeniden üretildi.<br><br>Bekleyen iOS dalı birleşti, iCloud yeteneği API'den açıldı, Codemagic derlemesi ilk seferde geçti ve 1.0.3 incelemeye gönderildi. Play için 1.0.3 AAB ve sürüm notları hazır.",
+   "maddeler": [
+    "test <b>1862</b>",
+    "duman <b>74/74</b>",
+    "sürüm <b>1.0.3</b>",
+    "iOS <b>incelemede</b>"
+   ]
+  },
+  {
    "tarih": "13.10.2026",
    "etiket": "Sprint C tur 1 — seçenekle ilerleme (D-165)",
    "baslik": "Mağaza <b>baştan düzenlendi</b>, ChatGPT ikonları onaylandı",

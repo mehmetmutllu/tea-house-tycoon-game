@@ -19,15 +19,12 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   Kat 2'deyken Kat 1 işler (`KAT1_DISI`), `Kat2.tsx` boş merdiven salonu, `KatPerdesi`. Dev: `__kat2()` aç · `__kat2(2)` geç.
 - K2-2b: Kat 1'de `MerdivenTamir` (kırmızı yolluklu — kullanıcı onayladı, kareler artifact 5urr3ut2YGwzVNrwigG1MU) · Kat 2'de kat bandı
   (`data-testid="kat-bandi"`) + Kat 1 ipuçları susar · `__devPlan` sis düzeltmesi. `__game().merdivenTamirli`.
-- Bekçi `tests/kat2-altyapi.test.ts` 19 test · duman 77/77 + 4/4 · vitest 1904.
 
 ## ✅ Kat 2 sprint S2 kapandı (2026-11-13) · D-188 · D-189 · D-190 — üretimde kapı kapalı
 - Kodda: kasa + çevrimdışı (D-185) · tavla/2. ocak/garson mantığı (D-186) · **pad fiyatları SB9** (D-188, config, bekçi
   "config = SB9") · **garson hız 3 · tepsi 2 · tek** (D-189) · **alçak bölme 1,2** (D-190; B/C/D silindi, perde `h` parametreli).
-- Hata bulundu/düzeldi: yol ağı görüşü kapı pervazındaki yürüyeni "açık" sayıyordu → bot/garson geçit ucunda itip kalıyordu.
 
 ## ✅ KAT 2 AKIŞ TURU (D-191) + K2-6 MANTIK (D-192) + GÖRSEL (D-193) — kodda, üretimde kapı kapalı
-- Akış sayfası https://claude.ai/artifact/Xejd4pNeiebku7FsPmjM3T (`tools/kat2-akis.tsx`).
 - Mantık: `kat.ts` N7 · geçitsiz duvar · 2. ocak x −13,2 · `KAT2_LAVABO_YER` · `MERDIVEN_PAD_YER` · config `kat2.hazir`,
   zincir SB9-L1 (4,90 sa), lavabo L1, merdiven 9.400 · rapor `docs/kat2-akis-zincir-raporu-k2-6.md`.
 - Görsel (D-193): `kat2/Bolme.tsx` tam boy duvar gömülür/yükselir · `MaketTadilatPerde` P3 + `simge` (okey/lavabo/mutfak) ·
@@ -40,11 +37,14 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   tavla Sv4 koyu cila · Kat 2 sesleri (takırtı + ilk çıkış Aday 2) · görev hattı 18+2 + Kat 1 kutlama ritmi · 6 başarım ·
   analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
-- Kareler `tools/kat2-s3-kare.mjs` · ses sayfası paketleme: esbuild ile `tools/kat2-ses-dinle.html` tek dosyaya.
 
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
-0. **2026-11-14 geri bildirimi** (`docs/geribildirim-oyun-testi-2026-11-14.md`): G1-G5 KODDA (D-198; G5 = kol G2). Set: sap ustaya,
-   servis tepsisi, kahveci usta. Bekleyen: **ön set** (6 aday, `__kat2OnSet(id)`) → kaybedenleri + sandbox kolunu sil → yeni deneme APK.
+0. **SON OTURUM (2026-11-14/15, D-198 · `docs/geribildirim-oyun-testi-2026-11-14.md`):** oyun testi G1-G5 KODDA — G1 kasa kalktı,
+   Kat 1 parası Kat 2'deyken cüzdana akar · G2 Kat 2 mutfağı = Kat 1 kopyası + katı ön tezgâh · G3 ön bölme 0,6 · G4 grup tek sıra ·
+   G5 kol G2 (hemen kahve + anında para, 90 sn, ücret 38; rapor `docs/kat2-g5-okey-raporu-d198.md`) · kahve seti: sap ustaya,
+   ön kenarda servis tepsisi, arkada kahveci usta. Commit'ler 42b5a33 · 5dd7b9a · 75a40d6.
+   **Bekleyen:** kullanıcı **ön set** seçecek (1 kum · 2 mangal · 3 iki gözlü · 4 ispirto · 5 kum+değirmen+lokum · 6 kum+askı;
+   `__kat2OnSet(id)`) → kaybedenleri + sandbox kolunu sil → yeni deneme APK.
 1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
    bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
    Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).
