@@ -86,6 +86,18 @@ export interface Kat2Ayar {
    * `Kat2Girdi.masaSv` okunmaz, oyun bugünküyle BİREBİR (bütün çarpanlar 1). Ölçüm `tools/olcum-kat2-masasv.ts`.
    */
   masaSv?: { okey: Kat2SvKol; tavla: Kat2SvKol };
+  /**
+   * D-198 (oyun testi G5 "oturuyor, 1-2 dk hiçbir şey olmuyor"): oturan grup İLK kahveyi bu kadar sn
+   * sonra ister. YOKSA `kahveAralik` (bugünkü). Okey ve tavla ortak. Ölçüm `tools/olcum-kat2-g5.ts`.
+   */
+  ilkKahve?: number;
+  /**
+   * D-198 (G5): teslim edilen kahvenin parası ANINDA masanın önüne düşer (Kat 1'de çayın parası gibi);
+   * kalkışta yalnız masa ücreti düşer. YOKSA kahve parası birikip kalkışta tek yığına eklenir (bugünkü).
+   */
+  kahveAninda?: boolean;
+  /** D-198 (G5): masa AÇILINCA ilk grubun gelişi (sn). YOKSA `gelisAralik` (bugünkü). */
+  ilkGelis?: number;
 }
 
 /**
@@ -327,13 +339,29 @@ export function kat2SiradakiPad(ayar: Kat2Ayar, padsDone: readonly string[]) {
   return ayar.padler.find((p) => !padsDone.includes(p.id)) ?? null;
 }
 
+/**
+ * Teslim edilen kahvenin parası. D-198 `kahveAninda`: masanın önündeki yığına hemen düşer (aynı yerde
+ * toplanmamış yığın varsa ona eklenir — yığınlar üst üste binmesin); yoksa kalkış yığınına birikir.
+ */
+function kahveOde(d: Kat2Dunya, m: OkeyMasa, yer: Kat2MasaYeri, miktar: number, ayar: Kat2Ayar, olay: Kat2Cikti['olay']): void {
+  if (!ayar.kahveAninda) {
+    m.birikim += miktar;
+    return;
+  }
+  const [px, pz] = paraDusmeYeri(yer);
+  const var_ = d.paralar.find((p) => p.x === px && p.z === pz);
+  if (var_) var_.miktar += miktar;
+  else d.paralar.push({ id: d.nextId++, x: px, z: pz, miktar });
+  olay.dusen.push(miktar);
+}
+
 export function yeniKat2Dunya(padsDone: readonly string[], ayar: Kat2Ayar): Kat2Dunya {
   return {
     masalar: KAT2_MASALAR.map((o) => ({
       id: o.id,
       tur: o.tur,
       durum: padsDone.includes(o.id) ? 'bos' : 'kapali',
-      t: ayar.gelisAralik,
+      t: ayar.ilkGelis ?? ayar.gelisAralik,
       kahveT: 0,
       istek: 0,
       sabir: 0,
@@ -609,7 +637,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
         const m = d.masalar.find((x) => x.id === pad.id);
         if (m) {
           m.durum = 'bos';
-          m.t = ayar.gelisAralik;
+          m.t = ayar.ilkGelis ?? ayar.gelisAralik;
         }
       } else {
         d.padFill[pad.id] = fill;
@@ -691,7 +719,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       if (m.t <= 0) {
         m.durum = 'oyunda';
         m.t += a.oturum * svCarpan(kol?.oturumCarpan, sv);
-        m.kahveT = kahveAralik;
+        m.kahveT = ayar.ilkKahve ?? kahveAralik;
         m.istek = 0;
         m.birikim = 0;
       }
@@ -705,7 +733,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
           const n = Math.min(d.tepsi, m.istek);
           d.tepsi -= n;
           m.istek -= n;
-          m.birikim += n * kahveFiyat;
+          kahveOde(d, m, yer, n * kahveFiyat, ayar, olay);
           olay.servis += n;
           if (tavla) olay.tavlaServis += n;
           if (m.istek === 0) m.kahveT = kahveAralik;
@@ -717,7 +745,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
             const n = Math.min(gs.tepsi, m.istek);
             gs.tepsi -= n;
             m.istek -= n;
-            m.birikim += n * kahveFiyat;
+            kahveOde(d, m, yer, n * kahveFiyat, ayar, olay);
             olay.servis += n;
             olay.garsonServis += n;
             olay.tavlaServis += n;

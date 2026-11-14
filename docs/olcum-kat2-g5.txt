@@ -1,0 +1,56 @@
+=== D-198 / G5 — OKEY MASASININ İLK DAKİKALARI (kollar) ===
+Kip: tam · durağan 24 dk, ilk 4 dk sayılmaz · varış 3 dk · dt 0.1
+Taban (config) teorik okey tavanı 54.0 · 4 okeyde ÖLÇÜLEN 52.6 ₺/dk/masa (kolların masa ücreti buna kalibre) · kahve 9 ₺ · sabır 25 sn
+Varış masaları: k2okey2 (config kat2.hazir) · oyuncu merdiven başında
+
+G0: taban (bugünkü config): 3 dk oyun, ilk kahve 25 sn sonra, para kalkışta
+    oyun 180 sn · sonraki grup 15 sn · ilk grup 15 sn · ilk kahve 25 sn · masa ücreti 72 ₺ · ~6 istek/oyun · teorik 54.0 ₺/dk/masa
+G1: yalnız HİS: oturunca hemen kahve + kahve parası anında + ilk grup 3 sn (süre aynı)
+    oyun 180 sn · sonraki grup 15 sn · ilk grup 3 sn · ilk kahve 0 sn · masa ücreti 62 ₺ · ~7 istek/oyun · teorik 56.4 ₺/dk/masa
+G2: HİS + oyun 90 sn, sonraki grup 10 sn
+    oyun 90 sn · sonraki grup 10 sn · ilk grup 3 sn · ilk kahve 0 sn · masa ücreti 38 ₺ · ~4 istek/oyun · teorik 62.9 ₺/dk/masa
+G3: HİS + oyun 60 sn, sonraki grup 8 sn
+    oyun 60 sn · sonraki grup 8 sn · ilk grup 3 sn · ilk kahve 0 sn · masa ücreti 28 ₺ · ~2 istek/oyun · teorik 52.6 ₺/dk/masa
+G4: HİS + oyun 45 sn, sonraki grup 6 sn
+    oyun 45 sn · sonraki grup 6 sn · ilk grup 3 sn · ilk kahve 0 sn · masa ücreti 18 ₺ · ~2 istek/oyun · teorik 57.9 ₺/dk/masa
+
+--- A · VARIŞ (son kademe: hız 4.95 · tepsi 6) — masa açıldıktan sonra ---
+kol | ilk kahve isteği sn | ilk para sn | ilk 3 dk para olayı | ilk 3 dk en uzun parasız aralık sn
+G0  |                45.0 |           — |                   0 |               180
+G1  |                 8.0 |         8.8 |                   7 |                26
+G2  |                 8.0 |         8.8 |                   8 |                26
+G3  |                 8.0 |         8.8 |                   7 |                33
+G4  |                 8.0 |         8.8 |                  10 |                26
+
+--- A · VARIŞ (ilk kademe: hız 4.5 · tepsi 2) — masa açıldıktan sonra ---
+kol | ilk kahve isteği sn | ilk para sn | ilk 3 dk para olayı | ilk 3 dk en uzun parasız aralık sn
+G0  |                45.0 |           — |                   0 |               180
+G1  |                 8.0 |         8.9 |                   7 |                26
+G2  |                 8.0 |         8.9 |                   7 |                37
+G3  |                 8.0 |         8.9 |                   7 |                33
+G4  |                 8.0 |         8.9 |                  10 |                26
+
+--- B · DURAĞAN 1 okey (son kademe) ---
+kol | ₺/dk/masa | taban farkı | para olayı arası sn | yığın ort ₺ | servis %
+G0  |      54.0 |          %0 |               200.0 |         180 | %100
+G1  |      56.4 |          %4 |                25.0 |          24 | %100
+G2  |      52.4 |         %-3 |                26.3 |          23 | %100
+G3  |      52.1 |         %-4 |                24.3 |          21 | %100
+G4  |      57.6 |          %7 |                18.7 |          18 | %100
+
+--- B · DURAĞAN 4 okey (son kademe) ---
+kol | ₺/dk/masa | taban farkı | para olayı arası sn | yığın ort ₺ | servis %
+G0  |      52.6 |          %0 |                50.0 |         176 | %100
+G1  |      52.6 |         %-0 |                 5.8 |          20 | %100
+G2  |      52.4 |         %-0 |                 6.5 |          23 | %100
+G3  |      52.8 |          %0 |                 6.1 |          21 | %100
+G4  |      53.1 |          %1 |                 5.1 |          18 | %100
+
+--- C · TAVLA 4 masa (son kademe) — yalnız bayraklar (ilk kahve + anında para); tavla sayıları aynı ---
+kol | ₺/dk/masa | taban farkı | para olayı arası sn | servis %
+G0  |      26.6 |          %0 |                34.2 | %100
+G1  |      27.5 |          %3 |                 6.9 | %100
+
+Kıyas: Kat 1 çay döngüsü — oturur → hemen sipariş → çay 6 sn → para (config tea.prepTime 6, npc.eatTime 4).
+
+✓ Damgalar temiz (tam koşu).
