@@ -58,4 +58,8 @@ para olayları arası 34 → 7 sn.
 3. Kat 1 hissi (çay → para, ~6-10 sn) G1–G4'ün hepsinde var: para olayları arası 5–7 sn (4 masada).
 
 ## Karar
-_(boş — kullanıcı seçimi bekleniyor)_
+**2026-11-15 — kol G2.** Kullanıcı: *"G2 veya G3 olsun fark etmez"*; öneri G2'ydi (kısalma + okeyin "oturan dörtlü" kimliği).
+`economy.config.kat2`: `oturum 90 · gelisAralik 10 · ilkGelis 3 · ilkKahve 0 · kahveAninda true · masaUcreti 38`.
+Bekçi: `tests/kat2-g-turu.test.ts` G5 (config = G2; hemen istek · teslimde para · korunum) — mutasyon 2/2 yakalandı
+(`kahveAninda false`, `ilkKahve 25`). Araç damgası "config = G2"; G0 araçta donmuş taban. Final tam koşu: `docs/olcum-kat2-g5.txt`
+(sayılar §Bulgular ile aynı, damgalar temiz). D-184 mekanizma testleri `tests/kat2-d184-ayar.ts` ile eski ayarda bekçilenir.

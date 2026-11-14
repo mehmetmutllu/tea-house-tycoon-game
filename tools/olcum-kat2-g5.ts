@@ -3,7 +3,8 @@
  *
  * Kullanıcı (2026-11-14): "Okey masasına oturuyor. 1-2 dakika gitmiyor. Kahve servisi hemen gelmiyor. Ne
  * yapacağımı bilmiyorum." Seçtiği yön (tam paket): oturunca hemen kahve · kahve parası anında · kısa oyun +
- * düşük masa ücreti · ilk grup çabuk. Bu araç kolları yan yana koyar; `economy.config.ts` DEĞİŞMEZ (D-084).
+ * düşük masa ücreti · ilk grup çabuk. Bu araç kolları yan yana koyar. Karar (2026-11-15): kol G2 config'te;
+ * G0 donmuş taban, damga "config = G2".
  *
  * A · VARIŞ: Kat 2'ye ilk çıkış (hazır okey masası + mutfak), oyuncu merdivenin başında. Ölçülen: ilk
  *     kahve isteği / ilk para kaçıncı saniyede, ilk 3 dakikada kaç para olayı, oyuncunun "yapacak işi
@@ -18,7 +19,7 @@
  *   OLCUM=kisa npx tsx tools/olcum-kat2-g5.ts
  *   OLCUM=tam  npx tsx tools/olcum-kat2-g5.ts > docs/olcum-kat2-g5.txt
  */
-import { KISA, botDamgasi, damgaOzeti, kipBandi, kisaDeger, korunumDamgasi, varyantDamgasi } from './olcum-lib';
+import { KISA, botDamgasi, damga, damgaOzeti, kipBandi, kisaDeger, korunumDamgasi, varyantDamgasi } from './olcum-lib';
 import { attractRadiusFor, charMaxTier, economyConfig, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
 import { KAT2_MASALAR, OCAK, OKEY_ERISIM, TAVLA_ERISIM, VARIS, kat2Adim } from '../src/game/kat';
 import { kat2MasaYeri, kat2Tick, yeniKat2Dunya, type Kat2Ayar } from '../src/game/kat2Dongu';
@@ -41,7 +42,8 @@ function teorik(a: Kat2Ayar): { dk: number; istek: number; dongu: number } {
   return { dk: ((a.masaUcreti + istek * a.istekAdet * a.kahveFiyat) / dongu) * 60, istek, dongu };
 }
 
-const TABAN: Kat2Ayar = { ...C2, padler: [] };
+/** G0 = D-198 öncesi config (D-184 V4), donmuş: config artık G2 (commit #2), taban kıyası bu sayılarla kalır. */
+const TABAN: Kat2Ayar = { ...C2, padler: [], oturum: 180, gelisAralik: 15, masaUcreti: 72, ilkGelis: undefined, ilkKahve: undefined, kahveAninda: false };
 const HEDEF_DK = teorik(TABAN).dk;
 
 const HIS = { ilkKahve: 0, kahveAninda: true, ilkGelis: 3 } as const;
@@ -181,6 +183,13 @@ function kalibre(a: Kat2Ayar): Kat2Ayar {
   return { ...a, masaUcreti: Math.max(0, Math.round((TABAN_OLCULEN - sifir.dkMasa) / sifir.kalkisDk)) };
 }
 const KOLLAR: Kol[] = HAM.map((k) => (k.ad === 'G0' ? k : { ...k, ayar: kalibre(k.ayar) }));
+{
+  // D-198 commit #2 bekçisi: config'e yazılan sayılar G2 kolunun kendisi (masa ücreti tam koşuda kalibre).
+  const g2 = KOLLAR.find((k) => k.ad === 'G2')!.ayar;
+  const alan = ['oturum', 'gelisAralik', 'ilkGelis', 'ilkKahve', 'kahveAninda', 'masaUcreti'] as const;
+  const es = alan.filter((a) => a !== 'masaUcreti' || !KISA).every((a) => C2[a as keyof typeof C2] === g2[a]);
+  damga('config = G2 (D-198)', es, alan.map((a) => `${a} ${String(C2[a as keyof typeof C2])}/${String(g2[a])}`).join(' · '));
+}
 
 console.log('=== D-198 / G5 — OKEY MASASININ İLK DAKİKALARI (kollar) ===');
 console.log(`Kip: ${KISA ? 'kisa' : 'tam'} · durağan ${SURE / 60} dk, ilk ${ISINMA / 60} dk sayılmaz · varış ${VARIS_SN / 60} dk · dt ${DT}`);

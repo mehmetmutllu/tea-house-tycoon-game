@@ -1,13 +1,16 @@
 /**
  * kat2-g-turu.test.ts — D-198 BEKÇİSİ: oyun testi 2026-11-14 G2 · G3 · G4 (Kat 2 görsel/yerleşim turu).
- * (G1 Kat 1 parası `kasa-oyun.test.ts`; G5 okey döngüsü ölçümde, `tools/olcum-kat2-g5.ts`.)
+ * (G1 Kat 1 parası `kasa-oyun.test.ts`; G5 ölçümü `tools/olcum-kat2-g5.ts`.)
  *
  *  G2 mutfak: ön tezgâh bandın içinde ve KATI — oyuncu kahve alma noktasından tezgâha doğru yürüse de
  *     gövdesi tezgâha girmez; kahve alma noktası erişimde kalır; ocaklar tezgâhın üstünde.
  *  G3 duvar: kameraya bakan bölmeler (z sabit, kapalı alan önde) alçak; yan bölme tam boy.
  *  G4 grup: herkes aynı hızla, sabit aralıkla — yolun ortak kısmında iki üye birbirine binmez.
+ *  G5 okey: config = kol G2 — grup oturunca hemen kahve ister, kahve parası teslimde düşer.
  */
 import { describe, it, expect } from 'vitest';
+import { economyConfig as C } from '../src/config/economy.config';
+import { kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya, type Kat2Girdi } from '../src/game/kat2Dongu';
 import {
   KAT2_ALANLAR,
   KAT2_BOLMELER,
@@ -15,7 +18,10 @@ import {
   KAT2_ON_TEZGAH,
   OCAK,
   OCAKLAR,
+  OKEY_ERISIM,
+  OKEY_YER,
   ON_BOLME_H,
+  PARA_DUSME_DZ,
   kameraBakanBolme,
   kat2Adim,
   kat2Engeller,
@@ -123,5 +129,50 @@ describe('G4 — grup tek sıra yürür', () => {
     }
     expect(enAz).toBeGreaterThanOrEqual(0.8);
     expect(GRUP_ARA * GRUP_HIZ).toBeGreaterThanOrEqual(0.8);
+  });
+});
+
+describe('G5 — okey masası ilk saniyeden iş verir (config = kol G2)', () => {
+  const K: Kat2Ayar = C.kat2;
+  const PADS = ['k2okey1', OCAK.id];
+  const M1 = OKEY_YER[0];
+  const MASA_ONU: [number, number] = [M1.x, M1.z + OKEY_ERISIM - 0.2];
+  const UZAK: [number, number] = [0, -1];
+  const girdi = (yer: [number, number]): Kat2Girdi => ({ x: yer[0], z: yer[1], durdu: true, cuzdan: 0, padsDone: PADS, tepsiKap: 6, miknatis: 0.5 });
+  const sur = (d: Kat2Dunya, sn: number, yer: [number, number], tepsi?: number) => {
+    const top = { istek: 0, servis: 0, dusen: [] as number[], kazanc: 0 };
+    for (let t = 0; t < sn - 1e-9; t += 0.1) {
+      const r = kat2Tick(tepsi === undefined ? d : { ...d, tepsi }, girdi(yer), 0.1, K);
+      d = r.dunya;
+      top.istek += r.olay.istek;
+      top.servis += r.olay.servis;
+      top.dusen.push(...r.olay.dusen);
+      top.kazanc += r.kazanc;
+    }
+    return { d, ...top };
+  };
+
+  it('ilk grup ilkGelis\'te gelir ve oturduğu an kahve ister', () => {
+    let r = sur(yeniKat2Dunya(PADS, K), K.ilkGelis! + 0.1, UZAK);
+    expect(r.d.masalar[0].durum).toBe('geliyor');
+    r = sur(r.d, K.yurume + 0.2, UZAK);
+    expect(r.d.masalar[0].durum).toBe('oyunda');
+    expect(r.istek).toBe(K.istekAdet);
+  });
+
+  it('teslim edilen kahvenin parası o anda masanın önüne düşer (kalkışı beklemez)', () => {
+    const d = sur(yeniKat2Dunya(PADS, K), K.ilkGelis! + K.yurume + 0.3, UZAK).d;
+    const s = kat2Tick({ ...d, tepsi: 2 }, { ...girdi(MASA_ONU), miknatis: 0 }, 0.1, K);
+    expect(s.olay.servis).toBe(2);
+    expect(s.olay.dusen).toEqual([2 * K.kahveFiyat]);
+    expect(s.dunya.masalar[0].birikim).toBe(0);
+    expect(s.dunya.paralar[0]).toMatchObject({ x: M1.x, z: M1.z + PARA_DUSME_DZ });
+  });
+
+  it('tam oturum: birçok küçük para olayı, toplam = ücret + servis × fiyat (korunum)', () => {
+    const r = sur(yeniKat2Dunya(PADS, K), K.ilkGelis! + K.yurume + K.oturum + 1, MASA_ONU, 6);
+    expect(r.dusen.length).toBeGreaterThanOrEqual(4);
+    expect(r.dusen.reduce((a, b) => a + b, 0)).toBe(K.masaUcreti + r.servis * K.kahveFiyat);
+    expect(r.dusen.at(-1)).toBe(K.masaUcreti);
   });
 });

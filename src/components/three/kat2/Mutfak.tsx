@@ -6,8 +6,8 @@
  *  · ARKA: Kat 1'in mutfak odası (`Kitchen.MutfakOdasi`) — aynı koordinat, aynı modeller, Kat 2'nin
  *    kendi ilerlemesiyle büyür (`kat2MutfakSeviyesi`). Aspiratör (davlumbaz) YOK — kullanıcı istemedi.
  *  · ÖN: bandın solunu kapatan servis tezgâhı (`kat.KAT2_ON_TEZGAH`, katı gövde). Her cezve ocağının
- *    (`OCAKLAR`) yerinde tezgâhın üstünde KAHVE SETİ: ısıtıcı + cezveler + hazır fincanlar. Oyuncu
- *    setin tam önünden alır.
+ *    (`OCAKLAR`) yerinde tezgâhın üstünde KAHVE SETİ: arka yarıda ısıtıcı + cezveler (sap ustaya dönük),
+ *    ön kenarda servis tepsisi + hazır fincanlar. Arkada kahveci usta hazırlar, oyuncu/garson tepsiden alır.
  *  · Ön setin biçimi aday karşılaştırmasında (`ON_SETLER`); seçilince kaybedenler silinir.
  */
 import { useRef } from 'react';
@@ -17,6 +17,7 @@ import { KayTezgah, MutfakOdasi } from '../Kitchen';
 import { FRONT_TOP_Y, kat2MutfakSeviyesi } from '../kitchenLook';
 import { KAT2_ON_TEZGAH, type Kat2Ocak } from '../../../game/kat';
 import { useSandbox } from '../../../game/devSandbox';
+import { KayActor } from '../KayActor';
 import { Fincan, Kutu, Silindir } from './parca';
 
 /** Kat 2'de servis hep bantta — Kat 1'in son yerleşimi (adalar o koridora göre durur). */
@@ -60,7 +61,8 @@ function Cezve({ x, z, y = 0, s = 1.4 }: { x: number; z: number; y?: number; s?:
   return (
     <group position={[x, y, z]} scale={s}>
       <Silindir r1={0.07} r2={0.095} h={0.16} renk={BAKIR} pos={[0, 0.08, 0]} seg={10} />
-      <Silindir r1={0.016} r2={0.016} h={0.28} renk={KOYU} pos={[0, 0.13, 0.17]} rot={[-Math.PI / 2.4, 0, 0]} seg={5} />
+      {/* sap ARKAYA (−z): tezgâhın öbür yanındaki usta tutar, oyuncu önden fincanı alır (oyun testi 2026-11-15) */}
+      <Silindir r1={0.016} r2={0.016} h={0.28} renk={KOYU} pos={[0, 0.13, -0.17]} rot={[Math.PI / 2.4, 0, 0]} seg={5} />
     </group>
   );
 }
@@ -81,30 +83,31 @@ function Kopuk({ pisiyor, pos }: { pisiyor: boolean; pos: [number, number, numbe
   );
 }
 
-/** Setin ısıtıcısı + üstündeki cezveler (yerel: tezgâh üstü y=0, ön +z). Köpük ilk cezvede. */
+/** Setin ısıtıcısı + üstündeki cezveler (yerel: tezgâh üstü y=0, ön +z). Köpük ilk cezvede. Isıtıcı ARKA yarıda (ustanın tarafı). */
+const ISITICI_Z = -0.1;
 type IsiticiCiz = (pisiyor: boolean) => React.ReactNode;
 
 const kumOcagi: IsiticiCiz = (p) => (
-  <group position={[0.25, 0, -0.12]}>
-    <Kutu w={0.9} h={0.12} d={0.5} renk={BAKIR} pos={[0, 0.06, 0]} />
-    <Kutu w={0.82} h={0.02} d={0.42} renk={KUM} pos={[0, 0.125, 0]} golge={false} />
+  <group position={[0.25, 0, ISITICI_Z]}>
+    <Kutu w={0.9} h={0.12} d={0.36} renk={BAKIR} pos={[0, 0.06, 0]} />
+    <Kutu w={0.82} h={0.02} d={0.28} renk={KUM} pos={[0, 0.125, 0]} golge={false} />
     {[-0.25, 0, 0.25].map((dx) => <Cezve key={dx} x={dx} z={0} y={0.07} />)}
     <Kopuk pisiyor={p} pos={[-0.25, 0.07 + 0.22, 0]} />
   </group>
 );
 
 const mangal: IsiticiCiz = (p) => (
-  <group position={[0.25, 0, -0.12]}>
-    <Kutu w={0.8} h={0.2} d={0.45} renk="#3b3b3b" pos={[0, 0.1, 0]} />
-    <Kutu w={0.7} h={0.03} d={0.35} renk={KOZ} pos={[0, 0.2, 0]} golge={false} />
+  <group position={[0.25, 0, ISITICI_Z]}>
+    <Kutu w={0.8} h={0.2} d={0.36} renk="#3b3b3b" pos={[0, 0.1, 0]} />
+    <Kutu w={0.7} h={0.03} d={0.28} renk={KOZ} pos={[0, 0.2, 0]} golge={false} />
     {[-0.2, 0.2].map((dx) => <Cezve key={dx} x={dx} z={0} y={0.21} />)}
     <Kopuk pisiyor={p} pos={[-0.2, 0.21 + 0.22, 0]} />
   </group>
 );
 
 const tupOcak: IsiticiCiz = (p) => (
-  <group position={[0.25, 0, -0.12]}>
-    <Kutu w={0.85} h={0.1} d={0.45} renk="#9e9e9e" pos={[0, 0.05, 0]} />
+  <group position={[0.25, 0, ISITICI_Z]}>
+    <Kutu w={0.85} h={0.1} d={0.36} renk="#9e9e9e" pos={[0, 0.05, 0]} />
     {[-0.2, 0.2].map((dx) => (
       <group key={dx}>
         <Silindir r1={0.12} r2={0.12} h={0.02} renk="#2b2b2b" pos={[dx, 0.11, 0]} seg={12} golge={false} />
@@ -116,7 +119,7 @@ const tupOcak: IsiticiCiz = (p) => (
 );
 
 const ispirto: IsiticiCiz = (p) => (
-  <group position={[0.25, 0, -0.12]}>
+  <group position={[0.25, 0, ISITICI_Z]}>
     {[-0.22, 0.22].map((dx) => (
       <group key={dx}>
         <Silindir r1={0.11} r2={0.13} h={0.16} renk={PIRINC} pos={[dx, 0.08, 0]} seg={10} />
@@ -180,8 +183,23 @@ export const ON_SET_VARSAYILAN: OnSetId = 'kum';
 /** Set büyütmesi — tezgâh üstündeki tek "kahve buradan" işareti; uzak kadrajdan da okunmalı (G2 "nereden alacağım belli değil"). */
 const SET_OLCEK = 1.5;
 
-/** Hazır fincanların dizisi: tezgâhın ön kenarı, oyuncuya en yakın sıra (tabaklı, büyük — uzaktan okunsun). */
-const FINCAN = { x: -0.35, z: 0.14, adim: 0.2, s: 1.3 } as const;
+/**
+ * SERVİS TEPSİSİ (oyun testi 2026-11-15: "masadan ben kahveleri alıp dağıtıma çıkacağım veya garson"): usta
+ * pişeni tezgâhın ön kenarındaki pirinç tepsiye bırakır; oyuncu/garson oradan alır. Tepsi boşken de durur —
+ * "kahve buradan alınır" işareti. Hazır fincanlar tepside, oyuncuya en yakın sıra.
+ */
+const TEPSI = { x: 0.15, z: 0.17, w: 1.1, d: 0.2 } as const;
+const FINCAN = { x: 0.15, z: 0.17, adim: 0.2, s: 1.3 } as const;
+
+function ServisTepsisi() {
+  return (
+    <group position={[TEPSI.x, 0, TEPSI.z]}>
+      <Kutu w={TEPSI.w} h={0.015} d={TEPSI.d} renk={PIRINC} pos={[0, 0.0075, 0]} />
+      {[-1, 1].map((k) => <Kutu key={`z${k}`} w={TEPSI.w} h={0.03} d={0.012} renk={PIRINC} pos={[0, 0.015, (k * TEPSI.d) / 2]} golge={false} />)}
+      {[-1, 1].map((k) => <Kutu key={`x${k}`} w={0.012} h={0.03} d={TEPSI.d} renk={PIRINC} pos={[(k * TEPSI.w) / 2, 0.015, 0]} golge={false} />)}
+    </group>
+  );
+}
 
 /** Bir ocağın tezgâh üstü seti. `hazir` fincan ön kenarda bekler; `pisiyor` iken cezve köpürür. */
 export function KahveSeti({ ocak, hazir, pisiyor }: { ocak: Kat2Ocak; hazir: number; pisiyor: boolean }) {
@@ -190,6 +208,7 @@ export function KahveSeti({ ocak, hazir, pisiyor }: { ocak: Kat2Ocak; hazir: num
   return (
     <group position={[ocak.x, FRONT_TOP_Y, TEZGAH_CZ]} scale={SET_OLCEK}>
       {set.isitici(pisiyor)}
+      <ServisTepsisi />
       {set.sus === 'degirmen' && (
         <>
           <Degirmen x={-0.75} />
@@ -198,8 +217,20 @@ export function KahveSeti({ ocak, hazir, pisiyor }: { ocak: Kat2Ocak; hazir: num
       )}
       {set.sus === 'aski' && <Aski x={-0.55} />}
       {Array.from({ length: hazir }, (_, i) => (
-        <Fincan key={i} pos={[FINCAN.x + i * FINCAN.adim - ((hazir - 1) * FINCAN.adim) / 2, 0, FINCAN.z]} s={FINCAN.s} />
+        <Fincan key={i} pos={[FINCAN.x + i * FINCAN.adim - ((hazir - 1) * FINCAN.adim) / 2, 0.015, FINCAN.z]} s={FINCAN.s} />
       ))}
+    </group>
+  );
+}
+
+/**
+ * KAHVECİ USTA — Kat 1 çaycısının (Scene `KitchenHand`, D-023) karşılığı: tezgâhın arkasında, setinin başında
+ * oyuncuya dönük durur; cezve pişerken çalışır. SALT GÖRSEL (kahve mekaniği `kat2Dongu`'da).
+ */
+export function KahveUsta({ ocak, pisiyor }: { ocak: Kat2Ocak; pisiyor: boolean }) {
+  return (
+    <group position={[ocak.x + 0.25 * SET_OLCEK, 0, T.z0 - 0.45]}>
+      <KayActor kind="kitchenHand" hal={pisiyor ? 'calis' : 'dur'} />
     </group>
   );
 }

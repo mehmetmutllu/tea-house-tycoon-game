@@ -1199,16 +1199,23 @@ export const economyConfig = {
    * oynar, 25 sn'de bir 2 fincan kahve ister; kalkarken masa ücreti + kahve parası TEK yığın düşer.
    * Kol V4 (`docs/kat2-dongu-raporu-k2-3.md`): fiyatlar teorik 54 ₺/dk/masa tavanına normalize,
    * gelirin %60'ı kahveden. ₺ DÜZEYİ ve pad fiyatları K2-5'te zincirle ölçülür (D-084).
+   * D-198 (oyun testi G5, kol G2 — `docs/kat2-g5-okey-raporu-d198.md`): grup oturunca HEMEN kahve ister,
+   * her kahvenin parası teslimde masanın önüne düşer, ilk grup 3 sn'de gelir; oyun 90 sn, sonraki grup 10 sn.
+   * Masa ücreti 4 okeyde ölçülen geliri eskisiyle (72 ₺ / 180 sn) eşit tutacak şekilde kalibre (38).
+   * Bekçi: `tools/olcum-kat2-g5.ts` "config = G2" · `tests/kat2-g-turu.test.ts`.
    */
   kat2: {
-    gelisAralik: 15,
+    gelisAralik: 10,
+    ilkGelis: 3,
     yurume: 5,
-    oturum: 180,
+    oturum: 90,
+    ilkKahve: 0,
+    kahveAninda: true,
     kahveAralik: 25,
     istekAdet: 2,
     kahveSabir: 25,
     kahveFiyat: 9,
-    masaUcreti: 72,
+    masaUcreti: 38,
     demleme: 4,
     ocakKuyruk: 4,
     /**

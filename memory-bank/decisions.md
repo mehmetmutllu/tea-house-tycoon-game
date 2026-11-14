@@ -5245,4 +5245,6 @@ geçer; çevrimdışı Kat 1 tavanı (ölçülen gelir × 20 dk) aynen; `k2kasa`
 (`Kitchen.MutfakOdasi`, aspiratörsüz, Kat 2 ilerlemesiyle Sv1→6) + boydan boya KATI ön tezgâh (`KAT2_ON_TEZGAH`); kahve seti
 tezgâhın üstünde ×1,5; ön set biçimi 6 adaydan seçilecek (`ON_SETLER`, varsayılan kum ocağı). **G3:** kameraya bakan bölme
 0,6 (yan bölme 3,2). **G4:** grup aynı hızla 0,7 sn arayla tek sıra (yolda ≥ 0,8 m). Bekçi `kat2-g-turu` + `kasa-oyun`,
-mutasyon 4/4. G5 (okey ilk dakikalar) ölçüldü, karar bekliyor: `docs/kat2-g5-okey-raporu-d198.md`.
+mutasyon 4/4. **G5 (2026-11-15, kol G2):** grup oturunca hemen kahve, kahve parası teslimde düşer, ilk grup 3 sn; oyun 90 sn,
+geliş 10 sn, masa ücreti 38 (4 okey geliri eşit kalibre) — `docs/kat2-g5-okey-raporu-d198.md`, bekçi `kat2-g-turu` + damga, mutasyon 2/2.
+**Set (2026-11-15):** cezve sapı ARKAYA (ustaya), ön kenarda pirinç servis tepsisi (hazır fincan), arkada kahveci usta (Kat 1 çaycısı).

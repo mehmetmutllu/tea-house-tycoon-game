@@ -6,6 +6,7 @@
  * salonu tarafındaki pad'iyle açılır. Tavla 2 kişilik (D-181), kendi sayılarıyla döner; ücret + kahve TEK yığın.
  */
 import { describe, it, expect } from 'vitest';
+import { D184_AYAR } from './kat2-d184-ayar';
 import { economyConfig as C } from '../src/config/economy.config';
 import { hitsSolid, LAYOUT } from '../src/game/layout';
 import {
@@ -38,7 +39,7 @@ import {
 
 const PR = LAYOUT.playerRadius;
 const TAVLA = { oturum: 90, kahveAralik: 25, istekAdet: 1, kahveFiyat: 10, masaUcreti: 20 };
-const A: Kat2Ayar = { ...C.kat2, tavla: TAVLA };
+const A: Kat2Ayar = { ...D184_AYAR, tavla: TAVLA };
 const T1 = KAT2_MASALAR.find((m) => m.tur === 'tavla')!;
 const S2 = KAT2_MASALAR.find((m) => m.alan === 1)!;
 const UZAK: [number, number] = [0, -1];

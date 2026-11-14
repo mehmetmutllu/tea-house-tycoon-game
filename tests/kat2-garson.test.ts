@@ -6,6 +6,7 @@
  * yığın toplamaz. Kapalı alanın duvarını delmez (D-191: açık alanlar arasında duvar yok).
  */
 import { describe, it, expect } from 'vitest';
+import { D184_AYAR } from './kat2-d184-ayar';
 import { economyConfig as C } from '../src/config/economy.config';
 import { hitsSolid, LAYOUT } from '../src/game/layout';
 import {
@@ -41,7 +42,7 @@ import {
 import { inFrame, padCercevesi } from '../src/game/markerFrame';
 
 const PR = LAYOUT.playerRadius;
-const A: Kat2Ayar = C.kat2;
+const A: Kat2Ayar = D184_AYAR;
 const GARSON = { hiz: 3, tepsi: 4 };
 const AG: Kat2Ayar = { ...A, garson: GARSON };
 const HEPSI = [...C.kat2.hazir, ...A.padler.map((p) => p.id)]; // D-191: hazır pad'ler zincirin önünde

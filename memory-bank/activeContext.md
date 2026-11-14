@@ -43,8 +43,8 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Kareler `tools/kat2-s3-kare.mjs` · ses sayfası paketleme: esbuild ile `tools/kat2-ses-dinle.html` tek dosyaya.
 
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
-0. **2026-11-14 geri bildirimi** (`docs/geribildirim-oyun-testi-2026-11-14.md`): G1-G4 KODDA (D-198). Bekleyen: **G5 okey kolu**
-   (rapor `docs/kat2-g5-okey-raporu-d198.md`, G0-G4 · karar BOŞ) + **ön set** (6 aday, `__kat2OnSet(id)`) → seçim → commit #2 → yeni deneme APK.
+0. **2026-11-14 geri bildirimi** (`docs/geribildirim-oyun-testi-2026-11-14.md`): G1-G5 KODDA (D-198; G5 = kol G2). Set: sap ustaya,
+   servis tepsisi, kahveci usta. Bekleyen: **ön set** (6 aday, `__kat2OnSet(id)`) → kaybedenleri + sandbox kolunu sil → yeni deneme APK.
 1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
    bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
    Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).

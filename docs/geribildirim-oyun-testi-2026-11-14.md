@@ -59,3 +59,9 @@ Kaynak: kullanıcının sesli notu, cümleleri aynen. Teşhis: kod + `tools/_kat
 
 ## Uygulama sırası (öneri)
 1. G4 + G3 + G1 (görsel/kural, hızlı) · 2. G2 mutfak + ön set aday karesi · 3. G5 ölçüm turu → sayı tablosu → seçim → kod · 4. yeni deneme APK.
+
+## Sonraki tur (2026-11-15)
+- G5: kullanıcı *"G2 veya G3 olsun fark etmez"* → **G2** config'te (rapor §Karar).
+- Set tasarımı: *"sap niye bana doğru dönük … tezgâhın öbür tarafındaki kişiye dönük olacak, o hazırlıyor gibi … masadan da ben
+  kahveleri alıp dağıtıma çıkacağım veya garson"* → cezve sapı arkaya, ısıtıcı tezgâhın arka yarısında, ön kenarda pirinç
+  servis tepsisi (hazır fincanlar), arkada kahveci usta (Kat 1 çaycısının karşılığı). Ön set biçimi (6 aday) seçim bekliyor.

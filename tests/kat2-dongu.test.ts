@@ -6,6 +6,7 @@
  * yalnız o kahvenin parası yok. Pad'ler tek hat: önceki bitmeden sonraki dolmaz.
  */
 import { describe, it, expect } from 'vitest';
+import { D184_AYAR } from './kat2-d184-ayar';
 import { economyConfig as C } from '../src/config/economy.config';
 import { useGame } from '../src/game/store';
 import { OCAK, OKEY_ERISIM, OKEY_YER, OKEY_YARI, PARA_DUSME_DZ, VARIS, kat2Adim, kat2Engeller } from '../src/game/kat';
@@ -22,7 +23,7 @@ import {
 import Decimal from 'break_infinity.js';
 import type { Vec3 } from '../src/game/types';
 
-const A: Kat2Ayar = C.kat2;
+const A: Kat2Ayar = D184_AYAR;
 
 function withStorage(fn: () => void): void {
   const mem: Record<string, string> = {};
@@ -61,10 +62,12 @@ function sur(d: Kat2Dunya, sn: number, g: Kat2Girdi, dt = 0.1) {
   return { d, ...top };
 }
 
-describe('config — D-184 kolu V4 (3 dk oyun · 25 sn\'de 2 kahve · gelirin %60\'ı kahve)', () => {
-  it('seçilen kolun sayıları', () => {
-    expect([A.oturum, A.kahveAralik, A.istekAdet, A.kahveFiyat, A.masaUcreti]).toEqual([180, 25, 2, 9, 72]);
-    expect([A.gelisAralik, A.yurume, A.kahveSabir, A.demleme, A.ocakKuyruk]).toEqual([15, 5, 25, 4, 4]);
+describe('config — D-184 V4 → D-198 G2 (mekanizma testleri D184_AYAR ile)', () => {
+  it('seçilen kolun sayıları (D-198 G5 kol G2: 90 sn oyun · 10 sn geliş · ücret 38 · hemen kahve + anında para)', () => {
+    const K: Kat2Ayar = C.kat2;
+    expect([K.oturum, K.kahveAralik, K.istekAdet, K.kahveFiyat, K.masaUcreti]).toEqual([90, 25, 2, 9, 38]);
+    expect([K.gelisAralik, K.yurume, K.kahveSabir, K.demleme, K.ocakKuyruk]).toEqual([10, 5, 25, 4, 4]);
+    expect([K.ilkGelis, K.ilkKahve, K.kahveAninda]).toEqual([3, 0, true]);
   });
 
   it('zincir (D-191): hazır masa + ocak → 3 masa → okey salonu → 2 masa → 2. ocak → 4 masa → lavabo → tavla köşesi → garson → 12 tavla', () => {
