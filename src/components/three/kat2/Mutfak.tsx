@@ -29,7 +29,6 @@ const BANT_YERLESIMI = 3;
 const BAKIR = '#b87333';
 const PIRINC = '#c9a227';
 const KOYU = '#5d4037';
-const KUM = '#d8b98a';
 const KOZ = '#ff7a2f';
 
 /** Ön tezgâhın modül eni (Kat 1'in KayKit tezgâh oranı; tek parçaya gerilip çekmeceler uzamasın). */

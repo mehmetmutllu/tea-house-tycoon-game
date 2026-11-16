@@ -43,7 +43,7 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
    `kat2/Mutfak.MANGAL_SEVIYE`) · mutfakta orta adalar YOK · Kat 2 mutfak zemini **koyu kahve + krem**. Kareler:
    `node tools/_kat2-mangal-kare.mjs <klasör>`. Öncesi (D-198): G1-G5 kodda (kasa yok, Kat 1 mutfağı Kat 2'de, ön bölme 0,6,
    tek sıra, okey G2) — `docs/geribildirim-oyun-testi-2026-11-14.md`.
-   **Sıradaki:** yeni deneme APK (`VITE_KAT2=1 VITE_DENEME=1 npm run apk`, D-197) → masaüstüne → kullanıcı dener.
+   **Deneme APK hazır:** masaüstünde `TeaHouse-deneme-Kat2-2026-11-17.apk` (D-197 tarifi) → kullanıcı dener, geri bildirim bekleniyor.
 1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
    bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
    Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).
