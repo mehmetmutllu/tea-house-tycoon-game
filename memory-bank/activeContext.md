@@ -17,8 +17,6 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 ## K2-2 — KAT ALTYAPISI ✅ (D-182 · D-183) — kod girdi, sürüme ÇIKMADI (üretimde kapı kapalı)
 - K2-2a: `src/game/kat.ts` (geometri · `kat2Adim` · `merdivenTetik` · `kat2Etkin()`), kayıt `kat` + `kat2` additive (sürüm 34),
   Kat 2'deyken Kat 1 işler (`KAT1_DISI`), `Kat2.tsx` boş merdiven salonu, `KatPerdesi`. Dev: `__kat2()` aç · `__kat2(2)` geç.
-- K2-2b: Kat 1'de `MerdivenTamir` (kırmızı yolluklu — kullanıcı onayladı, kareler artifact 5urr3ut2YGwzVNrwigG1MU) · Kat 2'de kat bandı
-  (`data-testid="kat-bandi"`) + Kat 1 ipuçları susar · `__devPlan` sis düzeltmesi. `__game().merdivenTamirli`.
 
 ## ✅ Kat 2 sprint S2 kapandı (2026-11-13) · D-188 · D-189 · D-190 — üretimde kapı kapalı
 - Kodda: kasa + çevrimdışı (D-185) · tavla/2. ocak/garson mantığı (D-186) · **pad fiyatları SB9** (D-188, config, bekçi
@@ -44,12 +42,15 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
    `node tools/_kat2-mangal-kare.mjs <klasör>`. Öncesi (D-198): G1-G5 kodda (kasa yok, Kat 1 mutfağı Kat 2'de, ön bölme 0,6,
    tek sıra, okey G2) — `docs/geribildirim-oyun-testi-2026-11-14.md`.
    **Deneme APK hazır:** masaüstünde `TeaHouse-deneme-Kat2-2026-11-17.apk` (D-197 tarifi) → kullanıcı dener, geri bildirim bekleniyor.
+   **Kat 2'de kalan (kullanıcıya 2026-11-17 sunuldu, seçim bekliyor):** zorunlu → kullanıcı deneme notları · Kat 2 süre
+   ölçümü (D-192 4,9 sa, D-198 G5/kasa sonrası eskidi) · 1.1 hazırlığı. Opsiyonel → **ocak + garson yükseltmesi** (Kat 1
+   karşılığı; mangal şu an yalnız görsel büyür, garson sabit 3/2/1) — öneri: süre ölçümüyle TEK tur (varyant kapısı) ·
+   balkon · Kat 2 temaları · Kat 1 merdiven sarı-siyah bant · Usta "0/7".
 1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
    bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
    Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).
    Beklerken yayınsız işler (kullanıcıya 2026-11-13 sunuldu, seçim bekliyor): Puanla özelliği (aşağıda) · küçük kusurlar (AÇIK KALEMLER).
 2. **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (kullanıcı 2026-11-13). Kullanıcı derse 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım (ASC) · Play listesi + zip arkadaşa · "Yenilikler".
-3. Not: Kat 1'deki yıkık merdivende sarı-siyah bant var (hafıza: bantlar beğenilmemişti) — kullanıcı denemede söylerse ele al. Göz aracı: `node tools/_kat-kare.mjs`.
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
