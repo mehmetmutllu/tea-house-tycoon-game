@@ -9,7 +9,7 @@
 token `dev-ortam/gizli/wordmaster/codemagic-api.md`). AdMob'u Chrome'da `?authuser=mutlubadem.dev@gmail.com` ile aç.
 
 **Yayın:** iOS **1.0.7 App Store'da YAYINDA** (2026-11-13 kullanıcı bildirdi; derleme 6; 1.0.5 atlandı). Play zip
-masaüstünde `TeaHouseTycoon-1.0.7-vc10007-GooglePlay.zip` (`0-BU-SURUM.txt`: önce Data safety, sonra AAB) → arkadaşa.
+masaüstünde `TeaHouseTycoon-1.0.7-vc10007-GooglePlay.zip` (+ ayrık `…-vc10007.aab`, 2026-11-16) → kullanıcı Play'e atıyor (Kat 2 YOK).
 Play üretim erişimi formu (`TeaHouse-Uretim-Erisimi-Formu.txt`) gönderildi, cevap bekleniyor · onay → rehber 9B (Production →
 Add from library) · ret → e-postayı iste, cevaplar güçlendirilir. Mediation (D-173): Liftoff + Unity bidding'de.
 Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `geribildirim/deneme-…` elle silinecek.
