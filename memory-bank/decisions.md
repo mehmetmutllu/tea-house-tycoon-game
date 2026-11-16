@@ -5248,3 +5248,14 @@ tezgâhın üstünde ×1,5; ön set biçimi 6 adaydan seçilecek (`ON_SETLER`, v
 mutasyon 4/4. **G5 (2026-11-15, kol G2):** grup oturunca hemen kahve, kahve parası teslimde düşer, ilk grup 3 sn; oyun 90 sn,
 geliş 10 sn, masa ücreti 38 (4 okey geliri eşit kalibre) — `docs/kat2-g5-okey-raporu-d198.md`, bekçi `kat2-g-turu` + damga, mutasyon 2/2.
 **Set (2026-11-15):** cezve sapı ARKAYA (ustaya), ön kenarda pirinç servis tepsisi (hazır fincan), arkada kahveci usta (Kat 1 çaycısı).
+
+## D-199 · Kat 2 ön set = köz mangalı (yol C) · mutfakta ada yok · zemin koyu kahve + krem (2026-11-17)
+Kullanıcı 6 ön set adayını yan yana gördü (`tools/_kat2-mangal-kare.mjs` atası) → **köz mangalı**; kum/tüp/ispirto/değirmen/askı
+silindi. Mangalın kendi mekaniği yok: görünüşü **Kat 2 mutfak seviyesinden** türer (`kat2MutfakSeviyesi`, 1-6). 4 büyüme yolu
+çizildi (A boy · B malzeme · C karma · D kullanıcının "düz → siyah çerçeve → altın çizgi") → **C karma** (`kat2/Mutfak.MANGAL_SEVIYE`):
+her basamakta ≥ 2 sinyal (boy 0,7→1,0 · cezve 2→4 · demir → koyu bakır → pirinç · ayak · köz parıltısı · Sv5+ kalaylı cezve).
+Açık bakır turuncu tezgâhla karıştığı için gövde koyu bakır (#7a3e1f). **Ortadaki adalar kalktı** ("karmaşık duruyor; alttaki
+mutfaktan farkı o olsun") — `MutfakOdasi adasiz`. **Zemin:** 5 aday (klasik · kahve dama · koyu kahve · zümrüt · bordo) →
+**koyu kahve + krem** (`ZEMIN_TEMALARI.koyuKahve`, atlas [0,7]+[1,4]; mağazada satılmaz, Kat 1'in satılık "Kahve Dama"sı ayrı kalır).
+Yan düzeltme: `Fayans`ın `Merged`'i temaya göre yeniden kurulur (`key={tema}`) — tema ikinci kez değişince zemin eski kalıyordu.
+Yalnız görsel; ekonomi/tick/rules dokunulmadı.

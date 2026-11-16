@@ -51,8 +51,6 @@ declare global {
     /** Mağaza videosu (D-170): joystick girdisi + hafif konum okuma (`__game` her karede ağır). */
     __girdi?: (x: number, z: number) => [number, number];
     __sinema?: (k: { pos: [number, number, number]; bak: [number, number, number]; fov: number; gok?: string } | null) => void;
-    /** D-198: Kat 2 ön set karşılaştırması (`kat2/Mutfak.ON_SETLER` kimliği; `null` = varsayılan). */
-    __kat2OnSet?: (id: string | null) => void;
     /** Quest hattında belirli göreve atla (id ile; smoke testleri sıralı sayaç görevlerini beklemesin). */
     __setQuest?: (id: string) => Record<string, unknown>;
     /** Kalıcı sayaç ver (ör. waiterServed=20 → arka-plan reveal şartını test et). */
@@ -410,7 +408,6 @@ export function installDevHooks(): void {
   };
 
   window.__sinema = (k) => useSandbox.getState().set({ sinema: k });
-  window.__kat2OnSet = (id) => useSandbox.getState().set({ kat2OnSet: id });
 
   window.__park = () => {
     const s = useGame.getState();

@@ -65,3 +65,10 @@ Kaynak: kullanıcının sesli notu, cümleleri aynen. Teşhis: kod + `tools/_kat
 - Set tasarımı: *"sap niye bana doğru dönük … tezgâhın öbür tarafındaki kişiye dönük olacak, o hazırlıyor gibi … masadan da ben
   kahveleri alıp dağıtıma çıkacağım veya garson"* → cezve sapı arkaya, ısıtıcı tezgâhın arka yarısında, ön kenarda pirinç
   servis tepsisi (hazır fincanlar), arkada kahveci usta (Kat 1 çaycısının karşılığı). Ön set biçimi (6 aday) seçim bekliyor.
+
+## Sonraki tur (2026-11-17) — D-199
+- Ön set: 6 aday yan yana → *"en iyisi köz mangalı gibi ama bunların seviyelerini artırdıkça fark nasıl olacak? ve ortadaki
+  masaları kaldır karmaşık duruyo alttaki mutfaktan farkı o olmuş olsun"* → mangal; 3 büyüme yolu (A/B/C) çizildi; adalar kalktı.
+- *"Düz renkle başlasın. Seviye artınca çevresi siyah olsun … altın sarısı çizgi … sırayla cezve sayısı artsın … zeminini
+  kahvemtırak bir ton … bir tane daha farklı renk"* → D yolu + 5 zemin çizildi.
+- Seçim: *"koyu kahve ve krem olsun ve diğerinde de c diyorum karma olan"* → zemin koyu kahve + krem, mangal yolu C.

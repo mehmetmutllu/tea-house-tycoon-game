@@ -247,9 +247,10 @@ function temali(mesh: Mesh | null, esleme: ReturnType<typeof zeminEsleme>, nativ
   return kopya;
 }
 
-function Fayans() {
+function Fayans({ zeminTema }: { zeminTema?: string }) {
   const karo = useSandbox((s) => s.fayansKaro);
-  const tema = useGame((s) => s.kitchenTheme);
+  const oyunTema = useGame((s) => s.kitchenTheme);
+  const tema = zeminTema ?? oyunTema;
   const gltf = useGLTF(`${KAY}${floorKaroModel(karo)}.gltf`);
   const mesh = useMemo(
     () => temali(ilkMesh(gltf.scene), zeminEsleme(tema), temaNative(tema)),
@@ -258,7 +259,7 @@ function Fayans() {
   const karolar = useMemo(() => fayansKarolari(karo), [karo]);
   if (!mesh) return null;
   return (
-    <Merged meshes={{ karo: mesh }} frustumCulled={false} frames={MERGED_KARE}>
+    <Merged key={tema} meshes={{ karo: mesh }} frustumCulled={false} frames={MERGED_KARE}>
       {(comps) => {
         const C = comps.karo;
         if (!C) return null;
@@ -290,16 +291,16 @@ export function Kitchen() {
  * seviyesinden, Kat 2 (D-198, oyun testi G2 "aşağıyı kopyala direkt") kendi ilerlemesinden besler;
  * iki kat aynı odayı aynı koordinatta çizer (Kat 2'nin bandı Kat 1'inkinin tam üstü).
  */
-export function MutfakOdasi({ level, areasOpen, aspiratorsuz = false }: { level: number; areasOpen: number; aspiratorsuz?: boolean }) {
+export function MutfakOdasi({ level, areasOpen, aspiratorsuz = false, adasiz = false, zeminTema }: { level: number; areasOpen: number; aspiratorsuz?: boolean; adasiz?: boolean; zeminTema?: string }) {
   return (
     <group>
       {/* Zemin DUVAR KİPİNDEN BAĞIMSIZ: duvar denemesi reddedildi ama karo zemin kullanıcı
           tarafından beğenildi (2026-09-09) — ikisi ayrı karar, ayrı anahtar. */}
-      <Fayans />
+      <Fayans zeminTema={zeminTema} />
       {KITCHEN_UNITS.map((u, i) =>
         aspiratorsuz && u.key === 'extractorhood' ? null : <Unite key={`${u.key}-${i}`} u={u} i={i} level={level} />,
       )}
-      <Adalar level={level} areasOpen={areasOpen} />
+      {!adasiz && <Adalar level={level} areasOpen={areasOpen} />}
       <Raflar />
     </group>
   );

@@ -682,6 +682,8 @@ export const ZEMIN_TEMALARI: Record<string, ZeminTemasi> = {
   klasik: { ...ZEMIN_NATIVE, swatch: ['#343434', '#d5dcdf'] },
   // Satılan TEK tema — `docs/gorsel/ss/s4-zemin-kucuk-kahve.png` karesindeki zeminin ta kendisi.
   kahve: { koyu: [0, 6], acik: [1, 5], swatch: ['#995842', '#daae7d'] },
+  // Kat 2 mutfağının zemini (kullanıcı 2026-11-17, `kat2/Mutfak.KAT2_ZEMIN`); mağazada satılmaz.
+  koyuKahve: { koyu: [0, 7], acik: [1, 4], swatch: ['#6b5d53', '#e8ceb4'] },
 };
 
 /** Temanın UV eşlemesi (kaynak göz → hedef göz). */

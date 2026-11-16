@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-13 — Kat 2 S3 + metin turu bitti · KULLANICI TÜM OYUNU DENİYOR (deneme APK) · yayın onun geri bildiriminden sonra)
+## ŞU AN (2026-11-17 — oyun testi turları D-198/D-199 kodda · yeni deneme APK sırada · yayın kullanıcının geri bildiriminden sonra)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -39,12 +39,11 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
-0. **SON OTURUM (2026-11-14/15, D-198 · `docs/geribildirim-oyun-testi-2026-11-14.md`):** oyun testi G1-G5 KODDA — G1 kasa kalktı,
-   Kat 1 parası Kat 2'deyken cüzdana akar · G2 Kat 2 mutfağı = Kat 1 kopyası + katı ön tezgâh · G3 ön bölme 0,6 · G4 grup tek sıra ·
-   G5 kol G2 (hemen kahve + anında para, 90 sn, ücret 38; rapor `docs/kat2-g5-okey-raporu-d198.md`) · kahve seti: sap ustaya,
-   ön kenarda servis tepsisi, arkada kahveci usta. Commit'ler 42b5a33 · 5dd7b9a · 75a40d6.
-   **Bekleyen:** kullanıcı **ön set** seçecek (1 kum · 2 mangal · 3 iki gözlü · 4 ispirto · 5 kum+değirmen+lokum · 6 kum+askı;
-   `__kat2OnSet(id)`) → kaybedenleri + sandbox kolunu sil → yeni deneme APK.
+0. **SON OTURUM (2026-11-17, D-199):** Kat 2 ön set = **köz mangalı**, görünüşü mutfak seviyesiyle büyür (yol C,
+   `kat2/Mutfak.MANGAL_SEVIYE`) · mutfakta orta adalar YOK · Kat 2 mutfak zemini **koyu kahve + krem**. Kareler:
+   `node tools/_kat2-mangal-kare.mjs <klasör>`. Öncesi (D-198): G1-G5 kodda (kasa yok, Kat 1 mutfağı Kat 2'de, ön bölme 0,6,
+   tek sıra, okey G2) — `docs/geribildirim-oyun-testi-2026-11-14.md`.
+   **Sıradaki:** yeni deneme APK (`VITE_KAT2=1 VITE_DENEME=1 npm run apk`, D-197) → masaüstüne → kullanıcı dener.
 1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
    bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
    Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).

@@ -31,7 +31,7 @@ import { AGIZ, KAT2_ALANLAR, KAT2_LAVABO_PAD, KAT2_MASALAR, KOVA, OCAKLAR, kat2A
 import { useGame } from '../../game/store';
 import { Dogus, OkeyMasa, SvSekme, TavlaMasa } from './kat2/Esya';
 import { KahveSeti, KahveUsta, Kat2Mutfak } from './kat2/Mutfak';
-import { FRONT_TOP_Y } from './kitchenLook';
+import { FRONT_TOP_Y, kat2MutfakSeviyesi } from './kitchenLook';
 import { Kat2SvIsaretleri } from './kat2/SvIsaret';
 import { useMasaSvleri } from './kat2/masaSv';
 import { masaSvOku } from '../../game/kat2Dongu';
@@ -409,10 +409,11 @@ function Ocak({ i, ilk }: { i: number; ilk: ReadonlySet<string> }) {
   const yer = OCAKLAR[i];
   const hazir = useGame((s) => s.kat2Dunya.ocaklar[i]?.hazir ?? 0);
   const pisiyor = useGame((s) => (s.kat2Dunya.ocaklar[i]?.demT ?? 0) > 0);
+  const seviye = useGame((s) => kat2MutfakSeviyesi(s.kat2.padsDone));
   return (
     <>
       <Dogus dogus={!ilk.has(yer.id)} pos={[yer.x, FRONT_TOP_Y, yer.z]}>
-        <KahveSeti ocak={yer} hazir={hazir} pisiyor={pisiyor} />
+        <KahveSeti ocak={yer} hazir={hazir} pisiyor={pisiyor} seviye={seviye} />
       </Dogus>
       <KahveUsta ocak={yer} pisiyor={pisiyor} />
     </>
