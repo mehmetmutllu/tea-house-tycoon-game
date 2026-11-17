@@ -126,6 +126,8 @@ interface Kol {
    * yükseltmesi D-200 kuralıyla (açan pad × ½), garson/bulaşıkçı pad'i ardından gelen pad × f — hepsi kaymış fiyattan türer.
    */
   kayma?: boolean;
+  /** Bulaşıkçı yıkama kuralı (`dishwasher.yikamaKurali`, Kat 1 ile ortak); yoksa null = bugün (dolunca git). */
+  kural?: { esik?: number; temizEnFazla?: number } | null;
 }
 /** Tur 2'de çalışma anında ölçülür: gerçek Kat 1 − eski ölçümlerin Kat 1'i (coin/dk). */
 let KAYMA_DK = 0;
@@ -193,7 +195,20 @@ const FINAL = !!CFG.bulasik;
 /** Kolun koşusunda bulaşık var mı (`kolAyari` kuralı: ek'siz kol config'in bulaşığını alır). */
 const bulasikli = (k: Kol) => (k.bulasik === undefined && !k.ekler.length ? !!CFG.bulasik : !!k.bulasik);
 const BT = (esik: number): Kat2BulasikAyar => ({ ...BULASIK_MASA, esik, teslimdeAl: true });
-const KOLLAR2: Kol[] = FINAL ? [{ ad: 'D-201', not: 'config OLDUĞU GİBİ (= K-Bt2)', ekler: [] }] : [
+/**
+ * IS_DW=1 — BULAŞIKÇI YIKAMA KURALI turu (`tools/olcum-bulasikci.ts` eşi, Kat 2): config + bulaşıkçı Kat 1 son kademe
+ * (hız 2,8 · taşıma 8) ile yıkama kuralı kolları. Rapor `docs/bulasikci-raporu.md`.
+ */
+const DW_TUR = process.env.IS_DW === '1';
+const DW_KOL = (ad: string, not: string, kural: Kol['kural']): Kol => ({ ad, not, ekler: [], bulasik: CFG.bulasik && { ...CFG.bulasik, bulasikci: DW_SON }, kural });
+const KOLLAR_DW: Kol[] = [
+  { ad: 'D-201', not: 'config OLDUĞU GİBİ (bulaşıkçı taban 2/2)', ekler: [] },
+  DW_KOL('Y', 'son kademe · bugünkü kural: dolunca git', null),
+  DW_KOL('E4', 'son kademe · 4 kirliyle git', { esik: 4 }),
+  DW_KOL('K0', 'son kademe · temiz bitince elindekini götür', { temizEnFazla: 0 }),
+  DW_KOL('K2', 'son kademe · temiz ≤ 2 olunca götür', { temizEnFazla: 2 }),
+];
+const KOLLAR2: Kol[] = FINAL ? (DW_TUR ? KOLLAR_DW : [{ ad: 'D-201', not: 'config OLDUĞU GİBİ (= K-Bt2)', ekler: [] }]) : [
   { ad: 'TABAN', not: 'bugünkü config, GERÇEK Kat 1', ekler: [] },
   { ad: 'Gbug', not: 'G-K1 + LVy + bulaşık eşik 4 (tur 1 önerisi), bugünkü fiyatlar, GERÇEK Kat 1', ekler: [...G_K1, BK], lavabo: LV_YARIM_UCRET, bulasik: { ...BULASIK_MASA, esik: 4 } },
   { ad: 'K-G', not: 'kayma + G-K1 + LVy, bulaşık yok', ekler: G_K1, lavabo: LV_YARIM_UCRET, kayma: true },
@@ -205,6 +220,7 @@ const KOLLAR2: Kol[] = FINAL ? [{ ad: 'D-201', not: 'config OLDUĞU GİBİ (= K-
 const PLATOLAR2: Kol[] = FINAL ? [
   { ad: 'bulaşık yok', not: '', ekler: [], bulasik: null },
   { ad: 'B eşik 2 teslim', not: '', ekler: [] },
+  ...(DW_TUR ? KOLLAR_DW.slice(1).map((k) => ({ ...k, ad: `DW ${k.ad}` })) : []),
 ] : [
   { ad: 'bulaşık yok', not: '', ekler: G_K1, lavabo: LV_YARIM_UCRET },
   { ad: 'B eşik 2', not: '', ekler: [...G_K1, BK], lavabo: LV_YARIM_UCRET, bulasik: BULASIK_MASA },
@@ -340,6 +356,7 @@ const sevOyun = (s: Record<Yuk['tur'], number>, lavOyun = false): Kat2YukSeviye 
 function kos(kol: Kol, o: { plato?: { sv: number }; iz1?: Float64Array; sure: number; olcBas: number }): Kosu {
   const plato = o.plato;
   const { a: A0, lav: LAV } = kolAyari(kol);
+  (C.dishwasher as { yikamaKurali: Kol['kural'] }).yikamaKurali = kol.kural ?? null;
   const ZINCIR = A0.padler;
   const TUM = [...HAZIR, ...ZINCIR.map((p) => p.id)];
   const MASALAR = KAT2_MASALAR.filter((m) => TUM.includes(m.id));

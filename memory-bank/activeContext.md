@@ -43,6 +43,13 @@ Kat 1 masaları L4'teyse Kat 1 ~1.216 coin/dk → Kat 2 ~7,5 sa (ölçülmedi).
 - Önceki açıklar: 2 metin ChatGPT turu (D-200) · yeni deneme APK alınmadı · kullanıcı deneme APK ile oynuyor (D-197).
 - **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (2026-11-13). 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım · Play zip · "Yenilikler".
 
+## 🔧 TUR — BULAŞIKÇI YIKAMA KURALI (2026-11-17, yan bulgu D-201 Bulgu 5)
+- **SORU:** Bulaşıkçı elindeki kapasite dolmadan yıkamaya gitmiyor (`tick.ts` dishwasher · `kat2Dongu.bulasikciAdim`); tavan
+  (leğen 8 · hız 2,8) temiz havuzu kurutuyor mu, hangi kural düzeltir?
+- **KOLLAR:** T0 taban kademe · Y tavan bugün (dolunca) · E4 tavan, 4'te git · K0 tavan + temiz bitince elindekini götür · K2 tavan
+  + temiz ≤ 2'de götür. Dünyalar W20 / W8 (oyuncu parkta). Araç `tools/olcum-bulasikci.ts`.
+- **SAYILAR:** rapor `docs/bulasikci-raporu.md` §Bulgular (Kat 2 etkisiz; Kat 1 W8 tavan 8,3 vs K2 9,8 servis/dk) · **KARAR:** (paket soruldu) · **UYGULAMA:** (boş) · **BEKÇİ:** (boş)
+
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
   reklam iş ortağı olarak ekle" kutusu ✅ 2026-11-13 Claude işaretledi + Kaydet (yenileyince kalıcı) · b) Unity: Chrome'da oturum kapalı, kontrol

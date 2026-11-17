@@ -122,6 +122,7 @@ import {
   type QuestView,
   type QuestCtx,
   type CamFocus,
+  yikamayaGit,
 } from './rules';
 import type { LevelUpOdul } from './rules';
 import type { NavGrid } from './nav';
@@ -1146,7 +1147,7 @@ function dishwasherSystem(c: TickCtx): void {
   const dStep = dishSpeedFor(s.waiterUpgrades.dishSpeed) * dt; // v29: hız panel kademesinden
   const dCap = dishCarryCapacityFor(s.waiterUpgrades.dishCarry);
   const carried = dw.tray + dw.trayFood;
-  if (carried >= dCap || (carried > 0 && dishes.length === 0)) {
+  if (yikamayaGit(carried, dCap, dishes.length, cleanCups)) {
     // Dolu (ya da elinde var ama toplanacak kalmadı) → bulaşıkta yıka. Bardak da tabak da AYNI
     // havuza döner (korunum değişmezi tek).
     if (navStep(dw.pos, place.dish, dStep, navGrid, reachWash(c.areasOpen), player, obstacles)) {

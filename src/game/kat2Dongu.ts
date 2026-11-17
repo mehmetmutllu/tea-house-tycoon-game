@@ -46,6 +46,7 @@ import {
 import { LAYOUT } from './layout';
 import { inFrame, masaCercevesi, masaEtiketi, padCercevesi, servisCercevesi } from './markerFrame';
 import { t } from '../i18n';
+import { yikamayaGit } from './rules';
 
 /** Denge sayıları (K2-3: varyant; seçilen kol `economy.config.kat2`ye yazılır). */
 export interface Kat2Ayar {
@@ -810,7 +811,7 @@ function bulasikciAdim(d: Kat2Dunya, padsDone: readonly string[], b: Kat2Bulasik
   const kirliMasa = d.masalar.filter((m) => (m.kirli ?? 0) > 0);
   let hedef: string | null = null;
   let nokta: [number, number] = [KAT2_BULASIKCI_YER[0], KAT2_BULASIKCI_YER[1]];
-  if (w.kirli >= bk.tasima || (w.kirli > 0 && !kirliMasa.length)) {
+  if (yikamayaGit(w.kirli, bk.tasima, kirliMasa.length, d.temiz ?? 0)) {
     hedef = KAT2_YIKAMA_ID;
     nokta = [KAT2_YIKAMA_YER[0], KAT2_YIKAMA_YER[1]];
   } else if (kirliMasa.length) {

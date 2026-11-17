@@ -606,6 +606,12 @@ export const economyConfig = {
      * sekmesinden satın alınır (garson tepsi deseni); TÜM salonların bulaşıkçılarına ortak.
      */
     carryUpgrades: { costs: [600, 2000, 5000] },
+    /**
+     * YIKAMAYA GİDİŞ KURALI (ölçüm kancası, `tools/olcum-bulasikci.ts`). null = bugünkü kural: elindeki kapasite
+     * DOLUNCA (ya da toplanacak kalmayınca) yıkamaya gider. `esik`: bu kadar kirliyle gider (≤ kapasite);
+     * `temizEnFazla`: temiz bardak bu sayıya inince elindekini götürür. Kat 2 bulaşıkçısı aynı kuralı okur.
+     */
+    yikamaKurali: null as null | { esik?: number; temizEnFazla?: number },
   },
 
   /** Yere düşen para. */

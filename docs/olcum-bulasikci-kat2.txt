@@ -1,0 +1,59 @@
+=== KAT 2 İŞLEYİŞİ = KAT 1 (garson pad · lavabo seviyesi · bulaşık) ===
+Kip: tam · dt 0.1 · plato 5+30 dk · ilerleme ufku 16 sa
+Bot: hız 4.95 · tepsi 6 (kirliyle paylaşımlı) · mıknatıs 5 · "en ucuz açık hedef önce" · Kat 1 parası doğrudan cüzdana (D-198).
+Bulaşık (Kat 1): havuz 10/ocak +2/ocak yük. · eşik >2 · yıkama r 1.6 · leğen 10 sn · boştaki garson 1 · bulaşıkçı taban 2/2 · son 2.8/8
+Lavabo L1-L6 (Kat 1): uğrama 0.3/0.35/0.4/0.45/0.5/0.55 · ücret 18/24/32/44/60/86 · açan k2salon3 → k2tavla2 → k2tavla5 → k2tavla8 → k2tavla11
+  LVy ücret 18/21/25/31/39/52
+  LV½ fiyat 6800/6950/7350/7800/8200 · LVK1 fiyat 17350/21650/30350/39000/49850
+Kat 1 izi: 80.5 coin/dk (pad'ler açık, seviyeler taban — D-192…D-200 ölçümlerinin izi)
+TUR 2 · GERÇEK Kat 1 izi (görev hattı sonu): 901.4 coin/dk · fark 821 → pad +7400 · Sv +2450
+  D-201      config OLDUĞU GİBİ (bulaşıkçı taban 2/2)
+  Y          son kademe · bugünkü kural: dolunca git
+  E4         son kademe · 4 kirliyle git
+  K0         son kademe · temiz bitince elindekini götür
+  K2         son kademe · temiz ≤ 2 olunca götür
+  config zincir: k2okey1 8600 · k2okey3 9100 · k2garson 4800 · k2okey4 9600 · k2garson2 10100 · k2salon2 10100 · k2s2okey1 10100 · k2s2okey2 10600 · k2bulasikci 5500 · k2cezve2 11000 · k2s2okey3 11000 · k2s2okey4 11500 · k2s2okey5 12000 · k2s2okey6 12500 · k2garson3 13000 · k2lavabo 13000 · k2salon3 13600 · k2tavla1 13600 · k2tavla2 13900 · k2tavla3 14100 · k2tavla4 14400 · k2tavla5 14700 · k2tavla6 15000 · k2tavla7 15300 · k2tavla8 15600 · k2tavla9 15900 · k2tavla10 16100 · k2tavla11 16400 · k2tavla12 16700
+  config ocak 4800/5500/6500/6800/7500 · garson hız 6950 · tepsi 7350/8050 · lavabo 6800/6950/7350/7800/8200 · okey Sv 0/6750/7750/8750/9750 · tavla Sv 0/4750/5250/5750/6250
+
+--- §A PLATO — bütün zincir açık (3 garson · ocak 6 · garson 4/4 · lavabo L6); GERÇEK Kat 2 coin/dk (masa + lavabo) ---
+(Bk1 = havuz Kat 1 kuralı · B = + masa başına kişi kadar fincan)
+kurulum          | Sv | coin/dk | servis % | garson payı | kirli masa bekler % | temiz fincan yok % | oyuncu yıkadı/dk | bot boş %
+bulaşık yok      | 1  |   1.751 |      %87 |         %74 |                  %0 |                 %0 |              0.0 |        %1
+B eşik 2 teslim  | 1  |   1.743 |      %84 |         %78 |                  %0 |                 %0 |              8.6 |        %0
+DW Y             | 1  |   1.738 |      %84 |         %78 |                  %0 |                 %0 |              8.8 |        %0
+DW E4            | 1  |   1.732 |      %83 |         %77 |                  %0 |                 %0 |              8.0 |        %0
+DW K0            | 1  |   1.738 |      %84 |         %78 |                  %0 |                 %0 |              8.8 |        %0
+DW K2            | 1  |   1.738 |      %84 |         %78 |                  %0 |                 %0 |              8.8 |        %0
+bulaşık yok      | 5  |   2.696 |      %86 |         %76 |                  %0 |                 %0 |              0.0 |        %0
+B eşik 2 teslim  | 5  |   2.691 |      %82 |         %77 |                  %0 |                 %0 |              8.9 |        %0
+DW Y             | 5  |   2.687 |      %81 |         %79 |                  %0 |                 %0 |              8.7 |        %0
+DW E4            | 5  |   2.685 |      %82 |         %79 |                  %0 |                 %0 |              8.2 |        %0
+DW K0            | 5  |   2.687 |      %81 |         %79 |                  %0 |                 %0 |              8.7 |        %0
+DW K2            | 5  |   2.687 |      %81 |         %79 |                  %0 |                 %0 |              8.7 |        %0
+
+--- §B İLERLEME — ilk çıkıştan: zincir → Sv → yükseltmeler (ocak + garson hız/tepsi config · lavabo kolun) ---
+kol        | zincir pad | ilk garson dk | zincir biter | Sv biter  | yük. biter | KAT 2 BİTER | en uzun bekleyiş dk | medyan dk | servis % | kirli masa % | temiz yok % | son saat Kat 2 coin/dk
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+D-201      |         29 |          23.1 |      4.91 sa |   8.11 sa |    4.80 sa |     8.11 sa |                10.1 |       2.8 |      %84 |           %0 |          %0 |      2.747
+Y          |         29 |          23.1 |      4.91 sa |   8.10 sa |    4.80 sa |     8.10 sa |                10.1 |       2.8 |      %86 |           %0 |          %0 |      2.726
+E4         |         29 |          23.1 |      4.90 sa |   8.10 sa |    4.80 sa |     8.10 sa |                10.1 |       2.8 |      %85 |           %0 |          %0 |      2.752
+K0         |         29 |          23.1 |      4.91 sa |   8.10 sa |    4.80 sa |     8.10 sa |                10.1 |       2.8 |      %86 |           %0 |          %0 |      2.726
+K2         |         29 |          23.1 |      4.91 sa |   8.10 sa |    4.80 sa |     8.10 sa |                10.1 |       2.8 |      %86 |           %0 |          %0 |      2.726
+
+--- §B2 garson / bulaşıkçı / lavabo alım dakikaları ---
+D-201      | k2garson 23 · k2garson2 45 · k2bulasikci 77 · k2garson3 136 | lavabo 167/193/226/259/288
+Y          | k2garson 23 · k2garson2 45 · k2bulasikci 77 · k2garson3 136 | lavabo 167/193/226/258/288
+E4         | k2garson 23 · k2garson2 45 · k2bulasikci 77 · k2garson3 136 | lavabo 167/193/226/259/288
+K0         | k2garson 23 · k2garson2 45 · k2bulasikci 77 · k2garson3 136 | lavabo 167/193/226/258/288
+K2         | k2garson 23 · k2garson2 45 · k2bulasikci 77 · k2garson3 136 | lavabo 167/193/226/258/288
+
+--- §B3 saat başına toplam gelir (Kat 1 + Kat 2) coin/dk ---
+D-201      | 1.064 · 1.235 · 1.475 · 1.745 · 2.181 · 2.744 · 3.097 · 3.431 · 3.648
+Y          | 1.064 · 1.235 · 1.477 · 1.752 · 2.193 · 2.754 · 3.108 · 3.436 · 3.628
+E4         | 1.064 · 1.235 · 1.479 · 1.749 · 2.190 · 2.742 · 3.110 · 3.430 · 3.654
+K0         | 1.064 · 1.235 · 1.477 · 1.752 · 2.193 · 2.754 · 3.108 · 3.436 · 3.628
+K2         | 1.064 · 1.235 · 1.477 · 1.752 · 2.193 · 2.754 · 3.108 · 3.436 · 3.628
+
+(süre: 243 sn)
+
+✓ Damgalar temiz (tam koşu).

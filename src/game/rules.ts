@@ -971,3 +971,16 @@ export const stationSoftMaxLevel = () => C.service.upgrade.maxLevel;
 export const stationUpgradeCost = (level: number) => upgradeCost(C.service.upgrade, level + 1);
 /** Eski adıyla (servis parametresi kalktı; çağıranlar tek servisi soruyor). */
 export const stationUpgradeCostAt = (_service: number, level: number) => stationUpgradeCost(level);
+
+/**
+ * Bulaşıkçı yıkamaya mı gitsin: kapasite doldu · toplanacak kalmadı · (config `yikamaKurali`) eşik ya da temiz azaldı.
+ * Kat 1 ve Kat 2 (`kat2Dongu.bulasikciAdim`) aynı kuralı okur.
+ */
+export function yikamayaGit(elde: number, kapasite: number, kirliSayisi: number, temiz: number): boolean {
+  if (elde <= 0) return false;
+  if (elde >= kapasite || kirliSayisi === 0) return true;
+  const k = C.dishwasher.yikamaKurali;
+  if (!k) return false;
+  if (k.esik != null && elde >= Math.min(kapasite, k.esik)) return true;
+  return k.temizEnFazla != null && temiz <= k.temizEnFazla;
+}
