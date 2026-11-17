@@ -36,7 +36,7 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 Kodda: config = K-Bt2 · zincirde garson ×3 + bulaşıkçı · bulaşık (masada fincan/telveli kirli, ön tezgâhta bakır leğen, bulaşıkçı
 NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası · pad etiketleri Kat 1 (Garson Tut / 2. Garson / 3. Garson /
 Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
-`docs/kareler/kat2-isleyis-gorsel-*.png`. **Sıradaki:** kullanıcıya yeni deneme APK (D-197) → oyun testi geri bildirimi.
+`docs/kareler/kat2-isleyis-gorsel-*.png`. **Deneme APK hazır** (D-201 dahil): masaüstü `TeaHouse-deneme-Kat2-2026-11-17b.apk` (2026-11-17). **Sıradaki:** kullanıcının oyun testi geri bildirimi.
 Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit seviye 2'ydi).
 **Sonraki oturumda sor:** eski `tools/olcum-kat2-ocak-garson.ts` "config = HOG2-½" damgası artık kırık (D-201 fiyatları değiştirdi) —
 araç tarihî, silinsin mi/FİNAL kipine alınsın mı.
