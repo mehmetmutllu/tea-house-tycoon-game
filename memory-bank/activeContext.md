@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-17 — D-201 Parça 1 MANTIK + Parça 2 GÖRSEL kodda · sıradaki: kullanıcı oyunda dener · yayın geri bildirimden sonra)
+## ŞU AN (2026-11-17 — D-201 mantık + görsel · D-202 bulaşıkçı kuralı kodda · deneme APK masaüstünde · sıradaki: kullanıcının oyun testi)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
