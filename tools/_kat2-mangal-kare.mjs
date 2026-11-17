@@ -1,6 +1,6 @@
 /**
  * _kat2-mangal-kare.mjs — Kat 2 köz mangalı mutfak Sv1-6 (yakın) + mutfak geniş (Sv1, Sv6), tek pano.
- * Seviye `kat2MutfakSeviyesi(padsDone)`den türer → padsDone'dan KAT2_MUTFAK_ADIM'ın kalanı çıkarılır.
+ * Seviye `kat2MutfakSeviyesi(kat2.yuk.ocak)`den türer (D-200) → ocak alımı sv − 1 yazılır.
  * Kullanım: node tools/_kat2-mangal-kare.mjs <klasör>
  */
 import { chromium } from 'playwright';
@@ -41,15 +41,14 @@ try {
     const look = await import('/src/components/three/kitchenLook.ts');
     const { useGame } = await import('/src/game/store.ts');
     const k = useGame.getState().kat2;
-    const cikar = look.KAT2_MUTFAK_ADIM.slice(sv - 1);
-    const hepsi = [...cfg.economyConfig.kat2.hazir, ...cfg.economyConfig.kat2.padler.map((p) => p.id)].filter((id) => !cikar.includes(id));
+    const hepsi = [...cfg.economyConfig.kat2.hazir, ...cfg.economyConfig.kat2.padler.map((p) => p.id)];
     const w = dongu.yeniKat2Dunya(hepsi, cfg.economyConfig.kat2);
     w.masalar = w.masalar.map((m) => ({ ...m, durum: 'oyunda', t: 9999, kahveT: 999 }));
     w.ocaklar = w.ocaklar.map((o) => ({ ...o, hazir: 3, demT: 999 }));
     w.paralar = [];
-    window.__setState({ kat2: { ...k, acik: true, padsDone: hepsi }, kat2Dunya: w, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
+    window.__setState({ kat2: { ...k, acik: true, padsDone: hepsi, yuk: { ...k.yuk, ocak: sv - 1 } }, kat2Dunya: w, inputKeyboard: [0, 0], inputJoystick: [0, 0] });
     window.__teleport(-3.5, kat.OCAK.al[1] + 1.2);
-    return { x: kat.OCAK.x, z: kat.OCAK.z, sv: look.kat2MutfakSeviyesi(hepsi) };
+    return { x: kat.OCAK.x, z: kat.OCAK.z, sv: look.kat2MutfakSeviyesi(sv - 1) };
   }, sv);
   const D = 8.5 * 1.3;
   const satirlar = [];

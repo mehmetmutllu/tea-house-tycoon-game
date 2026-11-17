@@ -79,16 +79,28 @@ D-186'dan beri yalnız tavlaya gidiyordu. Kod seçmeli ayar aldı: `Kat2GarsonAy
 |---|---|---|---|---|---|---|
 | TABAN (bugün) | — | 4,71 sa | 9,86 sa | — | 12,2 dk | %37 |
 | H yükseltmesiz | — | 4,57 sa | 9,46 sa | −24 dk | 11,9 dk | %46 |
-| HOG-½ ocak 5 + garson 3, yarım | 23.850 | 4,93 sa | 9,71 sa | −9 dk | 10,8 dk | %60 |
-| HOG-1 aynısı, tam fiyat | 47.700 | 5,58 sa | 10,39 sa | +32 dk | 11,0 dk | %58 |
-| **HOG2-½ + 2. garson, yarım** | 27.950 | 4,97 sa | **9,58 sa** | −17 dk | 10,7 dk | **%71** |
-| HOG2-1 aynısı, tam fiyat | 55.900 | 5,70 sa | 10,30 sa | +26 dk | 10,9 dk | %70 |
+| HOG-½ ocak 5 + garson 3, yarım | 23.850 | 4,93 sa | 9,75 sa | −7 dk | 11,0 dk | %58 |
+| HOG-1 aynısı, tam fiyat | 47.700 | 5,54 sa | 10,28 sa | +25 dk | 10,8 dk | %61 |
+| **HOG2-½ + 2. garson, yarım** | 27.950 | 4,96 sa | **9,55 sa** | −19 dk | 11,0 dk | **%71** |
+| HOG2-1 aynısı, tam fiyat | 55.900 | 5,68 sa | 10,26 sa | +24 dk | 10,8 dk | %72 |
 
 **Bulgu 5 · Garson her masaya gidince yükseltmeler karşılığını veriyor:** 2 garson + ocak 6 ile kahvelerin %80'i
-servis ediliyor (bugün %45), para Sv1'de +%17. Yarım fiyatta Kat 2 bugünden 17 dk KISA bitiyor; tam fiyatta 26 dk uzun.
+servis ediliyor (bugün %45), para Sv1'de +%17. Yarım fiyatta Kat 2 bugünden 19 dk KISA bitiyor; tam fiyatta 24 dk uzun.
 Kahve paranın küçük payı olduğu için (masa ücreti + lavabo baskın, grup kahve gelse de gelmese de aynı süre oturur)
 etki Kat 1'deki kadar büyük değil; Sv5'te +%8.
 
-## Karar
+(Bulgular 2'deki ilerleme satırları FİNAL koşudan: ocak noktası oyundaki yerinde, `KAT2_OCAK_YUK_YER`. §Bulgular 1'in
+O-½/OG-½ satırları ölçüm aracının ilk noktasıyla; final koşuda 9,92 / 10,12 sa — fark ≤ 4 dk.)
 
-<!-- karar paketi sonrası doldurulur -->
+## Karar (2026-11-17, D-200)
+
+Kullanıcı ilk paketi (A-D, garson yalnız tavla) "yükseltme nasıl işe yaramaz" diye geri çevirdi; mantığın Kat 1'deki gibi
+olmasını istedi (garson her masaya, ocak/garson yükseltmesi). İkinci pakette **1 · 2 garson, yarım fiyat (HOG2-½)** seçti.
+
+- Config `kat2.garson.herMasa = true` · `kat2.yukseltme` (ocak 5 · garson hız 1 · tepsi 2 · ek garson 1; fiyat açan pad ×½).
+- Ocak noktası ocağın sağında (`KAT2_OCAK_YUK_YER`), Kat 1 servis noktası dili; mutfak/mangal görseli ocak alımından türer.
+- Garson alımları karakter panelinde, Kat 2'deyken "Garson" sekmesi (Kat 1 garson/bulaşıkçı sekmeleri Kat 1'de).
+- Kayıt additive `kat2.yuk` (saveVersion değişmedi).
+- **Final tam koşu (CONFIG kolu, oyun mantığı):** Kat 2 **9,55 sa** (bugün 9,86) · zincir 4,96 sa · en uzun bekleyiş 11,0 dk ·
+  kahve servisi %71 · damgalar temiz, "config = HOG2-½" ve "araç = oyun kuralı" bekçileri yeşil.
+- Bekçi `tests/kat2-yukseltme.test.ts` (17 test) · mutasyon 3/3 yakalandı (herMasa yok · açan pad kontrolü yok · demleme hızlanmaz).

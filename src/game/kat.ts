@@ -299,13 +299,18 @@ export interface Kat2Kayit {
   masaSv?: Record<string, number>;
   /** S3: Kat 2 görev hattının ilerlemesi (`kat2Gorev.ts`; sıradaki görev + sayaçlar). Additive, eski kayıtta baştan. */
   gorev?: { idx: number; sayac: Record<string, number> };
+  /**
+   * D-200: ocak + garson yükseltmelerinin alım sayıları (Kat 1 mantığı; `kat2Dongu.Kat2YukSeviye`). Additive (D-182):
+   * eski kayıtta yok → hepsi 0, `saveVersion` artmaz.
+   */
+  yuk?: { ocak?: number; garsonHiz?: number; garsonTepsi?: number; garsonSayi?: number };
 }
 
 /** Masa seviyesinin tavanı (Sv1-5, D-181 görselleri). Oyun kuralı: tetik Sv5'te kalkar. */
 export const KAT2_SV_MAX = 5;
 
 export const defaultKat2Gorev = (): NonNullable<Kat2Kayit['gorev']> => ({ idx: 0, sayac: {} });
-export const defaultKat2 = (): Kat2Kayit => ({ acik: false, padsDone: [], masaSv: {}, gorev: defaultKat2Gorev() });
+export const defaultKat2 = (): Kat2Kayit => ({ acik: false, padsDone: [], masaSv: {}, gorev: defaultKat2Gorev(), yuk: {} });
 
 /**
  * D-191: açık katın HAZIR pad'leri (`kat2.hazir`) `padsDone`da olmalı. Merdiven açılınca da, eski bir
@@ -450,6 +455,14 @@ export const OCAKLAR: readonly Kat2Ocak[] = [
   OCAK,
   { id: 'k2cezve2', x: -13.2, z: OCAK.z, al: [-13.2, OCAK.al[1]], erisim: OCAK.erisim },
 ];
+
+/**
+ * D-200: OCAK YÜKSELTME noktası (Kat 1'in servis yükseltme noktası karşılığı — ocağın yanında, altta dolan bar).
+ * 1. ocağın SAĞINDA: çerçeve (`servisCercevesi`, ±~1,05 × ±0,85) ocağın alma payına (x −7,4 ± 0,9) değmez —
+ * kahve almak için duran oyuncu farkında olmadan yükseltmeyi doldurmasın.
+ */
+export const KAT2_OCAK_YUK_ID = 'k2ocakYuk';
+export const KAT2_OCAK_YUK_YER: readonly [number, number] = [-5.2, BAND.front + 1.0];
 
 /**
  * Kat 2'nin LAVABOSU (D-191): bandın sağ arka köşesi (Kat 1'in lavabo odasının üstü, x 13,4). Pad

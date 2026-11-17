@@ -79,7 +79,7 @@ describe('config — D-186 tavla T120U + zincir', () => {
     expect(kat2YapiHatasi(A)).toBeNull();
     expect(kat2EksikSayi(A)).toBeNull();
     expect(kat2ZincirHatasi(A)).toBeNull();
-    expect(A.garson).toEqual({ hiz: 3, tepsi: 2, sayi: 1 });
+    expect(A.garson).toEqual({ hiz: 3, tepsi: 2, sayi: 1, herMasa: true }); // D-200: Kat 1 gibi her masaya
     expect(A.garson!.hiz).toBeCloseTo(C.waiter.speedUpgrades.speeds.at(-1)! * 1.5);
     const garsonsuz: Kat2Ayar = { ...A, garson: undefined };
     expect(kat2EksikSayi(garsonsuz)).toBe('k2garson: garson sayıları (Kat2Ayar.garson) yok');

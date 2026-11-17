@@ -1280,10 +1280,22 @@ export const economyConfig = {
     merdiven: { cost: 9_400, fillRate: 2_686 },
     /**
      * Kat 2 garsonu (D-189, `docs/kat2-garson-raporu-k2-s2.md`): Kat 1'in son kademe garson hızının
-     * 1,5 katı (2,0 × 1,5 = 3,0; oyuncunun 4,5 tabanından yavaş — D-014), tepsi 2 (4 hiçbir kolda
-     * kazandırmadı), tek garson (ikincisi ileride yükseltme olabilir).
+     * 1,5 katı (2,0 × 1,5 = 3,0; oyuncunun 4,5 tabanından yavaş — D-014), tepsi 2, tek garson.
+     * D-200 (kullanıcı 2026-11-17 "birinci katta bu mantığı kurmadık mı?"): garson Kat 1'deki gibi HER masaya.
      */
-    garson: { hiz: 3, tepsi: 2, sayi: 1 },
+    garson: { hiz: 3, tepsi: 2, sayi: 1, herMasa: true },
+    /**
+     * D-200 OCAK + GARSON YÜKSELTMESİ (Kat 1 mantığı; kol HOG2-½ — `docs/kat2-ocak-garson-raporu.md`): ocak 5 kademe
+     * (demleme ×1,35 + kuyruk +1, Kat 1 `service.upgrade`/`brew`), mangal görseli bu seviyeden türer · garson hız 3→4,
+     * tepsi 2→3→4 (Kat 1 eğrisi) ve 2. garson panelden. Her alımın fiyatı onu AÇAN zincir pad'inin yarısı.
+     * Kat 2 ~9,6 sa (bugün 9,9), kahve servisi %37 → %71. Bekçi: `tools/olcum-kat2-ocak-garson.ts` "config = HOG2-½".
+     */
+    yukseltme: {
+      ocak: { acan: ['k2okey4', 'k2cezve2', 'k2lavabo', 'k2garson', 'k2tavla6'], fiyat: [1_100, 1_800, 2_800, 3_100, 3_800], demlemeCarpan: 1.35, kuyrukArti: 1 },
+      garsonHiz: { acan: ['k2tavla2'], fiyat: [3_250], deger: [4] },
+      garsonTepsi: { acan: ['k2tavla5', 'k2tavla10'], fiyat: [3_650, 4_350] },
+      garsonSayi: { acan: ['k2tavla8'], fiyat: [4_100] },
+    },
     /**
      * TAVLA (D-186, kol T120U — `docs/kat2-tavla-raporu-k2-3c.md`): 2 kişi 2 dk oynar, 25 sn'de 1 fincan;
      * para masa ücretinden (gelirin %20'si kahve). Tavan kişi başına okeyle eşit (27 ₺/dk/masa).

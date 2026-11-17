@@ -410,12 +410,10 @@ export const KADEME_MERDIVENI: readonly (readonly KademeAdimi[])[] = [
 export const KADEME_MAX = KADEME_MERDIVENI.length;
 
 /**
- * KAT 2 MUTFAĞI (D-198, oyun testi G2 "aşağıyı kopyala"): Kat 1'in odası aynı merdivenle, Kat 2 akışının
- * dönüm noktalarında bir basamak büyür (varışta 1 — D-191 "mutfak yerinde büyür"). Görsel; padsDone'dan türer.
+ * KAT 2 MUTFAĞI (D-198, oyun testi G2 "aşağıyı kopyala"): Kat 1'in odası aynı merdivenle. D-200: Kat 1'in
+ * `mutfakSeviyesi(stationLevel)` gibi OCAK YÜKSELTMESİNDEN türer — varışta 1, her alım bir basamak.
  */
-export const KAT2_MUTFAK_ADIM: readonly string[] = ['k2okey4', 'k2cezve2', 'k2lavabo', 'k2garson', 'k2tavla12'];
-export const kat2MutfakSeviyesi = (padsDone: readonly string[]): number =>
-  Math.min(KADEME_MAX, 1 + KAT2_MUTFAK_ADIM.filter((id) => padsDone.includes(id)).length);
+export const kat2MutfakSeviyesi = (ocakAlim: number): number => Math.min(KADEME_MAX, 1 + Math.max(0, ocakAlim));
 
 /**
  * ODANIN ETKİN SEVİYESİ — `wcSeviye`nin kardeşi (`feedback_single_source_of_truth`).

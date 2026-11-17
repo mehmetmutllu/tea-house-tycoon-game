@@ -444,6 +444,9 @@ export const en: Record<string, string> = {
   "Gönder": "Send",
   "Teşekkürler!": "Thank you!",
   "Mesajın bize ulaştı. Her birini okuyoruz.": "Your message reached us. We read every one.",
+  // D-200 Kat 2 garson sekmesi (ChatGPT mikrometin turu bekliyor)
+  "Tavla köşesinde {1} masa aç": "Open {1} backgammon tables",
+  "Kat 2 garsonları her masaya kahve götürür.": "Floor 2 servers bring coffee to every table.",
   // Kat 2 görev hattı (S3-D) — ChatGPT mikrometin turu S3 karar paketinde
   "İLK KAHVE": "FIRST COFFEE",
   "Okey masasına kahve götür": "Bring coffee to the okey table",

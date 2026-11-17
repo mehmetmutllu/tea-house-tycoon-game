@@ -531,6 +531,13 @@ function kat2SvSozluk(v: unknown): Record<string, number> {
   }
   return out;
 }
+/** D-200: Kat 2 yükseltme alım sayıları — yalnız bilinen hatlar, tam sayı, ≥ 0. */
+function kat2YukKaydi(v: unknown): NonNullable<Kat2Kayit['yuk']> {
+  const y = sozluk(v, negatifsizSayiMi);
+  const out: NonNullable<Kat2Kayit['yuk']> = {};
+  for (const k of ['ocak', 'garsonHiz', 'garsonTepsi', 'garsonSayi'] as const) if (y[k] != null) out[k] = Math.floor(y[k]);
+  return out;
+}
 /** S3: Kat 2 görev hattı kaydı (D'nin `kat2Gorev.ts`i okur) — eksik/bozuk → baştan. */
 function kat2GorevKaydi(v: unknown): NonNullable<Kat2Kayit['gorev']> {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return defaultKat2Gorev();
@@ -638,6 +645,8 @@ export function kayitDogrula(d: SaveData): { data: SaveData; red: string[] } {
       // S3 (additive, D-182): eski kayıt → bütün masalar Sv1 · görev hattı baştan. Bozuk Sv düşer (Sv1), taşan kırpılır.
       masaSv: kat2SvSozluk(d.kat2.masaSv),
       gorev: kat2GorevKaydi(d.kat2.gorev),
+      // D-200 (additive): eski kayıt → yükseltme yok. Bozuk/eksi değer 0'a, kesir aşağı.
+      yuk: kat2YukKaydi(d.kat2.yuk),
     },
     kasa: gecerliTutar(d.kasa) ? d.kasa : '0',
     kasaOlcum: { para: negatifsiz(d.kasaOlcum.para), sn: negatifsiz(d.kasaOlcum.sn) },

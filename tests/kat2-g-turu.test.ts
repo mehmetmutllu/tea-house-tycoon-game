@@ -28,7 +28,6 @@ import {
 } from '../src/game/kat';
 import { BAND, LAYOUT } from '../src/game/layout';
 import { GRUP_ARA, GRUP_HIZ, gelisHizi, gelisOrani, grupYolu, oturakYerleri, yolKur, yolNoktasi, type Nokta } from '../src/components/three/kat2/yol';
-import { KADEME_MAX, KAT2_MUTFAK_ADIM, kat2MutfakSeviyesi } from '../src/components/three/kitchenLook';
 
 const PR = LAYOUT.playerRadius;
 
@@ -62,12 +61,6 @@ describe('G2 — mutfağın ön tezgâhı', () => {
     }
   });
 
-  it('mutfak Kat 2 ilerlemesiyle büyür: varışta 1, adımların hepsi bitince Kat 1 mutfağının tepe seviyesi', () => {
-    expect(kat2MutfakSeviyesi([])).toBe(1);
-    expect(kat2MutfakSeviyesi(['k2okey4'])).toBe(2);
-    expect(kat2MutfakSeviyesi([...KAT2_MUTFAK_ADIM])).toBe(Math.min(KADEME_MAX, 1 + KAT2_MUTFAK_ADIM.length));
-    expect(1 + KAT2_MUTFAK_ADIM.length).toBeLessThanOrEqual(KADEME_MAX);
-  });
 });
 
 describe('G3 — kameraya bakan bölme alçak', () => {

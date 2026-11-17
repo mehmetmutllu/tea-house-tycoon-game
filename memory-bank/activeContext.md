@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-17 — oyun testi turları D-198/D-199 kodda · yeni deneme APK sırada · yayın kullanıcının geri bildiriminden sonra)
+## ŞU AN (2026-11-17 — D-200 Kat 2 ocak/garson yükseltmesi kodda · deneme APK yenilenecek · yayın kullanıcının geri bildiriminden sonra)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -37,19 +37,16 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
 ## ⏭️ SIRADAKİ ADIM (yeni chat)
-0. **SON OTURUM (2026-11-17, D-199):** Kat 2 ön set = **köz mangalı**, görünüşü mutfak seviyesiyle büyür (yol C,
-   `kat2/Mutfak.MANGAL_SEVIYE`) · mutfakta orta adalar YOK · Kat 2 mutfak zemini **koyu kahve + krem**. Kareler:
-   `node tools/_kat2-mangal-kare.mjs <klasör>`. Öncesi (D-198): G1-G5 kodda (kasa yok, Kat 1 mutfağı Kat 2'de, ön bölme 0,6,
-   tek sıra, okey G2) — `docs/geribildirim-oyun-testi-2026-11-14.md`.
-   **Deneme APK hazır:** masaüstünde `TeaHouse-deneme-Kat2-2026-11-17.apk` (D-197 tarifi) → kullanıcı dener, geri bildirim bekleniyor.
-   **Kat 2'de kalan (kullanıcıya 2026-11-17 sunuldu, seçim bekliyor):** zorunlu → kullanıcı deneme notları · Kat 2 süre
-   ölçümü (D-192 4,9 sa, D-198 G5/kasa sonrası eskidi) · 1.1 hazırlığı. Opsiyonel → **ocak + garson yükseltmesi** (Kat 1
-   karşılığı; mangal şu an yalnız görsel büyür, garson sabit 3/2/1) — öneri: süre ölçümüyle TEK tur (varyant kapısı) ·
-   balkon · Kat 2 temaları · Kat 1 merdiven sarı-siyah bant · Usta "0/7".
-1. Kullanıcı masaüstündeki `TeaHouse-deneme-Kat2-2026-11-13.apk` ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i
-   bitir"). Gelen geri bildirimler → `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı, kullanıcının cümlesiyle) → tur planı.
-   Yeni deneme APK: `VITE_KAT2=1 VITE_DENEME=1 npm run apk` (google-services.json'a geçici `.deneme` istemcisi — D-197).
-   Beklerken yayınsız işler (kullanıcıya 2026-11-13 sunuldu, seçim bekliyor): Puanla özelliği (aşağıda) · küçük kusurlar (AÇIK KALEMLER).
+0. **SON OTURUM (2026-11-17 2., D-200):** Kat 2 süresi ölçüldü (bugün 9,86 sa) → kullanıcı Kat 1 mantığını istedi: garson
+   HER masaya, ocak 5 kademe (ocağın sağında "Yükselt" noktası, mangal/mutfak bu seviyeden büyür), garson hız/tepsi/2. garson
+   karakter panelinde (Kat 2'deyken "Garson" sekmesi). Fiyat açan pad ×½. Final: Kat 2 9,55 sa, kahve servisi %71.
+   Rapor `docs/kat2-ocak-garson-raporu.md`; kareler `node tools/_kat2-yuk-kare.mjs <klasör>`.
+   **Açık:** yeni metinler ("Tavla köşesinde {1} masa aç", "Kat 2 garsonları her masaya kahve götürür.") ChatGPT
+   mikrometin turu bekliyor · Kat 2 görev hattına ocak/garson görevi (Kat 1'de var) eklenmedi · yeni deneme APK
+   (`VITE_KAT2=1 VITE_DENEME=1 npm run apk`) bu değişikliklerle henüz alınmadı.
+1. Kullanıcı deneme APK ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i bitir"). Geri bildirim →
+   `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı) → tur planı. Kat 2'de kalan opsiyoneller: balkon (kullanıcı emin
+   değil) · Kat 2 temaları (kullanıcı: Kat 1 ile aynı olabilir) · Kat 1 merdiven sarı-siyah bant (kalsın) · Usta "0/7" (fark etmez).
 2. **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (kullanıcı 2026-11-13). Kullanıcı derse 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım (ASC) · Play listesi + zip arkadaşa · "Yenilikler".
 
 ## KULLANICIYA HATIRLAT

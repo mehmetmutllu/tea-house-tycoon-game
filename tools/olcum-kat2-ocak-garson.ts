@@ -22,8 +22,8 @@
 import { KISA, botDamgasi, damga, damgaOzeti, izOlustur, kipBandi, kisaDeger, korunumDamgasi, seedRandom, takilmaDamgasi, varyantDamgasi, yuzdelik } from './olcum-lib';
 import { attractRadiusFor, charMaxTier, economyConfig as C, playerSpeedFor, trayCapacityFor } from '../src/config/economy.config';
 import { useGame } from '../src/game/store';
-import { AGIZ, KAT2_MASALAR, KAT2_SV_MAX, OCAKLAR, OKEY_ERISIM, TAVLA_ERISIM, VARIS, kat2AcikAlan, kat2Adim } from '../src/game/kat';
-import { kat2MasaYeri, kat2PadYeri, kat2SvCanliTetik, kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from '../src/game/kat2Dongu';
+import { AGIZ, KAT2_MASALAR, KAT2_OCAK_YUK_YER, KAT2_SV_MAX, OCAKLAR, OKEY_ERISIM, TAVLA_ERISIM, VARIS, kat2AcikAlan, kat2Adim } from '../src/game/kat';
+import { kat2EtkinAyar, kat2MasaYeri, kat2PadYeri, kat2SvCanliTetik, kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya, type Kat2YukAyar, type Kat2YukSeviye } from '../src/game/kat2Dongu';
 import { BAND, LAYOUT } from '../src/game/layout';
 import { D } from '../src/game/decimal';
 import type { Vec3 } from '../src/game/types';
@@ -61,6 +61,7 @@ type Tur = 'ocak' | 'ghiz' | 'gtepsi' | 'gsayi';
 interface Yuk {
   tur: Tur;
   acan: string; // açılış noktası: bu zincir pad'i bitince görünür
+  fiyat?: number; // verilirse kolun f'si yerine bu (CONFIG kolu: config'in kendi fiyatı)
 }
 const OCAK_YUK: Yuk[] = ['k2okey4', 'k2cezve2', 'k2lavabo', 'k2garson', 'k2tavla6'].map((acan) => ({ tur: 'ocak', acan }));
 const GARSON_YUK: Yuk[] = [
@@ -80,10 +81,15 @@ interface Seviye {
 const S0: Seviye = { ocak: 1, ghiz: 0, gtepsi: 0, gsayi: 0 };
 const GHIZ = [GARSON0.hiz, 4];
 
+/** Araç seviyesi → oyunun alım sayıları (`Kat2Kayit.yuk`). */
+const oyunSev = (s: Seviye): Kat2YukSeviye => ({ ocak: s.ocak - 1, garsonHiz: s.ghiz, garsonTepsi: s.gtepsi, garsonSayi: s.gsayi });
+/** Config'in yükseltme tanımı yok sayılır: kollar alımı ARAÇTA yapar (CONFIG kolu hariç — o oyunun kendi tetiğini kullanır). */
+const { yukseltme: _cfgYuk, ...CFG_YUKSUZ } = CFG;
+
 function ayarOf(s: Seviye, herMasa = false): Kat2Ayar {
-  if (MUT === 'etkisiz') return CFG;
+  if (MUT === 'etkisiz') return { ...CFG_YUKSUZ, garson: { ...GARSON0, herMasa } };
   return {
-    ...CFG,
+    ...CFG_YUKSUZ,
     demleme: CFG.demleme / KAT1_OCAK ** (s.ocak - 1),
     ocakKuyruk: CFG.ocakKuyruk + KAT1_KUYRUK * (s.ocak - 1),
     garson: { ...GARSON0, hiz: GHIZ[s.ghiz], tepsi: GARSON0.tepsi + s.gtepsi, sayi: (GARSON0.sayi ?? 1) + s.gsayi, herMasa },
@@ -96,7 +102,17 @@ interface Kol {
   yuk: Yuk[];
   f: number; // fiyat = açan pad × f
   herMasa?: boolean; // garson Kat 1 gibi her masaya (okey dahil) — kullanıcı 2026-11-17
+  kod?: boolean; // CONFIG kolu: etki `kat2EtkinAyar`, ocak tetiği `kat2Tick`in kendisi (D-200 final)
 }
+
+/** Config'in yükseltme hatları araç biçiminde (CONFIG kolu). */
+const CFG_YUK = CFG.yukseltme!;
+const configYuk = (u: Kat2YukAyar): Yuk[] => [
+  ...u.ocak.acan.map((acan, i) => ({ tur: 'ocak' as Tur, acan, fiyat: u.ocak.fiyat[i] })),
+  ...u.garsonHiz.acan.map((acan, i) => ({ tur: 'ghiz' as Tur, acan, fiyat: u.garsonHiz.fiyat[i] })),
+  ...u.garsonTepsi.acan.map((acan, i) => ({ tur: 'gtepsi' as Tur, acan, fiyat: u.garsonTepsi.fiyat[i] })),
+  ...u.garsonSayi.acan.map((acan, i) => ({ tur: 'gsayi' as Tur, acan, fiyat: u.garsonSayi.fiyat[i] })),
+];
 const KOLLAR: Kol[] = [
   { ad: 'TABAN', not: 'bugünkü config: yükseltme yok (mangal yalnız görsel büyür, garson 3/2/1)', yuk: [], f: 0 },
   { ad: 'O-1', not: 'ocak 5 kademe (×1,35 demleme · +1 kuyruk, Kat 1 gibi), fiyat = açan pad × 1', yuk: OCAK_YUK, f: 1 },
@@ -112,7 +128,9 @@ const KOLLAR: Kol[] = [
   { ad: 'HOG-1', not: 'garson her masaya + ocak 5 + garson 3, fiyat × 1', yuk: [...OCAK_YUK, ...GARSON_YUK], f: 1, herMasa: true },
   { ad: 'HOG2-½', not: 'garson her masaya + ocak 5 + garson 3 + 2. garson, fiyat × 0,5', yuk: [...OCAK_YUK, ...GARSON_YUK, GARSON2_YUK], f: 0.5, herMasa: true },
   { ad: 'HOG2-1', not: 'garson her masaya + ocak 5 + garson 3 + 2. garson, fiyat × 1', yuk: [...OCAK_YUK, ...GARSON_YUK, GARSON2_YUK], f: 1, herMasa: true },
+  { ad: 'CONFIG', not: 'D-200 config kendisi (oyun mantığı: kat2EtkinAyar + ocak tetiği kat2Tick) — FİNAL', yuk: configYuk(CFG_YUK), f: 0, herMasa: !!GARSON0.herMasa, kod: true },
 ];
+const yukFiyat = (y: Yuk, f: number) => y.fiyat ?? Math.round(acanFiyat(y.acan) * f);
 
 // ---------------------------------------------------------------------------------------------
 // KAT 1 İZİ (olcum-kat2-masasv ile aynı) — D-198: Kat 2'deyken Kat 1 parası doğrudan cüzdana.
@@ -160,8 +178,8 @@ function yol(x: number, z: number, h: readonly [number, number]): readonly [numb
   if (hk) return Math.abs(x - KX) < 0.3 && z <= KAPI_Z + 0.3 ? [KX, h[1]] : [KX, KAPI_Z];
   return h;
 }
-/** Ocak yükseltme noktası (ölçüm yeri; oyundaki yeri commit #2'de): 1. ocağın alma noktasının sağı. */
-const OCAK_YUK_YER: readonly [number, number] = [OCAKLAR[0].al[0] + 1.6, OCAKLAR[0].al[1]];
+/** Ocak yükseltme noktası — oyunun yeri (D-200). */
+const OCAK_YUK_YER = KAT2_OCAK_YUK_YER;
 
 // ---------------------------------------------------------------------------------------------
 // KOŞU
@@ -200,10 +218,12 @@ function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye; herMasa?: boolean
   let padsDone: string[] = plato ? [...TUM] : [...HAZIR];
   let sev: Seviye = plato ? { ...plato.sev } : { ...S0 };
   const herMasa = plato ? !!plato.herMasa : !!kol.herMasa;
-  let ayar = ayarOf(sev, herMasa);
+  const kod = !!kol.kod && MUT !== 'etkisiz';
+  const ayarHesap = () => (kod ? kat2EtkinAyar(CFG, oyunSev(sev)) : ayarOf(sev, herMasa));
+  let ayar = ayarHesap();
   let d: Kat2Dunya = yeniKat2Dunya(padsDone, ayar);
   const masaSv: Record<string, number> = plato ? Object.fromEntries(MASALAR.map((m) => [m.id, plato.sv])) : {};
-  const yukKalan = plato ? [] : kol.yuk.map((y) => ({ ...y, fiyat: Math.round(acanFiyat(y.acan) * kol.f) }));
+  const yukKalan = plato ? [] : kol.yuk.map((y) => ({ ...y, fiyat: yukFiyat(y, kol.f) }));
   let yukDolum = 0;
   let cuzdan = 0;
   let x = VARIS[2][0];
@@ -219,7 +239,7 @@ function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye; herMasa?: boolean
   let svAlim = 0;
   const yukAlindi = (y: (typeof yukKalan)[number], t: number) => {
     sev = { ...sev, [y.tur]: sev[y.tur] + 1 };
-    ayar = ayarOf(sev, herMasa);
+    ayar = ayarHesap();
     yukKalan.splice(yukKalan.indexOf(y), 1);
     alimlar.push({ t, ne: `${y.tur}${y.tur === 'ocak' ? sev.ocak : ''}` });
     if (!yukKalan.length) yukBitis = t;
@@ -248,7 +268,7 @@ function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye; herMasa?: boolean
     if (sp && !plato) adaylar.push({ kalan: sp.cost - (d.padFill[sp.id] ?? 0), yer: kat2PadYeri(sp.id) });
     if (svT) adaylar.push({ kalan: svT.fiyat - (d.padFill[svT.id] ?? 0), yer: [svT.x, svT.z] });
     const yk = acik.length ? acik.reduce((a, b) => (a.fiyat <= b.fiyat ? a : b)) : undefined;
-    if (yk) adaylar.push({ kalan: yk.fiyat - (yk.tur === 'ocak' ? yukDolum : 0), yer: yk.tur === 'ocak' ? OCAK_YUK_YER : null, yuk: yk });
+    if (yk) adaylar.push({ kalan: yk.fiyat - (yk.tur === 'ocak' ? (kod ? d.padFill['k2ocakYuk'] ?? 0 : yukDolum) : 0), yer: yk.tur === 'ocak' ? OCAK_YUK_YER : null, yuk: yk });
     const ucuz = adaylar.length ? adaylar.reduce((a, b) => (a.kalan <= b.kalan ? a : b)) : null;
     // Panel alımı (garson): para yetince anında.
     if (ucuz?.yuk && ucuz.yer === null && cuzdan >= ucuz.kalan) {
@@ -295,7 +315,7 @@ function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye; herMasa?: boolean
       z = nz;
     }
     // Ocak yükseltme noktası: durunca pad hızıyla dolar.
-    if (yk && yk.tur === 'ocak' && durdu && ucuz?.yuk === yk && uz([x, z], OCAK_YUK_YER) < 0.5) {
+    if (!kod && yk && yk.tur === 'ocak' && durdu && ucuz?.yuk === yk && uz([x, z], OCAK_YUK_YER) < 0.5) {
       const amt = Math.min((yk.fiyat / DOLUM_SN) * DT, cuzdan, yk.fiyat - yukDolum);
       yukDolum += amt;
       cuzdan -= amt;
@@ -306,7 +326,7 @@ function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye; herMasa?: boolean
       }
     }
 
-    const r = kat2Tick(d, { x, z, durdu, cuzdan, padsDone, tepsiKap: TEPSI, miknatis: MIKNATIS, masaSv, svCanli: !plato && zincirBitti }, DT, ayar);
+    const r = kat2Tick(d, { x, z, durdu, cuzdan, padsDone, tepsiKap: TEPSI, miknatis: MIKNATIS, masaSv, svCanli: !plato && zincirBitti, yuk: kod ? oyunSev(sev) : undefined }, DT, ayar);
     d = r.dunya;
     for (const id of r.olay.svAtlayan) {
       masaSv[id] = Math.min(KAT2_SV_MAX, (masaSv[id] ?? 1) + 1);
@@ -316,6 +336,11 @@ function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye; herMasa?: boolean
     }
     if (r.padsDone !== padsDone) padsDone = r.padsDone;
     if (r.olay.padBitti) alimlar.push({ t, ne: 'pad' });
+    // CONFIG: ocak tetiğini oyunun kendisi doldurdu (parası r.harcama'da).
+    if (r.olay.ocakYuk) {
+      const oy = yukKalan.filter((y) => y.tur === 'ocak' && padsDone.includes(y.acan)).reduce((a, b) => (a.fiyat <= b.fiyat ? a : b));
+      yukAlindi(oy, t);
+    }
     const dusen = r.olay.dusen.reduce((a, b) => a + b, 0) + r.olay.lavabo;
     dusenTop += dusen;
     cuzdan += r.kazanc - r.harcama;
@@ -367,6 +392,26 @@ const { iz: IZ1, r1Dk } = kat1Izi();
 console.log(`Kat 1 izi: ${r1Dk.toFixed(1)} coin/dk (bitmiş Kat 1, oyuncusuz)`);
 damga('Kat 1 izi akıyor', r1Dk > 10, `${r1Dk.toFixed(1)}`);
 
+// ---- BEKÇİ: araç kuralı = oyun kuralı · config = karar D-200 (HOG2-½)
+{
+  const SEVLER: Seviye[] = [S0, { ocak: 3, ghiz: 1, gtepsi: 1, gsayi: 0 }, { ocak: 6, ghiz: 1, gtepsi: 2, gsayi: 1 }];
+  const ayni = SEVLER.every((sv) => {
+    const a = ayarOf(sv, true);
+    const o = kat2EtkinAyar(CFG, oyunSev(sv));
+    return Math.abs(a.demleme - o.demleme) < 1e-9 && a.ocakKuyruk === o.ocakKuyruk && JSON.stringify(a.garson) === JSON.stringify(o.garson);
+  });
+  damga('araç ayarı = oyunun kat2EtkinAyar sonucu', MUT === 'etkisiz' || ayni);
+  const kol = KOLLAR.find((k) => k.ad === 'HOG2-½')!;
+  const hat = (tur: Tur) => kol.yuk.filter((y) => y.tur === tur);
+  const beklenen: Kat2YukAyar = {
+    ocak: { acan: hat('ocak').map((y) => y.acan), fiyat: hat('ocak').map((y) => yukFiyat(y, kol.f)), demlemeCarpan: KAT1_OCAK, kuyrukArti: KAT1_KUYRUK },
+    garsonHiz: { acan: hat('ghiz').map((y) => y.acan), fiyat: hat('ghiz').map((y) => yukFiyat(y, kol.f)), deger: [GHIZ[1]] },
+    garsonTepsi: { acan: hat('gtepsi').map((y) => y.acan), fiyat: hat('gtepsi').map((y) => yukFiyat(y, kol.f)) },
+    garsonSayi: { acan: hat('gsayi').map((y) => y.acan), fiyat: hat('gsayi').map((y) => yukFiyat(y, kol.f)) },
+  };
+  damga('config kat2.yukseltme = karar D-200 (HOG2-½)', JSON.stringify(CFG_YUK) === JSON.stringify(beklenen) && GARSON0.herMasa === true, JSON.stringify(CFG_YUK));
+}
+
 // ---- §A PLATO
 const MAKS: Seviye = { ocak: 6, ghiz: 1, gtepsi: 2, gsayi: 0 };
 const PLATOLAR: { ad: string; sev: Seviye; herMasa?: boolean }[] = [
@@ -408,7 +453,7 @@ varyantDamgasi('plato ocak6+garson Sv5', platoIz.get('ocak6/5')!, platoIz.get('o
 varyantDamgasi('plato H (garson her masaya) Sv1', platoIz.get('taban/1')!, platoIz.get('H taban/1')!);
 
 // ---- §B İLERLEME
-const ILERLEME = KISA ? KOLLAR.filter((k) => ['TABAN', 'H', 'HOG-1'].includes(k.ad)) : KOLLAR;
+const ILERLEME = KISA ? KOLLAR.filter((k) => ['TABAN', 'HOG2-½', 'CONFIG'].includes(k.ad)) : KOLLAR;
 const sonuc: { k: Kol; r: Kosu }[] = [];
 for (const k of ILERLEME) {
   const r = kos(k, { iz1: IZ1, sure: UFUK, olcBas: 0 });
@@ -425,7 +470,7 @@ console.log(`--- §B İLERLEME — ilk çıkıştan: zincir ${ZINCIR.length} pad
 console.log('kol    | yükseltme toplam | zincir biter | Sv biter  | yükseltme biter | KAT 2 BİTER | en uzun bekleyiş dk | medyan dk | servis % | tavla % | son saat Kat 2 coin/dk');
 console.log('-'.repeat(160));
 for (const { k, r } of sonuc) {
-  const top = k.yuk.reduce((a, y) => a + Math.round(acanFiyat(y.acan) * k.f), 0);
+  const top = k.yuk.reduce((a, y) => a + yukFiyat(y, k.f), 0);
   // Bekleyiş: zincir pad'i + Sv + yükseltme alımları arası (hepsi satın alma; ilk çıkıştan).
   const ts = [...r.alimlar.map((a) => a.t)].sort((a, b) => a - b);
   const bek = ts.map((v, i) => v - (i ? ts[i - 1] : 0));

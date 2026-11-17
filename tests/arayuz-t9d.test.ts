@@ -144,7 +144,7 @@ describe('B9 — bildirim sağ düğmeye binmez, kesilmez', () => {
 
 describe('B12 — sönük alım nedenini söyler', () => {
   it('Çaycı panelindeki her alım satırı ve Usta "eksik" yazar; mağaza YAZMAZ (2026-10-13)', () => {
-    expect((CHAR.match(/<Eksik cost=/g) ?? []).length).toBe(5);
+    expect((CHAR.match(/<Eksik cost=/g) ?? []).length).toBe(6); // D-200: Kat 2 garson sekmesi tek satır şablonu
     // Kullanıcı: mağazadaki "{1} eksik" ekstra satır açıyordu — fiyat ad satırında ve düğmede zaten yazılı.
     expect(HUD).not.toMatch(/shop-eksik/);
     expect(HUD).toMatch(/\{!yeter && \(/);

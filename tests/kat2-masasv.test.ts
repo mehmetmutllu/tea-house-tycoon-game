@@ -249,7 +249,7 @@ describe('Kat 2 masa Sv — store + kayıt', () => {
     expect(data.kat2.masaSv).toEqual({});
     expect(data.kat2.gorev).toEqual({ idx: 0, sayac: {} });
     expect(masaSvOku(data.kat2.masaSv, 'k2okey2')).toBe(1);
-    expect(defaultKat2()).toEqual({ acik: false, padsDone: [], masaSv: {}, gorev: { idx: 0, sayac: {} } });
+    expect(defaultKat2()).toEqual({ acik: false, padsDone: [], masaSv: {}, gorev: { idx: 0, sayac: {} }, yuk: {} });
   });
 
   it('bozuk Sv düşer, taşan kırpılır; görev sayaçları korunur', () => {

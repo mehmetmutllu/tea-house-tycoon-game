@@ -4,7 +4,7 @@
  * Kullanıcı: "Aşağıyı kopyala direkt. Önde tezgâh olsun, arkada ocak vesaire olsun … öndeki tezgâhın
  * üzerine o kahve şeyini koyarsın. Aspiratör olmasına gerek yok. Sadece öndeki set farklı olsun."
  *  · ARKA: Kat 1'in mutfak odası (`Kitchen.MutfakOdasi`) — aynı koordinat, aynı modeller, Kat 2'nin
- *    kendi ilerlemesiyle büyür (`kat2MutfakSeviyesi`). Aspiratör (davlumbaz) YOK — kullanıcı istemedi.
+ *    ocak yükseltmesiyle büyür (`kat2MutfakSeviyesi`, D-200). Aspiratör (davlumbaz) YOK — kullanıcı istemedi.
  *  · ÖN: bandın solunu kapatan servis tezgâhı (`kat.KAT2_ON_TEZGAH`, katı gövde). Her cezve ocağının
  *    (`OCAKLAR`) yerinde tezgâhın üstünde KAHVE SETİ: arka yarıda ısıtıcı + cezveler (sap ustaya dönük),
  *    ön kenarda servis tepsisi + hazır fincanlar. Arkada kahveci usta hazırlar, oyuncu/garson tepsiden alır.
@@ -15,6 +15,7 @@ import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
 import { KayTezgah, MutfakOdasi } from '../Kitchen';
+import { useGame } from '../../../game/store';
 import { FRONT_TOP_Y, kat2MutfakSeviyesi } from '../kitchenLook';
 import { KAT2_ON_TEZGAH, type Kat2Ocak } from '../../../game/kat';
 import { KayActor } from '../KayActor';
@@ -92,7 +93,7 @@ const KALAY = '#cfd3d6';
 
 /**
  * KÖZ MANGALI (kullanıcı 2026-11-17: ön setlerden mangal, büyüme yolu C "karma"). Seviyesi Kat 2 mutfağının
- * seviyesidir (`kat2MutfakSeviyesi`, 1-6) — mangalın kendi mekaniği yok, oda büyüdükçe o da büyür. Her basamakta
+ * seviyesidir (`kat2MutfakSeviyesi`, 1-6; D-200 ocak yükseltmesinden) — ocak yükseldikçe mangal da büyür. Her basamakta
  * en az iki sinyal değişir (boy · cezve sayısı · malzeme · ayak · köz), `feedback_upgrade_legibility`.
  * Gövde koyu bakır: açık bakır turuncu tezgâhla karışıyordu.
  */
@@ -188,10 +189,11 @@ export function KahveUsta({ ocak, pisiyor }: { ocak: Kat2Ocak; pisiyor: boolean 
 }
 
 /** Mutfak odası (Kat 1'in kopyası) + ön tezgâh. Setler `Kat2.Ocak` ile ocak başına çizilir. */
-export function Kat2Mutfak({ padsDone }: { padsDone: readonly string[] }) {
+export function Kat2Mutfak() {
+  const ocakAlim = useGame((s) => s.kat2.yuk?.ocak ?? 0);
   return (
     <group>
-      <MutfakOdasi level={kat2MutfakSeviyesi(padsDone)} areasOpen={BANT_YERLESIMI} aspiratorsuz adasiz zeminTema={KAT2_ZEMIN} />
+      <MutfakOdasi level={kat2MutfakSeviyesi(ocakAlim)} areasOpen={BANT_YERLESIMI} aspiratorsuz adasiz zeminTema={KAT2_ZEMIN} />
       <OnTezgah />
     </group>
   );

@@ -5259,3 +5259,12 @@ mutfaktan farkı o olsun") — `MutfakOdasi adasiz`. **Zemin:** 5 aday (klasik �
 **koyu kahve + krem** (`ZEMIN_TEMALARI.koyuKahve`, atlas [0,7]+[1,4]; mağazada satılmaz, Kat 1'in satılık "Kahve Dama"sı ayrı kalır).
 Yan düzeltme: `Fayans`ın `Merged`'i temaya göre yeniden kurulur (`key={tema}`) — tema ikinci kez değişince zemin eski kalıyordu.
 Yalnız görsel; ekonomi/tick/rules dokunulmadı.
+
+## D-200 · Kat 2 = Kat 1 mantığı: garson her masaya + ocak/garson yükseltmesi, yarım fiyat (HOG2-½, 2026-11-17)
+Rapor `docs/kat2-ocak-garson-raporu.md` (araç `tools/olcum-kat2-ocak-garson.ts`). Kat 2 bugün 9,86 sa'ti (zincir 4,7 + Sv 5,2).
+İlk paket (garson yalnız tavla) "yükseltme işe yaramıyor" çıktı → kullanıcı: *"birinci katta bu mantığı kurmadık mı?"* Seçilen:
+- Garson **her masaya** kahve götürür (`garson.herMasa`; D-186'nın "yalnız tavla"sı kalktı).
+- **Ocak 5 kademe** (demleme ×1,35 + kuyruk +1, Kat 1 eğrisi) ocağın yanındaki noktadan; mangal/mutfak görseli bu
+  seviyeden türer (D-199'un zincirden türemesi kalktı). **Garson** hız 3→4 · tepsi 2→3→4 · **2. garson** panelden.
+- Fiyat: her alım onu açan zincir pad'inin yarısı (toplam 27.950). Final: Kat 2 9,55 sa · kahve servisi %37 → %71.
+- Kayıt additive `kat2.yuk`. Yeni metinler (TR+EN) ChatGPT mikrometin turunu bekliyor.

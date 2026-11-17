@@ -199,7 +199,7 @@ import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
 import { GECIS_SN, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo, OCAKLAR } from './kat';
 import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
-import { kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2Tick, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
+import { kat2EtkinAyar, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2Tick, kat2YukSiradaki, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
 import { kat2Gorevleri, kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
 import { bosKasaOlcum, kasaSiniriOlcumden, type KasaOlcum } from './kasa';
 import { t } from '../i18n';
@@ -298,7 +298,7 @@ export function kayitVerisi(s: GameState): SaveData {
     levelUp: s.levelUp && s.levelUp.amount > 0 ? { ...s.levelUp } : null,
     // Geçiş sürerken kayıt HEDEF katı yazar (perde inerken kapanırsa oyuncu vardığı katta açılır).
     kat: s.katGecis?.hedef ?? s.kat,
-    kat2: { ...s.kat2, padsDone: [...s.kat2.padsDone], masaSv: { ...s.kat2.masaSv } },
+    kat2: { ...s.kat2, padsDone: [...s.kat2.padsDone], masaSv: { ...s.kat2.masaSv }, yuk: { ...s.kat2.yuk } },
     lastSaved: Date.now(),
   };
 }
@@ -616,6 +616,8 @@ export interface GameState {
   buyWaiterSpeed: () => boolean;
   /** Bulaşıkçı hız kademesi satın al (v29, Bulaşıkçı sekmesi): tüm salonlara ortak. */
   buyDishSpeed: () => boolean;
+  /** D-200: Kat 2 garson yükseltmesi (panelden; Kat 1 `buyWaiterTray` deseni). Açık değilse/para yetmezse false. */
+  kat2GarsonYukAl: (tur: 'garsonHiz' | 'garsonTepsi' | 'garsonSayi') => boolean;
   /** Karakter paneli ilk-sefer spotlight'ını kapat (butona dokununca; persist — bir daha çıkmaz). */
   markCharPanelSeen: () => void;
   /**
@@ -1030,7 +1032,7 @@ export const useGame = create<GameState>((set, get) => ({
       kat: ilkKat,
       kat2: kat2Kayit,
       katGecis: null,
-      kat2Dunya: yeniKat2Dunya(kat2Kayit.padsDone, KAT2_AYAR),
+      kat2Dunya: yeniKat2Dunya(kat2Kayit.padsDone, kat2EtkinAyar(KAT2_AYAR, kat2Kayit.yuk)),
       kat1Akis: 0,
       kasaOlcum,
     });
@@ -1087,9 +1089,10 @@ export const useGame = create<GameState>((set, get) => ({
           miknatis: attractRadiusFor(s.charUpgrades.magnet),
           masaSv: kat2.masaSv,
           svCanli: kat2SvCanli(kat2, C.kat2Gorevler, KAT2_AYAR),
+          yuk: kat2.yuk,
         },
         dt,
-        KAT2_AYAR,
+        kat2EtkinAyar(KAT2_AYAR, kat2.yuk),
       );
       kat2Dunya = r.dunya;
       k2olay = { ...r.olay, kazanc: r.kazanc };
@@ -1101,6 +1104,11 @@ export const useGame = create<GameState>((set, get) => ({
       if (r.padsDone !== kat2.padsDone) kat2 = { ...kat2, padsDone: r.padsDone };
       // S3: dolan Sv tetiği → masa bir seviye (parası `harcama`yla yukarıda düştü; pad tamamlanma deseni).
       if (r.olay.svAtlayan.length) kat2 = { ...kat2, masaSv: kat2SvAtla(kat2.masaSv, r.olay.svAtlayan) };
+      // D-200: dolan ocak yükseltmesi → mutfak bir seviye (Kat 1 servis yükseltmesi deseni).
+      if (r.olay.ocakYuk) {
+        kat2 = { ...kat2, yuk: { ...kat2.yuk, ocak: (kat2.yuk?.ocak ?? 0) + 1 } };
+        xp += C.xp.perUpgrade;
+      }
     } else if (kat2.acik && kat2Etkin() && kat2.padsDone.length > 0) {
       // D-185: oyuncu Kat 1'deyken Kat 2 de işler — masalar oynar, yığınlar masanın önünde bekler.
       // Oyuncu Kat 2'den UZAKTA (pad dolmaz, servis olmaz, para toplanmaz); cüzdan 0 verilir ve
@@ -1110,7 +1118,7 @@ export const useGame = create<GameState>((set, get) => ({
         { x: KAT2_DISI[0], z: KAT2_DISI[1], durdu: true, cuzdan: 0, padsDone: kat2.padsDone,
           tepsiKap: trayCapacityFor(s.charUpgrades.tray), miknatis: attractRadiusFor(s.charUpgrades.magnet), masaSv: kat2.masaSv },
         dt,
-        KAT2_AYAR,
+        kat2EtkinAyar(KAT2_AYAR, kat2.yuk),
       );
       kat2Dunya = r.dunya;
       k2olay = { ...r.olay, kazanc: 0 };
@@ -1147,7 +1155,7 @@ export const useGame = create<GameState>((set, get) => ({
           padFills = kalan;
           activeSpot = null;
           kat2 = kat2Hizali(kat2HazirEkle({ ...kat2, acik: true }, KAT2_HAZIR));
-          kat2Dunya = yeniKat2Dunya(kat2.padsDone, KAT2_AYAR);
+          kat2Dunya = yeniKat2Dunya(kat2.padsDone, kat2EtkinAyar(KAT2_AYAR, kat2.yuk));
         } else {
           padFills = { ...padFills, [MERDIVEN_PAD]: fill };
           activeSpot = { kind: 'pad', label: etiket, fill, cost: m.cost };
@@ -1641,6 +1649,19 @@ export const useGame = create<GameState>((set, get) => ({
     return true;
   },
 
+  kat2GarsonYukAl: (tur) => {
+    const s = get();
+    const n = kat2YukSiradaki(KAT2_AYAR, s.kat2.padsDone, s.kat2.yuk, tur);
+    if (!n?.acik || s.wallet.lt(n.fiyat)) return false;
+    set({
+      wallet: s.wallet.sub(n.fiyat),
+      kat2: { ...s.kat2, yuk: { ...s.kat2.yuk, [tur]: (s.kat2.yuk?.[tur] ?? 0) + 1 } },
+      xp: s.xp + C.xp.perUpgrade,
+    });
+    get().saveNow();
+    return true;
+  },
+
   // Bulaşıkçı leğen kademesi satın al (v28 — Bulaşıkçı sekmesi; buyWaiterTray deseni).
   buyDishCarry: () => {
     const s = get();
@@ -1784,7 +1805,7 @@ export const useGame = create<GameState>((set, get) => ({
   kat2Ac: () => {
     set((s) => {
       const kat2 = kat2Hizali(kat2HazirEkle({ ...s.kat2, acik: true }, KAT2_HAZIR));
-      return { kat2, kat2Dunya: yeniKat2Dunya(kat2.padsDone, KAT2_AYAR) };
+      return { kat2, kat2Dunya: yeniKat2Dunya(kat2.padsDone, kat2EtkinAyar(KAT2_AYAR, kat2.yuk)) };
     });
     get().saveNow();
   },

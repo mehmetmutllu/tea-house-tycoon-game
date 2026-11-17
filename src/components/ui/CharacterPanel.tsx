@@ -18,6 +18,7 @@ import {
   waiterSpeedNextCost,
   dishSpeedFor,
   dishSpeedNextCost,
+  economyConfig,
   type CharStat,
 } from '../../config/economy.config';
 import { CupTray, tepsiKaymasi, tepsiTekEl } from '../three/Player';
@@ -27,6 +28,8 @@ import { FixedCam, SalonLights, FloorPatch, WallBack } from './SalonSlice';
 import { PREVIEW_GL } from '../../config/palette';
 import { CoinIcon, TrayIcon, BasinIcon, MagnetIcon, BootIcon, ToIcon } from './icons';
 import { Sheet } from './Sheet';
+import { KAT2_GARSON_PAD } from '../../game/kat';
+import { kat2EtkinAyar, kat2YukSiradaki, type Kat2Ayar } from '../../game/kat2Dongu';
 import { t } from '../../i18n';
 
 /**
@@ -113,7 +116,7 @@ const STAT_ROWS: { stat: CharStat; name: string; unit: string; icon: React.React
   { stat: 'speed', name: t('Hareket Hızı'), unit: t('hız'), icon: <BootIcon size={42} /> },
 ];
 
-export type Tab = 'player' | 'waiter' | 'dish';
+export type Tab = 'player' | 'waiter' | 'dish' | 'k2garson';
 
 // Garson sekmesi içeriği: tepsi yükseltme satırı. Sekme yalnız garson tutulunca ÇİZİLİR
 // (turu-5 m.7: kilitli sekme hiç görünmez), o yüzden burada kilit dalı yok.
@@ -202,6 +205,67 @@ function WaiterTab() {
         )}
       </div>
       <div className="char-note">{t('Garsonların ortak tepsisi ve hızı — hepsi tek havuzdan, her masaya.')}</div>
+    </>
+  );
+}
+
+const K2 = economyConfig.kat2 as Kat2Ayar;
+type K2Tur = 'garsonTepsi' | 'garsonHiz' | 'garsonSayi';
+
+/** Kilitli alımın ipucu: garson alımlarını tavla masaları açar (config `kat2.yukseltme`) → "Tavla köşesinde N masa aç". */
+const kilitIpucu = (acan: string): string => t('Tavla köşesinde {1} masa aç', acan.replace('k2tavla', ''));
+
+/**
+ * D-200: KAT 2 GARSON sekmesi (Kat 1 `WaiterTab` deseni; Kat 2'deyken ve Kat 2 garsonu tutulmuşken çizilir).
+ * Garsonlar Kat 1'deki gibi her masaya kahve götürür. Satırlar: tepsi · hız · 2. garson. Alım açılmadıysa satır
+ * kilit ipucunu gösterir (açan tavla masası).
+ */
+function Kat2GarsonTab() {
+  const cash = useGame((s) => s.wallet.toNumber());
+  const padsDone = useGame((s) => s.kat2.padsDone);
+  const yuk = useGame((s) => s.kat2.yuk);
+  const al = useGame((s) => s.kat2GarsonYukAl);
+  const g = kat2EtkinAyar(K2, yuk).garson!;
+  const satir = (tur: K2Tur, icon: React.ReactNode, ad: string, simdi: string, sonra: string | null, id: string) => {
+    const n = kat2YukSiradaki(K2, padsDone, yuk, tur);
+    const cost = n?.acik ? n.fiyat : null;
+    return (
+      <div className="char-stat" key={tur}>
+        <span className="char-stat-icon">{icon}</span>
+        <span className="char-stat-info">
+          <span className="char-stat-name">{ad}</span>
+          <span className="char-stat-val" data-testid={`${id}-val`}>
+            {n && sonra != null ? (
+              <>
+                {simdi} <i><ToIcon /> {sonra}</i>
+              </>
+            ) : (
+              simdi
+            )}
+          </span>
+          <Eksik cost={cost} cash={cash} />
+        </span>
+        {n == null ? (
+          <span className="char-max" data-testid={`${id}-buy`}>{t('Son seviye')}</span>
+        ) : !n.acik ? (
+          <span className="char-max" data-testid={`${id}-buy`}>{kilitIpucu(n.acan)}</span>
+        ) : (
+          <button className="char-buy" data-testid={`${id}-buy`} disabled={cash < n.fiyat} onClick={() => al(tur)}>
+            <CoinIcon size={16} />
+            {fmt(n.fiyat)}
+          </button>
+        )}
+      </div>
+    );
+  };
+  const hizSonra = K2.yukseltme?.garsonHiz.deger[yuk?.garsonHiz ?? 0];
+  const sayi0 = g.sayi ?? 1;
+  return (
+    <>
+      {satir('garsonTepsi', <TrayIcon size={42} food={false} />, t('Tepsi'), `${g.tepsi} ${t('ürün')}`, `${g.tepsi + 1} ${t('ürün')}`, 'k2garson-tepsi')}
+      {satir('garsonHiz', <BootIcon size={42} />, t('Hız'), `${sayi(g.hiz)} ${t('hız')}`, hizSonra != null ? `${sayi(hizSonra)} ${t('hız')}` : null, 'k2garson-hiz')}
+      {satir('garsonSayi', <TrayIcon size={42} />, t('Garson'), `${sayi0}`, `${sayi0 + 1}`, 'k2garson-sayi')}
+      <div className="char-note">{t('Kat 2 garsonları her masaya kahve götürür.')}</div>
     </>
   );
 }
@@ -312,22 +376,31 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
   const cash = wallet.toNumber();
   const cap = trayCapacityFor(charUpgrades.tray);
   const lvl = charLevel(charUpgrades);
-  const waiterHired = padsDone.includes('waiter');
+  // D-200: Kat 2'deyken garson sekmesi Kat 2 garsonunu gösterir (Kat 1 garson/bulaşıkçı sekmeleri Kat 1'de).
+  const kat2de = useGame((s) => s.kat === 2);
+  const k2GarsonVar = useGame((s) => s.kat2.padsDone.includes(KAT2_GARSON_PAD));
+  const k2Yuk = useGame((s) => s.kat2.yuk);
+  const waiterHired = !kat2de && padsDone.includes('waiter');
   const dishHired =
-    padsDone.includes('dishwasher') || padsDone.includes('z2dishwasher') || padsDone.includes('z3dishwasher');
+    !kat2de && (padsDone.includes('dishwasher') || padsDone.includes('z2dishwasher') || padsDone.includes('z3dishwasher'));
+  const k2Garson = kat2de && k2GarsonVar;
   // turu-5 m.7: tutulmamış karakterin sekmesi HİÇ çizilmez (kilitli mesaj yerine).
   // İstenen sekme tutulmamış karakterinse (bozuk kayıt/erken görev) Oyuncu'ya düşer.
+  const istenen: Tab = kat2de && secili === 'waiter' ? 'k2garson' : secili;
   const tab: Tab =
-    (secili === 'waiter' && !waiterHired) || (secili === 'dish' && !dishHired) ? 'player' : secili;
+    (istenen === 'waiter' && !waiterHired) || (istenen === 'dish' && !dishHired) || (istenen === 'k2garson' && !k2Garson)
+      ? 'player'
+      : istenen;
   const tabs: { id: Tab; label: string }[] = [
     { id: 'player', label: t('Çaycı') },
     ...(waiterHired ? [{ id: 'waiter' as Tab, label: t('Garson') }] : []),
     ...(dishHired ? [{ id: 'dish' as Tab, label: t('Bulaşıkçı') }] : []),
+    ...(k2Garson ? [{ id: 'k2garson' as Tab, label: t('Garson') }] : []),
   ];
 
   return (
     <Sheet
-      title={tab === 'player' ? t('Çaycı') : tab === 'waiter' ? t('Garson') : t('Bulaşıkçı')}
+      title={tab === 'player' ? t('Çaycı') : tab === 'waiter' || tab === 'k2garson' ? t('Garson') : t('Bulaşıkçı')}
       testid="char-panel"
       onClose={onClose}
       navda
@@ -385,6 +458,9 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
             {tab === 'player' && <Onizleme kind="owner" cap={cap} kiyafet={kiyafet} tepsi={tepsi} />}
             {tab === 'waiter' && waiterHired && (
               <Onizleme kind="waiter" cap={waiterTrayCapacityFor(waiterUpgrades.tray)} />
+            )}
+            {tab === 'k2garson' && k2Garson && (
+              <Onizleme kind="waiter" cap={kat2EtkinAyar(K2, k2Yuk).garson?.tepsi ?? 2} />
             )}
             {tab === 'dish' && dishHired && (
               <Onizleme
@@ -446,6 +522,7 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
 
         {tab === 'waiter' && <WaiterTab />}
         {tab === 'dish' && <DishTab />}
+        {tab === 'k2garson' && <Kat2GarsonTab />}
       </div>
     </Sheet>
   );

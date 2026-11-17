@@ -22,6 +22,8 @@ import {
   KAT2_LAVABO_PAD,
   KAT2_LAVABO_YER,
   KAT2_MASALAR,
+  KAT2_OCAK_YUK_ID,
+  KAT2_OCAK_YUK_YER,
   KAT2_SALON_PAD,
   KAT2_SALON_PAD_YER,
   KAT2_SV_MAX,
@@ -36,7 +38,7 @@ import {
   type MasaTuru,
 } from './kat';
 import { LAYOUT } from './layout';
-import { inFrame, masaCercevesi, masaEtiketi, padCercevesi } from './markerFrame';
+import { inFrame, masaCercevesi, masaEtiketi, padCercevesi, servisCercevesi } from './markerFrame';
 import { t } from '../i18n';
 
 /** Denge sayıları (K2-3: varyant; seçilen kol `economy.config.kat2`ye yazılır). */
@@ -98,6 +100,73 @@ export interface Kat2Ayar {
   kahveAninda?: boolean;
   /** D-198 (G5): masa AÇILINCA ilk grubun gelişi (sn). YOKSA `gelisAralik` (bugünkü). */
   ilkGelis?: number;
+  /**
+   * D-200: OCAK + GARSON yükseltmeleri (Kat 1 mantığı). YOKSA yükseltme yok: tetik çizilmez, ayar değişmez.
+   * Etkisi `kat2EtkinAyar` ile ayara işlenir (tick o ayarla çağrılır). Ölçüm `tools/olcum-kat2-ocak-garson.ts`.
+   */
+  yukseltme?: Kat2YukAyar;
+}
+
+/**
+ * D-200: Kat 2 yükseltme hatları. Her hatta `fiyat[k]` = (k+1). alımın fiyatı, `acan[k]` = o alımın göründüğü zincir pad'i.
+ */
+export interface Kat2YukAyar {
+  /** Ocak: her alım iki ocağın demlemesini `demlemeCarpan` kat hızlandırır, hazır kuyruğa `kuyrukArti` ekler. */
+  ocak: { acan: readonly string[]; fiyat: readonly number[]; demlemeCarpan: number; kuyrukArti: number };
+  /** Garson hızı: k. alımdan sonra hız `deger[k-1]`. */
+  garsonHiz: { acan: readonly string[]; fiyat: readonly number[]; deger: readonly number[] };
+  /** Garson tepsisi: her alım +1 fincan. */
+  garsonTepsi: { acan: readonly string[]; fiyat: readonly number[] };
+  /** Ek garson: her alım +1 garson. */
+  garsonSayi: { acan: readonly string[]; fiyat: readonly number[] };
+}
+export type Kat2YukTur = keyof Kat2YukAyar;
+export type Kat2YukSeviye = Record<Kat2YukTur, number>;
+export const KAT2_YUK_TURLERI: readonly Kat2YukTur[] = ['ocak', 'garsonHiz', 'garsonTepsi', 'garsonSayi'];
+
+/** Kayıttaki alım sayıları (eksik = 0). */
+export const kat2YukOku = (y?: Partial<Kat2YukSeviye>): Kat2YukSeviye => ({
+  ocak: y?.ocak ?? 0,
+  garsonHiz: y?.garsonHiz ?? 0,
+  garsonTepsi: y?.garsonTepsi ?? 0,
+  garsonSayi: y?.garsonSayi ?? 0,
+});
+
+/** Yükseltmelerin işlendiği ayar. Alım yoksa AYNI nesne döner (kimlik korunur). */
+export function kat2EtkinAyar(a: Kat2Ayar, y?: Partial<Kat2YukSeviye>): Kat2Ayar {
+  const u = a.yukseltme;
+  if (!u) return a;
+  const ham = kat2YukOku(y);
+  // Tavan hattın uzunluğu (bozuk/eski kayıt fazlasını taşımasın).
+  const s = Object.fromEntries(KAT2_YUK_TURLERI.map((k) => [k, Math.min(Math.max(0, ham[k]), u[k].fiyat.length)])) as Kat2YukSeviye;
+  if (KAT2_YUK_TURLERI.every((k) => s[k] === 0)) return a;
+  return {
+    ...a,
+    demleme: a.demleme / u.ocak.demlemeCarpan ** s.ocak,
+    ocakKuyruk: a.ocakKuyruk + u.ocak.kuyrukArti * s.ocak,
+    garson: a.garson && {
+      ...a.garson,
+      hiz: s.garsonHiz > 0 ? u.garsonHiz.deger[s.garsonHiz - 1] : a.garson.hiz,
+      tepsi: a.garson.tepsi + s.garsonTepsi,
+      sayi: (a.garson.sayi ?? 1) + s.garsonSayi,
+    },
+  };
+}
+
+/** Bir hattın sıradaki alımı: fiyat + açık mı (açan pad bitti mi). Hat bittiyse ya da yükseltme yoksa null. */
+export function kat2YukSiradaki(a: Kat2Ayar, padsDone: readonly string[], y: Partial<Kat2YukSeviye> | undefined, tur: Kat2YukTur): { fiyat: number; acik: boolean; acan: string } | null {
+  const h = a.yukseltme?.[tur];
+  if (!h) return null;
+  const k = kat2YukOku(y)[tur];
+  if (k >= h.fiyat.length) return null;
+  return { fiyat: h.fiyat[k], acan: h.acan[k], acik: padsDone.includes(h.acan[k]) };
+}
+
+/** Ocak yükseltme tetiği (en fazla bir): açık ve tavanda değilse. Çerçeve `servisCercevesi` (Kat 1 servis noktası). */
+export function kat2OcakTetik(a: Kat2Ayar, padsDone: readonly string[], y: Partial<Kat2YukSeviye> | undefined): { id: string; fiyat: number; x: number; z: number } | null {
+  const s = kat2YukSiradaki(a, padsDone, y, 'ocak');
+  if (!s?.acik) return null;
+  return { id: KAT2_OCAK_YUK_ID, fiyat: s.fiyat, x: KAT2_OCAK_YUK_YER[0], z: KAT2_OCAK_YUK_YER[1] };
 }
 
 /**
@@ -227,6 +296,8 @@ export interface Kat2Girdi {
   masaSv?: Readonly<Record<string, number>>;
   /** S3 / D-142 Kat 1 karşılığı: Sv noktası şu an canlı mı (görev hattı Sv görevinde ya da hat bitti). Yok = canlı. */
   svCanli?: boolean;
+  /** D-200: yükseltme alım sayıları (ocak tetiği için; etkisi çağıranın `kat2EtkinAyar`ıyla). */
+  yuk?: Partial<Kat2YukSeviye>;
 }
 
 export interface Kat2Cikti {
@@ -259,6 +330,8 @@ export interface Kat2Cikti {
      * `kat2.masaSv[id]`yi bir artırır (pad tamamlanma deseni). Sv'nin parası `harcama`ya girer.
      */
     svAtlayan: string[];
+    /** D-200: ocak yükseltme tetiği bu adımda doldu (çağıran `kat2.yuk.ocak`ı artırır; parası `harcama`da). */
+    ocakYuk: boolean;
   };
 }
 
@@ -615,6 +688,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     tavlaKacan: 0,
     lavabo: 0,
     svAtlayan: [],
+    ocakYuk: false,
   };
   let kazanc = 0;
   let harcama = 0;
@@ -672,6 +746,25 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
         d.padFill[tt.id] = fill;
       }
       break;
+    }
+  }
+
+  // ---- OCAK YÜKSELTMESİ (D-200): Kat 1 servis noktası deseni — çerçevede durunca cüzdandan dolar.
+  const oy = kat2OcakTetik(ayar, padsDone, g.yuk);
+  if (oy && inFrame(g.x, g.z, [oy.x, 0, oy.z], servisCercevesi())) {
+    let fill = d.padFill[oy.id] ?? 0;
+    if (g.durdu) {
+      const amt = Math.min((oy.fiyat / SV_DOLUM_SN) * dt, g.cuzdan - harcama, oy.fiyat - fill);
+      if (amt > 0) {
+        fill += amt;
+        harcama += amt;
+      }
+    }
+    if (fill >= oy.fiyat - 1e-9) {
+      delete d.padFill[oy.id];
+      olay.ocakYuk = true;
+    } else {
+      d.padFill[oy.id] = fill;
     }
   }
 
