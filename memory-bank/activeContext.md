@@ -32,27 +32,17 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
-## ⏭️ SIRADAKİ ADIM (yeni chat) — TUR: "KAT 2 İŞLEYİŞİ = KAT 1" (kullanıcı 2026-11-17, kesin ilke)
-**Kullanıcının cümlesi:** "Birinci kat ve ikinci kat işleyiş olarak aynı olsun. Sadece içerik farklı (altta çay masası,
-üstte okey masası). Neden alışkanlığı değiştiriyoruz?" → Kat 2'de Kat 1'den farklı İŞLEYİŞ kalmayacak.
-Yapılacaklar (ÖLÇ → karar paketi → uygula, D-084; `tools/olcum-kat2-ocak-garson.ts` temel alınır):
-  a. **İlk garson ERKEN, pad ile** (Kat 1: 3. adım, 130 coin). Bugün Kat 2'de 14. adım (~2,5 sa garsonsuz).
-  b. **2. ve 3. garson zincirde PAD** (Kat 1 `waiter2`/`waiter3` gibi). D-200'ün panelden 2. garson alımı (`garsonSayi`) KALKAR.
-     Garson hız/tepsi panelde KALIR (Kat 1'de de panel).
-  c. **Lavabo seviye yükseltmesi** Kat 1 gibi (Kat 2 lavabosu bugün seviyesiz L1).
-  d. **Bulaşık döngüsü Kat 2'de de** (kullanıcı "Evet, Kat 1 gibi"): kirli fincan · yıkama yeri · bulaşıkçı PAD'i;
-     garson boşken kirli taşır (Kat 1 `idleDishCarry`). Kat 1'de bulaşıkçı VAR (`dishwasher` pad 900, 2. salon;
-     G-69 yalnız tezgâh görünüşünü kaldırmıştı) — kullanıcı "yok" sanıyordu, düzeltildi.
-  e. Ocak yükseltmesi 4. okeyden sonra KALIR (kullanıcı "öyle kalsın").
-  Ölçülecek: garson pad yerleri (zincirde nerede) × fiyat; 3 garson; bulaşık açık/kapalı; Kat 2 süresi + en uzun bekleyiş.
-  Karar paketinde sade tablo (memory feedback_plain_decision_package). Yer/yerleşim için görsel kare göster.
-0. **ÖNCEKİ OTURUM (D-200):** garson her masaya + ocak 5 / garson hız·tepsi yükseltmesi (yarım fiyat), mangal ocak
-   seviyesiyle; Kat 2 9,55 sa, kahve servisi %71 · `docs/kat2-ocak-garson-raporu.md` · kareler `node tools/_kat2-yuk-kare.mjs <klasör>`.
-   Açık: 2 yeni metin ChatGPT turu bekliyor · Kat 2 görev hattına ocak/garson görevi yok · yeni deneme APK alınmadı.
-1. Kullanıcı deneme APK ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i bitir"). Geri bildirim →
-   `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı) → tur planı. Kat 2'de kalan opsiyoneller: balkon (kullanıcı emin
-   değil) · Kat 2 temaları (kullanıcı: Kat 1 ile aynı olabilir) · Kat 1 merdiven sarı-siyah bant (kalsın) · Usta "0/7" (fark etmez).
-2. **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (kullanıcı 2026-11-13). Kullanıcı derse 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım (ASC) · Play listesi + zip arkadaşa · "Yenilikler".
+## 🔧 TUR (2026-11-17, açık) — "KAT 2 İŞLEYİŞİ = KAT 1" (kullanıcı: "neden alışkanlığı değiştiriyoruz?")
+- **SORU:** Kat 2'de Kat 1'den farklı işleyiş kalmasın — a) ilk garson erken, pad ile · b) 2-3. garson zincirde pad
+  (panelden 2. garson `garsonSayi` kalkar; hız/tepsi panelde kalır) · c) lavabo seviyesi · d) bulaşık döngüsü + bulaşıkçı
+  pad'i + boştaki garson kirli taşır · e) ocak yükseltmesi 4. okeyden sonra kalır.
+- **ÖLÇÜLECEK KOLLAR** (`tools/olcum-kat2-isleyis.ts`): garson pad yeri × fiyat (Kat 1 karşılığı / erken / geç · ×1/×½) ·
+  lavabo seviye fiyatı (D-200 kuralı ½ / Kat 1 oranı) · bulaşık yok / var (bulaşıkçı taban / Kat 1 son kademe).
+  Ölçü: Kat 2 süresi · en uzun bekleyiş · servis % · ilk garsona kadar dk.
+- **SAYILAR:** (boş — rapor `docs/kat2-isleyis-raporu.md`) · **KARAR:** (boş) · **UYGULAMA:** (boş) · **BEKÇİ:** (boş)
+- Önceki tur D-200: `docs/kat2-ocak-garson-raporu.md` (Kat 2 9,55 sa). Açık: 2 metin ChatGPT turu · görev hattında ocak/garson
+  görevi yok · yeni deneme APK alınmadı. Kullanıcı deneme APK ile oynuyor (D-197) → geri bildirim `docs/geribildirim-…`.
+- **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (2026-11-13). 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım · Play zip · "Yenilikler".
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman

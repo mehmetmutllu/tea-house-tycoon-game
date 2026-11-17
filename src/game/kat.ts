@@ -471,15 +471,35 @@ export const KAT2_OCAK_YUK_YER: readonly [number, number] = [-5.2, BAND.front + 
 export const KAT2_LAVABO_PAD = 'k2lavabo';
 export const KAT2_LAVABO_YER: readonly [number, number] = [13.4, BAND.front + 1.2];
 
-/**
- * Kat 2 garsonunun pad'i (D-186: tavla köşesi açılınca gelen ilk pad) ve garsonun EVİ (boştayken
- * döndüğü yer). Köşenin İÇİNDE, eski duvar hattının dibinde, iç tavla sütununun (x 6,5) solu: pad
- * çerçevesi (±0,89 × ±0,85) x [3,11; 4,89] · z [0,75; 2,45] — masanın ayak izine (x ≥ 5,3) değmez.
- * Neden salon pad'inin yeri (9,75; −1,4) değil: zincirde `k2salon3`ün hemen ardından geliyor, aynı
- * yerde çıksaydı salonu yeni açan oyuncu durduğu yerde farkında olmadan garsonu doldurmaya başlardı.
- */
+/** Kat 2'nin 1. garson pad'i ve garsonun EVİ (boştayken döndüğü yer) — aşağıdaki `KAT2_GARSON_PADLER`. */
 export const KAT2_GARSON_PAD = 'k2garson';
-export const KAT2_GARSON_YER: readonly [number, number] = [4, 1.6];
+export const KAT2_GARSON_YER: readonly [number, number] = [-2.2, -6];
+
+/**
+ * "KAT 2 İŞLEYİŞİ = KAT 1" turu (kullanıcı 2026-11-17): garsonlar Kat 1 gibi zincirde PAD ile gelir (Kat 1
+ * `waiter` / `waiter2` / `waiter3`). Her pad bir garson; garson pad'inin yerinde (evi) bekler. 2. ve 3. pad
+ * MERDİVEN SALONUNDA (alan 0 — kata çıkıştan erişilir; ilk garson erken gelir), kova ağzının önünde yan yana:
+ * çerçeve (±0,89 × ±0,85) okey ayak izine (x ≥ |5,25|, z ≥ −4,75) ve kovanın ağzına (z ≤ −9,8) değmez.
+ * (Eski yer tavla köşesinin içi [4; 1,6] idi — garson zincirin 14. adımındaydı.)
+ */
+export const KAT2_GARSON_PADLER: readonly string[] = [KAT2_GARSON_PAD, 'k2garson2', 'k2garson3'];
+export const KAT2_GARSON_YERLERI: Readonly<Record<string, readonly [number, number]>> = {
+  [KAT2_GARSON_PAD]: KAT2_GARSON_YER,
+  k2garson2: [0, -6],
+  k2garson3: [2.2, -6],
+};
+
+/**
+ * BULAŞIK (Kat 1 döngüsü, aynı tur): YIKAMA YERİ ön tezgâhın üstünde iki ocağın ORTASI (x −10,3): alma
+ * noktaları (−7,4 / −13,2, pay 0,9) yıkama yarıçapına (Kat 1 `washRadius` 1,6) girmez — kahve alan
+ * oyuncu farkında olmadan yıkamaz. BULAŞIKÇI pad'i (Kat 1 `dishwasher`) yıkama yerinin önünde, evi orası.
+ */
+export const KAT2_YIKAMA_YER: readonly [number, number] = [-10.3, BAND.front + 0.6];
+export const KAT2_BULASIKCI_PAD = 'k2bulasikci';
+export const KAT2_BULASIKCI_YER: readonly [number, number] = [-10.3, BAND.front + 2.2];
+/** LAVABO SEVİYESİ noktası (Kat 1 lavabo yükseltmesi karşılığı) — lavabo pad'inin solunda, çerçeveler değmez. */
+export const KAT2_LAVABO_YUK_ID = 'k2lavaboYuk';
+export const KAT2_LAVABO_YUK_YER: readonly [number, number] = [10.8, BAND.front + 1.2];
 
 // ---- YOL BULMA (Kat 2 garsonu + ölçüm botu). Kat 1'in `nav.ts` ızgarası, Kat 2'nin geometrisiyle:
 // katılar = kuyu + bölmeler (geçitler yalnız iki yanı açıksa) + açık masa/ocak gövdeleri, oyuncu

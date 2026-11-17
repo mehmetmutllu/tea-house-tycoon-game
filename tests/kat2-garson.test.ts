@@ -11,9 +11,15 @@ import { economyConfig as C } from '../src/config/economy.config';
 import { hitsSolid, LAYOUT } from '../src/game/layout';
 import {
   KAT2_BOLMELER,
+  KAT2_BULASIKCI_PAD,
   KAT2_GARSON_PAD,
+  KAT2_GARSON_PADLER,
   KAT2_GARSON_YER,
+  KAT2_LAVABO_PAD,
+  KAT2_LAVABO_YUK_YER,
   KAT2_MASALAR,
+  KAT2_OCAK_YUK_YER,
+  KAT2_YIKAMA_YER,
   KUYU,
   OCAK,
   OCAKLAR,
@@ -39,7 +45,7 @@ import {
   type Kat2Dunya,
   type Kat2Girdi,
 } from '../src/game/kat2Dongu';
-import { inFrame, padCercevesi } from '../src/game/markerFrame';
+import { padCercevesi, servisCercevesi } from '../src/game/markerFrame';
 
 const PR = LAYOUT.playerRadius;
 const A: Kat2Ayar = D184_AYAR;
@@ -85,11 +91,11 @@ describe('config — D-186 tavla T120U + zincir', () => {
     expect(kat2EksikSayi(garsonsuz)).toBe('k2garson: garson sayıları (Kat2Ayar.garson) yok');
   });
 
-  it('2. ocak salon beklemez (bantta); garson tavla köşesinden önce zincire giremez', () => {
+  it('2. ocak, garson ve bulaşıkçı pad\'leri salon beklemez (bant / merdiven salonu: ilk garson erken gelebilir)', () => {
     const p = (id: string) => ({ id, cost: 1, fillRate: 1 });
     expect(kat2YapiHatasi({ ...AG, padler: [p(OCAK.id), p(OCAK2.id)] })).toBeNull();
-    expect(kat2YapiHatasi({ ...AG, padler: [p('k2salon2'), p(KAT2_GARSON_PAD)] })).toMatch(/salonu/);
-    expect(kat2YapiHatasi({ ...AG, padler: [p('k2salon2'), p(OCAK2.id), p('k2salon3'), p(KAT2_GARSON_PAD)] })).toBeNull();
+    expect(kat2YapiHatasi({ ...AG, padler: [...KAT2_GARSON_PADLER.map(p), p(KAT2_BULASIKCI_PAD)] })).toBeNull();
+    expect(kat2YapiHatasi({ ...AG, padler: [p('k2tavla1')] })).toMatch(/salonu/);
   });
 
   it('pad yerleri + etiketler: 2. ocak "Cezve Ocağı" ocağın önünde, garson köşenin içinde', () => {
@@ -121,18 +127,32 @@ describe('yerleşim — 2. ocak ve garson pad\'i hiçbir şeyle çakışmaz', ()
     expect(z).toBeGreaterThanOrEqual(OCAK.z + 0.5);
   });
 
-  it('garson pad\'i tavla köşesinde; çerçevesi masa ayak izine değmez', () => {
-    const [gx, gz] = KAT2_GARSON_YER;
-    expect(gx).toBeGreaterThan(0);
-    expect(gz).toBeGreaterThan(0);
-    const c = padCercevesi(kat2PadEtiket(KAT2_GARSON_PAD));
-    for (const m of KAT2_MASALAR)
-      expect(Math.abs(m.x - gx) >= c.hw + TAVLA_YARI[0] || Math.abs(m.z - gz) >= c.hh + TAVLA_YARI[1]).toBe(true);
-    expect(gz - c.hh).toBeGreaterThan(0.09);
-    expect(hitsSolid(gx, gz, [...kat2Duvarlar(tum), ...masaKatilari], PR)).toBe(false);
-    // Salon pad'inden ayrı yerde: salonu bitiren oyuncu farkında olmadan garsonu doldurmaz.
-    const [sx, sz] = kat2PadYeri('k2salon3');
-    expect(inFrame(sx, sz, [gx, 0, gz], c)).toBe(false);
+  it('garson + bulaşıkçı pad\'leri merdiven salonunda (alan 0); çerçeveler masaya, kovaya, birbirine değmez', () => {
+    expect(kat2PadYeri(KAT2_GARSON_PAD)).toEqual([...KAT2_GARSON_YER]);
+    const padler = [...KAT2_GARSON_PADLER, KAT2_BULASIKCI_PAD, KAT2_LAVABO_PAD, 'k2salon2', 'k2salon3'];
+    const kutular = [
+      ...padler.map((id) => ({ id, yer: kat2PadYeri(id), c: padCercevesi(kat2PadEtiket(id)) })),
+      { id: 'ocakYuk', yer: [...KAT2_OCAK_YUK_YER] as [number, number], c: servisCercevesi() },
+      { id: 'lavaboYuk', yer: [...KAT2_LAVABO_YUK_YER] as [number, number], c: servisCercevesi() },
+    ];
+    for (const k of kutular) {
+      const [x, z] = k.yer;
+      if (KAT2_GARSON_PADLER.includes(k.id) || k.id === KAT2_BULASIKCI_PAD) {
+        expect(z, k.id).toBeLessThan(0); // merdiven salonu
+        expect(z - k.c.hh, k.id).toBeGreaterThan(KUYU.c[2] + KUYU.h[1]); // kovanın ağzının önünde
+      }
+      for (const m of KAT2_MASALAR) {
+        const [yx, yz] = m.tur === 'tavla' ? TAVLA_YARI : [OKEY_YARI, OKEY_YARI];
+        expect(Math.abs(m.x - x) >= k.c.hw + yx || Math.abs(m.z - z) >= k.c.hh + yz, `${k.id} × ${m.id}`).toBe(true);
+      }
+      for (const o of kutular) {
+        if (o === k) continue;
+        expect(Math.abs(o.yer[0] - x) >= k.c.hw + o.c.hw || Math.abs(o.yer[1] - z) >= k.c.hh + o.c.hh, `${k.id} × ${o.id}`).toBe(true);
+      }
+      expect(hitsSolid(x, z, [KUYU, ...kat2Duvarlar(tum), ...masaKatilari], PR), k.id).toBe(false);
+    }
+    // Yıkama yeri: kahve alma noktasında duran oyuncu yıkama yarıçapına (Kat 1 washRadius) girmez.
+    for (const o of OCAKLAR) expect(Math.hypot(o.al[0] - KAT2_YIKAMA_YER[0], o.al[1] - KAT2_YIKAMA_YER[1])).toBeGreaterThan(C.cups.washRadius + o.erisim);
   });
 });
 
