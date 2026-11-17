@@ -5,7 +5,7 @@ D-198 kasa kaldırma + G5 + D-195 masa Sv'den önceydi.) Kat 1'deki **ocak** ve 
 karşılığı ne getirir?
 
 Araç: `tools/olcum-kat2-ocak-garson.ts` · ham çıktı: `docs/olcum-kat2-ocak-garson.txt` (`OLCUM=tam`, damgalar temiz).
-Mutasyonlar: `OG_MUT=etkisiz` (yükseltme ayara işlenmez → 2 varyant damgası kırıldı) · `OG_MUT=kat1yok`
+Mutasyonlar (ilk koşu): `OG_MUT=etkisiz` (yükseltme ayara işlenmez → 2 varyant damgası kırıldı) · `OG_MUT=kat1yok`
 (Kat 1 parası akmaz → "Kat 1 parası cüzdana aktı" damgası kırıldı). `economy.config.ts` değişmedi.
 
 ## Kollar (Kat 1'den aynen uyarlama)
@@ -60,6 +60,34 @@ neredeyse aynı kalıyor (±%1). 2. garson ocaktan fincan alıyor; okey servisi 
 
 **Bulgu 4 · Her yükseltme kolu Kat 2'yi uzatıyor:** harcanan para, getirdiği paradan fazla. En hafifi **O-½** (+4 dk,
 fiyat ~12.600), en ağırı OG2-1 (+68 dk). Bekleyiş ritmi bütün kollarda aynı: en uzun ~12 dk, medyan ~4,5 dk.
+
+## §Bulgular 2 — Kat 1 mantığı: garson HER masaya (tam koşu, aynı araç)
+
+Kullanıcı (2026-11-17): *"Garson yükseltince daha hızlı olur, elinde daha fazla kahve tutar; ocağı yükseltince kapasite ve
+hız artar; siparişi garsonlar iletir — birinci katta bu mantığı kurmadık mı? İkincisinde niye yok?"* → Kat 2 garsonu
+D-186'dan beri yalnız tavlaya gidiyordu. Kod seçmeli ayar aldı: `Kat2GarsonAyar.herMasa` (verilmezse oyun bugünkü).
+
+| kurulum (plato) | Sv | coin/dk | servis | okey | tavla | garson payı |
+|---|---|---|---|---|---|---|
+| H: garson her masaya | 1 | 822 (+%5) | %50 | %54 | %44 | %28 |
+| H + ocak 6 + garson son kademe | 1 | 905 (+%15) | %74 | %77 | %68 | %37 |
+| H + ocak 6 + garson + 2. garson | 1 | 918 (+%17) | %80 | %78 | %84 | %60 |
+| H: garson her masaya | 5 | 1.745 (+%2) | %47 | %51 | %39 | %30 |
+| H + ocak 6 + garson + 2. garson | 5 | 1.846 (+%8) | %77 | %78 | %76 | %63 |
+
+| kol (ilerleme) | yükseltmelerin toplamı | zincir biter | **Kat 2 biter** | tabana göre | en uzun bekleyiş | servis |
+|---|---|---|---|---|---|---|
+| TABAN (bugün) | — | 4,71 sa | 9,86 sa | — | 12,2 dk | %37 |
+| H yükseltmesiz | — | 4,57 sa | 9,46 sa | −24 dk | 11,9 dk | %46 |
+| HOG-½ ocak 5 + garson 3, yarım | 23.850 | 4,93 sa | 9,71 sa | −9 dk | 10,8 dk | %60 |
+| HOG-1 aynısı, tam fiyat | 47.700 | 5,58 sa | 10,39 sa | +32 dk | 11,0 dk | %58 |
+| **HOG2-½ + 2. garson, yarım** | 27.950 | 4,97 sa | **9,58 sa** | −17 dk | 10,7 dk | **%71** |
+| HOG2-1 aynısı, tam fiyat | 55.900 | 5,70 sa | 10,30 sa | +26 dk | 10,9 dk | %70 |
+
+**Bulgu 5 · Garson her masaya gidince yükseltmeler karşılığını veriyor:** 2 garson + ocak 6 ile kahvelerin %80'i
+servis ediliyor (bugün %45), para Sv1'de +%17. Yarım fiyatta Kat 2 bugünden 17 dk KISA bitiyor; tam fiyatta 26 dk uzun.
+Kahve paranın küçük payı olduğu için (masa ücreti + lavabo baskın, grup kahve gelse de gelmese de aynı süre oturur)
+etki Kat 1'deki kadar büyük değil; Sv5'te +%8.
 
 ## Karar
 

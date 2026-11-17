@@ -80,13 +80,13 @@ interface Seviye {
 const S0: Seviye = { ocak: 1, ghiz: 0, gtepsi: 0, gsayi: 0 };
 const GHIZ = [GARSON0.hiz, 4];
 
-function ayarOf(s: Seviye): Kat2Ayar {
+function ayarOf(s: Seviye, herMasa = false): Kat2Ayar {
   if (MUT === 'etkisiz') return CFG;
   return {
     ...CFG,
     demleme: CFG.demleme / KAT1_OCAK ** (s.ocak - 1),
     ocakKuyruk: CFG.ocakKuyruk + KAT1_KUYRUK * (s.ocak - 1),
-    garson: { ...GARSON0, hiz: GHIZ[s.ghiz], tepsi: GARSON0.tepsi + s.gtepsi, sayi: (GARSON0.sayi ?? 1) + s.gsayi },
+    garson: { ...GARSON0, hiz: GHIZ[s.ghiz], tepsi: GARSON0.tepsi + s.gtepsi, sayi: (GARSON0.sayi ?? 1) + s.gsayi, herMasa },
   };
 }
 
@@ -95,6 +95,7 @@ interface Kol {
   not: string;
   yuk: Yuk[];
   f: number; // fiyat = açan pad × f
+  herMasa?: boolean; // garson Kat 1 gibi her masaya (okey dahil) — kullanıcı 2026-11-17
 }
 const KOLLAR: Kol[] = [
   { ad: 'TABAN', not: 'bugünkü config: yükseltme yok (mangal yalnız görsel büyür, garson 3/2/1)', yuk: [], f: 0 },
@@ -105,6 +106,12 @@ const KOLLAR: Kol[] = [
   { ad: 'OG-1', not: 'ocak 5 + garson 3, fiyat × 1', yuk: [...OCAK_YUK, ...GARSON_YUK], f: 1 },
   { ad: 'OG-½', not: 'ocak 5 + garson 3, fiyat × 0,5', yuk: [...OCAK_YUK, ...GARSON_YUK], f: 0.5 },
   { ad: 'OG2-1', not: 'ocak 5 + garson 3 + 2. garson, fiyat × 1', yuk: [...OCAK_YUK, ...GARSON_YUK, GARSON2_YUK], f: 1 },
+  // KAT 1 MANTIĞI (kullanıcı 2026-11-17): garson HER masaya kahve götürür.
+  { ad: 'H', not: 'garson her masaya (Kat 1 gibi), yükseltme yok', yuk: [], f: 0, herMasa: true },
+  { ad: 'HOG-½', not: 'garson her masaya + ocak 5 + garson 3, fiyat × 0,5', yuk: [...OCAK_YUK, ...GARSON_YUK], f: 0.5, herMasa: true },
+  { ad: 'HOG-1', not: 'garson her masaya + ocak 5 + garson 3, fiyat × 1', yuk: [...OCAK_YUK, ...GARSON_YUK], f: 1, herMasa: true },
+  { ad: 'HOG2-½', not: 'garson her masaya + ocak 5 + garson 3 + 2. garson, fiyat × 0,5', yuk: [...OCAK_YUK, ...GARSON_YUK, GARSON2_YUK], f: 0.5, herMasa: true },
+  { ad: 'HOG2-1', not: 'garson her masaya + ocak 5 + garson 3 + 2. garson, fiyat × 1', yuk: [...OCAK_YUK, ...GARSON_YUK, GARSON2_YUK], f: 1, herMasa: true },
 ];
 
 // ---------------------------------------------------------------------------------------------
@@ -188,11 +195,12 @@ interface Kosu {
   iz: string;
 }
 
-function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye }; iz1?: Float64Array; sure: number; olcBas: number }): Kosu {
+function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye; herMasa?: boolean }; iz1?: Float64Array; sure: number; olcBas: number }): Kosu {
   const plato = o.plato;
   let padsDone: string[] = plato ? [...TUM] : [...HAZIR];
   let sev: Seviye = plato ? { ...plato.sev } : { ...S0 };
-  let ayar = ayarOf(sev);
+  const herMasa = plato ? !!plato.herMasa : !!kol.herMasa;
+  let ayar = ayarOf(sev, herMasa);
   let d: Kat2Dunya = yeniKat2Dunya(padsDone, ayar);
   const masaSv: Record<string, number> = plato ? Object.fromEntries(MASALAR.map((m) => [m.id, plato.sv])) : {};
   const yukKalan = plato ? [] : kol.yuk.map((y) => ({ ...y, fiyat: Math.round(acanFiyat(y.acan) * kol.f) }));
@@ -211,7 +219,7 @@ function kos(kol: Kol, o: { plato?: { sv: number; sev: Seviye }; iz1?: Float64Ar
   let svAlim = 0;
   const yukAlindi = (y: (typeof yukKalan)[number], t: number) => {
     sev = { ...sev, [y.tur]: sev[y.tur] + 1 };
-    ayar = ayarOf(sev);
+    ayar = ayarOf(sev, herMasa);
     yukKalan.splice(yukKalan.indexOf(y), 1);
     alimlar.push({ t, ne: `${y.tur}${y.tur === 'ocak' ? sev.ocak : ''}` });
     if (!yukKalan.length) yukBitis = t;
@@ -361,23 +369,28 @@ damga('Kat 1 izi akıyor', r1Dk > 10, `${r1Dk.toFixed(1)}`);
 
 // ---- §A PLATO
 const MAKS: Seviye = { ocak: 6, ghiz: 1, gtepsi: 2, gsayi: 0 };
-const PLATOLAR: { ad: string; sev: Seviye }[] = [
+const PLATOLAR: { ad: string; sev: Seviye; herMasa?: boolean }[] = [
   { ad: 'taban', sev: S0 },
   { ad: 'ocak6', sev: { ...S0, ocak: 6 } },
   { ad: 'garson', sev: { ...MAKS, ocak: 1 } },
   { ad: 'garson+2', sev: { ...MAKS, ocak: 1, gsayi: 1 } },
   { ad: 'ocak6+garson', sev: MAKS },
   { ad: 'ocak6+garson+2', sev: { ...MAKS, gsayi: 1 } },
+  { ad: 'H taban', sev: S0, herMasa: true },
+  { ad: 'H garson', sev: { ...MAKS, ocak: 1 }, herMasa: true },
+  { ad: 'H ocak6+garson', sev: MAKS, herMasa: true },
+  { ad: 'H garson+2', sev: { ...MAKS, ocak: 1, gsayi: 1 }, herMasa: true },
+  { ad: 'H ocak6+garson+2', sev: { ...MAKS, gsayi: 1 }, herMasa: true },
 ];
 const BOS_KOL: Kol = { ad: 'plato', not: '', yuk: [], f: 0 };
 console.log('');
 console.log('--- §A PLATO — bütün zincir açık; GERÇEK Kat 2 coin/dk (masa + lavabo) · servis % · ocak (kuyruk dolu / boş) · bot boş ---');
-console.log('kurulum         | Sv | coin/dk | servis % | okey % | tavla % | garson payı | ocak dolu % | ocak boş % | bot boş %');
+console.log('kurulum          | Sv | coin/dk | servis % | okey % | tavla % | garson payı | ocak dolu % | ocak boş % | bot boş %');
 const platoIz = new Map<string, string>();
 for (const sv of [1, KAT2_SV_MAX]) {
   for (const p of PLATOLAR) {
-    if (KISA && !['taban', 'ocak6', 'ocak6+garson'].includes(p.ad)) continue;
-    const r = kos({ ...BOS_KOL, ad: `plato ${p.ad} Sv${sv}` }, { plato: { sv, sev: p.sev }, sure: PLATO_ISINMA + PLATO_SURE, olcBas: PLATO_ISINMA });
+    if (KISA && !['taban', 'ocak6', 'ocak6+garson', 'H taban', 'H ocak6+garson'].includes(p.ad)) continue;
+    const r = kos({ ...BOS_KOL, ad: `plato ${p.ad} Sv${sv}` }, { plato: { sv, sev: p.sev, herMasa: p.herMasa }, sure: PLATO_ISINMA + PLATO_SURE, olcBas: PLATO_ISINMA });
     const o = r.olcu;
     const dk = o.sure / 60;
     botDamgasi(`plato ${p.ad} Sv${sv}`, o.yol, dk, 30);
@@ -386,15 +399,16 @@ for (const sv of [1, KAT2_SV_MAX]) {
     const okeyS = o.servis - o.tavlaServis;
     const okeyK = o.kacan - o.tavlaKacan;
     console.log(
-      `${p.ad.padEnd(15)} | ${sv}  | ${f0(o.para / dk).padStart(7)} | ${yuzde(o.servis, o.servis + o.kacan).padStart(8)} | ${yuzde(okeyS, okeyS + okeyK).padStart(6)} | ${yuzde(o.tavlaServis, o.tavlaServis + o.tavlaKacan).padStart(7)} | ${yuzde(o.garson, o.servis).padStart(11)} | ${yuzde(o.ocakDolu, o.ocakSn).padStart(11)} | ${yuzde(o.ocakBos, o.ocakSn).padStart(10)} | ${yuzde(o.botBos, o.sure).padStart(9)}`,
+      `${p.ad.padEnd(16)} | ${sv}  | ${f0(o.para / dk).padStart(7)} | ${yuzde(o.servis, o.servis + o.kacan).padStart(8)} | ${yuzde(okeyS, okeyS + okeyK).padStart(6)} | ${yuzde(o.tavlaServis, o.tavlaServis + o.tavlaKacan).padStart(7)} | ${yuzde(o.garson, o.servis).padStart(11)} | ${yuzde(o.ocakDolu, o.ocakSn).padStart(11)} | ${yuzde(o.ocakBos, o.ocakSn).padStart(10)} | ${yuzde(o.botBos, o.sure).padStart(9)}`,
     );
   }
 }
 varyantDamgasi('plato ocak6 Sv1', platoIz.get('taban/1')!, platoIz.get('ocak6/1')!);
 varyantDamgasi('plato ocak6+garson Sv5', platoIz.get('ocak6/5')!, platoIz.get('ocak6+garson/5')!);
+varyantDamgasi('plato H (garson her masaya) Sv1', platoIz.get('taban/1')!, platoIz.get('H taban/1')!);
 
 // ---- §B İLERLEME
-const ILERLEME = KISA ? KOLLAR.filter((k) => ['TABAN', 'O-1', 'OG-1'].includes(k.ad)) : KOLLAR;
+const ILERLEME = KISA ? KOLLAR.filter((k) => ['TABAN', 'H', 'HOG-1'].includes(k.ad)) : KOLLAR;
 const sonuc: { k: Kol; r: Kosu }[] = [];
 for (const k of ILERLEME) {
   const r = kos(k, { iz1: IZ1, sure: UFUK, olcBas: 0 });
@@ -420,18 +434,18 @@ for (const { k, r } of sonuc) {
   const sonDk = ((Number.isFinite(r.bitis) ? r.bitis : UFUK) - son * 3600) / 60 || 60;
   const sonKat2 = (r.saatlik[son] - r1Dk * sonDk) / sonDk;
   console.log(
-    `${k.ad.padEnd(6)} | ${f0(top).padStart(16)} | ${sa(r.zincirBitis).padStart(12)} | ${sa(r.svBitis).padStart(9)} | ${(k.yuk.length ? sa(r.yukBitis) : '—').padStart(15)} | ${sa(r.bitis).padStart(11)} | ${f1(Math.max(...bek, 0) / 60).padStart(19)} | ${f1(yuzdelik(bek, 0.5) / 60).padStart(9)} | ${yuzde(o.servis, o.servis + o.kacan).padStart(8)} | ${yuzde(o.tavlaServis, o.tavlaServis + o.tavlaKacan).padStart(7)} | ${f0(sonKat2).padStart(10)}`,
+    `${k.ad.padEnd(7)}| ${f0(top).padStart(16)} | ${sa(r.zincirBitis).padStart(12)} | ${sa(r.svBitis).padStart(9)} | ${(k.yuk.length ? sa(r.yukBitis) : '—').padStart(15)} | ${sa(r.bitis).padStart(11)} | ${f1(Math.max(...bek, 0) / 60).padStart(19)} | ${f1(yuzdelik(bek, 0.5) / 60).padStart(9)} | ${yuzde(o.servis, o.servis + o.kacan).padStart(8)} | ${yuzde(o.tavlaServis, o.tavlaServis + o.tavlaKacan).padStart(7)} | ${f0(sonKat2).padStart(10)}`,
   );
 }
 console.log('');
 console.log('--- §B2 yükseltme alım dakikaları ---');
 for (const { k, r } of sonuc) {
   if (!k.yuk.length) continue;
-  console.log(`${k.ad.padEnd(6)} | ${r.alimlar.filter((a) => a.ne !== 'sv' && a.ne !== 'pad').map((a) => `${a.ne} ${f0(a.t / 60)}`).join(' · ')}`);
+  console.log(`${k.ad.padEnd(7)}| ${r.alimlar.filter((a) => a.ne !== 'sv' && a.ne !== 'pad').map((a) => `${a.ne} ${f0(a.t / 60)}`).join(' · ')}`);
 }
 console.log('');
 console.log('--- §B3 saat başına toplam gelir (Kat 1 + Kat 2) coin/dk ---');
-for (const { k, r } of sonuc) console.log(`${k.ad.padEnd(6)} | ${r.saatlik.map((s, i) => f0(s / ((i < r.saatlik.length - 1 ? 3600 : ((Number.isFinite(r.bitis) ? r.bitis : UFUK) - i * 3600) || 3600) / 60))).join(' · ')}`);
+for (const { k, r } of sonuc) console.log(`${k.ad.padEnd(7)}| ${r.saatlik.map((s, i) => f0(s / ((i < r.saatlik.length - 1 ? 3600 : ((Number.isFinite(r.bitis) ? r.bitis : UFUK) - i * 3600) || 3600) / 60))).join(' · ')}`);
 damga('Kat 1 parası cüzdana aktı (§B)', sonuc.every((s) => s.r.kat1 > 0), sonuc.map((s) => f0(s.r.kat1)).join('/'));
 
 console.log('');

@@ -134,6 +134,11 @@ export interface Kat2GarsonAyar {
   tepsi: number;
   /** Kaç garson (yoksa 1). */
   sayi?: number;
+  /**
+   * Kullanıcı 2026-11-17 ("birinci katta bu mantığı kurmadık mı?"): garson Kat 1'deki gibi HER masaya (okey dahil)
+   * kahve götürür. YOKSA yalnız tavla (D-186, bugünkü). Ölçüm `tools/olcum-kat2-ocak-garson.ts`.
+   */
+  herMasa?: boolean;
 }
 
 /** Tavla masasının döngü sayıları (anlamları `Kat2Ayar`ın aynı adlı alanlarıyla aynı). */
@@ -510,7 +515,7 @@ const garsonAyir = (gs: Kat2Garson[]): Pick<Kat2Dunya, 'garson' | 'garsonEk'> =>
  * Garsonun tavla masasına yaklaşma noktası: masanın +z önü (yığının düştüğü yüz), ayak izinin
  * şişkinliğinin (yarı + gövde yarıçapı) hemen dışı, kahve erişiminin içi.
  */
-const garsonMasaNoktasi = (m: Kat2MasaYeri): [number, number] => [m.x, m.z + TAVLA_YARI[1] + LAYOUT.playerRadius + 0.13];
+const garsonMasaNoktasi = (m: Kat2MasaYeri): [number, number] => [m.x, m.z + (m.tur === 'tavla' ? TAVLA_YARI[1] : OKEY_YARI) + LAYOUT.playerRadius + 0.13];
 
 /**
  * Garsonların bir adımı: karar → yürüyüş → ocaktan alma. Servis masa döngüsünde (oyuncunun
@@ -525,7 +530,7 @@ const garsonMasaNoktasi = (m: Kat2MasaYeri): [number, number] => [m.x, m.z + TAV
 function garsonlarAdim(d: Kat2Dunya, gs: Kat2Garson[], padsDone: readonly string[], acikOcak: readonly boolean[], ga: Kat2GarsonAyar, dt: number): void {
   const ag = kat2YolAgi(padsDone);
   const istekli = d.masalar
-    .filter((m) => m.tur === 'tavla' && m.durum === 'oyunda' && m.istek > 0)
+    .filter((m) => (ga.herMasa || m.tur === 'tavla') && m.durum === 'oyunda' && m.istek > 0)
     .sort((a, b) => a.sabir - b.sabir);
   const toplamIstek = istekli.reduce((a, m) => a + m.istek, 0);
   const alinan = new Set<string>();
@@ -738,7 +743,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
           if (tavla) olay.tavlaServis += n;
           if (m.istek === 0) m.kahveT = kahveAralik;
         }
-        if (tavla) {
+        if (tavla || ayar.garson?.herMasa) {
           for (const gs of garsonlar) {
             if (m.istek === 0) break;
             if (gs.tepsi <= 0 || !masaErisimde(yer, gs.x, gs.z)) continue;
@@ -748,7 +753,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
             kahveOde(d, m, yer, n * kahveFiyat, ayar, olay);
             olay.servis += n;
             olay.garsonServis += n;
-            olay.tavlaServis += n;
+            if (tavla) olay.tavlaServis += n;
             if (m.istek === 0) m.kahveT = kahveAralik;
           }
         }
