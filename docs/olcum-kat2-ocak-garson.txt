@@ -1,0 +1,55 @@
+=== KAT 2 SÜRESİ + OCAK/GARSON YÜKSELTMESİ (Kat 1 karşılığı) ===
+Kip: tam · dt 0.1 · plato 5+30 dk · ilerleme ufku 14 sa
+Config: zincir 26 pad (D-192) + hazır k2okey2/k2cezve · 22 masa · 88 Sv alımı (D-195) · garson 3/2/1 · demleme 4 sn · kuyruk 4
+Bot: hız 4.95 · tepsi 6 · mıknatıs 5 (karakter son kademe) · "en ucuz açık hedef önce" · Kat 1 parası doğrudan cüzdana (D-198, kasa yok).
+Ocak kademesi: demleme ÷1.35 · kuyruk +1 (Kat 1 service.upgrade/brew) · açılış k2okey4 → k2cezve2 → k2lavabo → k2garson → k2tavla6
+Garson: hız 3→4 (k2tavla2) · tepsi 2→3→4 (k2tavla5, k2tavla10) · 2. garson (k2tavla8)
+Kat 1 izi: 80.5 coin/dk (bitmiş Kat 1, oyuncusuz)
+
+--- §A PLATO — bütün zincir açık; GERÇEK Kat 2 coin/dk (masa + lavabo) · servis % · ocak (kuyruk dolu / boş) · bot boş ---
+kurulum         | Sv | coin/dk | servis % | okey % | tavla % | garson payı | ocak dolu % | ocak boş % | bot boş %
+taban           | 1  |     785 |      %45 |    %35 |     %60 |         %22 |         %38 |        %17 |        %1
+ocak6           | 1  |     853 |      %64 |    %57 |     %73 |         %16 |         %79 |         %0 |        %1
+garson          | 1  |     788 |      %49 |    %34 |     %69 |         %32 |         %33 |        %18 |        %0
+garson+2        | 1  |     775 |      %48 |    %25 |     %77 |         %40 |         %33 |        %22 |        %1
+ocak6+garson    | 1  |     836 |      %64 |    %49 |     %84 |         %26 |         %79 |         %0 |        %1
+ocak6+garson+2  | 1  |     828 |      %64 |    %44 |     %89 |         %37 |         %79 |         %0 |        %1
+taban           | 5  |   1.717 |      %44 |    %38 |     %53 |         %23 |         %35 |        %17 |        %1
+ocak6           | 5  |   1.755 |      %58 |    %47 |     %73 |         %20 |         %80 |         %0 |        %1
+garson          | 5  |   1.709 |      %47 |    %31 |     %68 |         %36 |         %31 |        %19 |        %0
+garson+2        | 5  |   1.699 |      %47 |    %24 |     %77 |         %49 |         %29 |        %22 |        %0
+ocak6+garson    | 5  |   1.754 |      %61 |    %43 |     %85 |         %28 |         %79 |         %0 |        %0
+ocak6+garson+2  | 5  |   1.760 |      %64 |    %44 |     %90 |         %35 |         %77 |         %0 |        %1
+
+--- §B İLERLEME — ilk çıkıştan: zincir 26 pad → 88 Sv + kolun yükseltmeleri (Kat 1 81 coin/dk doğrudan cüzdana) ---
+kol    | yükseltme toplam | zincir biter | Sv biter  | yükseltme biter | KAT 2 BİTER | en uzun bekleyiş dk | medyan dk | servis % | tavla % | son saat Kat 2 coin/dk
+----------------------------------------------------------------------------------------------------------------------------------------------------------------
+TABAN  |                0 |      4.71 sa |   9.86 sa |               — |     9.86 sa |                12.2 |       4.3 |      %37 |     %47 |      1.588
+O-1    |           25.200 |      5.26 sa |  10.27 sa |         4.10 sa |    10.27 sa |                12.1 |       4.5 |      %49 |     %56 |      1.659
+O-½    |           12.600 |      4.88 sa |   9.93 sa |         3.73 sa |     9.93 sa |                11.7 |       4.4 |      %46 |     %54 |      1.590
+G-1    |           22.500 |      5.29 sa |  10.40 sa |         4.89 sa |    10.40 sa |                12.2 |       4.5 |      %40 |     %60 |      1.634
+G2-1   |           30.700 |      5.48 sa |  10.61 sa |         5.08 sa |    10.61 sa |                12.3 |       4.5 |      %43 |     %72 |      1.620
+OG-1   |           47.700 |      5.78 sa |  10.80 sa |         5.40 sa |    10.80 sa |                11.7 |       4.5 |      %50 |     %64 |      1.603
+OG-½   |           23.850 |      5.15 sa |  10.19 sa |         4.76 sa |    10.19 sa |                11.9 |       4.5 |      %48 |     %59 |      1.642
+OG2-1  |           55.900 |      5.98 sa |  11.00 sa |         5.59 sa |    11.00 sa |                11.7 |       4.5 |      %53 |     %78 |      1.583
+
+--- §B2 yükseltme alım dakikaları ---
+O-1    | ocak2 35 · ocak3 89 · ocak4 139 · ocak5 179 · ocak6 246
+O-½    | ocak2 31 · ocak3 73 · ocak4 127 · ocak5 153 · ocak6 224
+G-1    | ghiz 175 · gtepsi 222 · gtepsi 293
+G2-1   | ghiz 175 · gtepsi 222 · gsayi 270 · gtepsi 305
+OG-1   | ocak2 35 · ocak3 89 · ocak4 139 · ocak5 179 · ghiz 200 · gtepsi 245 · ocak6 267 · gtepsi 324
+OG-½   | ocak2 31 · ocak3 73 · ocak4 127 · ocak5 153 · ghiz 179 · gtepsi 217 · ocak6 234 · gtepsi 285
+OG2-1  | ocak2 35 · ocak3 89 · ocak4 139 · ocak5 179 · ghiz 200 · gtepsi 245 · ocak6 267 · gsayi 301 · gtepsi 335
+
+--- §B3 saat başına toplam gelir (Kat 1 + Kat 2) coin/dk ---
+TABAN  | 255 · 428 · 561 · 658 · 767 · 901 · 1.056 · 1.232 · 1.446 · 1.669
+O-1    | 252 · 440 · 592 · 637 · 725 · 856 · 1.006 · 1.181 · 1.381 · 1.606 · 1.740
+O-½    | 256 · 449 · 596 · 668 · 772 · 905 · 1.056 · 1.242 · 1.456 · 1.671
+G-1    | 255 · 428 · 561 · 624 · 716 · 828 · 975 · 1.147 · 1.336 · 1.554 · 1.715
+G2-1   | 255 · 428 · 561 · 624 · 709 · 796 · 952 · 1.104 · 1.284 · 1.504 · 1.700
+OG-1   | 252 · 440 · 592 · 629 · 698 · 800 · 925 · 1.088 · 1.279 · 1.488 · 1.683
+OG-½   | 256 · 449 · 596 · 664 · 747 · 858 · 1.020 · 1.193 · 1.391 · 1.621 · 1.722
+OG2-1  | 252 · 440 · 592 · 629 · 698 · 770 · 894 · 1.052 · 1.227 · 1.452 · 1.664
+
+(süre: 141 sn)
