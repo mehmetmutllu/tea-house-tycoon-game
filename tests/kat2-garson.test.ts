@@ -105,7 +105,7 @@ describe('config — D-186 tavla T120U + zincir', () => {
     expect(kat2PadYeri(OCAK2.id)).toEqual([OCAK2.al[0], OCAK2.al[1]]);
     expect(kat2PadYeri(KAT2_GARSON_PAD)).toEqual([...KAT2_GARSON_YER]);
     expect(kat2PadEtiket(OCAK2.id)).toBe('Cezve Ocağı');
-    expect(kat2PadEtiket(KAT2_GARSON_PAD)).toBe('Garson');
+    expect(kat2PadEtiket(KAT2_GARSON_PAD)).toBe('Garson Tut');
   });
 });
 

@@ -47,3 +47,14 @@ export function Fincan({ pos, s = 1 }: { pos: V3; s?: number }) {
     </group>
   );
 }
+
+/** İçilmiş (kirli) fincan: köpük yerine dipte telve, gövde Kat 1'in kirli bardağı gibi gri — temizden uzaktan ayrışır. */
+export function KirliFincan({ pos, s = 1 }: { pos: V3; s?: number }) {
+  return (
+    <group position={pos} scale={s}>
+      <Silindir r1={0.062} r2={0.058} h={0.01} renk="#b8ada0" pos={[0, 0.005, 0]} seg={12} golge={false} />
+      <Silindir r1={0.042} r2={0.03} h={0.06} renk="#9e9488" pos={[0, 0.04, 0]} seg={10} />
+      <Silindir r1={0.036} r2={0.036} h={0.004} renk="#2e1c10" pos={[0, 0.062, 0]} seg={10} golge={false} />
+    </group>
+  );
+}

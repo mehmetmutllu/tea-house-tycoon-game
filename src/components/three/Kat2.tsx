@@ -17,6 +17,9 @@
  *
  * K2-S3: masa görünüşü `kat2.masaSv`den türer (okey G · tavla A Sv1-5, `kat2/Esya`), Sv atlayınca
  * masa yerinde seker + toz (`SvSekme`); masanın yanında Sv işareti (`kat2/SvIsaret`, Kat 1 dili).
+ *
+ * D-201: bulaşık (`kat2/Bulasik`: masadaki fincan + telveli kirli, ön tezgâhta leğen, bulaşıkçı) · lavabo
+ * seviyesiyle büyür + yükseltme noktası (`Kat2LavaboIsareti`).
  */
 import { Suspense, useLayoutEffect, useRef } from 'react';
 import { CylinderGeometry, MeshStandardMaterial, Object3D, type InstancedMesh } from 'three';
@@ -32,7 +35,8 @@ import { useGame } from '../../game/store';
 import { Dogus, OkeyMasa, SvSekme, TavlaMasa } from './kat2/Esya';
 import { KahveSeti, KahveUsta, Kat2Mutfak } from './kat2/Mutfak';
 import { FRONT_TOP_Y, kat2MutfakSeviyesi } from './kitchenLook';
-import { Kat2OcakIsareti, Kat2SvIsaretleri } from './kat2/SvIsaret';
+import { Kat2LavaboIsareti, Kat2OcakIsareti, Kat2SvIsaretleri } from './kat2/SvIsaret';
+import { Kat2Bulasikci, MasaBulasiklari, YikamaYeri } from './kat2/Bulasik';
 import { useMasaSvleri } from './kat2/masaSv';
 import { masaSvOku } from '../../game/kat2Dongu';
 import { MasaGrubu, useKalkisIzle } from './kat2/Grup';
@@ -420,18 +424,19 @@ function Ocak({ i, ilk }: { i: number; ilk: ReadonlySet<string> }) {
   );
 }
 
-/** Kat 2 lavabosu sabit seviyede çizilir (D-192: seviyesiz; görünüş akış sayfasının t4 karesi). */
-const KAT2_LAVABO_SEVIYE = 2;
+/** D-201: lavabonun çizim seviyesi = L1 + alınan lavabo yükseltmesi (Kat 1 `wcSeviye` gibi; lavabo/kabin sayısı büyür). */
+const kat2LavaboSeviye = (yukLavabo: number | undefined): number => 1 + (yukLavabo ?? 0);
 
 /**
  * Bandın sağ arka köşesi: açıkken Kat 1'in lavabo odası (yerinde büyür), kapalıyken P3 perde (damla
  * levhası) + arkada kaba inşaat — perde 2,4, kamera üstünden içeriyi görür; boş oda okunmasın.
  */
 function Kat2Lavabo({ acik, ilk }: { acik: boolean; ilk: ReadonlySet<string> }) {
+  const seviye = useGame((s) => kat2LavaboSeviye(s.kat2.yuk?.lavabo));
   if (acik)
     return (
       <Dogus dogus={!ilk.has(KAT2_LAVABO_PAD)} pos={[(KOVA.x1 + H) / 2, 0, (BANT_ARKA + BAND.front) / 2]}>
-        <MaketLavaboBlock seviye={KAT2_LAVABO_SEVIYE} />
+        <MaketLavaboBlock seviye={seviye} />
       </Dogus>
     );
   return (
@@ -461,7 +466,10 @@ export function Kat2Sahne() {
       <ArkaDuvarUstu />
       {OCAKLAR.map((o, i) => (padsDone.includes(o.id) ? <Ocak key={o.id} i={i} ilk={ilk.current} /> : null))}
       {ocak ? (
-        <Kat2Mutfak />
+        <>
+          <Kat2Mutfak />
+          <YikamaYeri />
+        </>
       ) : (
         <MaketTadilatPerde x1={-H} x2={KOVA.x0 - 0.2} z={BAND.front} simge="mutfak" />
       )}
@@ -476,7 +484,10 @@ export function Kat2Sahne() {
         <Kat2PadIsareti />
         <Kat2SvIsaretleri />
         <Kat2OcakIsareti />
+        <Kat2LavaboIsareti />
         <Kat2Garson />
+        <MasaBulasiklari />
+        <Kat2Bulasikci />
       </Suspense>
     </group>
   );

@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-17 — D-201 Parça 1 MANTIK kodda · sıradaki Parça 2 GÖRSEL · yayın kullanıcının geri bildiriminden sonra)
+## ŞU AN (2026-11-17 — D-201 Parça 1 MANTIK + Parça 2 GÖRSEL kodda · sıradaki: kullanıcı oyunda dener · yayın geri bildirimden sonra)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -32,14 +32,12 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
-## ⏭️ SIRADAKİ ADIM — D-201 PARÇA 2 GÖRSEL (Parça 1 mantık bitti 2026-11-17; rapor `docs/kat2-isleyis-raporu.md` §Uygulama)
-Kodda: config = K-Bt2 · zincirde `k2garson`(3. okeyden sonra)/`k2garson2`/`k2garson3` + `k2bulasikci` · `kat2.bulasik` (teslimdeAl) ·
-lavabo L2-L6 `kat2LavaboTetik` (`KAT2_LAVABO_YUK_YER`, kayıt `kat2.yuk.lavabo`) · panelden 2. garson KALKTI · görev hattı +4 (Kat 1
-metinleri), ödüller referans × %15. Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` = ölçüm (8,11 sa).
-Ölçüm aracı artık FİNAL kipinde (config'te bulaşık varsa config'i olduğu gibi koşar); tarihî kollar git 464271b'de.
-**Parça 2 — GÖRSEL (dünyada henüz çizilmeyenler):** masada fincan/kirli · yıkama yeri + leğen · bulaşıkçı NPC · 2-3. garson
-evleri/NPC · lavabo seviye noktası (çerçeve + dolum barı, Kat 1 servis noktası dili) · garson/bulaşıkçı pad etiketleri ("2. Garson"
-vb. TR+EN) → kare ile göster (plan `docs/kareler/kat2-isleyis-plan.png`). Duman ile oyunda yürüyerek doğrula.
+## ⏭️ SIRADAKİ ADIM — D-201 bitti (Parça 1 mantık + Parça 2 görsel, 2026-11-17; rapor `docs/kat2-isleyis-raporu.md` §Uygulama)
+Kodda: config = K-Bt2 · zincirde garson ×3 + bulaşıkçı · bulaşık (masada fincan/telveli kirli, ön tezgâhta bakır leğen, bulaşıkçı
+NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası · pad etiketleri Kat 1 (Garson Tut / 2. Garson / 3. Garson /
+Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
+`docs/kareler/kat2-isleyis-gorsel-*.png`. **Sıradaki:** kullanıcıya yeni deneme APK (D-197) → oyun testi geri bildirimi.
+Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit seviye 2'ydi).
 **Sonraki oturumda sor:** eski `tools/olcum-kat2-ocak-garson.ts` "config = HOG2-½" damgası artık kırık (D-201 fiyatları değiştirdi) —
 araç tarihî, silinsin mi/FİNAL kipine alınsın mı.
 **Yan bulgular:** Kat 1 bulaşıkçısının son kademesi (taşıma 8) tabandan kötü (dolmadan yıkamaya gitmiyor) — ayrı turda bak ·

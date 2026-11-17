@@ -558,8 +558,11 @@ function lavaboyaUgra(d: Kat2Dunya, kisi: number, l: { ugrama: number; ucret: nu
 /** Pad etiketi (çerçeve ölçüsü etikete bağlı — Kat 1'in `padCercevesi` dili). */
 export function kat2PadEtiket(id: string): string {
   if (OCAKLAR.some((o) => o.id === id)) return t('Cezve Ocağı');
-  if (KAT2_GARSON_PADLER.includes(id)) return t('Garson');
-  if (id === KAT2_BULASIKCI_PAD) return t('Bulaşıkçı');
+  // D-201: Kat 1'in personel pad etiketleri aynen (`waiter` / `waiter2` / `waiter3` / `dishwasher`).
+  if (id === KAT2_GARSON_PADLER[0]) return t('Garson Tut');
+  if (id === KAT2_GARSON_PADLER[1]) return t('2. Garson');
+  if (id === KAT2_GARSON_PADLER[2]) return t('3. Garson');
+  if (id === KAT2_BULASIKCI_PAD) return t('Bulaşıkçı Tut');
   if (id === KAT2_LAVABO_PAD) return t('Lavabo');
   if (id === KAT2_SALON_PAD[0]) return t('Okey Salonu');
   if (id === KAT2_SALON_PAD[1]) return t('Tavla Köşesi');

@@ -10,7 +10,7 @@
 import { useGame } from '../../../game/store';
 import { economyConfig } from '../../../config/economy.config';
 import { fmt } from '../../../game/decimal';
-import { kat2OcakTetik, kat2SvCanliTetik, type Kat2Ayar, type Kat2SvTetik } from '../../../game/kat2Dongu';
+import { kat2LavaboTetik, kat2OcakTetik, kat2SvCanliTetik, type Kat2Ayar, type Kat2SvTetik } from '../../../game/kat2Dongu';
 import { kat2SvCanli } from '../../../game/kat2Gorev';
 import { ETIKET_SERVIS, ISARET_R, MASA_ISARET_R } from '../../../game/markerFrame';
 import { GroundMarker } from '../GroundMarker';
@@ -47,6 +47,34 @@ export function Kat2OcakIsareti() {
   const padsDone = useGame((s) => s.kat2.padsDone);
   const yuk = useGame((s) => s.kat2.yuk);
   const t = kat2OcakTetik(AYAR, padsDone, yuk);
+  const fill = useGame((s) => (t ? s.kat2Dunya.padFill[t.id] ?? 0 : 0));
+  const kalan = t ? Math.max(0, Math.ceil(t.fiyat - fill)) : 0;
+  const yetiyor = useGame((s) => s.wallet.toNumber() >= kalan);
+  if (!t) return null;
+  return (
+    <GroundMarker
+      key={t.fiyat}
+      pos={[t.x, 0, t.z]}
+      label={ETIKET_SERVIS}
+      arrow
+      sub={fmt(kalan)}
+      pip="coin"
+      tint="#ffce54"
+      radius={ISARET_R}
+      progress={t.fiyat > 0 ? fill / t.fiyat : 0}
+      afford={yetiyor}
+    />
+  );
+}
+
+/**
+ * D-201: LAVABO SEVİYE noktası — ocak noktasıyla aynı dil ("Yükselt" + ok + kalan tutar, altta dolan bar); lavabo pad'inin
+ * solunda. Yer/fiyat `kat2LavaboTetik`ten; tick aynı tetiği `servisCercevesi` ile test eder (çizilen = tetik).
+ */
+export function Kat2LavaboIsareti() {
+  const padsDone = useGame((s) => s.kat2.padsDone);
+  const yuk = useGame((s) => s.kat2.yuk);
+  const t = kat2LavaboTetik(AYAR, padsDone, yuk);
   const fill = useGame((s) => (t ? s.kat2Dunya.padFill[t.id] ?? 0 : 0));
   const kalan = t ? Math.max(0, Math.ceil(t.fiyat - fill)) : 0;
   const yetiyor = useGame((s) => s.wallet.toNumber() >= kalan);

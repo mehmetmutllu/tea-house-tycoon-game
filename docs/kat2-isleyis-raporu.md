@@ -170,3 +170,23 @@ mutasyon 4/4 yakalandı: pad fiyatı · `teslimdeAl` · lavabo tetiği · lavabo
 | **config (final)** | **23,1 dk** | **4,91 sa** | **8,11 sa** | **10,1 dk** | **%84** | **%0** | **2.747** |
 
 Birebir aynı; alım dakikaları da aynı (garson 23/45/136 · bulaşıkçı 77 · lavabo 167/193/226/259/288). Sıradaki: Parça 2 görsel.
+
+## Uygulama — Parça 2 GÖRSEL (2026-11-17)
+
+Dünyada artık çizilenler (`kat2/Bulasik.tsx` + mevcut dosyalar; durum değişmez, yalnız sunum):
+- **Masa:** içilen fincan (beyaz, köpüklü) oturağın sağında · kirli fincan (gri gövde + dipte telve) solunda; Sv'ye göre masa
+  üstü yüksekliği ve boyu izlenir.
+- **Yıkama yeri:** ön tezgâhta iki ocağın ortasında bakır leğen + su + ibrik + temiz fincan süzgeci (×1,35, oyun kamerasından
+  seçilsin); leğende bekleyen kirliler halka dizilir (en çok 8), boşalınca su-mavisi halka (Kat 1 `DishSink.Yikama`).
+- **Bulaşıkçı:** Kat 1 gövdesi (`dishwasher`), garsonla ortak `Kat2Personel` (konum damp'la). Garson/bulaşıkçı/oyuncu tepsisinde
+  kirli fincan kahvenin ardına dizilir.
+- **Lavabo:** çizim seviyesi = 1 + `kat2.yuk.lavabo` (Kat 1 lavabo/kabin sayısı dizileri; eski sabit 2 kalktı) · yükseltme noktası
+  `Kat2LavaboIsareti` (ocak noktasının dili, "Yükselt" + ok + kalan tutar; tetikle aynı `servisCercevesi`).
+- **Pad etiketleri = Kat 1:** Garson Tut · 2. Garson · 3. Garson · Bulaşıkçı Tut (EN: Hire Server · Server 2 · Server 3 · Hire
+  Dishwasher — mevcut çeviriler).
+- Dev: `__game().kat2` artık `masalar[].ictigi/kirli`, `garsonEk`, `tepsiKirli`, `legen`, `temiz`, `bulasikci`, `yuk` taşır.
+
+Bekçi `tests/kat2-isleyis.test.ts` "personel pad etiketleri = Kat 1" (etiket config'teki Kat 1 etiketinden okunur; mutasyon 2/2:
+2. garson · bulaşıkçı). Etiket genişliği pad çerçevesini büyüttü → **final tam koşu yeniden:** sayılar `docs/olcum-kat2-isleyis-final.txt`
+ile birebir aynı (8,11 sa · damgalar temiz). Kareler: `docs/kareler/kat2-isleyis-gorsel-{oyun,masa,lavabo}.png`.
+vitest 2135 · duman 78/78 + EN 4/4.

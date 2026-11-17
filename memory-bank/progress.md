@@ -53,6 +53,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-17 (2.): ✅ Kat 2 = Kat 1 mantığı: garson her masaya + ocak 5 / garson hız·tepsi·2. garson yükseltmesi (yarım fiyat), mangal ocak seviyesiyle · D-200 · docs/kat2-ocak-garson-raporu.md · vitest +17
   · 2026-11-17 (3.): 🔧 Kat 2 işleyişi = Kat 1 ölçüldü (garson pad · lavabo seviyesi · bulaşık) + Kat 1 gerçek geliri 899 coin/dk (eski 79) → Kat 2 fiyatları +7.400 · D-201 karar, uygulama sonraki oturum · docs/kat2-isleyis-raporu.md
   · 2026-11-17 (4.): ✅ D-201 Parça 1 MANTIK: config = K-Bt2 (3 garson pad · bulaşıkçı · lavabo L2-L6 tetiği · bulaşık · fiyat kayması) · bekçi kat2-isleyis 12 test, mutasyon 4/4 · final tam koşu = ölçüm (8,11 sa) · vitest 2131 · duman yeşil · sıradaki: Parça 2 görsel
+  · 2026-11-17 (5.): ✅ D-201 Parça 2 görsel — masada fincan + telveli kirli · bakır leğen · bulaşıkçı · tepside kirli · lavabo seviyeyle büyür + Yükselt noktası · pad etiketleri Kat 1 · bekçi mutasyon 2/2 · final aynı 8,11 sa · vitest 2135 · duman 78/78
   · 2026-11-16: ✅ Play için 1.0.7 (10007) AAB'si zip'ten masaüstüne çıkarıldı (App Store sürümü, Kat 2 yok) · kod değişikliği yok
   · 2026-11-15: ✅ G5 kol G2 config'te (hemen kahve + anında para, 90 sn oyun, ücret 38) · kahve seti: sap ustaya, servis tepsisi, kahveci usta · ön set seçimi bekliyor
   · 2026-11-14: ✅ Oyun testi G1-G4 (D-198) — kasa kalktı/Kat 1 parası akar · Kat 2 mutfağı Kat 1 kopyası + katı ön tezgâh · ön bölme 0,6 · grup tek sıra · G5 okey ölçüldü (karar bekliyor) · bekçi mutasyon 4/4

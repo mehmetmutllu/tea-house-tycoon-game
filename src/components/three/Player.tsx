@@ -8,7 +8,7 @@ import { KAY_TEPSI_KAYMA } from '../../config/actor';
 import { KayActor } from './KayActor';
 import { tepsiGorunum, type TepsiGorunum } from '../../config/kozmetik';
 import { gecerliKiyafet, gecerliTepsi } from '../../game/vitrin';
-import { Fincan } from './kat2/parca';
+import { Fincan, KirliFincan } from './kat2/parca';
 
 /** Askılı tepsinin halkası tabanın bu kadar üstünde — tepsi elden bu kadar aşağı sarkar (F4c). */
 export const ASKI_HALKA_Y = 0.5;
@@ -235,6 +235,7 @@ export function CupTray({
   cap = 6,
   gorunum = 'klasik',
   kahve = 0,
+  kahveKirli = 0,
 }: {
   tea: number;
   dirty: number;
@@ -246,9 +247,11 @@ export function CupTray({
   gorunum?: string;
   /** K2-3b: Kat 2'nin Türk kahvesi (fincan) — ızgaranın başına dizilir. Kat 1'de hep 0. */
   kahve?: number;
+  /** D-201: Kat 2'nin toplanmış kirli fincanı — kahvenin ardına dizilir (tepsi paylaşımlı). Kat 1'de hep 0. */
+  kahveKirli?: number;
 }) {
   const g = tepsiGorunum(gorunum);
-  const total = kahve + tea + food + dirty + dirtyFood;
+  const total = kahve + kahveKirli + tea + food + dirty + dirtyFood;
   if (total <= 0) return null;
   const colSpacing = 0.16;
   const rowSpacing = 0.15;
@@ -267,9 +270,10 @@ export function CupTray({
       {Array.from({ length: total }).map((_, k) => {
         // Sıra: (Kat 2 kahvesi) → çaylar (kırmızı) → tostlar (kızarmış dilim, M3) → kirli bardaklar (gri) →
         // kirli tabaklar (yayvan disk); aynı ızgara paylaşılır.
-        const i = k - kahve;
+        const i = k - kahve - kahveKirli;
         if (i < 0) {
-          return <Fincan key={k} pos={[((k % 3) - 1) * colSpacing, 0.03, (Math.floor(k / 3) - 0.5) * rowSpacing]} s={1.35} />;
+          const pos: [number, number, number] = [((k % 3) - 1) * colSpacing, 0.03, (Math.floor(k / 3) - 0.5) * rowSpacing];
+          return k < kahve ? <Fincan key={k} pos={pos} s={1.35} /> : <KirliFincan key={k} pos={pos} s={1.35} />;
         }
         const isFood = i >= tea && i < tea + food;
         const isDirty = i >= tea + food && i < tea + food + dirty;
@@ -334,10 +338,11 @@ export function Player() {
   // K2-3b: Kat 2'de tepsi Kat 2'nin kahvesini taşır; Kat 1'in tepsisi (yukarıda kalan) çizilmez.
   const kat2 = useGame((s) => s.kat === 2);
   const kahve = useGame((s) => (s.kat === 2 ? s.kat2Dunya.tepsi : 0));
+  const kahveKirli = useGame((s) => (s.kat === 2 ? s.kat2Dunya.tepsiKirli ?? 0 : 0));
   const outerRef = useRef<Group>(null);
   const ref = useRef<Group>(null);
   /** Elinde bir şey var mı: temiz ürün ya da toplanmış kirli. Taşıma pozunu bu tetikler. */
-  const eldeVar = kat2 ? kahve > 0 : tray + trayFood + carriedDirty + carriedDirtyFood > 0;
+  const eldeVar = kat2 ? kahve + kahveKirli > 0 : tray + trayFood + carriedDirty + carriedDirtyFood > 0;
   // P0 perf: oyuncu konumu store'dan her karede OKUNUR, React'e prop olarak girmez — eskiden
   // `useGame((s) => s.player)` yürürken her kare Player alt ağacını yeniden render ediyordu.
   useActorTransform(outerRef, ref, readPlayerXZ);
@@ -360,6 +365,7 @@ export function Player() {
               dirty={kat2 ? 0 : carriedDirty}
               dirtyFood={kat2 ? 0 : carriedDirtyFood}
               kahve={kahve}
+              kahveKirli={kahveKirli}
               cap={trayCapacityFor(trayTier)}
               gorunum={tepsi}
             />

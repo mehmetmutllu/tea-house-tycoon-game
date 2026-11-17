@@ -11,7 +11,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { economyConfig as C } from '../src/config/economy.config';
 import { KAT2_LAVABO_PAD, KAT2_LAVABO_YUK_ID, KAT2_LAVABO_YUK_YER, OCAKLAR, VARIS } from '../src/game/kat';
-import { kat2EtkinAyar, kat2LavaboTetik, kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya, type Kat2Girdi } from '../src/game/kat2Dongu';
+import { kat2EtkinAyar, kat2LavaboTetik, kat2PadEtiket, kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya, type Kat2Girdi } from '../src/game/kat2Dongu';
 import { inFrame, servisCercevesi } from '../src/game/markerFrame';
 import { defaultSave, kayitCoz } from '../src/game/save';
 import { useGame } from '../src/game/store';
@@ -175,5 +175,19 @@ describe('store + kayıt', () => {
   it('kayıt additive: lavabo okunur, eski garsonSayi düşer', () => {
     const k = { ...defaultSave(), kat2: { acik: true, padsDone: [], yuk: { ocak: 2, lavabo: 3, garsonSayi: 1 } } } as unknown as Record<string, unknown>;
     expect(kayitCoz(JSON.parse(JSON.stringify(k))).data.kat2.yuk).toEqual({ ocak: 2, lavabo: 3 });
+  });
+});
+
+describe('D-201 Parça 2: personel pad etiketleri = Kat 1', () => {
+  // Kat 1 zincirinin kendi etiketleri (config) — Kat 2 aynısını söyler (Kat 2 = Kat 1 uyarlaması).
+  const kat1 = (id: string) => C.pads.find((p) => p.id === id)?.label;
+  it.each([
+    ['k2garson', 'waiter'],
+    ['k2garson2', 'waiter2'],
+    ['k2garson3', 'waiter3'],
+    ['k2bulasikci', 'dishwasher'],
+  ])('%s = Kat 1 %s', (k2, k1) => {
+    expect(kat1(k1)).toBeTruthy();
+    expect(kat2PadEtiket(k2)).toBe(kat1(k1));
   });
 });
