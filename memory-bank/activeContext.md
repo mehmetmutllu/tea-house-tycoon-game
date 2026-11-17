@@ -32,16 +32,19 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
-## 🔧 TUR (2026-11-17, açık) — "KAT 2 İŞLEYİŞİ = KAT 1" (kullanıcı: "neden alışkanlığı değiştiriyoruz?")
-- **SORU:** Kat 2'de Kat 1'den farklı işleyiş kalmasın — a) ilk garson erken, pad ile · b) 2-3. garson zincirde pad
-  (panelden 2. garson `garsonSayi` kalkar; hız/tepsi panelde kalır) · c) lavabo seviyesi · d) bulaşık döngüsü + bulaşıkçı
-  pad'i + boştaki garson kirli taşır · e) ocak yükseltmesi 4. okeyden sonra kalır.
-- **ÖLÇÜLECEK KOLLAR** (`tools/olcum-kat2-isleyis.ts`): garson pad yeri × fiyat (Kat 1 karşılığı / erken / geç · ×1/×½) ·
-  lavabo seviye fiyatı (D-200 kuralı ½ / Kat 1 oranı) · bulaşık yok / var (bulaşıkçı taban / Kat 1 son kademe).
-  Ölçü: Kat 2 süresi · en uzun bekleyiş · servis % · ilk garsona kadar dk.
-- **SAYILAR:** (boş — rapor `docs/kat2-isleyis-raporu.md`) · **KARAR:** (boş) · **UYGULAMA:** (boş) · **BEKÇİ:** (boş)
-- Önceki tur D-200: `docs/kat2-ocak-garson-raporu.md` (Kat 2 9,55 sa). Açık: 2 metin ChatGPT turu · görev hattında ocak/garson
-  görevi yok · yeni deneme APK alınmadı. Kullanıcı deneme APK ile oynuyor (D-197) → geri bildirim `docs/geribildirim-…`.
+## ⏭️ SIRADAKİ ADIM — D-201 UYGULAMA (karar verildi 2026-11-17; rapor `docs/kat2-isleyis-raporu.md` §Tur 2 + Karar)
+Ölçüm + karar bitti (commit 77b9b89, 464271b). Kodda hazır, config'te KAPALI: 3 garson pad'i (`KAT2_GARSON_PADLER`, merdiven
+salonu; 1. garson pad'i oraya taşındı) · `Kat2Ayar.bulasik` (+ `teslimdeAl`, `havuzKisi`) · yıkama/bulaşıkçı/lavabo-yük yerleri (`kat.ts`).
+**Parça 1 — MANTIK (sonraki oturum):** config'e K-Bt2'yi yaz — sayılar `docs/olcum-kat2-isleyis-t2.txt` "K-Bt2 zincir/ocak" satırları
+(pad +7.400 · Sv +2.450 · garson pad'leri · bulaşıkçı · yükseltme ½ · `garsonSayi` sil · ocak 4. açan `k2salon3`) · lavabo L2-L6
+tetiği `kat2Dongu`'ya (ocak tetiği gibi, `KAT2_LAVABO_YUK_YER`, LVy ücret 18/21/25/31/39/52) + kayıt `kat2.yuk.lavabo` (additive) ·
+store'a bulaşık dünyası · CharacterPanel'den 2. garson satırı · görev hattı (garson/bulaşıkçı pad'leri) · bekçi testi "config = K-Bt2"
++ ≥2 mutasyon · final TAM koşu (`IS_TUR=2`, K-Bt2 ≈ 8,11 sa) · D-201 başlığından "UYGULAMA BEKLİYOR" kalkar.
+**Parça 2 — GÖRSEL:** masada fincan/kirli · yıkama yeri + leğen · bulaşıkçı NPC · garson evleri · lavabo seviye noktası · pad etiketleri
+("2. Garson" vb. TR+EN, ChatGPT mikrometin) → kare ile göster (plan `docs/kareler/kat2-isleyis-plan.png`).
+**Yan bulgular:** Kat 1 bulaşıkçısının son kademesi (taşıma 8) tabandan kötü (dolmadan yıkamaya gitmiyor) — Kat 1'de de aynı
+kural, ayrı turda bak · Kat 1 masaları L4'teyse Kat 1 ~1.216 coin/dk → Kat 2 ~7,5 sa (ölçülmedi).
+- Önceki açıklar: 2 metin ChatGPT turu (D-200) · yeni deneme APK alınmadı · kullanıcı deneme APK ile oynuyor (D-197).
 - **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (2026-11-13). 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım · Play zip · "Yenilikler".
 
 ## KULLANICIYA HATIRLAT

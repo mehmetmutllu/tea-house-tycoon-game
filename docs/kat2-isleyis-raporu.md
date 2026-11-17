@@ -150,4 +150,6 @@ eşit; bulaşık oyuncunun işi olarak kalıyor (oyuncu dakikada ~9 fincan yık�
 
 ## Karar
 
-(boş — karar paketi sonrası)
+**D-201 (kullanıcı 2026-11-17): K-Bt2** — kayma + garson pad'leri G-K1 + lavabo yarı güç (LVy) + bulaşık Kat 1 (eşik 2) +
+masa başına fincan + garson teslimde boşu alır. Uygulama sonraki oturum: önce mantık (config + kod + kayıt + bekçi + final tam
+koşu), sonra görsel. Final koşusunda bu tablodaki K-Bt2 satırı (8,11 sa) config'le yeniden üretilmeli.
