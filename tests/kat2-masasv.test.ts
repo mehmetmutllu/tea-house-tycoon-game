@@ -339,8 +339,10 @@ describe('Kat 2 masa Sv — Kat 1 kuralı: tek hedef (D-124) + görev kapısı (
 describe('Kat 2 masa Sv — config = karar (D-195, kol UG/SB3T)', () => {
   it('config değerleri aracın UG/SB3T çıktısıyla aynı', () => {
     const k = (C.kat2 as Kat2Ayar).masaSv!;
-    expect(k.okey.fiyat).toEqual([0, 4_300, 5_300, 6_300, 7_300]);
-    expect(k.tavla.fiyat).toEqual([0, 2_300, 2_800, 3_300, 3_800]);
+    // D-201 (K-Bt2): UG/SB3T fiyatı + 2.450 (gerçek Kat 1 gelirinin 3 dk'lık farkı).
+    const kay = (f: number[]) => f.map((v, i) => (i ? v + 2_450 : v));
+    expect(k.okey.fiyat).toEqual(kay([0, 4_300, 5_300, 6_300, 7_300]));
+    expect(k.tavla.fiyat).toEqual(kay([0, 2_300, 2_800, 3_300, 3_800]));
     expect(k.okey.ucretCarpan).toEqual([1, 1.634, 2.243, 2.843, 3.443]);
     expect(k.tavla.ucretCarpan).toEqual([1, 1.313, 1.607, 1.895, 2.183]);
     for (const t of [k.okey, k.tavla]) {

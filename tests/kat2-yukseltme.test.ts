@@ -37,13 +37,14 @@ const girdi = (yer: readonly [number, number], o: Partial<Kat2Girdi> = {}): Kat2
 });
 const fiyatOf = (id: string) => A.padler.find((p) => p.id === id)!.cost;
 
-describe('config = karar D-200 (HOG2-½)', () => {
-  it('garson her masaya; hatların uzunluğu Kat 1 karşılığı (ocak 5 · hız 1 · tepsi 2 · ek garson 1)', () => {
-    expect(A.garson).toEqual({ hiz: 3, tepsi: 2, sayi: 1, herMasa: true });
+describe('config = karar D-200 (HOG2-½) + D-201 (K-Bt2: ek garson pad ile, lavabo L2-L6)', () => {
+  it('garson her masaya; hatların uzunluğu Kat 1 karşılığı (ocak 5 · hız 1 · tepsi 2 · lavabo 5)', () => {
+    expect(A.garson).toEqual({ hiz: 3, tepsi: 2, herMasa: true });
     expect(U.ocak.fiyat).toHaveLength(5);
     expect(U.garsonHiz.deger).toEqual([4]);
     expect(U.garsonTepsi.fiyat).toHaveLength(2);
-    expect(U.garsonSayi.fiyat).toHaveLength(1);
+    expect(U.lavabo.fiyat).toHaveLength(C.rooms.lavabo.upgradeCosts.length);
+    expect('garsonSayi' in U).toBe(false); // D-201: panelden ek garson yok
     expect(U.ocak.demlemeCarpan).toBe(C.service.upgrade.outputMult);
     expect(U.ocak.kuyrukArti).toBe(C.brew.queuePerLevel);
     // Mutfak 1 + 5 alım = Kat 1 mutfağının tepe seviyesi.
@@ -51,9 +52,9 @@ describe('config = karar D-200 (HOG2-½)', () => {
   });
 
   it('her alımın fiyatı, onu açan zincir pad\'inin YARISI; açan pad zincirde', () => {
-    for (const h of [U.ocak, U.garsonHiz, U.garsonTepsi, U.garsonSayi]) {
+    for (const h of [U.ocak, U.garsonHiz, U.garsonTepsi, U.lavabo]) {
       expect(h.acan).toHaveLength(h.fiyat.length);
-      h.acan.forEach((id, i) => expect(h.fiyat[i], id).toBe(Math.round(fiyatOf(id) * 0.5)));
+      h.acan.forEach((id, i) => expect(h.fiyat[i], id).toBe(Math.round(fiyatOf(id) / 2 / 50) * 50));
     }
   });
 });
@@ -63,11 +64,12 @@ describe('kat2EtkinAyar — Kat 1 ocak/garson eğrisi', () => {
     expect(kat2EtkinAyar(A, {})).toBe(A);
     expect(kat2EtkinAyar(A, undefined)).toBe(A);
   });
-  it('ocak 5 alım: demleme ÷1,35⁵ · kuyruk +5; garson tam: hız 4 · tepsi 4 · 2 garson', () => {
-    const e = kat2EtkinAyar(A, { ocak: 5, garsonHiz: 1, garsonTepsi: 2, garsonSayi: 1 });
+  it('ocak 5 alım: demleme ÷1,35⁵ · kuyruk +5; garson tam: hız 4 · tepsi 4; lavabo L6', () => {
+    const e = kat2EtkinAyar(A, { ocak: 5, garsonHiz: 1, garsonTepsi: 2, lavabo: 5 });
     expect(e.demleme).toBeCloseTo(A.demleme / 1.35 ** 5);
     expect(e.ocakKuyruk).toBe(A.ocakKuyruk + 5);
-    expect(e.garson).toEqual({ hiz: 4, tepsi: 4, sayi: 2, herMasa: true });
+    expect(e.garson).toEqual({ hiz: 4, tepsi: 4, herMasa: true });
+    expect(e.lavabo).toEqual({ ugrama: 0.55, ucret: 52 });
   });
   it('bozuk/taşan kayıt tavanda kalır', () => {
     const e = kat2EtkinAyar(A, { ocak: 99, garsonTepsi: -3 });
@@ -121,8 +123,9 @@ describe('ocak yükseltme noktası (Kat 1 servis noktası deseni)', () => {
     expect(kat2OcakTetik(yuksuz, HEPSI, {})).toBeNull();
   });
 
-  it('ocak seviyesi kahve üretimini artırır (5 alım ≥ 4 kat fincan/dk)', () => {
-    const uret = (ayar: Kat2Ayar) => {
+  it('ocak seviyesi kahve üretimini artırır (5 alım ≥ 4 kat fincan/dk; bulaşıksız mekanik)', () => {
+    const uret = (a0: Kat2Ayar) => {
+      const ayar: Kat2Ayar = { ...a0, bulasik: undefined };
       let d: Kat2Dunya = yeniKat2Dunya([OCAK.id], ayar);
       let n = 0;
       for (let i = 0; i < 600; i++) {
@@ -158,10 +161,14 @@ describe('garson her masaya (Kat 1 mantığı)', () => {
     expect(r.okey).toBe(0);
     expect(r.tavla).toBeGreaterThan(5);
   });
-  it('2. garson alımı dünyaya ikinci garsonu getirir', () => {
-    const e = kat2EtkinAyar(A, { garsonSayi: 1 });
-    const r = kat2Tick(yeniKat2Dunya(HEPSI, A), girdi(UZAK), 0.1, e);
-    expect([r.dunya.garson, ...(r.dunya.garsonEk ?? [])].filter(Boolean)).toHaveLength(2);
+  it("D-201: garson sayısı = açık garson pad'lerinin sayısı (Kat 1 waiter/2/3)", () => {
+    const say = (pd: string[]) => {
+      const d = kat2Tick(yeniKat2Dunya(pd, A), girdi(UZAK, { padsDone: pd }), 0.1, A).dunya;
+      return [d.garson, ...(d.garsonEk ?? [])].filter(Boolean).length;
+    };
+    expect(say(HEPSI)).toBe(3);
+    expect(say(HEPSI.filter((id) => id !== 'k2garson3'))).toBe(2);
+    expect(say(HEPSI.filter((id) => !id.startsWith('k2garson')))).toBe(0);
   });
   it('okey masası da var (bekçinin anlamı)', () => {
     expect(KAT2_MASALAR.some((m) => m.tur === 'okey' && HEPSI.includes(m.id))).toBe(true);

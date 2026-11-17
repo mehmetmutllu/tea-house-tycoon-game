@@ -153,3 +153,20 @@ eşit; bulaşık oyuncunun işi olarak kalıyor (oyuncu dakikada ~9 fincan yık�
 **D-201 (kullanıcı 2026-11-17): K-Bt2** — kayma + garson pad'leri G-K1 + lavabo yarı güç (LVy) + bulaşık Kat 1 (eşik 2) +
 masa başına fincan + garson teslimde boşu alır. Uygulama sonraki oturum: önce mantık (config + kod + kayıt + bekçi + final tam
 koşu), sonra görsel. Final koşusunda bu tablodaki K-Bt2 satırı (8,11 sa) config'le yeniden üretilmeli.
+
+## Uygulama — Parça 1 MANTIK (2026-11-17)
+
+Config = K-Bt2 (zincir 29 pad · ocak/garson/lavabo yükseltmesi · Sv · `kat2.bulasik`); panelden 2. garson kalktı
+(`garsonSayi` hattı silindi, eski kayıttaki değer düşer — kapı kapalıydı); lavabo L2-L6 oyunun tetiği (`kat2LavaboTetik`,
+`KAT2_LAVABO_YUK_YER`) + kayıt `kat2.yuk.lavabo` (additive); görev hattı +4 (Kat 1 metinleri: İLK/İKİNCİ/ÜÇÜNCÜ GARSON,
+BULAŞIKÇI), ödüller mevcut kuralla (referans pad × %15) yeniden yazıldı. Bekçi `tests/kat2-isleyis.test.ts` (12 test;
+mutasyon 4/4 yakalandı: pad fiyatı · `teslimdeAl` · lavabo tetiği · lavabo seviyesinin etkisi).
+
+**Final tam koşu** (`OLCUM=tam IS_TUR=2`, araç FİNAL kipi: config olduğu gibi — `docs/olcum-kat2-isleyis-final.txt`):
+
+| | ilk garson | zincir | Kat 2 | en uzun bekleyiş | servis | kirli masa | son saat Kat 2 |
+|---|---|---|---|---|---|---|---|
+| ölçüm K-Bt2 | 23,1 dk | 4,91 sa | 8,11 sa | 10,1 dk | %84 | %0 | 2.747 |
+| **config (final)** | **23,1 dk** | **4,91 sa** | **8,11 sa** | **10,1 dk** | **%84** | **%0** | **2.747** |
+
+Birebir aynı; alım dakikaları da aynı (garson 23/45/136 · bulaşıkçı 77 · lavabo 167/193/226/259/288). Sıradaki: Parça 2 görsel.

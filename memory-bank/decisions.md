@@ -5269,7 +5269,7 @@ Rapor `docs/kat2-ocak-garson-raporu.md` (araç `tools/olcum-kat2-ocak-garson.ts`
 - Fiyat: her alım onu açan zincir pad'inin yarısı (toplam 27.950). Final: Kat 2 9,55 sa · kahve servisi %37 → %71.
 - Kayıt additive `kat2.yuk`. Yeni metinler (TR+EN) ChatGPT mikrometin turunu bekliyor.
 
-## D-201 · Kat 2 işleyişi = Kat 1 + Kat 2 fiyatları gerçek Kat 1 geliriyle (K-Bt2, 2026-11-17) — UYGULAMA BEKLİYOR
+## D-201 · Kat 2 işleyişi = Kat 1 + Kat 2 fiyatları gerçek Kat 1 geliriyle (K-Bt2, 2026-11-17) — MANTIK KODDA, GÖRSEL BEKLİYOR
 Rapor `docs/kat2-isleyis-raporu.md` (araç `tools/olcum-kat2-isleyis.ts`, `IS_TUR=2`; Kat 1 `tools/olcum-kat1-pasif.ts`).
 Kullanıcı: *"neden alışkanlığı değiştiriyoruz?"* + *"Kat 1'in de para getirdiğini unutma"* + *"masalar sürekli kirli kalıyor gibi bir his olmasın"*.
 - **Kat 1 geliri:** formül yok, Kat 1 arkada oynar. Merdiveni açan oyuncunun Kat 1'i (görev hattı sonu) oyuncusuz **~900 coin/dk**;
@@ -5280,3 +5280,5 @@ Kullanıcı: *"neden alışkanlığı değiştiriyoruz?"* + *"Kat 1'in de para g
 - **Bulaşık = Kat 1** (eşik >2 · leğen 10 sn · boştaki garson 1 · bulaşıkçı pad 2,0/2, okey salonu 2. masadan sonra) + havuz masa
   başına kişi kadar fincan + **garson kahveyi getirirken boşu alır** (`teslimdeAl`) → kirli masa %0, gelir bulaşıksızla eşit.
 - Ölçülen: Kat 2 **8,11 sa** · zincir 4,91 sa (D-192 hedefi) · ilk garson 23. dk · en uzun bekleyiş 10,1 dk. Kat 1 sayıları değişmez.
+- Uygulama (2026-11-17): Parça 1 mantık commit #2'de; `npm run sira` "karma-commit" uyarısı verdi — araca FİNAL kipi (config'i olduğu gibi
+  koşar) + final çıktı kodla aynı commit'te, çünkü final koşu config'in kendisini ölçer; karar commit #1 (464271b) + 49ff418'de idi.

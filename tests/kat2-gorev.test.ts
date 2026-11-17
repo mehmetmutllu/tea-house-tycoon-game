@@ -45,10 +45,11 @@ describe('Kat 2 görev hattı — config bekçisi', () => {
     expect(kat2GorevHatasi(G, AYAR, HAZIR)).toBeNull();
     expect(kat2GorevHatasi(G, AYAR_SV, HAZIR)).toBeNull();
   });
-  it('15-20 görev (Sv hariç), Sv görevleri yalnız masaSv varken', () => {
+  // D-201: Kat 1 gibi garson/bulaşıkçı pad'lerinin kendi görevi (+4) → üst sınır 22.
+  it('15-22 görev (Sv hariç), Sv görevleri yalnız masaSv varken', () => {
     const svsiz = kat2Gorevleri(G, AYAR);
     expect(svsiz.length).toBeGreaterThanOrEqual(15);
-    expect(svsiz.length).toBeLessThanOrEqual(20);
+    expect(svsiz.length).toBeLessThanOrEqual(22);
     expect(svsiz.some((g) => g.hedef.tip === 'masaSv')).toBe(false);
     expect(kat2Gorevleri(G, AYAR_SV).length).toBe(G.length);
     // Config bugün masaSv taşımıyorsa oynanan hat Sv'siz (sözleşme: kapı ölçümden sonra).
@@ -59,10 +60,12 @@ describe('Kat 2 görev hattı — config bekçisi', () => {
     const sira = padHedef.map((id) => ZINCIR.indexOf(id));
     expect(sira.every((z, i) => z >= 0 && (i === 0 || z > sira[i - 1]))).toBe(true);
     expect(padHedef[padHedef.length - 1]).toBe(ZINCIR[ZINCIR.length - 1]);
-    for (const id of ['k2okey1', 'k2salon2', 'k2cezve2', 'k2lavabo', 'k2salon3', 'k2garson', 'k2tavla1']) expect(padHedef).toContain(id);
-    // D-191 akışı: okey salonu → 2. ocak → lavabo → tavla köşesi → garson
+    for (const id of ['k2okey1', 'k2garson', 'k2garson2', 'k2salon2', 'k2bulasikci', 'k2cezve2', 'k2garson3', 'k2lavabo', 'k2salon3', 'k2tavla1']) expect(padHedef).toContain(id);
+    // D-191 akışı + D-201 (Kat 1 gibi garson erken, pad ile): garson → 2. garson → okey salonu → bulaşıkçı → 2. ocak →
+    // 3. garson → lavabo → tavla köşesi
     const i = (id: string) => padHedef.indexOf(id);
-    expect(i('k2salon2') < i('k2cezve2') && i('k2cezve2') < i('k2lavabo') && i('k2lavabo') < i('k2salon3') && i('k2salon3') < i('k2garson')).toBe(true);
+    const akis = ['k2garson', 'k2garson2', 'k2salon2', 'k2bulasikci', 'k2cezve2', 'k2garson3', 'k2lavabo', 'k2salon3'].map(i);
+    expect(akis.every((v, k) => k === 0 || v > akis[k - 1])).toBe(true);
     // İlk görev varışta (hazır masa + ocak) yapılabilir.
     expect(G[0].hedef).toEqual({ tip: 'sayac', sayac: 'servis', adet: 1 });
   });
@@ -140,9 +143,9 @@ describe('kat2GorevIlerlet', () => {
     const i = G.findIndex((g) => g.id === 'k2_kahve10');
     const k: Kat2GorevKayit = { idx: i, sayac: { servis: 9 } };
     const r = kat2GorevIlerlet(k, olay({ servis: 1 }), { padsDone: kadar('k2salon2') }, G, AYAR);
-    expect(r.biten.map((g) => g.id)).toEqual(['k2_kahve10', 'k2_okey4', 'k2_salon2']);
+    expect(r.biten.map((g) => g.id)).toEqual(['k2_kahve10', 'k2_garson', 'k2_okey4', 'k2_garson2', 'k2_salon2']);
     expect(r.odul).toBe(r.biten.reduce((a, g) => a + g.reward, 0));
-    expect(r.kayit.idx).toBe(i + 3);
+    expect(r.kayit.idx).toBe(i + 5);
   });
   it('uçtan uca: zincir sırayla alınıp olaylar akınca bütün hat biter (Sv dahil)', () => {
     for (const ayar of [AYAR, AYAR_SV]) {
@@ -198,9 +201,9 @@ describe('kat2GorevHizala (yükleme, ödülsüz)', () => {
 
 describe('kat2GorevGorunumu (HUD şeridi)', () => {
   it('pad görevi aradaki zincir pad\'lerini adım sayar', () => {
-    const i = G.findIndex((g) => g.id === 'k2_okey4');
-    const v = kat2GorevGorunumu({ padsDone: kadar('k2okey3'), gorev: { idx: i, sayac: {} } }, G, AYAR);
-    expect(v).toMatchObject({ id: 'k2_okey4', cur: 1, total: 2, reward: G[i].reward });
+    const i = G.findIndex((g) => g.id === 'k2_s2okey2');
+    const v = kat2GorevGorunumu({ padsDone: kadar('k2s2okey1'), gorev: { idx: i, sayac: {} } }, G, AYAR);
+    expect(v).toMatchObject({ id: 'k2_s2okey2', cur: 1, total: 2, reward: G[i].reward });
   });
   it('tek adımlı pad görevi çubuksuz · sayaç görevi cur/total', () => {
     expect(kat2GorevGorunumu({ padsDone: [...HAZIR], gorev: { idx: 1, sayac: {} } }, G, AYAR)).toMatchObject({ cur: null, total: null });

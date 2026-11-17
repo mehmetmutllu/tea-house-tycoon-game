@@ -531,11 +531,11 @@ function kat2SvSozluk(v: unknown): Record<string, number> {
   }
   return out;
 }
-/** D-200: Kat 2 yükseltme alım sayıları — yalnız bilinen hatlar, tam sayı, ≥ 0. */
+/** D-200: Kat 2 yükseltme alım sayıları — yalnız bilinen hatlar, tam sayı, ≥ 0. D-201: `garsonSayi` hattı kalktı (kapı kapalıydı) → düşer. */
 function kat2YukKaydi(v: unknown): NonNullable<Kat2Kayit['yuk']> {
   const y = sozluk(v, negatifsizSayiMi);
   const out: NonNullable<Kat2Kayit['yuk']> = {};
-  for (const k of ['ocak', 'garsonHiz', 'garsonTepsi', 'garsonSayi'] as const) if (y[k] != null) out[k] = Math.floor(y[k]);
+  for (const k of ['ocak', 'garsonHiz', 'garsonTepsi', 'lavabo'] as const) if (y[k] != null) out[k] = Math.floor(y[k]);
   return out;
 }
 /** S3: Kat 2 görev hattı kaydı (D'nin `kat2Gorev.ts`i okur) — eksik/bozuk → baştan. */

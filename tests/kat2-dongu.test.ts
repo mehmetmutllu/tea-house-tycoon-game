@@ -38,7 +38,7 @@ function withStorage(fn: () => void): void {
 }
 /** Merdiven salonu (4 okey + ocak; D-191: ikisi hazır, üçü zincirin başı): okey davranışının bekçisi. */
 const HAZIR: readonly string[] = C.kat2.hazir;
-const HEPSI = [...HAZIR, ...A.padler.slice(0, 3).map((p) => p.id)];
+const HEPSI = [...HAZIR, 'k2okey1', 'k2okey3', 'k2okey4']; // D-201: zincirde aralarına 1. garson girdi — masalar adıyla
 const M1 = OKEY_YER[0];
 const MASA_ONU: [number, number] = [M1.x, M1.z + OKEY_ERISIM - 0.2];
 const UZAK: [number, number] = [0, -1]; // hiçbir masaya/ocağa/pada yetişmez
@@ -70,15 +70,17 @@ describe('config — D-184 V4 → D-198 G2 (mekanizma testleri D184_AYAR ile)', 
     expect([K.ilkGelis, K.ilkKahve, K.kahveAninda]).toEqual([3, 0, true]);
   });
 
-  it('zincir (D-191): hazır masa + ocak → 3 masa → okey salonu → 2 masa → 2. ocak → 4 masa → lavabo → tavla köşesi → garson → 12 tavla', () => {
-    expect(HEPSI).toEqual(['k2okey2', 'k2cezve', 'k2okey1', 'k2okey3', 'k2okey4']);
+  it('zincir (D-191 + D-201): hazır masa + ocak → 2 masa → garson → masa → 2. garson → okey salonu → 2 masa → bulaşıkçı → 2. ocak → 4 masa → 3. garson → lavabo → tavla köşesi → 12 tavla', () => {
     expect(A.padler.map((p) => p.id)).toEqual([
-      ...HEPSI.slice(HAZIR.length),
-      'k2salon2', 'k2s2okey1', 'k2s2okey2', 'k2cezve2', 'k2s2okey3', 'k2s2okey4', 'k2s2okey5', 'k2s2okey6',
-      'k2lavabo', 'k2salon3', 'k2garson', ...Array.from({ length: 12 }, (_, i) => `k2tavla${i + 1}`),
+      'k2okey1', 'k2okey3', 'k2garson', 'k2okey4', 'k2garson2',
+      'k2salon2', 'k2s2okey1', 'k2s2okey2', 'k2bulasikci', 'k2cezve2', 'k2s2okey3', 'k2s2okey4', 'k2s2okey5', 'k2s2okey6',
+      'k2garson3', 'k2lavabo', 'k2salon3', ...Array.from({ length: 12 }, (_, i) => `k2tavla${i + 1}`),
     ]);
-    // D-188 (SB9): fiyat o anki gelire bakar; salon/ocak/garson masadan pahalı değil → ardışık eşit olabilir, düşmez.
-    for (let i = 1; i < A.padler.length; i++) expect(A.padler[i].cost).toBeGreaterThanOrEqual(A.padler[i - 1].cost);
+    // D-188 (SB9): fiyat o anki gelire bakar; salon/ocak masadan pahalı değil → ardışık eşit olabilir, düşmez.
+    // D-201: garson/bulaşıkçı pad'i Kat 1 gibi ardından gelen pad × ½ olabilir → onlar bu kuralın dışında.
+    const yarim = new Set(['k2garson', 'k2bulasikci']);
+    const zincir = A.padler.filter((p) => !yarim.has(p.id));
+    for (let i = 1; i < zincir.length; i++) expect(zincir[i].cost).toBeGreaterThanOrEqual(zincir[i - 1].cost);
     for (const p of A.padler) {
       expect(p.cost).toBeGreaterThan(0);
       expect(p.cost / p.fillRate).toBeLessThanOrEqual(3.6); // Kat 1'in dolum tavanı

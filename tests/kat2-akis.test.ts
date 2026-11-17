@@ -61,7 +61,7 @@ describe('config — D-191 hazır başlangıç + D-192 zinciri', () => {
     expect(i(KAT2_LAVABO_PAD)).toBeGreaterThan(i('k2cezve2'));
     expect(i(KAT2_LAVABO_PAD)).toBeGreaterThan(i('k2s2okey6'));
     expect(i(KAT2_LAVABO_PAD)).toBeLessThan(i('k2salon3'));
-    expect(ZINCIR).toHaveLength(26);
+    expect(ZINCIR).toHaveLength(29); // D-201: 3 garson + bulaşıkçı pad (eski tek garson pad çıktı)
     expect(kat2ZincirHatasi({ ...A, padler: [...HAZIR, ...ZINCIR].map((id) => ({ id, cost: 1, fillRate: 1 })) })).toBeNull();
     for (const p of A.padler) expect(p.fillRate).toBe(Math.round(p.cost / 3.5));
   });

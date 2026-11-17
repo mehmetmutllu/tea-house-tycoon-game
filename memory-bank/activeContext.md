@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-17 — D-200 Kat 2 ocak/garson yükseltmesi kodda · deneme APK yenilenecek · yayın kullanıcının geri bildiriminden sonra)
+## ŞU AN (2026-11-17 — D-201 Parça 1 MANTIK kodda · sıradaki Parça 2 GÖRSEL · yayın kullanıcının geri bildiriminden sonra)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -32,18 +32,18 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
-## ⏭️ SIRADAKİ ADIM — D-201 UYGULAMA (karar verildi 2026-11-17; rapor `docs/kat2-isleyis-raporu.md` §Tur 2 + Karar)
-Ölçüm + karar bitti (commit 77b9b89, 464271b). Kodda hazır, config'te KAPALI: 3 garson pad'i (`KAT2_GARSON_PADLER`, merdiven
-salonu; 1. garson pad'i oraya taşındı) · `Kat2Ayar.bulasik` (+ `teslimdeAl`, `havuzKisi`) · yıkama/bulaşıkçı/lavabo-yük yerleri (`kat.ts`).
-**Parça 1 — MANTIK (sonraki oturum):** config'e K-Bt2'yi yaz — sayılar `docs/olcum-kat2-isleyis-t2.txt` "K-Bt2 zincir/ocak" satırları
-(pad +7.400 · Sv +2.450 · garson pad'leri · bulaşıkçı · yükseltme ½ · `garsonSayi` sil · ocak 4. açan `k2salon3`) · lavabo L2-L6
-tetiği `kat2Dongu`'ya (ocak tetiği gibi, `KAT2_LAVABO_YUK_YER`, LVy ücret 18/21/25/31/39/52) + kayıt `kat2.yuk.lavabo` (additive) ·
-store'a bulaşık dünyası · CharacterPanel'den 2. garson satırı · görev hattı (garson/bulaşıkçı pad'leri) · bekçi testi "config = K-Bt2"
-+ ≥2 mutasyon · final TAM koşu (`IS_TUR=2`, K-Bt2 ≈ 8,11 sa) · D-201 başlığından "UYGULAMA BEKLİYOR" kalkar.
-**Parça 2 — GÖRSEL:** masada fincan/kirli · yıkama yeri + leğen · bulaşıkçı NPC · garson evleri · lavabo seviye noktası · pad etiketleri
-("2. Garson" vb. TR+EN, ChatGPT mikrometin) → kare ile göster (plan `docs/kareler/kat2-isleyis-plan.png`).
-**Yan bulgular:** Kat 1 bulaşıkçısının son kademesi (taşıma 8) tabandan kötü (dolmadan yıkamaya gitmiyor) — Kat 1'de de aynı
-kural, ayrı turda bak · Kat 1 masaları L4'teyse Kat 1 ~1.216 coin/dk → Kat 2 ~7,5 sa (ölçülmedi).
+## ⏭️ SIRADAKİ ADIM — D-201 PARÇA 2 GÖRSEL (Parça 1 mantık bitti 2026-11-17; rapor `docs/kat2-isleyis-raporu.md` §Uygulama)
+Kodda: config = K-Bt2 · zincirde `k2garson`(3. okeyden sonra)/`k2garson2`/`k2garson3` + `k2bulasikci` · `kat2.bulasik` (teslimdeAl) ·
+lavabo L2-L6 `kat2LavaboTetik` (`KAT2_LAVABO_YUK_YER`, kayıt `kat2.yuk.lavabo`) · panelden 2. garson KALKTI · görev hattı +4 (Kat 1
+metinleri), ödüller referans × %15. Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` = ölçüm (8,11 sa).
+Ölçüm aracı artık FİNAL kipinde (config'te bulaşık varsa config'i olduğu gibi koşar); tarihî kollar git 464271b'de.
+**Parça 2 — GÖRSEL (dünyada henüz çizilmeyenler):** masada fincan/kirli · yıkama yeri + leğen · bulaşıkçı NPC · 2-3. garson
+evleri/NPC · lavabo seviye noktası (çerçeve + dolum barı, Kat 1 servis noktası dili) · garson/bulaşıkçı pad etiketleri ("2. Garson"
+vb. TR+EN) → kare ile göster (plan `docs/kareler/kat2-isleyis-plan.png`). Duman ile oyunda yürüyerek doğrula.
+**Sonraki oturumda sor:** eski `tools/olcum-kat2-ocak-garson.ts` "config = HOG2-½" damgası artık kırık (D-201 fiyatları değiştirdi) —
+araç tarihî, silinsin mi/FİNAL kipine alınsın mı.
+**Yan bulgular:** Kat 1 bulaşıkçısının son kademesi (taşıma 8) tabandan kötü (dolmadan yıkamaya gitmiyor) — ayrı turda bak ·
+Kat 1 masaları L4'teyse Kat 1 ~1.216 coin/dk → Kat 2 ~7,5 sa (ölçülmedi).
 - Önceki açıklar: 2 metin ChatGPT turu (D-200) · yeni deneme APK alınmadı · kullanıcı deneme APK ile oynuyor (D-197).
 - **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (2026-11-13). 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım · Play zip · "Yenilikler".
 

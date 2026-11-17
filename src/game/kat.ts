@@ -301,9 +301,9 @@ export interface Kat2Kayit {
   gorev?: { idx: number; sayac: Record<string, number> };
   /**
    * D-200: ocak + garson yükseltmelerinin alım sayıları (Kat 1 mantığı; `kat2Dongu.Kat2YukSeviye`). Additive (D-182):
-   * eski kayıtta yok → hepsi 0, `saveVersion` artmaz.
+   * eski kayıtta yok → hepsi 0, `saveVersion` artmaz. D-201: `lavabo` (L2-L6) eklendi, `garsonSayi` kalktı (additive).
    */
-  yuk?: { ocak?: number; garsonHiz?: number; garsonTepsi?: number; garsonSayi?: number };
+  yuk?: { ocak?: number; garsonHiz?: number; garsonTepsi?: number; lavabo?: number };
 }
 
 /** Masa seviyesinin tavanı (Sv1-5, D-181 görselleri). Oyun kuralı: tetik Sv5'te kalkar. */

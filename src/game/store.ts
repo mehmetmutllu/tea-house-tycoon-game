@@ -617,7 +617,7 @@ export interface GameState {
   /** Bulaşıkçı hız kademesi satın al (v29, Bulaşıkçı sekmesi): tüm salonlara ortak. */
   buyDishSpeed: () => boolean;
   /** D-200: Kat 2 garson yükseltmesi (panelden; Kat 1 `buyWaiterTray` deseni). Açık değilse/para yetmezse false. */
-  kat2GarsonYukAl: (tur: 'garsonHiz' | 'garsonTepsi' | 'garsonSayi') => boolean;
+  kat2GarsonYukAl: (tur: 'garsonHiz' | 'garsonTepsi') => boolean;
   /** Karakter paneli ilk-sefer spotlight'ını kapat (butona dokununca; persist — bir daha çıkmaz). */
   markCharPanelSeen: () => void;
   /**
@@ -1107,6 +1107,11 @@ export const useGame = create<GameState>((set, get) => ({
       // D-200: dolan ocak yükseltmesi → mutfak bir seviye (Kat 1 servis yükseltmesi deseni).
       if (r.olay.ocakYuk) {
         kat2 = { ...kat2, yuk: { ...kat2.yuk, ocak: (kat2.yuk?.ocak ?? 0) + 1 } };
+        xp += C.xp.perUpgrade;
+      }
+      // D-201: dolan lavabo seviye noktası → lavabo bir seviye (Kat 1 lavabo yükseltmesi deseni).
+      if (r.olay.lavaboYuk) {
+        kat2 = { ...kat2, yuk: { ...kat2.yuk, lavabo: (kat2.yuk?.lavabo ?? 0) + 1 } };
         xp += C.xp.perUpgrade;
       }
     } else if (kat2.acik && kat2Etkin() && kat2.padsDone.length > 0) {

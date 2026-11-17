@@ -25,6 +25,8 @@ import {
   KAT2_KISI,
   KAT2_LAVABO_PAD,
   KAT2_LAVABO_YER,
+  KAT2_LAVABO_YUK_ID,
+  KAT2_LAVABO_YUK_YER,
   KAT2_MASALAR,
   KAT2_OCAK_YUK_ID,
   KAT2_OCAK_YUK_YER,
@@ -159,19 +161,22 @@ export interface Kat2YukAyar {
   garsonHiz: { acan: readonly string[]; fiyat: readonly number[]; deger: readonly number[] };
   /** Garson tepsisi: her alım +1 fincan. */
   garsonTepsi: { acan: readonly string[]; fiyat: readonly number[] };
-  /** Ek garson: her alım +1 garson. */
-  garsonSayi: { acan: readonly string[]; fiyat: readonly number[] };
+  /**
+   * D-201 LAVABO L2-L6 (Kat 1 `rooms.lavabo`): k. alımdan sonra lavabo `{ ugrama[k], ucret[k] }` (indeks 0 = L1 = `Kat2Ayar.lavabo`).
+   * Lavabonun solundaki noktada durunca dolar (ocak noktası deseni). (D-200'ün panelden 2. garsonu kalktı: garsonlar zincirde pad.)
+   */
+  lavabo: { acan: readonly string[]; fiyat: readonly number[]; ugrama: readonly number[]; ucret: readonly number[] };
 }
 export type Kat2YukTur = keyof Kat2YukAyar;
 export type Kat2YukSeviye = Record<Kat2YukTur, number>;
-export const KAT2_YUK_TURLERI: readonly Kat2YukTur[] = ['ocak', 'garsonHiz', 'garsonTepsi', 'garsonSayi'];
+export const KAT2_YUK_TURLERI: readonly Kat2YukTur[] = ['ocak', 'garsonHiz', 'garsonTepsi', 'lavabo'];
 
 /** Kayıttaki alım sayıları (eksik = 0). */
 export const kat2YukOku = (y?: Partial<Kat2YukSeviye>): Kat2YukSeviye => ({
   ocak: y?.ocak ?? 0,
   garsonHiz: y?.garsonHiz ?? 0,
   garsonTepsi: y?.garsonTepsi ?? 0,
-  garsonSayi: y?.garsonSayi ?? 0,
+  lavabo: y?.lavabo ?? 0,
 });
 
 /** Yükseltmelerin işlendiği ayar. Alım yoksa AYNI nesne döner (kimlik korunur). */
@@ -190,8 +195,8 @@ export function kat2EtkinAyar(a: Kat2Ayar, y?: Partial<Kat2YukSeviye>): Kat2Ayar
       ...a.garson,
       hiz: s.garsonHiz > 0 ? u.garsonHiz.deger[s.garsonHiz - 1] : a.garson.hiz,
       tepsi: a.garson.tepsi + s.garsonTepsi,
-      sayi: (a.garson.sayi ?? 1) + s.garsonSayi,
     },
+    lavabo: s.lavabo > 0 ? { ugrama: u.lavabo.ugrama[s.lavabo], ucret: u.lavabo.ucret[s.lavabo] } : a.lavabo,
   };
 }
 
@@ -209,6 +214,14 @@ export function kat2OcakTetik(a: Kat2Ayar, padsDone: readonly string[], y: Parti
   const s = kat2YukSiradaki(a, padsDone, y, 'ocak');
   if (!s?.acik) return null;
   return { id: KAT2_OCAK_YUK_ID, fiyat: s.fiyat, x: KAT2_OCAK_YUK_YER[0], z: KAT2_OCAK_YUK_YER[1] };
+}
+
+/** D-201 lavabo seviye tetiği (en fazla bir): lavabo açık, açan pad bitmiş ve tavanda değilse. Çerçeve `servisCercevesi`. */
+export function kat2LavaboTetik(a: Kat2Ayar, padsDone: readonly string[], y: Partial<Kat2YukSeviye> | undefined): { id: string; fiyat: number; x: number; z: number } | null {
+  if (!padsDone.includes(KAT2_LAVABO_PAD)) return null;
+  const s = kat2YukSiradaki(a, padsDone, y, 'lavabo');
+  if (!s?.acik) return null;
+  return { id: KAT2_LAVABO_YUK_ID, fiyat: s.fiyat, x: KAT2_LAVABO_YUK_YER[0], z: KAT2_LAVABO_YUK_YER[1] };
 }
 
 /**
@@ -393,6 +406,8 @@ export interface Kat2Cikti {
     svAtlayan: string[];
     /** D-200: ocak yükseltme tetiği bu adımda doldu (çağıran `kat2.yuk.ocak`ı artırır; parası `harcama`da). */
     ocakYuk: boolean;
+    /** D-201: lavabo seviye tetiği bu adımda doldu (çağıran `kat2.yuk.lavabo`yu artırır; parası `harcama`da). */
+    lavaboYuk: boolean;
     /** Bulaşık: OYUNCUNUN bu adımda leğene bıraktığı kirli (personelinki sayılmaz — Kat 1 `dishesWashed`). */
     yikanan: number;
     /** Bulaşık: leğenden bu adımda temize dönen fincan (kim bırakmış olursa olsun). */
@@ -850,6 +865,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     lavabo: 0,
     svAtlayan: [],
     ocakYuk: false,
+    lavaboYuk: false,
     yikanan: 0,
     temizDonen: 0,
   };
@@ -928,6 +944,25 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       olay.ocakYuk = true;
     } else {
       d.padFill[oy.id] = fill;
+    }
+  }
+
+  // ---- LAVABO SEVİYESİ (D-201): aynı desen, lavabonun solundaki nokta.
+  const ly = kat2LavaboTetik(ayar, padsDone, g.yuk);
+  if (ly && inFrame(g.x, g.z, [ly.x, 0, ly.z], servisCercevesi())) {
+    let fill = d.padFill[ly.id] ?? 0;
+    if (g.durdu) {
+      const amt = Math.min((ly.fiyat / SV_DOLUM_SN) * dt, g.cuzdan - harcama, ly.fiyat - fill);
+      if (amt > 0) {
+        fill += amt;
+        harcama += amt;
+      }
+    }
+    if (fill >= ly.fiyat - 1e-9) {
+      delete d.padFill[ly.id];
+      olay.lavaboYuk = true;
+    } else {
+      d.padFill[ly.id] = fill;
     }
   }
 

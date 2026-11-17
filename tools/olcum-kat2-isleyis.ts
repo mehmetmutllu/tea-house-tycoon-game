@@ -16,6 +16,9 @@
  *
  *   OLCUM=kisa npx tsx tools/olcum-kat2-isleyis.ts
  *   OLCUM=tam  npx tsx tools/olcum-kat2-isleyis.ts > docs/olcum-kat2-isleyis.txt
+ * FİNAL (D-201 uygulandı → config `kat2.bulasik` taşıyor): tarihî kollar eski config'e göreydi (git 464271b); araç config'i
+ * OLDUĞU GİBİ koşar (garson/bulaşıkçı pad'leri zincirde, lavabo L2-L6 oyunun tetiğiyle) ve K-Bt2 ölçümüyle (8,11 sa) karşılaştırır.
+ *   OLCUM=tam IS_TUR=2 npx tsx tools/olcum-kat2-isleyis.ts > docs/olcum-kat2-isleyis-final.txt
  * Mutasyon: IS_MUT=garsonyok (garson pad'i açılır ama garson gelmez → G kollarının ilk garson etkisi kaybolur, varyant
  * damgası kırılır) · IS_MUT=yikamaz (leğen hiç temize döndürmez → bulaşık kolları tıkanır, "bulaşık döner" damgası kırılır).
  */
@@ -115,7 +118,8 @@ interface Kol {
   not: string;
   ekler: Ek[]; // boşsa zincir config'in kendisi (TABAN)
   lavabo?: LavYuk;
-  bulasik?: Kat2BulasikAyar;
+  /** null = bulaşık yok (FİNAL'de config'in bulaşığını kapatmak için). */
+  bulasik?: Kat2BulasikAyar | null;
   /**
    * TUR 2 — FİYAT KAYMASI (D-192 kuralı gerçek Kat 1'le): pad "o anki toplam gelirin ~9 dk'sı", masa Sv "~3 dk'sı" idi ama
    * toplam gelire Kat 1 ~76 coin/dk girmişti. Gerçek Kat 1 (görev hattı sonu) farkı Δ → pad +9Δ, Sv +3Δ; ocak/garson/lavabo
@@ -184,8 +188,12 @@ const KOLLAR: Kol[] = [
 ];
 
 const TUR2 = process.env.IS_TUR === '2';
+/** D-201 config'te mi (bulaşık config'te) → FİNAL kipi. */
+const FINAL = !!CFG.bulasik;
+/** Kolun koşusunda bulaşık var mı (`kolAyari` kuralı: ek'siz kol config'in bulaşığını alır). */
+const bulasikli = (k: Kol) => (k.bulasik === undefined && !k.ekler.length ? !!CFG.bulasik : !!k.bulasik);
 const BT = (esik: number): Kat2BulasikAyar => ({ ...BULASIK_MASA, esik, teslimdeAl: true });
-const KOLLAR2: Kol[] = [
+const KOLLAR2: Kol[] = FINAL ? [{ ad: 'D-201', not: 'config OLDUĞU GİBİ (= K-Bt2)', ekler: [] }] : [
   { ad: 'TABAN', not: 'bugünkü config, GERÇEK Kat 1', ekler: [] },
   { ad: 'Gbug', not: 'G-K1 + LVy + bulaşık eşik 4 (tur 1 önerisi), bugünkü fiyatlar, GERÇEK Kat 1', ekler: [...G_K1, BK], lavabo: LV_YARIM_UCRET, bulasik: { ...BULASIK_MASA, esik: 4 } },
   { ad: 'K-G', not: 'kayma + G-K1 + LVy, bulaşık yok', ekler: G_K1, lavabo: LV_YARIM_UCRET, kayma: true },
@@ -194,7 +202,10 @@ const KOLLAR2: Kol[] = [
   { ad: 'K-Bt4', not: 'K-Bt2, eşik 4', ekler: [...G_K1, BK], lavabo: LV_YARIM_UCRET, bulasik: BT(4), kayma: true },
   { ad: 'K-LV½-Bt2', not: 'K-Bt2, lavabo ücreti Kat 1 aynen (18 → 86)', ekler: [...G_K1, BK], lavabo: LV_YARIM, bulasik: BT(2), kayma: true },
 ];
-const PLATOLAR2: Kol[] = [
+const PLATOLAR2: Kol[] = FINAL ? [
+  { ad: 'bulaşık yok', not: '', ekler: [], bulasik: null },
+  { ad: 'B eşik 2 teslim', not: '', ekler: [] },
+] : [
   { ad: 'bulaşık yok', not: '', ekler: G_K1, lavabo: LV_YARIM_UCRET },
   { ad: 'B eşik 2', not: '', ekler: [...G_K1, BK], lavabo: LV_YARIM_UCRET, bulasik: BULASIK_MASA },
   { ad: 'B eşik 4', not: '', ekler: [...G_K1, BK], lavabo: LV_YARIM_UCRET, bulasik: { ...BULASIK_MASA, esik: 4 } },
@@ -225,7 +236,8 @@ function kolAyari(k: Kol): { a: Kat2Ayar; lav?: LavYuk } {
     masaSv = CFG.masaSv && { okey: { ...CFG.masaSv.okey, fiyat: sv(CFG.masaSv.okey.fiyat) }, tavla: { ...CFG.masaSv.tavla, fiyat: sv(CFG.masaSv.tavla.fiyat) } };
     if (lav && lav !== LV_K1) lav = { ...lav, fiyat: yarim(lav.acan) };
   }
-  const a: Kat2Ayar = { ...CFG, padler, yukseltme, masaSv, bulasik: k.bulasik };
+  const bulasik = k.bulasik === undefined && !k.ekler.length ? CFG.bulasik : k.bulasik ?? undefined;
+  const a: Kat2Ayar = { ...CFG, padler, yukseltme, masaSv, bulasik };
   const h = kat2YapiHatasi(a);
   if (h) throw new Error(`${k.ad}: ${h}`);
   return { a, lav };
@@ -321,7 +333,9 @@ interface Kosu {
 }
 
 type Yuk = { tur: 'ocak' | 'ghiz' | 'gtepsi' | 'gsayi' | 'lav'; acan: string; fiyat: number };
-const sevOyun = (s: Record<Yuk['tur'], number>): Kat2YukSeviye => ({ ocak: s.ocak, garsonHiz: s.ghiz, garsonTepsi: s.gtepsi, garsonSayi: s.gsayi });
+/** Oyunun gördüğü alım sayıları. Lavabo yalnız config'in hattıysa (FİNAL) oyuna gider; kolun lavabosu araçta sürülür. */
+const sevOyun = (s: Record<Yuk['tur'], number>, lavOyun = false): Kat2YukSeviye =>
+  ({ ocak: s.ocak, garsonHiz: s.ghiz, garsonTepsi: s.gtepsi, garsonSayi: s.gsayi, lavabo: lavOyun ? s.lav : 0 }) as unknown as Kat2YukSeviye;
 
 function kos(kol: Kol, o: { plato?: { sv: number }; iz1?: Float64Array; sure: number; olcBas: number }): Kosu {
   const plato = o.plato;
@@ -333,10 +347,13 @@ function kos(kol: Kol, o: { plato?: { sv: number }; iz1?: Float64Array; sure: nu
   let padsDone: string[] = plato ? [...TUM] : [...HAZIR];
   const sev: Record<Yuk['tur'], number> = { ocak: 0, ghiz: 0, gtepsi: 0, gsayi: 0, lav: 0 };
   const YK = A0.yukseltme!;
-  const lavAyar = () => (sev.lav > 0 || LAV ? { ugrama: K1_LAV.visitChanceByLevel[sev.lav], ucret: (LAV?.ucret ?? K1_LAV.feeByLevel)[sev.lav] } : A0.lavabo);
+  /** FİNAL: lavabo hattı config'te (`yukseltme.lavabo`), oyunun tetiği doldurur. */
+  const LAV_OYUN = !LAV && !!YK.lavabo;
+  const sevO = () => sevOyun(sev, LAV_OYUN);
+  const lavAyar = (a: Kat2Ayar) => (LAV ? { ugrama: K1_LAV.visitChanceByLevel[sev.lav], ucret: (LAV.ucret ?? K1_LAV.feeByLevel)[sev.lav] } : a.lavabo);
   const ayarHesap = (): Kat2Ayar => {
-    const a = kat2EtkinAyar(A0, sevOyun(sev));
-    const lavabo = lavAyar();
+    const a = kat2EtkinAyar(A0, sevO());
+    const lavabo = lavAyar(a);
     if (MUT === 'garsonyok') return { ...a, lavabo, garson: undefined };
     return { ...a, lavabo };
   };
@@ -350,16 +367,16 @@ function kos(kol: Kol, o: { plato?: { sv: number }; iz1?: Float64Array; sure: nu
         ...YK.ocak.acan.map((acan, i) => ({ tur: 'ocak' as const, acan, fiyat: YK.ocak.fiyat[i] })),
         ...YK.garsonHiz.acan.map((acan, i) => ({ tur: 'ghiz' as const, acan, fiyat: YK.garsonHiz.fiyat[i] })),
         ...YK.garsonTepsi.acan.map((acan, i) => ({ tur: 'gtepsi' as const, acan, fiyat: YK.garsonTepsi.fiyat[i] })),
-        ...YK.garsonSayi.acan.map((acan, i) => ({ tur: 'gsayi' as const, acan, fiyat: YK.garsonSayi.fiyat[i] })),
-        ...(LAV?.acan ?? []).map((acan, i) => ({ tur: 'lav' as const, acan, fiyat: LAV!.fiyat[i] })),
+        ...(YK.garsonSayi?.acan ?? []).map((acan, i) => ({ tur: 'gsayi' as const, acan, fiyat: YK.garsonSayi.fiyat[i] })),
+        ...(LAV ?? (LAV_OYUN ? YK.lavabo : undefined))?.acan.map((acan, i) => ({ tur: 'lav' as const, acan, fiyat: (LAV ?? YK.lavabo).fiyat[i] })) ?? [],
       ];
   const yukToplam = yukKalan.length;
   if (plato) {
     sev.ocak = YK.ocak.fiyat.length;
     sev.ghiz = YK.garsonHiz.fiyat.length;
     sev.gtepsi = YK.garsonTepsi.fiyat.length;
-    sev.gsayi = YK.garsonSayi.fiyat.length;
-    sev.lav = LAV ? LAV.fiyat.length : 0;
+    sev.gsayi = YK.garsonSayi?.fiyat.length ?? 0;
+    sev.lav = LAV ? LAV.fiyat.length : LAV_OYUN ? YK.lavabo.fiyat.length : 0;
     ayar = ayarHesap();
     d = yeniKat2Dunya(padsDone, ayar);
   }
@@ -409,7 +426,7 @@ function kos(kol: Kol, o: { plato?: { sv: number }; iz1?: Float64Array; sure: nu
     const yk = acik.length ? acik.reduce((a, b) => (a.fiyat <= b.fiyat ? a : b)) : undefined;
     if (yk) {
       const yer = yk.tur === 'ocak' ? KAT2_OCAK_YUK_YER : yk.tur === 'lav' ? KAT2_LAVABO_YUK_YER : null;
-      const dolu = yk.tur === 'ocak' ? d.padFill['k2ocakYuk'] ?? 0 : yk.tur === 'lav' ? lavDolum : 0;
+      const dolu = yk.tur === 'ocak' ? d.padFill['k2ocakYuk'] ?? 0 : yk.tur === 'lav' ? (LAV_OYUN ? d.padFill['k2lavaboYuk'] ?? 0 : lavDolum) : 0;
       adaylar.push({ kalan: yk.fiyat - dolu, yer, yuk: yk });
     }
     const ucuz = adaylar.length ? adaylar.reduce((a, b) => (a.kalan <= b.kalan ? a : b)) : null;
@@ -466,7 +483,7 @@ function kos(kol: Kol, o: { plato?: { sv: number }; iz1?: Float64Array; sure: nu
       z = nz;
     }
     // Lavabo seviye noktası: durunca pad hızıyla dolar (araç; oyunda tetik uygulamada gelir).
-    if (yk && yk.tur === 'lav' && durdu && ucuz?.yuk === yk && uz([x, z], KAT2_LAVABO_YUK_YER) < 0.5) {
+    if (!LAV_OYUN && yk && yk.tur === 'lav' && durdu && ucuz?.yuk === yk && uz([x, z], KAT2_LAVABO_YUK_YER) < 0.5) {
       const amt = Math.min((yk.fiyat / DOLUM_SN) * DT, cuzdan, yk.fiyat - lavDolum);
       lavDolum += amt;
       cuzdan -= amt;
@@ -477,7 +494,7 @@ function kos(kol: Kol, o: { plato?: { sv: number }; iz1?: Float64Array; sure: nu
       }
     }
 
-    const r = kat2Tick(d, { x, z, durdu, cuzdan, padsDone, tepsiKap: TEPSI, miknatis: MIKNATIS, masaSv, svCanli: !plato && zincirBitti, yuk: sevOyun(sev) }, DT, ayar);
+    const r = kat2Tick(d, { x, z, durdu, cuzdan, padsDone, tepsiKap: TEPSI, miknatis: MIKNATIS, masaSv, svCanli: !plato && zincirBitti, yuk: sevO() }, DT, ayar);
     d = r.dunya;
     for (const id of r.olay.svAtlayan) {
       masaSv[id] = Math.min(KAT2_SV_MAX, (masaSv[id] ?? 1) + 1);
@@ -490,6 +507,10 @@ function kos(kol: Kol, o: { plato?: { sv: number }; iz1?: Float64Array; sure: nu
     if (r.olay.ocakYuk) {
       const oy = yukKalan.filter((y) => y.tur === 'ocak' && padsDone.includes(y.acan)).reduce((a, c) => (a.fiyat <= c.fiyat ? a : c));
       yukAlindi(oy, t);
+    }
+    if (r.olay.lavaboYuk) {
+      if (!LAV_OYUN) throw new Error(`${kol.ad}: oyunun lavabo tetiği kolun lavabosuyla çakıştı`);
+      yukAlindi(yukKalan.filter((y) => y.tur === 'lav' && padsDone.includes(y.acan)).reduce((a, c) => (a.fiyat <= c.fiyat ? a : c)), t);
     }
     const dusen = r.olay.dusen.reduce((a, c) => a + c, 0) + r.olay.lavabo;
     dusenTop += dusen;
@@ -562,9 +583,10 @@ if (TUR2) {
   KAYMA_DK = r1Dk - eski;
   console.log(`TUR 2 · GERÇEK Kat 1 izi (görev hattı sonu): ${r1Dk.toFixed(1)} coin/dk · fark ${KAYMA_DK.toFixed(0)} → pad +${yuvarla50(9 * KAYMA_DK)} · Sv +${yuvarla50(3 * KAYMA_DK)}`);
   for (const k of KOLLAR2) console.log(`  ${k.ad.padEnd(10)} ${k.not}`);
-  const ornek = kolAyari(KOLLAR2.find((k) => k.ad === 'K-Bt2')!);
-  console.log(`  K-Bt2 zincir: ${ornek.a.padler.map((p) => `${p.id} ${p.cost}`).join(' · ')}`);
-  console.log(`  K-Bt2 ocak ${ornek.a.yukseltme!.ocak.fiyat.join('/')} · garson hız ${ornek.a.yukseltme!.garsonHiz.fiyat.join('/')} · tepsi ${ornek.a.yukseltme!.garsonTepsi.fiyat.join('/')} · lavabo ${ornek.lav!.fiyat.join('/')} · okey Sv ${ornek.a.masaSv!.okey.fiyat.join('/')} · tavla Sv ${ornek.a.masaSv!.tavla.fiyat.join('/')}`);
+  const ornek = kolAyari(FINAL ? KOLLAR2[0] : KOLLAR2.find((k) => k.ad === 'K-Bt2')!);
+  const ad = FINAL ? 'config' : 'K-Bt2';
+  console.log(`  ${ad} zincir: ${ornek.a.padler.map((p) => `${p.id} ${p.cost}`).join(' · ')}`);
+  console.log(`  ${ad} ocak ${ornek.a.yukseltme!.ocak.fiyat.join('/')} · garson hız ${ornek.a.yukseltme!.garsonHiz.fiyat.join('/')} · tepsi ${ornek.a.yukseltme!.garsonTepsi.fiyat.join('/')} · lavabo ${(ornek.lav ?? ornek.a.yukseltme!.lavabo).fiyat.join('/')} · okey Sv ${ornek.a.masaSv!.okey.fiyat.join('/')} · tavla Sv ${ornek.a.masaSv!.tavla.fiyat.join('/')}`);
 }
 damga('Kat 1 izi akıyor', r1Dk > 10, `${r1Dk.toFixed(1)}`);
 
@@ -597,7 +619,7 @@ for (const sv of [1, KAT2_SV_MAX]) {
     platoIz.set(`${p.ad}/${sv}`, r.iz);
     platoDk.set(`${p.ad}/${sv}`, o.para / dk);
     platoGarson.push(o.garson);
-    if (p.bulasik) platoDonen.push(o.donen / Math.max(1, o.servis));
+    if (bulasikli(p)) platoDonen.push(o.donen / Math.max(1, o.servis));
     console.log(
       `${p.ad.padEnd(16)} | ${sv}  | ${f0(o.para / dk).padStart(7)} | ${yuzde(o.servis, o.servis + o.kacan).padStart(8)} | ${yuzde(o.garson, o.servis).padStart(11)} | ${yuzde(o.kirliBek, o.masaSn).padStart(19)} | ${yuzde(o.temizYok, o.ocakSn).padStart(18)} | ${f1(o.yikanan / dk).padStart(16)} | ${yuzde(o.botBos, o.sure).padStart(9)}`,
     );
@@ -610,7 +632,7 @@ varyantDamgasi('plato bulaşık Sv1', platoIz.get(`${P0}/1`)!, platoIz.get(`${PB
 damga('bulaşık döner (≥ %50 bulaşıksız gelir)', platoDk.get(`${PB}/1`)! >= 0.5 * platoDk.get(`${P0}/1`)!, `${f0(platoDk.get(`${PB}/1`)!)} / ${f0(platoDk.get(`${P0}/1`)!)}`);
 
 // ---- §B İLERLEME
-const ILERLEME = TUR2 ? (KISA ? KOLLAR2.filter((k) => ['TABAN', 'K-Bt2'].includes(k.ad)) : KOLLAR2) : KISA ? KOLLAR.filter((k) => ['TABAN', 'G-K1', 'G+LV+B'].includes(k.ad)) : KOLLAR;
+const ILERLEME = TUR2 ? (KISA && !FINAL ? KOLLAR2.filter((k) => ['TABAN', 'K-Bt2'].includes(k.ad)) : KOLLAR2) : KISA ? KOLLAR.filter((k) => ['TABAN', 'G-K1', 'G+LV+B'].includes(k.ad)) : KOLLAR;
 const sonuc: { k: Kol; r: Kosu }[] = [];
 for (const k of ILERLEME) {
   const r = kos(k, { iz1: IZ1, sure: UFUK, olcBas: 0 });
@@ -621,7 +643,7 @@ for (const k of ILERLEME) {
 }
 for (const s of sonuc.slice(1)) varyantDamgasi(`ilerleme ${s.k.ad}`, sonuc[0].r.iz, s.r.iz);
 damga('ilerleme: garson servis eder (her kol)', sonuc.every((s) => s.r.olcu.garson > 0), sonuc.map((s) => s.r.olcu.garson).join('/'));
-damga('ilerleme: yıkanan fincan temize döner (bulaşık kolları ≥ %50 servis)', sonuc.filter((s) => s.k.bulasik).every((s) => s.r.olcu.donen >= 0.5 * s.r.olcu.servis));
+damga('ilerleme: yıkanan fincan temize döner (bulaşık kolları ≥ %50 servis)', sonuc.filter((s) => bulasikli(s.k)).every((s) => s.r.olcu.donen >= 0.5 * s.r.olcu.servis));
 const gk1 = sonuc.find((s) => s.k.ad === 'G-K1');
 if (gk1) damga('G-K1 ilk garson erken (< 30 dk)', gk1.r.ilkGarson < 30 * 60, f1(gk1.r.ilkGarson / 60));
 
@@ -637,7 +659,7 @@ for (const { k, r } of sonuc) {
   const sonDk = ((Number.isFinite(r.bitis) ? r.bitis : UFUK) - son * 3600) / 60 || 60;
   const sonKat2 = (r.saatlik[son] - r1Dk * sonDk) / sonDk;
   console.log(
-    `${k.ad.padEnd(11)}| ${String(zincirKur(k.ekler).length).padStart(10)} | ${f1(r.ilkGarson / 60).padStart(13)} | ${sa(r.zincirBitis).padStart(12)} | ${sa(r.svBitis).padStart(9)} | ${sa(r.yukBitis).padStart(10)} | ${sa(r.bitis).padStart(11)} | ${f1(Math.max(...bek, 0) / 60).padStart(19)} | ${f1(yuzdelik(bek, 0.5) / 60).padStart(9)} | ${yuzde(o.servis, o.servis + o.kacan).padStart(8)} | ${(k.bulasik ? yuzde(o.kirliBek, o.masaSn) : '—').padStart(12)} | ${(k.bulasik ? yuzde(o.temizYok, o.ocakSn) : '—').padStart(11)} | ${f0(sonKat2).padStart(10)}`,
+    `${k.ad.padEnd(11)}| ${String(zincirKur(k.ekler).length).padStart(10)} | ${f1(r.ilkGarson / 60).padStart(13)} | ${sa(r.zincirBitis).padStart(12)} | ${sa(r.svBitis).padStart(9)} | ${sa(r.yukBitis).padStart(10)} | ${sa(r.bitis).padStart(11)} | ${f1(Math.max(...bek, 0) / 60).padStart(19)} | ${f1(yuzdelik(bek, 0.5) / 60).padStart(9)} | ${yuzde(o.servis, o.servis + o.kacan).padStart(8)} | ${(bulasikli(k) ? yuzde(o.kirliBek, o.masaSn) : '—').padStart(12)} | ${(bulasikli(k) ? yuzde(o.temizYok, o.ocakSn) : '—').padStart(11)} | ${f0(sonKat2).padStart(10)}`,
   );
 }
 console.log('');
@@ -653,6 +675,12 @@ console.log('');
 console.log('--- §B3 saat başına toplam gelir (Kat 1 + Kat 2) coin/dk ---');
 for (const { k, r } of sonuc) console.log(`${k.ad.padEnd(11)}| ${r.saatlik.map((s, i) => f0(s / ((i < r.saatlik.length - 1 ? 3600 : ((Number.isFinite(r.bitis) ? r.bitis : UFUK) - i * 3600) || 3600) / 60))).join(' · ')}`);
 damga('Kat 1 parası cüzdana aktı (§B)', sonuc.every((s) => s.r.kat1 > 0));
+if (FINAL && !KISA) {
+  // D-201 kararının ölçümü (docs/olcum-kat2-isleyis-t2.txt, K-Bt2): Kat 2 8,11 sa · zincir 4,91 sa · ilk garson 23,1 dk.
+  const r = sonuc[0].r;
+  damga('FİNAL: Kat 2 süresi = K-Bt2 ölçümü (8,11 sa ± %3)', Math.abs(r.bitis / 3600 - 8.11) <= 0.03 * 8.11, sa(r.bitis));
+  damga('FİNAL: zincir = K-Bt2 ölçümü (4,91 sa ± %3)', Math.abs(r.zincirBitis / 3600 - 4.91) <= 0.03 * 4.91, sa(r.zincirBitis));
+}
 if (!KISA) damga('bütün kollar ufukta bitti', sonuc.every((s) => Number.isFinite(s.r.bitis)), sonuc.filter((s) => !Number.isFinite(s.r.bitis)).map((s) => s.k.ad).join(','));
 
 console.log('');

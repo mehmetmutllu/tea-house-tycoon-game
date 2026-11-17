@@ -51,7 +51,9 @@ const PR = LAYOUT.playerRadius;
 const A: Kat2Ayar = D184_AYAR;
 const GARSON = { hiz: 3, tepsi: 4 };
 const AG: Kat2Ayar = { ...A, garson: GARSON };
-const HEPSI = [...C.kat2.hazir, ...A.padler.map((p) => p.id)]; // D-191: hazır pad'ler zincirin önünde
+/** D-191: hazır pad'ler zincirin önünde. D-201: 2.-3. garson pad'i dışarıda — mekanik testleri TEK garsonla. */
+const EK_GARSON = KAT2_GARSON_PADLER.slice(1);
+const HEPSI = [...C.kat2.hazir, ...A.padler.map((p) => p.id)].filter((id) => !EK_GARSON.includes(id));
 const UZAK: [number, number] = [0, -1]; // hiçbir masaya/ocağa/pada/yığına yetişmez (mıknatıs 0,5)
 const OCAK2 = OCAKLAR[1];
 const T1 = KAT2_MASALAR.find((m) => m.tur === 'tavla')!;
@@ -81,13 +83,14 @@ describe('config — D-186 tavla T120U + zincir', () => {
     expect(A.tavla).toEqual({ oturum: 120, kahveAralik: 25, istekAdet: 1, kahveFiyat: 3, masaUcreti: 51 });
   });
 
-  it('zincir bekçisi: YAPI tutarlı, eksik sayı yok; garson D-189 (hız 3 · tepsi 2 · 1 garson)', () => {
-    expect(kat2YapiHatasi(A)).toBeNull();
-    expect(kat2EksikSayi(A)).toBeNull();
-    expect(kat2ZincirHatasi(A)).toBeNull();
-    expect(A.garson).toEqual({ hiz: 3, tepsi: 2, sayi: 1, herMasa: true }); // D-200: Kat 1 gibi her masaya
+  it('zincir bekçisi: YAPI tutarlı, eksik sayı yok; garson D-189 (hız 3 · tepsi 2; D-201: garson sayısı = pad sayısı)', () => {
+    const K = C.kat2 as unknown as Kat2Ayar;
+    expect(kat2YapiHatasi(K)).toBeNull();
+    expect(kat2EksikSayi(K)).toBeNull();
+    expect(kat2ZincirHatasi(K)).toBeNull();
+    expect(A.garson).toEqual({ hiz: 3, tepsi: 2, herMasa: true }); // D-200: Kat 1 gibi her masaya
     expect(A.garson!.hiz).toBeCloseTo(C.waiter.speedUpgrades.speeds.at(-1)! * 1.5);
-    const garsonsuz: Kat2Ayar = { ...A, garson: undefined };
+    const garsonsuz: Kat2Ayar = { ...K, garson: undefined };
     expect(kat2EksikSayi(garsonsuz)).toBe('k2garson: garson sayıları (Kat2Ayar.garson) yok');
   });
 
@@ -237,13 +240,14 @@ describe('Kat 2 garsonu', () => {
     expect(okeyYigin.every((v) => v === A.masaUcreti)).toBe(true);
   });
 
-  it('hiçbir masayı/ocağı/kuyuyu delmez, iki ocağa da gider (2 garson, 6 dk)', () => {
-    const tum = kat2AcikAlan(HEPSI);
-    const katilar = [KUYU, ...kat2Duvarlar(tum), ...kat2Engeller(HEPSI)];
-    const ayar: Kat2Ayar = { ...AG, garson: { ...GARSON, sayi: 2 } };
+  it('hiçbir masayı/ocağı/kuyuyu delmez, iki ocağa da gider (2 garson pad\'i, 6 dk)', () => {
+    const pd = [...HEPSI, EK_GARSON[0]];
+    const tum = kat2AcikAlan(pd);
+    const katilar = [KUYU, ...kat2Duvarlar(tum), ...kat2Engeller(pd)];
+    const ayar = AG;
     let ihlal = 0;
     let bant = false;
-    const r = sur(yeniKat2Dunya(HEPSI, ayar), 360, girdi(UZAK), ayar, (d) => {
+    const r = sur(yeniKat2Dunya(pd, ayar), 360, girdi(UZAK, { padsDone: pd }), ayar, (d) => {
       const gs = [d.garson!, ...(d.garsonEk ?? [])];
       expect(gs).toHaveLength(2);
       for (const g of gs) {
