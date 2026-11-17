@@ -36,14 +36,23 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
-## ⏭️ SIRADAKİ ADIM (yeni chat)
-0. **SON OTURUM (2026-11-17 2., D-200):** Kat 2 süresi ölçüldü (bugün 9,86 sa) → kullanıcı Kat 1 mantığını istedi: garson
-   HER masaya, ocak 5 kademe (ocağın sağında "Yükselt" noktası, mangal/mutfak bu seviyeden büyür), garson hız/tepsi/2. garson
-   karakter panelinde (Kat 2'deyken "Garson" sekmesi). Fiyat açan pad ×½. Final: Kat 2 9,55 sa, kahve servisi %71.
-   Rapor `docs/kat2-ocak-garson-raporu.md`; kareler `node tools/_kat2-yuk-kare.mjs <klasör>`.
-   **Açık:** yeni metinler ("Tavla köşesinde {1} masa aç", "Kat 2 garsonları her masaya kahve götürür.") ChatGPT
-   mikrometin turu bekliyor · Kat 2 görev hattına ocak/garson görevi (Kat 1'de var) eklenmedi · yeni deneme APK
-   (`VITE_KAT2=1 VITE_DENEME=1 npm run apk`) bu değişikliklerle henüz alınmadı.
+## ⏭️ SIRADAKİ ADIM (yeni chat) — TUR: "KAT 2 İŞLEYİŞİ = KAT 1" (kullanıcı 2026-11-17, kesin ilke)
+**Kullanıcının cümlesi:** "Birinci kat ve ikinci kat işleyiş olarak aynı olsun. Sadece içerik farklı (altta çay masası,
+üstte okey masası). Neden alışkanlığı değiştiriyoruz?" → Kat 2'de Kat 1'den farklı İŞLEYİŞ kalmayacak.
+Yapılacaklar (ÖLÇ → karar paketi → uygula, D-084; `tools/olcum-kat2-ocak-garson.ts` temel alınır):
+  a. **İlk garson ERKEN, pad ile** (Kat 1: 3. adım, 130 coin). Bugün Kat 2'de 14. adım (~2,5 sa garsonsuz).
+  b. **2. ve 3. garson zincirde PAD** (Kat 1 `waiter2`/`waiter3` gibi). D-200'ün panelden 2. garson alımı (`garsonSayi`) KALKAR.
+     Garson hız/tepsi panelde KALIR (Kat 1'de de panel).
+  c. **Lavabo seviye yükseltmesi** Kat 1 gibi (Kat 2 lavabosu bugün seviyesiz L1).
+  d. **Bulaşık döngüsü Kat 2'de de** (kullanıcı "Evet, Kat 1 gibi"): kirli fincan · yıkama yeri · bulaşıkçı PAD'i;
+     garson boşken kirli taşır (Kat 1 `idleDishCarry`). Kat 1'de bulaşıkçı VAR (`dishwasher` pad 900, 2. salon;
+     G-69 yalnız tezgâh görünüşünü kaldırmıştı) — kullanıcı "yok" sanıyordu, düzeltildi.
+  e. Ocak yükseltmesi 4. okeyden sonra KALIR (kullanıcı "öyle kalsın").
+  Ölçülecek: garson pad yerleri (zincirde nerede) × fiyat; 3 garson; bulaşık açık/kapalı; Kat 2 süresi + en uzun bekleyiş.
+  Karar paketinde sade tablo (memory feedback_plain_decision_package). Yer/yerleşim için görsel kare göster.
+0. **ÖNCEKİ OTURUM (D-200):** garson her masaya + ocak 5 / garson hız·tepsi yükseltmesi (yarım fiyat), mangal ocak
+   seviyesiyle; Kat 2 9,55 sa, kahve servisi %71 · `docs/kat2-ocak-garson-raporu.md` · kareler `node tools/_kat2-yuk-kare.mjs <klasör>`.
+   Açık: 2 yeni metin ChatGPT turu bekliyor · Kat 2 görev hattına ocak/garson görevi yok · yeni deneme APK alınmadı.
 1. Kullanıcı deneme APK ile Kat 1 + Kat 2'yi oynuyor (D-197; Ayarlar → "Deneme: Kat 1'i bitir"). Geri bildirim →
    `docs/geribildirim-oyun-testi-<tarih>.md` (G-numaralı) → tur planı. Kat 2'de kalan opsiyoneller: balkon (kullanıcı emin
    değil) · Kat 2 temaları (kullanıcı: Kat 1 ile aynı olabilir) · Kat 1 merdiven sarı-siyah bant (kalsın) · Usta "0/7" (fark etmez).
