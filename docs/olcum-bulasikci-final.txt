@@ -1,0 +1,25 @@
+=== BULAŞIKÇI YIKAMA KURALI (Kat 1) — dolunca mı, eşikle mi, temiz azalınca mı? Oyunun kendi tick'i, oyuncu parkta ===
+Isınma 180 sn · kayıt 420 sn · tohum 2 · DT 1/60
+
+--- W20 geç oyun (20 masa · masalar L4 · ocak tavan) ---
+kol | havuz | servis/dk | temiz ort | temiz=0 payı | masada kirli ort | kirli masa ort | bulaşıkçı elinde ort
+-------------------------------------------------------------------------------------------------------------
+Y   |    42 |       9.2 |      24.2 |         %0.0 |              1.4 |            0.0 |                  3.2
+!! DAMGA KIRILDI · varyant etkili (W20 CFG) — parmak izi kontrolle aynı (fea944856c51bc2d)
+CFG |    42 |       9.2 |      24.2 |         %0.0 |              1.4 |            0.0 |                  3.2
+CFG0 |    42 |       8.3 |       7.4 |        %30.2 |             23.3 |            0.7 |                  0.7
+
+--- W8 Salon 2 dolu (8 masa · masalar L2 · ocak L3 · bulaşıkçı yeni) ---
+kol | havuz | servis/dk | temiz ort | temiz=0 payı | masada kirli ort | kirli masa ort | bulaşıkçı elinde ort
+-------------------------------------------------------------------------------------------------------------
+Y   |    26 |       8.3 |      10.5 |        %22.5 |              6.5 |            0.2 |                  1.9
+CFG |    26 |       9.8 |      11.7 |         %2.2 |              4.0 |            0.0 |                  1.8
+CFG0 |    26 |      10.9 |       6.0 |         %9.4 |             11.0 |            0.8 |                  0.9
+
+KOLLAR:
+  Y  TAVAN (leğen 8 · hız 2,8) · bugünkü kural: dolunca git
+  CFG  config OLDUĞU GİBİ ({"temizEnFazla":2}) · tavan
+  CFG0  config OLDUĞU GİBİ · taban kademe
+
+!! 1 DAMGA KIRILDI — bu koşu ölçüm DEĞİL:
+   · varyant etkili (W20 CFG) — parmak izi kontrolle aynı (fea944856c51bc2d)

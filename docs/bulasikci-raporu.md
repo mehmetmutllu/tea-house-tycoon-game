@@ -51,4 +51,23 @@ ama temiz sıfır %5,1 (geç kalıyor). E4 kısmi (8,9) ve W20'de kötü (temiz 
 
 ## Karar
 
-(boş — karar paketi)
+**D-202 (kullanıcı 2026-11-17): B** — bulaşıkçı kapasite dolunca ya da toplanacak kalmayınca gider; ayrıca TEMİZ bardak 2'ye inince
+elindekini hemen yıkamaya götürür. Kat 1 ve Kat 2 aynı kural (`rules.yikamayaGit`). Gerekçe (kullanıcı): temiz bardak yok oranı
+en düşük olan. Kullanıcının sorusu: döngü kapalı mı? — evet: sabit bardak havuzu, temiz yoksa ocak çay koyamaz, kirli yıkanıp
+dönmeden yeni çay çıkmaz (Kat 2'de fincan/cezve aynı).
+
+## Uygulama (2026-11-17)
+
+Config `dishwasher.yikamaKurali = { temizEnFazla: 2 }`. Bekçi `tests/bulasikci-kurali.test.ts` (config = B · kural · Kat 2
+bulaşıkçısı aynı kuralı okur); mutasyon 2/2 (config null → 4 test düşer, Kat 2 dahil · `<=` → `<` → 1 test düşer).
+
+**Final tam koşu** (`docs/olcum-bulasikci-final.txt`, `BULASIK_FINAL=1`: config olduğu gibi):
+
+| dünya | kol | servis/dk | temiz = 0 payı | masada kirli ort |
+|---|---|---|---|---|
+| W8 | eski kural, tavan | 8,3 | %22,5 | 6,5 |
+| W8 | **config (B), tavan** | **9,8** | **%2,2** | 4,0 — ölçümdeki K2 ile birebir |
+| W8 | config (B), taban kademe | 10,9 | %9,4 | 11,0 — taban da kazandı (eski 9,8 · %16,9) |
+| W20 | config (B), tavan | 9,2 | %0 | 1,4 — değişmedi (kural tetiklenmez; "varyant etkili" damgası bu yüzden kırık) |
+
+Kat 2 final (`IS_TUR=2`, config): 8,11 sa · zincir 4,91 sa — D-201 ile aynı, damgalar temiz. vitest 2145 · duman 78/78 + EN 4/4.

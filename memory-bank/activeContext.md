@@ -38,17 +38,13 @@ NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası �
 Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
 `docs/kareler/kat2-isleyis-gorsel-*.png`. **Deneme APK hazır** (D-201 dahil): masaüstü `TeaHouse-deneme-Kat2-2026-11-17b.apk` (2026-11-17). **Sıradaki:** kullanıcının oyun testi geri bildirimi.
 Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit seviye 2'ydi).
-**Yan bulgular:** Kat 1 bulaşıkçısının son kademesi (taşıma 8) tabandan kötü (dolmadan yıkamaya gitmiyor) — ayrı turda bak ·
-Kat 1 masaları L4'teyse Kat 1 ~1.216 coin/dk → Kat 2 ~7,5 sa (ölçülmedi).
+**Yan bulgular:** Kat 1 masaları L4'teyse Kat 1 ~1.216 coin/dk → Kat 2 ~7,5 sa (ölçülmedi).
 - Önceki açıklar: 2 metin ChatGPT turu (D-200) · yeni deneme APK alınmadı · kullanıcı deneme APK ile oynuyor (D-197).
 - **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (2026-11-13). 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım · Play zip · "Yenilikler".
 
-## 🔧 TUR — BULAŞIKÇI YIKAMA KURALI (2026-11-17, yan bulgu D-201 Bulgu 5)
-- **SORU:** Bulaşıkçı elindeki kapasite dolmadan yıkamaya gitmiyor (`tick.ts` dishwasher · `kat2Dongu.bulasikciAdim`); tavan
-  (leğen 8 · hız 2,8) temiz havuzu kurutuyor mu, hangi kural düzeltir?
-- **KOLLAR:** T0 taban kademe · Y tavan bugün (dolunca) · E4 tavan, 4'te git · K0 tavan + temiz bitince elindekini götür · K2 tavan
-  + temiz ≤ 2'de götür. Dünyalar W20 / W8 (oyuncu parkta). Araç `tools/olcum-bulasikci.ts`.
-- **SAYILAR:** rapor `docs/bulasikci-raporu.md` §Bulgular (Kat 2 etkisiz; Kat 1 W8 tavan 8,3 vs K2 9,8 servis/dk) · **KARAR:** (paket soruldu) · **UYGULAMA:** (boş) · **BEKÇİ:** (boş)
+## ✅ TUR — BULAŞIKÇI YIKAMA KURALI (D-202, 2026-11-17) · rapor `docs/bulasikci-raporu.md`
+Bulaşıkçı temiz bardak ≤ 2 olunca elindekini götürür (Kat 1 + Kat 2). Bekçi `tests/bulasikci-kurali.test.ts`. Araç
+`tools/olcum-bulasikci.ts` (`BULASIK_FINAL=1` = config) · Kat 2 `IS_DW=1`. Deneme APK bu kuraldan ÖNCE derlendi.
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman

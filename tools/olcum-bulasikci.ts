@@ -30,7 +30,10 @@ const W20: Dunya = { ad: 'W20 geç oyun (20 masa · masalar L4 · ocak tavan)', 
 const W8: Dunya = { ad: 'W8 Salon 2 dolu (8 masa · masalar L2 · ocak L3 · bulaşıkçı yeni)', padSon: 'z2table4', masaSv: 2, ocak: 3 };
 
 type Kural = { esik?: number; temizEnFazla?: number } | null;
-interface Kol { kod: string; ad: string; tavan: boolean; kural: Kural }
+/** `kural` yoksa config OLDUĞU GİBİ (final koşusu). */
+interface Kol { kod: string; ad: string; tavan: boolean; kural?: Kural }
+const CFG_KURAL = C.dishwasher.yikamaKurali as Kural;
+const FINAL = process.env.BULASIK_FINAL === '1';
 
 function kur(w: Dunya, k: Kol, tohum: number): number {
   seedRandom(tohum);
@@ -49,7 +52,7 @@ function kur(w: Dunya, k: Kol, tohum: number): number {
   // `s0.areasOpen` setState'ten sonra BAYAT kalır (store yalnız yüklemede türetir; tick her karede
   // padsDone'dan kendisi türetir). T6 aracı havuzu buradan okudu: ölçülen dünya 42 değil 22 bardaktı.
   const havuz = totalCupPool(deriveWorld(s0.padsDone).areasOpen, lv);
-  (C.dishwasher as { yikamaKurali: Kural }).yikamaKurali = k.kural;
+  (C.dishwasher as { yikamaKurali: Kural }).yikamaKurali = k.kural === undefined ? CFG_KURAL : k.kural;
   useGame.setState({
     tableLevels: s0.tableLevels.map(() => w.masaSv),
     stationLevels: lv,
@@ -128,7 +131,9 @@ const TUM_KOLLAR: Kol[] = [
   { kod: 'K0', ad: 'tavan · temiz bitince elindekini götür', tavan: true, kural: { temizEnFazla: 0 } },
   { kod: 'K2', ad: 'tavan · temiz ≤ 2 olunca elindekini götür', tavan: true, kural: { temizEnFazla: 2 } },
 ];
-const KOLLAR = KISA ? TUM_KOLLAR.filter((k) => ['T0', 'Y', 'K2'].includes(k.kod)) : TUM_KOLLAR;
+const KOLLAR = FINAL
+  ? [TUM_KOLLAR[0], { kod: 'CFG', ad: `config OLDUĞU GİBİ (${JSON.stringify(CFG_KURAL)}) · tavan`, tavan: true }, { kod: 'CFG0', ad: 'config OLDUĞU GİBİ · taban kademe', tavan: false }]
+  : KISA ? TUM_KOLLAR.filter((k) => ['T0', 'Y', 'K2'].includes(k.kod)) : TUM_KOLLAR;
 
 const f1 = (x: number) => x.toFixed(1);
 const yuzde = (x: number) => `%${(x * 100).toFixed(1)}`;

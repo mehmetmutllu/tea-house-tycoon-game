@@ -607,11 +607,12 @@ export const economyConfig = {
      */
     carryUpgrades: { costs: [600, 2000, 5000] },
     /**
-     * YIKAMAYA GİDİŞ KURALI (ölçüm kancası, `tools/olcum-bulasikci.ts`). null = bugünkü kural: elindeki kapasite
-     * DOLUNCA (ya da toplanacak kalmayınca) yıkamaya gider. `esik`: bu kadar kirliyle gider (≤ kapasite);
-     * `temizEnFazla`: temiz bardak bu sayıya inince elindekini götürür. Kat 2 bulaşıkçısı aynı kuralı okur.
+     * YIKAMAYA GİDİŞ KURALI (D-202, `docs/bulasikci-raporu.md`): bulaşıkçı elindeki kapasite DOLUNCA (ya da toplanacak
+     * kalmayınca) yıkamaya gider; ayrıca TEMİZ bardak `temizEnFazla`ya inince elindekini hemen götürür — tavan leğen (8)
+     * temiz havuzu kurutuyordu (W8 servis 8,3 → 9,8/dk, temiz yok %22,5 → %2,2). `esik`: sabit sayıyla gider (ölçüldü, seçilmedi).
+     * null = eski kural. Kat 2 bulaşıkçısı aynı kuralı okur (`rules.yikamayaGit`).
      */
-    yikamaKurali: null as null | { esik?: number; temizEnFazla?: number },
+    yikamaKurali: { temizEnFazla: 2 } as null | { esik?: number; temizEnFazla?: number },
   },
 
   /** Yere düşen para. */

@@ -5282,3 +5282,12 @@ Kullanıcı: *"neden alışkanlığı değiştiriyoruz?"* + *"Kat 1'in de para g
 - Ölçülen: Kat 2 **8,11 sa** · zincir 4,91 sa (D-192 hedefi) · ilk garson 23. dk · en uzun bekleyiş 10,1 dk. Kat 1 sayıları değişmez.
 - Uygulama (2026-11-17): Parça 1 mantık commit #2'de; `npm run sira` "karma-commit" uyarısı verdi — araca FİNAL kipi (config'i olduğu gibi
   koşar) + final çıktı kodla aynı commit'te, çünkü final koşu config'in kendisini ölçer; karar commit #1 (464271b) + 49ff418'de idi.
+
+## D-202 · Bulaşıkçı temiz bardak 2'ye inince elindekini götürür (2026-11-17)
+- Kullanıcı B'yi seçti (`docs/bulasikci-raporu.md`): bulaşıkçı kapasite dolunca / toplanacak kalmayınca gider + TEMİZ bardak ≤ 2
+  olunca elindekini hemen yıkamaya götürür. Kat 1 + Kat 2 ortak (`rules.yikamayaGit`, config `dishwasher.yikamaKurali`).
+- Sebep: tavan leğen (8) dolmadan gitmiyordu, topladığı bardak elinde beklerken havuz kuruyordu — Kat 1 Salon 2'de tavan tabandan
+  kötüydü (servis 8,3 vs 9,8/dk, temiz yok %22,5). B: 9,8/dk · %2,2; geç oyun ve Kat 2 değişmedi (8,11 sa).
+- Döngü kapalı (kullanıcıya açıklandı): sabit havuz, temiz yoksa ocak bekler. E4 (sabit 4) geç oyunu bozdu, seçilmedi.
+- Sıra kilidi notu: commit #2'de `karma-commit` uyarısı — final tam koşu çıktısı + aracın `BULASIK_FINAL` kipi kodla aynı commit'te;
+  sıra izlendi (commit #1 `227fe48` karar boş · karar kullanıcıdan · #2 kod + final). Uyarı bilinçli geçildi.
