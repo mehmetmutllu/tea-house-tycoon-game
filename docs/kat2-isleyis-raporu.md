@@ -98,6 +98,56 @@ Kat 1 bulaşıkçısı da aynı kuralla çalışıyor. Kirlilerin çoğunu oyunc
 bekleyiş 10,2 dk. Yani Kat 1'in üç işleyişi birlikte gelince toplam süre bugünküyle aynı yerde kalıyor: lavabonun kazandırdığını
 bulaşık geri alıyor.
 
+## TUR 2 — Kat 1'in gerçek geliri + "masa sürekli kirli olmasın" (kullanıcı, karar paketine cevap)
+
+Kullanıcı: *"açma ve yükseltmeyi hesaplarken anlık olarak Kat 1'in de para getirdiğini unutma … ben Kat 2'deyken Kat 1 ne kadar
+verecek, neye göre hesaplanacak"* · *"masalar sürekli kirli kalıyor gibi bir his olmasın yeter."*
+Araç: aynı araç `IS_TUR=2` · ham çıktı `docs/olcum-kat2-isleyis-t2.txt` (tam, damgalar temiz) · Kat 1 ayrı: `tools/olcum-kat1-pasif.ts`
+→ `docs/olcum-kat1-pasif.txt`.
+
+**Bulgu 7 · Kat 1'in getirdiği para FORMÜLLE değil, Kat 1'in kendisiyle hesaplanır:** oyuncu Kat 2'deyken Kat 1 arkada gerçekten
+oynar (D-182), garsonlar servis eder, düşen para 2 sn sonra cüzdana geçer (D-198). Miktarı Kat 1'in HÂLİ belirler (oyuncusuz, 20 dk):
+
+| Kat 1'in hâli | coin/dk |
+|---|---|
+| pad'ler açık, seviyeler taban (D-192 · D-195 · D-200 · tur 1 bunu kullandı) | 79 |
+| **görev hattının sonu** (merdiveni açan oyuncu): ocak L6 · lavabo L6 · garson/bulaşıkçı tavan · masa seviyesiz | **899** |
+| + bütün masalar L2 | 1.139 |
+| + bütün masalar L4 | 1.216 |
+
+Bütün Kat 2 fiyatları Kat 1'i ~76 coin/dk sayarak kuruldu → gerçek oyunda bugünkü Kat 2 **4,83 sa** (ölçümde 9,62), zincir 1,98 sa.
+
+**Kayma kuralı (D-192'nin kuralı, düzeltilmiş Kat 1'le):** pad = o anki toplam gelirin ~9 dk'sı → her pad +9 × 821 ≈ **+7.400**;
+masa Sv = ~3 dk → **+2.450**; ocak/garson/lavabo yükseltmesi = açan pad × ½ (D-200), garson/bulaşıkçı pad'i = ardından gelen pad × f.
+Örnek (K-Bt2): okey1 8.600 · 1. garson 4.800 · 2. garson 10.100 · bulaşıkçı 5.500 · lavabo 13.000 · tavla12 16.700 ·
+ocak 4.800-7.500 · lavabo seviyesi 6.800-8.200 · okey Sv 6.750-9.750 · tavla Sv 4.750-6.250 (tam liste ham çıktıda).
+
+**Bulgu 8 · Garson kahveyi getirirken boşu alınca masa hiç kirli kalmaz:** (`bulasik.teslimdeAl`)
+
+| plato | Sv1 coin/dk | Sv5 coin/dk | kirli masa bekler | servis |
+|---|---|---|---|---|
+| bulaşık yok | 1.751 | 2.696 | — | %87 |
+| eşik 2 (Kat 1) | 1.055 | 1.473 | %45-52 | %94 |
+| eşik 4 | 1.273 | 1.812 | %32-35 | %89 |
+| **eşik 2 + garson boşu alır** | **1.743** | **2.691** | **%0** | %84 |
+
+Eşik 2 ile 4 bu kuralla aynı sonucu veriyor (masa eşiğe hiç ulaşmıyor) → Kat 1'in eşiği (2) aynen kalabilir. Gelir bulaşıksızla
+eşit; bulaşık oyuncunun işi olarak kalıyor (oyuncu dakikada ~9 fincan yıkıyor), masayı kilitlemiyor.
+
+**İlerleme** (gerçek Kat 1 izi 901 coin/dk; ilk çıkıştan)
+
+| kol | ilk garson | zincir biter | **Kat 2 biter** | en uzun bekleyiş | servis | kirli masa | son saat Kat 2 coin/dk |
+|---|---|---|---|---|---|---|---|
+| TABAN (bugünkü fiyat) | 47 dk | 1,98 sa | **4,83 sa** | 5,9 dk | %70 | — | 1.683 |
+| tur 1 önerisi, bugünkü fiyat | 4 dk | 2,16 sa | 4,81 sa | 5,7 dk | %87 | %35 | 1.733 |
+| kayma + garson + LVy, bulaşık yok | 23 dk | 4,82 sa | 8,01 sa | 10,1 dk | %85 | — | 3.077 |
+| kayma + … + bulaşık eşik 4 | 23 dk | 5,25 sa | 9,39 sa | 10,1 dk | %91 | %36 | 1.713 |
+| **kayma + … + bulaşık eşik 2 + garson boşu alır (K-Bt2)** | **23 dk** | **4,91 sa** | **8,11 sa** | **10,1 dk** | %84 | **%0** | 2.747 |
+| K-Bt2, lavabo ücreti Kat 1 aynen (LV½) | 23 dk | 4,75 sa | 7,39 sa | 10,1 dk | %85 | %0 | 3.288 |
+
+**Bulgu 9 · Kayma zinciri tasarlandığı yere geri getiriyor:** K-Bt2'de zincir 4,91 sa — D-192'nin hedefi (4,90 sa) birebir. Kat 2
+8,1 sa, en uzun bekleyiş 10,1 dk, ilk garson 23. dk. Bulaşık süreye yalnız +6 dk ekliyor (bulaşıksız 8,01 sa).
+
 ## Karar
 
 (boş — karar paketi sonrası)

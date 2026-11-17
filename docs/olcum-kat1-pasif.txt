@@ -1,0 +1,8 @@
+A pad açık, seviyeler taban (D-192…D-200 ölçümlerinin izi) servis [ 0 ] masa 20 00000000000000000000 lavabo 1 garson {"tray":0,"speed":0,"dishCarry":0,"dishSpeed":0}
+  → Kat 1 oyuncusuz 79.0 coin/dk
+D görev hattı sonu: ocak 6 · lavabo 6 · garson/bulaşıkçı max · masa 0 servis [ 6 ] masa 20 00000000000000000000 lavabo 6 garson {"tray":2,"speed":1,"dishCarry":3,"dishSpeed":2}
+  → Kat 1 oyuncusuz 899.0 coin/dk
+E + masalar L2 servis [ 6 ] masa 20 22222222222222222222 lavabo 6 garson {"tray":2,"speed":1,"dishCarry":3,"dishSpeed":2}
+  → Kat 1 oyuncusuz 1139.2 coin/dk
+F tam: + masalar L4 servis [ 6 ] masa 20 44444444444444444444 lavabo 6 garson {"tray":2,"speed":1,"dishCarry":3,"dishSpeed":2}
+  → Kat 1 oyuncusuz 1215.9 coin/dk

@@ -140,6 +140,11 @@ export interface Kat2BulasikAyar {
   yikamaSn: number;
   /** Boştaki garsonun taşıdığı kirli (Kat 1 `waiter.idleDishCarry`; 0 = taşımaz). */
   garsonTasima: number;
+  /**
+   * Kahveyi getiren GARSON masadaki boş fincanları da tepsisine alır (tepsiyle paylaşımlı) — "yeni kahve gelir, boşu gider".
+   * Masada kirli yalnız grup kalkınca kalır. YOKSA garson yalnız boştayken toplar (Kat 1 `idleDishCarry`).
+   */
+  teslimdeAl?: boolean;
   /** Bulaşıkçı (pad `KAT2_BULASIKCI_PAD`): hız + taşıma (Kat 1 `dishwasher`). YOKSA pad açılsa da gelmez. */
   bulasikci?: { hiz: number; tasima: number };
 }
@@ -1024,7 +1029,16 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
             gs.tepsi -= n;
             m.istek -= n;
             kahveOde(d, m, yer, n * kahveFiyat, ayar, olay);
-            if (b) fincanBirak(m, n);
+            if (b) {
+              fincanBirak(m, n);
+              if (b.teslimdeAl && ayar.garson) {
+                const al = Math.min(m.kirli ?? 0, ayar.garson.tepsi - gs.tepsi - (gs.kirli ?? 0));
+                if (al > 0) {
+                  m.kirli = (m.kirli ?? 0) - al;
+                  gs.kirli = (gs.kirli ?? 0) + al;
+                }
+              }
+            }
             olay.servis += n;
             olay.garsonServis += n;
             if (tavla) olay.tavlaServis += n;
