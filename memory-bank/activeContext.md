@@ -44,7 +44,7 @@ Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit sevi
 
 ## ✅ TUR — BULAŞIKÇI YIKAMA KURALI (D-202, 2026-11-17) · rapor `docs/bulasikci-raporu.md`
 Bulaşıkçı temiz bardak ≤ 2 olunca elindekini götürür (Kat 1 + Kat 2). Bekçi `tests/bulasikci-kurali.test.ts`. Araç
-`tools/olcum-bulasikci.ts` (`BULASIK_FINAL=1` = config) · Kat 2 `IS_DW=1`. Deneme APK bu kuraldan ÖNCE derlendi.
+`tools/olcum-bulasikci.ts` (`BULASIK_FINAL=1` = config) · Kat 2 `IS_DW=1`. Deneme APK (masaüstü …-17b) bu kuralla yeniden derlendi.
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
