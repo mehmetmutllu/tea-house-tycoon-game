@@ -2,6 +2,7 @@
  * kat2/Dis.tsx — ARKA DUVARIN ÜSTÜ (gözlem: Kat 2 varış kadrajında arka duvarın üstü koyu boşluktu;
  * Kat 1'de aynı yerde bahçe görünüyor). Kat 2 Kat 1'in 3,2 üstünde: duvarın üstünden bakan göz
  * dışarıyı YUKARIDAN görür — Kat 1'in kendi bahçesi 3,2 aşağıda (D-187 dış A: aynı dünya, üst kattan).
+ * Bahçe `binaTam`: Kat 1'in açılmamış alanındaki ağaçlar Kat 2'nin zemininden taşmasın (bina ayak izi tam).
  */
 import { Bahce } from '../Bahce';
 import { BAND } from '../../../game/layout';
@@ -18,7 +19,7 @@ export function ArkaDuvarUstu() {
         <planeGeometry args={[160, 80]} />
         <meshStandardMaterial color={PALETTE.plantAlt} />
       </mesh>
-      <Bahce />
+      <Bahce binaTam />
     </group>
   );
 }

@@ -10,6 +10,7 @@ import {
 } from 'three';
 import { PALETTE } from '../../config/palette';
 import { useGame } from '../../game/store';
+import { MAX_AREAS } from '../../config/economy.config';
 import { BAHCE, ZEMIN_YARI, bitkiler, cimAlanlari, cimTonu, citDirekleri, citParcalari } from './bahceLook';
 
 /**
@@ -89,8 +90,13 @@ function Yigin({
 const _ton = new Color();
 const tonla = (renk: string, k: number): string => '#' + _ton.set(renk).multiplyScalar(k).getHexString();
 
-export function Bahce() {
-  const areasOpen = useGame((s) => s.areasOpen);
+/**
+ * `binaTam`: Kat 2'nin dışarısı (`kat2/Dis`) — Kat 2 binanın TAM ayak izinin üstünde durur; bahçe Kat 1'in açılmamış
+ * alanlarına ağaç dikerse 3,2'den uzun ağaçlar Kat 2'nin zemininden taşar. Orada bahçe hep "bina tam" hâliyle çizilir.
+ */
+export function Bahce({ binaTam = false }: { binaTam?: boolean } = {}) {
+  const kat1Alan = useGame((s) => s.areasOpen);
+  const areasOpen = binaTam ? MAX_AREAS : kat1Alan;
 
   const cim = useMemo(() => cimAlanlari(areasOpen), [areasOpen]);
 
