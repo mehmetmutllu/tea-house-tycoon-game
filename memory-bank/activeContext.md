@@ -38,8 +38,6 @@ NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası �
 Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
 `docs/kareler/kat2-isleyis-gorsel-*.png`. **Deneme APK hazır** (D-201 dahil): masaüstü `TeaHouse-deneme-Kat2-2026-11-17b.apk` (2026-11-17). **Sıradaki:** kullanıcının oyun testi geri bildirimi.
 Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit seviye 2'ydi).
-**Sonraki oturumda sor:** eski `tools/olcum-kat2-ocak-garson.ts` "config = HOG2-½" damgası artık kırık (D-201 fiyatları değiştirdi) —
-araç tarihî, silinsin mi/FİNAL kipine alınsın mı.
 **Yan bulgular:** Kat 1 bulaşıkçısının son kademesi (taşıma 8) tabandan kötü (dolmadan yıkamaya gitmiyor) — ayrı turda bak ·
 Kat 1 masaları L4'teyse Kat 1 ~1.216 coin/dk → Kat 2 ~7,5 sa (ölçülmedi).
 - Önceki açıklar: 2 metin ChatGPT turu (D-200) · yeni deneme APK alınmadı · kullanıcı deneme APK ile oynuyor (D-197).

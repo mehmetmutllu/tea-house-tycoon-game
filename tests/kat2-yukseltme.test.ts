@@ -5,7 +5,7 @@
  *  · Ocak yükseltmesi: 5 kademe, demleme ×1,35 + kuyruk +1 (Kat 1 `service.upgrade`/`brew`); ocağın yanındaki
  *    noktada durunca cüzdandan dolar (Kat 1 servis noktası); açan zincir pad'i bitmeden görünmez.
  *  · Garson yükseltmesi panelden: hız 3→4 · tepsi 2→3→4 · 2. garson; açılmadan alınamaz.
- *  · Config = karar HOG2-½: her alım onu açan zincir pad'inin yarı fiyatı (ölçüm `tools/olcum-kat2-ocak-garson.ts`).
+ *  · Config = karar HOG2-½: her alım onu açan zincir pad'inin yarı fiyatı (ölçüm `docs/kat2-ocak-garson-raporu.md`).
  *  · Mutfak/mangal görseli ocak alımından türer (Kat 1 `mutfakSeviyesi(stationLevel)` gibi).
  *  · Kayıt additive: eski kayıt → hiç alım yok; bozuk değer temizlenir.
  */

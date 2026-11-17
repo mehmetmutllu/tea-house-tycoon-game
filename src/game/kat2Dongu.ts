@@ -108,7 +108,7 @@ export interface Kat2Ayar {
   ilkGelis?: number;
   /**
    * D-200: OCAK + GARSON yükseltmeleri (Kat 1 mantığı). YOKSA yükseltme yok: tetik çizilmez, ayar değişmez.
-   * Etkisi `kat2EtkinAyar` ile ayara işlenir (tick o ayarla çağrılır). Ölçüm `tools/olcum-kat2-ocak-garson.ts`.
+   * Etkisi `kat2EtkinAyar` ile ayara işlenir (tick o ayarla çağrılır). Ölçüm `docs/kat2-ocak-garson-raporu.md` (araç git'te, D-201'de silindi).
    */
   yukseltme?: Kat2YukAyar;
   /**
@@ -260,7 +260,7 @@ export interface Kat2GarsonAyar {
   sayi?: number;
   /**
    * Kullanıcı 2026-11-17 ("birinci katta bu mantığı kurmadık mı?"): garson Kat 1'deki gibi HER masaya (okey dahil)
-   * kahve götürür. YOKSA yalnız tavla (D-186, bugünkü). Ölçüm `tools/olcum-kat2-ocak-garson.ts`.
+   * kahve götürür. YOKSA yalnız tavla (D-186, bugünkü). Ölçüm `docs/kat2-ocak-garson-raporu.md` (araç git'te, D-201'de silindi).
    */
   herMasa?: boolean;
 }
