@@ -119,7 +119,7 @@ describe('ekran kabuğu — K3 (D-106)', () => {
     expect(sheet).toMatch(/navda \? \(\s*<button className="sheet-back sheet-kapat"[^>]*>\s*<CloseIcon/);
     const hud = yorumsuz(oku(HUD));
     for (const id of ['quests-panel', 'goals-panel', 'shop-panel']) {
-      expect(hud, `${id} menü-üstü değil`).toMatch(new RegExp(`testid="${id}" onClose=\{onClose\} navda>`));
+      expect(hud, `${id} menü-üstü değil`).toMatch(new RegExp(`testid="${id}" onClose=\\{onClose\\} navda>`));
     }
     expect(yorumsuz(oku(CHAR))).toMatch(/testid="char-panel"\s+onClose=\{onClose\}\s+navda/);
     expect(hud).toMatch(/testid="menu"\s+onClose=/);

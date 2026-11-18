@@ -335,7 +335,7 @@ export async function panelKapandi(): Promise<boolean> {
   const uc = arkaUc;
   reklamAcikAyarla(true);
   gecisliHazir = false;
-  let gosterildi = false;
+  let gosterildi: boolean;
   try {
     gosterildi = await dene(uc.gecisliGoster, false);
   } finally {
@@ -366,7 +366,7 @@ export async function odulluIzleSonuc(): Promise<OdulluSonuc> {
   const uc = arkaUc;
   odulluHazir = false;
   reklamAcikAyarla(true);
-  let sonuc: OdulluSonuc = 'gosterilemedi';
+  let sonuc: OdulluSonuc;
   try {
     sonuc = await dene(uc.odulluGoster, 'gosterilemedi');
   } finally {

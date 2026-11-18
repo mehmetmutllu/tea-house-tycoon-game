@@ -262,6 +262,8 @@ function kolAyari(k: Kol): { a: Kat2Ayar; lav?: LavYuk } {
 // ---------------------------------------------------------------------------------------------
 // KAT 1 İZİ (D-200 aracıyla aynı) — D-198: Kat 2'deyken Kat 1 parası doğrudan cüzdana.
 // ---------------------------------------------------------------------------------------------
+/** IS_K1MASA=n — yan bulgu: görev hattı sonundaki Kat 1'in bütün masaları Ln (rapor Bulgu 7: L2 1.139 · L4 1.216 coin/dk). */
+const K1_MASA = Number(process.env.IS_K1MASA ?? 0);
 function kat1Izi(gorevSonu = false): { iz: Float64Array; r1Dk: number } {
   seedRandom(7);
   g().hardReset();
@@ -278,6 +280,7 @@ function kat1Izi(gorevSonu = false): { iz: Float64Array; r1Dk: number } {
       stationLevels: s.stationLevels.map(() => 6),
       lavaboLevel: 6,
       waiterUpgrades: { ...s.waiterUpgrades, tray: C.waiter.trayUpgrades.costs.length, speed: waiterSpeedMaxTier(), dishCarry: dishCarryMaxTier(), dishSpeed: dishSpeedMaxTier() },
+      ...(K1_MASA ? { tableLevels: s.tableLevels.map(() => K1_MASA) } : {}),
     } as never);
   }
   useGame.setState({ kat: 2, player: [...VARIS[2]] as Vec3, kat2: { acik: true, padsDone: [] }, kat2Dunya: yeniKat2Dunya([], CFG) });
@@ -692,7 +695,7 @@ console.log('');
 console.log('--- §B3 saat başına toplam gelir (Kat 1 + Kat 2) coin/dk ---');
 for (const { k, r } of sonuc) console.log(`${k.ad.padEnd(11)}| ${r.saatlik.map((s, i) => f0(s / ((i < r.saatlik.length - 1 ? 3600 : ((Number.isFinite(r.bitis) ? r.bitis : UFUK) - i * 3600) || 3600) / 60))).join(' · ')}`);
 damga('Kat 1 parası cüzdana aktı (§B)', sonuc.every((s) => s.r.kat1 > 0));
-if (FINAL && !KISA) {
+if (FINAL && !KISA && !K1_MASA) {
   // D-201 kararının ölçümü (docs/olcum-kat2-isleyis-t2.txt, K-Bt2): Kat 2 8,11 sa · zincir 4,91 sa · ilk garson 23,1 dk.
   const r = sonuc[0].r;
   damga('FİNAL: Kat 2 süresi = K-Bt2 ölçümü (8,11 sa ± %3)', Math.abs(r.bitis / 3600 - 8.11) <= 0.03 * 8.11, sa(r.bitis));

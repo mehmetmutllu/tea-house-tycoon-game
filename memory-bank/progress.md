@@ -55,6 +55,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-17 (4.): ✅ D-201 Parça 1 MANTIK: config = K-Bt2 (3 garson pad · bulaşıkçı · lavabo L2-L6 tetiği · bulaşık · fiyat kayması) · bekçi kat2-isleyis 12 test, mutasyon 4/4 · final tam koşu = ölçüm (8,11 sa) · vitest 2131 · duman yeşil · sıradaki: Parça 2 görsel
   · 2026-11-17 (5.): ✅ D-201 Parça 2 görsel — masada fincan + telveli kirli · bakır leğen · bulaşıkçı · tepside kirli · lavabo seviyeyle büyür + Yükselt noktası · pad etiketleri Kat 1 · bekçi mutasyon 2/2 · final aynı 8,11 sa · vitest 2135 · duman 78/78
   · 2026-11-17 (6.): ✅ Kat 2 bahçe ağaçları zeminden taşmıyor · eski ölçüm aracı silindi · D-202 bulaşıkçı temiz ≤ 2'de götürür (Kat 1 Salon 2 servis 8,3 → 9,8/dk, temiz yok %22,5 → %2,2; Kat 2 aynı 8,11 sa) · vitest 2145 · duman 78/78
+  · 2026-11-18: ✅ **Google Play'de yayında** (kullanıcı) · Kat 1 masa L0/L2/L4 → Kat 2 8,11/7,26/6,69 sa (yalnız ölçüm) · lint 4 hata düzeldi · bardak-t8 korunumu leğeni sayıyor (damgalar temiz)
   · 2026-11-16: ✅ Play için 1.0.7 (10007) AAB'si zip'ten masaüstüne çıkarıldı (App Store sürümü, Kat 2 yok) · kod değişikliği yok
   · 2026-11-15: ✅ G5 kol G2 config'te (hemen kahve + anında para, 90 sn oyun, ücret 38) · kahve seti: sap ustaya, servis tepsisi, kahveci usta · ön set seçimi bekliyor
   · 2026-11-14: ✅ Oyun testi G1-G4 (D-198) — kasa kalktı/Kat 1 parası akar · Kat 2 mutfağı Kat 1 kopyası + katı ön tezgâh · ön bölme 0,6 · grup tek sıra · G5 okey ölçüldü (karar bekliyor) · bekçi mutasyon 4/4

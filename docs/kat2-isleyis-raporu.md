@@ -190,3 +190,16 @@ Bekçi `tests/kat2-isleyis.test.ts` "personel pad etiketleri = Kat 1" (etiket co
 2. garson · bulaşıkçı). Etiket genişliği pad çerçevesini büyüttü → **final tam koşu yeniden:** sayılar `docs/olcum-kat2-isleyis-final.txt`
 ile birebir aynı (8,11 sa · damgalar temiz). Kareler: `docs/kareler/kat2-isleyis-gorsel-{oyun,masa,lavabo}.png`.
 vitest 2135 · duman 78/78 + EN 4/4.
+
+## Yan bulgu — Kat 1 masa seviyesine duyarlılık (2026-11-18, tam koşu, config D-201 olduğu gibi)
+Araç aynı, `OLCUM=tam IS_TUR=2 IS_K1MASA=n` (görev hattı sonundaki Kat 1'in bütün masaları Ln) · ham çıktı
+`docs/olcum-kat2-k1masa-L2.txt` · `docs/olcum-kat2-k1masa-L4.txt` · damgalar temiz. Kod/config değişmedi.
+
+| Kat 1 masaları | Kat 1 coin/dk | ilk garson dk | zincir biter | KAT 2 BİTER | en uzun bekleyiş dk |
+|---|---|---|---|---|---|
+| L0 (D-201'in varsayımı, final) | 901 | 23,1 | 4,91 sa | **8,11 sa** | 10,1 |
+| L2 | 1.120 | 18,5 | 4,27 sa | **7,26 sa** (−%10) | 8,9 |
+| L4 | 1.300 | 17,5 | 3,86 sa | **6,69 sa** (−%18) | 7,8 |
+
+Okuma: masaları yükseltmiş oyuncuda Kat 2 kısalır ama bant dar (6,7–8,1 sa); zincir D-192 hedefinin (4,90 sa) en fazla %21 altına iner.
+Karar gerekmez; fiyatı L2 varsayımına kaydırmak istenirse bu tablo varyant satırıdır.

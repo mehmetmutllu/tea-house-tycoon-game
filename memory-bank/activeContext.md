@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-17 — D-201 mantık + görsel · D-202 bulaşıkçı kuralı kodda · deneme APK masaüstünde · sıradaki: kullanıcının oyun testi)
+## ŞU AN (2026-11-18 — **Google Play'de YAYINDA** (kullanıcı bildirdi) · Kat 1 masa duyarlılığı ölçüldü · lint 4 düzeldi · sıradaki: kullanıcının oyun testi)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -38,7 +38,7 @@ NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası �
 Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
 `docs/kareler/kat2-isleyis-gorsel-*.png`. **Deneme APK hazır** (D-201 dahil): masaüstü `TeaHouse-deneme-Kat2-2026-11-17b.apk` (2026-11-17). **Sıradaki:** kullanıcının oyun testi geri bildirimi.
 Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit seviye 2'ydi).
-**Yan bulgular:** Kat 1 masaları L4'teyse Kat 1 ~1.216 coin/dk → Kat 2 ~7,5 sa (ölçülmedi).
+**Yan bulgu ölçüldü (2026-11-18):** Kat 1 masaları L0/L2/L4 → Kat 2 8,11 / 7,26 / 6,69 sa · zincir 4,91 / 4,27 / 3,86 sa (rapor §Yan bulgu). Karar gerekmez.
 - Önceki açıklar: 2 metin ChatGPT turu (D-200) · yeni deneme APK alınmadı · kullanıcı deneme APK ile oynuyor (D-197).
 - **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (2026-11-13). 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım · Play zip · "Yenilikler".
 
@@ -50,7 +50,6 @@ Bulaşıkçı temiz bardak ≤ 2 olunca elindekini götürür (Kat 1 + Kat 2). B
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
   reklam iş ortağı olarak ekle" kutusu ✅ 2026-11-13 Claude işaretledi + Kaydet (yenileyince kalıcı) · b) Unity: Chrome'da oturum kapalı, kontrol
   edilemedi (Monetization → Settings → Developer website = `https://mehmetmutllu.github.io`).
-- Play üretim erişimi: 2026-11-13 hâlâ ses yok; kullanıcı haber verecek.
 - Play'de yayına girince: Liftoff + Unity Android uygulamalarına Play bağlantısı; AdMob Android'i bağla.
 - 1.0.7 iOS yayında (2026-11-13): AdMob iOS "Güncellemeleri kontrol edin"; ~2026-11-16 Liftoff/Unity dolum oranı; Firebase olayları.
 
@@ -63,9 +62,7 @@ TR+EN metin (ChatGPT mikrometin). TestFlight'ta pencere çıkmaz; doğrulama yay
 
 ## AÇIK KALEMLER
 - Kat 2: balkon (D-179 D adayı) hâlâ "düşünürüz" · bölme yürüme yolunu uzatır → K2-5'te ölç · okeyde 4 / tavlada 2 kişi sabit.
-- Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · lint: `src/game/ads.ts` 2 + `tests/ekran-kabugu.test.ts` 2
-  + `tools/kat2-*.tsx` 46 (dev araçları, react-refresh kuralı).
-- `tools/olcum-bardak-t8.ts` korunum damgası kırık (W20 B0/B2 2 birim, Y1 8 birim) — K2-2'den ÖNCE de böyleydi, bakılmadı.
+- Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · lint: `tools/kat2-*.tsx` 46 (dev araçları, react-refresh kuralı).
 - Tam vitest bir kez 1 kararsız düşüş verdi (hangisi yakalanmadı; sonraki koşular yeşil).
 - Duman 2026-11-13'te bir kez 75/76 (`waitForSelector` 5 sn zaman aşımı istisnası, hangi denetim yakalanmadı); sonraki iki koşu 77/77.
 - Wordmaster oturumu Kaktus'a Unity'yi S17 sonrası kendi kuracak.

@@ -99,7 +99,8 @@ function kos(w: Dunya, k: Kol, tohum: number): Olcum {
     const garsonda = s.waiters.reduce((a, x) => a + x.tray + x.trayFood + (x.dirtyCarry ?? 0) + (x.dirtyCarryFood ?? 0), 0);
     const dw = s.dishwasher ? s.dishwasher.tray + s.dishwasher.trayFood : 0;
     const elde = s.tray + s.trayFood + s.carriedDirty + s.carriedDirtyFood;
-    const toplam = s.cleanCups + s.ready.tea + s.ready.tost + garsonda + elde + musteride + s.dishes.length + dw;
+    const legen = (s.legen?.bardak ?? 0) + (s.legen?.tabak ?? 0); // T8b leğeni (D-143) sonradan geldi
+    const toplam = s.cleanCups + s.ready.tea + s.ready.tost + garsonda + elde + musteride + s.dishes.length + dw + legen;
     korunum = Math.max(korunum, Math.abs(toplam - havuz));
     temizTop += s.cleanCups;
     if (s.cleanCups === 0) sifir++;
