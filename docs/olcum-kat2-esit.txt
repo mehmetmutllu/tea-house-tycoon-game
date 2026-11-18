@@ -1,0 +1,52 @@
+=== KAT 1'DE OLAN KAT 2'DE DE OLSUN (XP · günlük/Hedefler · çevrimdışı Sv/lavabo · İzle eki) ===
+Kip: tam · dt 0.1 · ufuk 16 sa · TABAN + K1-ESIT (emüle)
+Başlangıç: Kat 1 görev hattı sonu (ocak L6 · lavabo L6 · personel tavan) · karakter tavan · seviye 12 · Kat 2 ilk çıkış.
+XP: pad 15 · yükseltme 10 · elle 2 · garson 1 · yıkama 1 · görev 25 · seviye ödülü L≥5: son 60 sn kazancı
+
+--- §1 İLERLEME — Kat 2 ilk çıkıştan bitişe (zincir + bütün masalar Sv5 + ocak/lavabo/garson yükseltmeleri) ---
+kol          | zincir biter | KAT 2 BİTER | seviye (baş → son) | XP kazanılan | seviye atlama | seviye ödülü coin | Kat 2 süresince kazanç (iki kat)
+TABAN        |      4.99 sa |     8.27 sa |            12 → 12 |        6.964 |             0 |                 0 |  1.042.433
+K1-ESIT      |      4.99 sa |     8.22 sa |            12 → 14 |       31.299 |             2 |             4.188 |  1.042.509
+
+--- §2 GÜNLÜK GÖREV SAYAÇLARI — Kat 2'de oynanan saat başına (Kat 1 arkada) ---
+kol          | servis/sa | elle/sa | para/sa | yıkama/sa | ocaktan/sa | garson/sa
+TABAN        |       757 |       0 |       0 |         0 |          0 |       757
+K1-ESIT      |     2.763 |     407 |   1.586 |       392 |        407 |     2.356
+Görev (hedef, Kat 1 masa sayısına ölçekli) → Kat 2'de bitme süresi (dk):
+TABAN        | serve 52: 4 · hand 28: ∞ · coins 80: ∞ · dishes 24: ∞ · earn 2800: 1 · pickup 50: ∞ · waiter 50: 4
+K1-ESIT      | serve 52: 1 · hand 28: 4 · coins 80: 3 · dishes 24: 4 · earn 2800: 1 · pickup 50: 7 · waiter 50: 1
+💎 akışı — 1 sa Kat 2 oyununda biten görev payı × günlük 10 💎:
+TABAN        | 3/7 görev 1 sa içinde → beklenen 4.3 💎/gün
+K1-ESIT      | 7/7 görev 1 sa içinde → beklenen 10.0 💎/gün
+
+--- §3 ÇEVRİMDIŞI DÖNÜŞ — Kat 2 bitmiş (koşunun son durumu); taban = ekranda gösterilen/cüzdana · İzle = ek ---
+kol          | kapattığı kat | yokluk | oyun taban | oyun İzle eki | kol taban | kol İzle eki | İzle / taban (kol)
+TABAN        |             2 |  10 dk |     16.920 |             0 |    16.920 |            0 | 0.00×
+TABAN        |             2 |   1 sa |     16.920 |             0 |    16.920 |            0 | 0.00×
+TABAN        |             2 |   8 sa |     16.920 |             0 |    16.920 |            0 | 0.00×
+TABAN        |             1 |  10 dk |     19.205 |             0 |    19.205 |            0 | 0.00×
+TABAN        |             1 |   1 sa |     19.205 |             0 |    19.205 |            0 | 0.00×
+TABAN        |             1 |   8 sa |     19.205 |             0 |    19.205 |            0 | 0.00×
+K1-ESIT      |             2 |  10 dk |     16.900 |             0 |    19.205 |            0 | 0.00×
+K1-ESIT      |             2 |   1 sa |     16.900 |             0 |    19.205 |            0 | 0.00×
+K1-ESIT      |             2 |   8 sa |     16.900 |             0 |    19.205 |            0 | 0.00×
+K1-ESIT      |             1 |  10 dk |     19.205 |             0 |    19.205 |            0 | 0.00×
+K1-ESIT      |             1 |   1 sa |     19.205 |             0 |    19.205 |            0 | 0.00×
+K1-ESIT      |             1 |   8 sa |     19.205 |             0 |    19.205 |            0 | 0.00×
+
+--- §3b ÇEVRİMDIŞI AYRINTI (kol formülü) — ham Kat 1 · ham Kat 2 (rateMult sonrası) · para tavanı · Kat 1 kesinti sınırı ---
+kol          | kat | yokluk | Kat 2 oran coin/dk (rateMult öncesi) | ham Kat 1 | ham Kat 2 | tavan | Kat 1 sınırı
+TABAN        |   2 |  10 dk |                                1.043 |    48.871 |     5.213 | 19.205 | 15.068
+TABAN        |   2 |   1 sa |                                1.043 |   293.231 |    31.282 | 19.205 | 15.068
+TABAN        |   2 |   8 sa |                                1.043 |   293.231 |    31.282 | 19.205 | 15.068
+TABAN        |   1 |  10 dk |                                1.043 |    48.871 |     5.213 | 19.205 | —
+TABAN        |   1 |   1 sa |                                1.043 |   293.231 |    31.282 | 19.205 | —
+TABAN        |   1 |   8 sa |                                1.043 |   293.231 |    31.282 | 19.205 | —
+K1-ESIT      |   2 |  10 dk |                                2.888 |    48.871 |    14.440 | 19.205 | 15.048
+K1-ESIT      |   2 |   1 sa |                                2.888 |   293.231 |    86.641 | 19.205 | 15.048
+K1-ESIT      |   2 |   8 sa |                                2.888 |   293.231 |    86.641 | 19.205 | 15.048
+K1-ESIT      |   1 |  10 dk |                                2.888 |    48.871 |    14.440 | 19.205 | —
+K1-ESIT      |   1 |   1 sa |                                2.888 |   293.231 |    86.641 | 19.205 | —
+K1-ESIT      |   1 |   8 sa |                                2.888 |   293.231 |    86.641 | 19.205 | —
+
+(süre: 503 sn)
