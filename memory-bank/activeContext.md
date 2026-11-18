@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-18 — **Google Play'de YAYINDA** (kullanıcı bildirdi) · Kat 1 masa duyarlılığı ölçüldü · lint 4 düzeldi · sıradaki: kullanıcının oyun testi)
+## ŞU AN (2026-11-18 (2.) — **Play + App Store'da YAYINDA** · Kat 2 TAMAM, son deneme APK hazır · sıradaki: kullanıcının KOMPLE oyun testi → geri bildirim → nihai → 1.1)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -36,11 +36,11 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 Kodda: config = K-Bt2 · zincirde garson ×3 + bulaşıkçı · bulaşık (masada fincan/telveli kirli, ön tezgâhta bakır leğen, bulaşıkçı
 NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası · pad etiketleri Kat 1 (Garson Tut / 2. Garson / 3. Garson /
 Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
-`docs/kareler/kat2-isleyis-gorsel-*.png`. **Deneme APK hazır** (D-201 dahil): masaüstü `TeaHouse-deneme-Kat2-2026-11-17b.apk` (2026-11-17). **Sıradaki:** kullanıcının oyun testi geri bildirimi.
+`docs/kareler/kat2-isleyis-gorsel-*.png`. **Son deneme APK (komple test için, 2026-11-18):** masaüstü `TeaHouse-deneme-tam-2026-11-18.apk` (Kat 2 açık, D-201 + D-202 + son 2 metin). **Sıradaki:** kullanıcı baştan sona oynar → geri bildirim turu → "nihai" denince 1.1 yayın listesi.
 Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit seviye 2'ydi).
 **Yan bulgu ölçüldü (2026-11-18):** Kat 1 masaları L0/L2/L4 → Kat 2 8,11 / 7,26 / 6,69 sa · zincir 4,91 / 4,27 / 3,86 sa (rapor §Yan bulgu). Karar gerekmez.
-- Önceki açıklar: 2 metin ChatGPT turu (D-200) · yeni deneme APK alınmadı · kullanıcı deneme APK ile oynuyor (D-197).
-- **Yeni sürüm ŞİMDİLİK GÖNDERİLMEZ** (2026-11-13). 1.1 yayını: `VITE_KAT2=1` · Game Center 6 başarım · Play zip · "Yenilikler".
+- D-200'ün 2 metni ChatGPT turundan geçti (2026-11-18): "Tavla {1}. masayı aç" / "Open backgammon table {1}" · "Garsonlar tüm masalara kahve götürür." / "Servers bring coffee to every table."
+- **Yayına kullanıcı "nihai" deyince** (2026-11-18). 1.1 listesi: `VITE_KAT2=1` · Game Center 6 başarım · "Yenilikler" TR+EN · iOS Codemagic + Play zip · tam test + eski kayıt açılışı.
 
 ## ✅ TUR — BULAŞIKÇI YIKAMA KURALI (D-202, 2026-11-17) · rapor `docs/bulasikci-raporu.md`
 Bulaşıkçı temiz bardak ≤ 2 olunca elindekini götürür (Kat 1 + Kat 2). Bekçi `tests/bulasikci-kurali.test.ts`. Araç

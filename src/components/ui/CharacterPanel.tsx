@@ -212,8 +212,8 @@ function WaiterTab() {
 const K2 = economyConfig.kat2 as Kat2Ayar;
 type K2Tur = 'garsonTepsi' | 'garsonHiz';
 
-/** Kilitli alımın ipucu: garson alımlarını tavla masaları açar (config `kat2.yukseltme`) → "Tavla köşesinde N masa aç". */
-const kilitIpucu = (acan: string): string => t('Tavla köşesinde {1} masa aç', acan.replace('k2tavla', ''));
+/** Kilitli alımın ipucu: garson alımlarını tavla masaları açar (config `kat2.yukseltme`) → "Tavla N. masayı aç". */
+const kilitIpucu = (acan: string): string => t('Tavla {1}. masayı aç', acan.replace('k2tavla', ''));
 
 /**
  * D-200: KAT 2 GARSON sekmesi (Kat 1 `WaiterTab` deseni; Kat 2'deyken ve Kat 2 garsonu tutulmuşken çizilir).
@@ -263,7 +263,7 @@ function Kat2GarsonTab() {
     <>
       {satir('garsonTepsi', <TrayIcon size={42} food={false} />, t('Tepsi'), `${g.tepsi} ${t('ürün')}`, `${g.tepsi + 1} ${t('ürün')}`, 'k2garson-tepsi')}
       {satir('garsonHiz', <BootIcon size={42} />, t('Hız'), `${sayi(g.hiz)} ${t('hız')}`, hizSonra != null ? `${sayi(hizSonra)} ${t('hız')}` : null, 'k2garson-hiz')}
-      <div className="char-note">{t('Kat 2 garsonları her masaya kahve götürür.')}</div>
+      <div className="char-note">{t('Garsonlar tüm masalara kahve götürür.')}</div>
     </>
   );
 }
