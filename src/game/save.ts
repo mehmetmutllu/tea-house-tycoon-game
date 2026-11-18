@@ -304,7 +304,7 @@ export interface SaveData {
    */
   kat: number;
   /** K2-2: Kat 2'nin kendi ilerlemesi (`kat.ts` · `Kat2Kayit`). Additive — eksik alan varsayılanla dolar. */
-  kat2: Kat2Kayit;
+  kat2: Kat2KayitDisk;
   /**
    * D-185: Kat 1'in kasası (Decimal dizgesi) + kasa sınırının kaynağı olan gelir ölçümü. Additive →
    * sürüm ARTMADI (`kat`/`kat2` deseni): eski kayıtta yok → kasa '0', ölçüm boş (soğuk başlangıç).
@@ -313,6 +313,38 @@ export interface SaveData {
   kasa: string;
   kasaOlcum: KasaOlcum;
   lastSaved: number; // epoch ms
+}
+
+/**
+ * Kat 2 kaydının DİSKTEKİ hâli: canlı `Kat2Kayit` + kısmi dolumlar (tarama 2026-11-18 · kayıt #2, Kat 1
+ * G-78 karşılığı). `padFill` canlıda `Kat2Dunya`da yaşar; yalnız kayda yazılır, yüklemede dünyaya döner.
+ * Additive → sürüm ARTMADI (eksik = dolum yok).
+ */
+export type Kat2KayitDisk = Kat2Kayit & { padFill?: Record<string, number> };
+
+/** Kat 2 ilerleme sırası: açık > pad sayısı > görev > Sv toplamı > yükseltme toplamı. */
+function kat2Sira(k: Kat2Kayit): number[] {
+  const topla = (o: Record<string, number | undefined> | undefined) =>
+    Object.values(o ?? {}).reduce<number>((a, v) => a + (typeof v === 'number' && Number.isFinite(v) ? v : 0), 0);
+  return [k.acik ? 1 : 0, k.padsDone.length, k.gorev?.idx ?? 0, topla(k.masaSv), topla(k.yuk)];
+}
+
+/** `a`nın Kat 2'si `b`ninkinden İLERİ mi (sıra `kat2Sira`; eşit ileri sayılmaz). */
+export function kat2IleriMi(a: Kat2Kayit, b: Kat2Kayit): boolean {
+  const x = kat2Sira(a);
+  const y = kat2Sira(b);
+  for (let i = 0; i < x.length; i++) if (x[i] !== y[i]) return x[i] > y[i];
+  return false;
+}
+
+/**
+ * KAT BAZINDA BİRLEŞİM (tarama 2026-11-18 · kayıt #1). Gelen kayıt (bulut ya da yedek) seçildi ama
+ * Kat 2'si eldekinden geride → eldeki `kat2` (+ `kat`) korunur. Kök: 1.0.7 `kat2`yi bilmez, yazdığı
+ * kayıtta alan YOK; o kayıt "daha ileri" diye yüklenince Kat 2 sıfırlanıyordu.
+ */
+export function kat2Koru(gelen: SaveData, eldeki: SaveData): SaveData {
+  if (!kat2IleriMi(eldeki.kat2, gelen.kat2)) return gelen;
+  return { ...gelen, kat: eldeki.kat, kat2: eldeki.kat2 };
 }
 
 export function defaultCharUpgrades(): CharUpgrades {
@@ -647,6 +679,8 @@ export function kayitDogrula(d: SaveData): { data: SaveData; red: string[] } {
       gorev: kat2GorevKaydi(d.kat2.gorev),
       // D-200 (additive): eski kayıt → yükseltme yok. Bozuk/eksi değer 0'a, kesir aşağı.
       yuk: kat2YukKaydi(d.kat2.yuk),
+      // Tarama 2026-11-18 · kayıt #2 (additive): kısmi dolumlar; bozuk değer düşer. Fiyat kelepçesi init'te.
+      ...(d.kat2.padFill !== undefined && { padFill: sozluk(d.kat2.padFill, negatifsizSayiMi) }),
     },
     kasa: gecerliTutar(d.kasa) ? d.kasa : '0',
     kasaOlcum: { para: negatifsiz(d.kasaOlcum.para), sn: negatifsiz(d.kasaOlcum.sn) },
@@ -671,14 +705,22 @@ export function kayitCoz(parsed: Record<string, unknown>): { data: SaveData; yen
   };
   const yeniSurum = typeof ham.saveVersion === 'number' && ham.saveVersion > SAVE_VERSION;
   let birlesik: SaveData;
+  let surumYok = false;
   if (ham.saveVersion === SAVE_VERSION || yeniSurum) birlesik = ayarla(ham);
   else {
     // Göç zinciri ADIM ADIM: her göç bir sonraki sürümü üretir (v31 → v33 → v34, v32 → v33 → v34).
     let d: Record<string, unknown> | null = ham;
     for (const goc of [migrateV31, migrateV32, migrateV33]) d = (d && goc(d)) ?? d;
-    birlesik = d && d.saveVersion === SAVE_VERSION ? ayarla(d) : resetKeepingSettings(ham);
+    if (d && d.saveVersion === SAVE_VERSION) birlesik = ayarla(d);
+    else {
+      birlesik = resetKeepingSettings(ham);
+      surumYok = true;
+    }
   }
   const { data, red } = kayitDogrula(birlesik);
+  // Tarama 2026-11-18 · kayıt #5: göç zincirinden düşen kayıt (sürüm eksik/dizge/tanınmayan) SESSİZCE
+  // sıfırlanmaz — aday reddedilir → yedeğe düşülür ya da karantina + `onarildi` notu.
+  if (surumYok) red.push('saveVersion');
   return { data, yeniSurum, red };
 }
 
@@ -724,6 +766,10 @@ interface Aday {
   /** Sağlama tuttu (ya da zarfsız eski kayıt) ve doğrulama reddetmedi. */
   saglam: boolean;
   cozum: { data: SaveData; yeniSurum: boolean; red: string[] } | null;
+  /** Ham kayıtta `kat2` anahtarı yok (Kat 2'yi bilmeyen 1.0.x yazdı). */
+  kat2Yok?: boolean;
+  /** Ham kayıtta `kat2` var ama görev hattı kaydı yok (S3 öncesi). */
+  kat2GorevYok?: boolean;
 }
 
 function adayCoz(ad: string, ham: string): Aday {
@@ -740,7 +786,9 @@ function adayCoz(ad: string, ham: string): Aday {
       n = z && sayiMi(z.n) ? z.n : 0;
     }
     const cozum = kayitCoz(o);
-    return { ad, n, saglam: tutuyor && cozum.red.length === 0, cozum };
+    const k2 = o.kat2 as Record<string, unknown> | null | undefined;
+    const kat2GorevYok = !!k2 && typeof k2 === 'object' && !Array.isArray(k2) && !('gorev' in k2);
+    return { ad, n, saglam: tutuyor && cozum.red.length === 0, cozum, kat2Yok: !('kat2' in o), kat2GorevYok };
   } catch {
     return { ad, n: 0, saglam: false, cozum: null };
   }
@@ -760,6 +808,12 @@ export function kayitMetniCoz(ham: string): { data: SaveData; yeniSurum: boolean
  */
 export type KayitSorunu = 'yedekten' | 'onarildi' | 'sifirdan';
 let sorun: KayitSorunu | null = null;
+/**
+ * Son yüklenen kaydın Kat 2'sinde görev hattı kaydı YOKTU (S3 öncesi) → store hattı pad/Sv'ye hizalar.
+ * Kaydı olan hat hizalanmaz: hizalama arada kalan sayaç görevini ödülsüz atlıyordu (tarama 2026-11-18 · kayıt #3).
+ */
+let kat2GorevYok = false;
+export const kat2GorevKaydiYok = (): boolean => kat2GorevYok;
 export const kayitSorunu = (): KayitSorunu | null => sorun;
 export function kayitSorunuGoruldu(): void {
   sorun = null;
@@ -787,6 +841,7 @@ export const karantinadakiKayit = (): string | null => kaliciOku(BOZUK);
  */
 export function loadSave(): SaveData {
   sorun = null;
+  kat2GorevYok = false;
   const anaHam = kaliciOku(KEY);
   const yerelHam = kaliciYerelOku(KEY);
   const yedekHam = Array.from({ length: YEDEK_SAYISI }, (_, i) => kaliciOku(YEDEK(i)));
@@ -820,7 +875,18 @@ export function loadSave(): SaveData {
     yazmaKilidi = false;
     return defaultSave();
   }
-  const { data, yeniSurum } = secilen.cozum;
+  let { data } = secilen.cozum;
+  const { yeniSurum } = secilen.cozum;
+  kat2GorevYok = !!secilen.kat2GorevYok;
+  // Kayıt #1'in yerel karşılığı: seçilen kaydı Kat 2'yi bilmeyen sürüm yazdıysa (alan yok), Kat 2'si
+  // daha ileri olan sağlam aday (öteki ana kopya / yedek) varsa onun Kat 2'si korunur.
+  if (secilen.kat2Yok) {
+    const digerleri = [
+      ...anaAdaylar,
+      ...yedekHam.map((h, i) => (i === 0 ? yedek0 : h ? adayCoz(`yedek.${i}`, h) : null)),
+    ].filter((a): a is Aday => !!a && a !== secilen && a.saglam && !!a.cozum && !a.kat2Yok);
+    for (const a of digerleri) data = kat2Koru(data, a.cozum!.data);
+  }
   sayac = Math.max(secilen.n, ...anaAdaylar.map((a) => a.n));
   sifirlamaNo = data.sifirlamaNo;
   yazmaKilidi = yeniSurum;

@@ -141,7 +141,22 @@ export function ParaYiginlari() {
   const sira = useRef(0);
   const [yazilar, setYazilar] = useState<{ id: number; x: number; z: number; deger: number }[]>([]);
 
+  // Kat 2 katmanı gizlenince (Kat 1'e iniş, `Activity`) efektler sökülür; dönüşte yeniden bağlanan efektler
+  // (ve store'un yetişen ilk render'ı) aradaki farkı toplanmış sanıp uçuş + yazı üretmesin: dönüşün ilk
+  // anında yalnız yeni durum kaydedilir. Oyuncu merdivenden yeni çıktı — o anda gerçek toplama olmaz.
+  const donus = useRef(false);
   useEffect(() => {
+    const t = donus.current ? setTimeout(() => (donus.current = false), 250) : undefined;
+    return () => {
+      clearTimeout(t);
+      donus.current = true;
+    };
+  }, []);
+  useEffect(() => {
+    if (donus.current) {
+      onceki.current = new Map(paralar.map((p) => [p.id, { x: p.x, z: p.z, miktar: p.miktar }]));
+      return;
+    }
     const simdi = new Set(paralar.map((p) => p.id));
     let toplam = 0;
     for (const [id, p] of onceki.current) {

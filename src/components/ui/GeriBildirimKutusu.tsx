@@ -5,7 +5,7 @@
 import { useState } from 'react';
 import { GERI_BILDIRIM_ARA_SN, GERI_BILDIRIM_UZUNLUK } from '../../config/firebase.config';
 import { levelProgress } from '../../config/economy.config';
-import { cihazOzeti, geriBildirimGonder, metniHazirla } from '../../game/geriBildirim';
+import { cihazOzeti, geriBildirimGonder, ilerlemeOzeti, metniHazirla } from '../../game/geriBildirim';
 import { useGame } from '../../game/store';
 import { dil, t } from '../../i18n';
 import { Capacitor } from '@capacitor/core';
@@ -31,7 +31,7 @@ export function GeriBildirimKutusu({ onKapat }: { onKapat: () => void }) {
       platform: Capacitor.getPlatform(),
       dil: dil(),
       cihaz: cihazOzeti(),
-      ilerleme: `gorev ${s.questIndex + 1} · sv ${levelProgress(s.xp).level} · masa ${s.tables} · nokta ${s.padsDone.length}`,
+      ilerleme: ilerlemeOzeti({ ...s, seviye: levelProgress(s.xp).level }),
     });
     if (ok) sonGonderim = Date.now();
     setHal(ok ? 'tamam' : 'hata');

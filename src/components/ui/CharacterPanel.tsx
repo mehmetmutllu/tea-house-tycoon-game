@@ -226,7 +226,8 @@ function Kat2GarsonTab() {
   const yuk = useGame((s) => s.kat2.yuk);
   const al = useGame((s) => s.kat2GarsonYukAl);
   const g = kat2EtkinAyar(K2, yuk).garson!;
-  const satir = (tur: K2Tur, icon: React.ReactNode, ad: string, simdi: string, sonra: string | null, id: string) => {
+  // Kat 1 Garson sekmesinin biçimi: "2 → 3 ürün" — birim yalnız sonda, bir kez (tarama-5 #6).
+  const satir = (tur: K2Tur, icon: React.ReactNode, ad: string, simdi: string, sonra: string | null, birim: string, id: string) => {
     const n = kat2YukSiradaki(K2, padsDone, yuk, tur);
     const cost = n?.acik ? n.fiyat : null;
     return (
@@ -237,10 +238,10 @@ function Kat2GarsonTab() {
           <span className="char-stat-val" data-testid={`${id}-val`}>
             {n && sonra != null ? (
               <>
-                {simdi} <i><ToIcon /> {sonra}</i>
+                {simdi} <i><ToIcon /> {sonra}</i> {birim}
               </>
             ) : (
-              simdi
+              <>{simdi} {birim}</>
             )}
           </span>
           <Eksik cost={cost} cash={cash} />
@@ -261,8 +262,8 @@ function Kat2GarsonTab() {
   const hizSonra = K2.yukseltme?.garsonHiz.deger[yuk?.garsonHiz ?? 0];
   return (
     <>
-      {satir('garsonTepsi', <TrayIcon size={42} food={false} />, t('Tepsi'), `${g.tepsi} ${t('ürün')}`, `${g.tepsi + 1} ${t('ürün')}`, 'k2garson-tepsi')}
-      {satir('garsonHiz', <BootIcon size={42} />, t('Hız'), `${sayi(g.hiz)} ${t('hız')}`, hizSonra != null ? `${sayi(hizSonra)} ${t('hız')}` : null, 'k2garson-hiz')}
+      {satir('garsonTepsi', <TrayIcon size={42} food={false} />, t('Tepsi'), String(g.tepsi), String(g.tepsi + 1), t('ürün'), 'k2garson-tepsi')}
+      {satir('garsonHiz', <BootIcon size={42} />, t('Hız'), sayi(g.hiz), hizSonra != null ? sayi(hizSonra) : null, t('hız'), 'k2garson-hiz')}
       <div className="char-note">{t('Garsonlar tüm masalara kahve götürür.')}</div>
     </>
   );

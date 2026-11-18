@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-18 (2.) — **Play + App Store'da YAYINDA** · Kat 2 TAMAM, son deneme APK hazır · sıradaki: kullanıcının KOMPLE oyun testi → geri bildirim → nihai → 1.1)
+## ŞU AN (2026-11-18 (3.) — **son tarama bitti (D-203)**, hata/perf/güvenlik düzeltildi · yeni deneme APK `TeaHouse-deneme-tam-2026-11-18b.apk` · sıradaki: kullanıcının KOMPLE testi + bekleyen 8 karar `docs/tarama-2026-11-18/README.md`)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -36,7 +36,7 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 Kodda: config = K-Bt2 · zincirde garson ×3 + bulaşıkçı · bulaşık (masada fincan/telveli kirli, ön tezgâhta bakır leğen, bulaşıkçı
 NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası · pad etiketleri Kat 1 (Garson Tut / 2. Garson / 3. Garson /
 Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
-`docs/kareler/kat2-isleyis-gorsel-*.png`. **Son deneme APK (komple test için, 2026-11-18):** masaüstü `TeaHouse-deneme-tam-2026-11-18.apk` (Kat 2 açık, D-201 + D-202 + son 2 metin). **Sıradaki:** kullanıcı baştan sona oynar → geri bildirim turu → "nihai" denince 1.1 yayın listesi.
+`docs/kareler/kat2-isleyis-gorsel-*.png`. **Son deneme APK (2026-11-18, tarama düzeltmeleri dahil):** masaüstü `TeaHouse-deneme-tam-2026-11-18b.apk`. **Sıradaki:** kullanıcı baştan sona oynar → geri bildirim + README'deki 8 karar (denge olanlar varyant kapısıyla) → "nihai" → 1.1.
 Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit seviye 2'ydi).
 **Yan bulgu ölçüldü (2026-11-18):** Kat 1 masaları L0/L2/L4 → Kat 2 8,11 / 7,26 / 6,69 sa · zincir 4,91 / 4,27 / 3,86 sa (rapor §Yan bulgu). Karar gerekmez.
 - D-200'ün 2 metni ChatGPT turundan geçti (2026-11-18): "Tavla {1}. masayı aç" / "Open backgammon table {1}" · "Garsonlar tüm masalara kahve götürür." / "Servers bring coffee to every table."

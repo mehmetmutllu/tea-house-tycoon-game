@@ -5291,3 +5291,12 @@ Kullanıcı: *"neden alışkanlığı değiştiriyoruz?"* + *"Kat 1'in de para g
 - Döngü kapalı (kullanıcıya açıklandı): sabit havuz, temiz yoksa ocak bekler. E4 (sabit 4) geç oyunu bozdu, seçilmedi.
 - Sıra kilidi notu: commit #2'de `karma-commit` uyarısı — final tam koşu çıktısı + aracın `BULASIK_FINAL` kipi kodla aynı commit'te;
   sıra izlendi (commit #1 `227fe48` karar boş · karar kullanıcıdan · #2 kod + final). Uyarı bilinçli geçildi.
+
+## D-203 · Son tarama: 6 tarama + 5 düzeltme ajanı, yalnız hata/perf/güvenlik (2026-11-18)
+Kullanıcı: "son bir tarama yap … istediğin kadar opus agent". Özet ve bulgular `docs/tarama-2026-11-18/README.md`.
+- Düzeltilen: bulut/kayıt Kat 2 kaybı (4 yol) · Kat 2 personeli 22 masaya ulaşır · tek tepsi iki kat · seviye ekranı tick dışı XP ·
+  GPU doku sızıntısı + gizli kat işi · yönlendirme (Kat 1 sonu → merdiven, Kat 2 ok/liste/bitiş) · reklam soğuması ödüllüden sonra ·
+  Capacitor 8.6.2 · 1.1 hattına `VITE_KAT2=1` + bekçi.
+- Kat 2 bitişi 8,11 → 8,06 sa (yol düzeltmesi; denge sayısı değişmedi). Denge/ürün soruları (XP, günlük görev, çevrimdışı, tavla
+  bandı, gölge, metin turu) README §Kullanıcı kararı bekleyenler — koda girmedi.
+

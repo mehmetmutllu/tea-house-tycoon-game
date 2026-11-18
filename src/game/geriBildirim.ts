@@ -85,3 +85,20 @@ export async function geriBildirimGonder(
     clearTimeout(sure);
   }
 }
+
+/**
+ * İlerleme özeti (saf) — geri bildirimi bağlamıyla okumak için. Tarama-6 #8: Kat 2 bağlamı da
+ * (hangi kat · Kat 2 noktası · Kat 2 görev sırası). Kişisel veri değil.
+ */
+export function ilerlemeOzeti(s: {
+  questIndex: number;
+  seviye: number;
+  tables: number;
+  padsDone: readonly string[];
+  kat: number;
+  kat2: { acik: boolean; padsDone: readonly string[]; gorev?: { idx: number } };
+}): string {
+  const k1 = `gorev ${s.questIndex + 1} · sv ${s.seviye} · masa ${s.tables} · nokta ${s.padsDone.length}`;
+  if (!s.kat2.acik) return `${k1} · kat ${s.kat}`;
+  return `${k1} · kat ${s.kat} · k2 ${s.kat2.padsDone.length} · k2g ${(s.kat2.gorev?.idx ?? 0) + 1}`;
+}

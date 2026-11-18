@@ -10,6 +10,7 @@ import { CanvasTexture, DoubleSide, LinearFilter, MeshBasicMaterial, SRGBColorSp
 import { useGame } from '../../../game/store';
 import { PALETTE } from '../../../config/palette';
 import type { Kat2MasaYeri } from '../../../game/kat';
+import { masaBul } from './masaIndeks';
 
 const BOY = 256;
 const KONTUR = 12;
@@ -144,7 +145,7 @@ function useFontHazir(): boolean {
 
 /** Masanın kahve balonu — `istek` 0'dan büyükken görünür, belirirken hafif zıplar. */
 export function KahveBalonu({ yer }: { yer: Kat2MasaYeri }) {
-  const istek = useGame((s) => s.kat2Dunya.masalar.find((m) => m.id === yer.id)?.istek ?? 0);
+  const istek = useGame((s) => masaBul(s.kat2Dunya.masalar, yer.id)?.istek ?? 0);
   const fontHazir = useFontHazir();
   const mat = useMemo(() => new MeshBasicMaterial({ transparent: true, depthWrite: false, toneMapped: false, side: DoubleSide }), []);
   useEffect(() => () => mat.dispose(), [mat]);

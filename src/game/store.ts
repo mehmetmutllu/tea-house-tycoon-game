@@ -32,6 +32,7 @@ import {
   defaultWaiterUpgrades,
   defaultReklam,
   defaultSatinAlim,
+  kat2GorevKaydiYok,
   loadSave,
   writeSave,
   clearSave,
@@ -199,7 +200,7 @@ import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
 import { GECIS_SN, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo, OCAKLAR } from './kat';
 import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
-import { kat2EtkinAyar, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2Tick, kat2YukSiradaki, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
+import { kat2EtkinAyar, kat2LavaboTetik, kat2OcakTetik, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2SvTetikleri, kat2TepsiBosalt, kat2TepsiDolu, kat2Tick, kat2YukSiradaki, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
 import { kat2Gorevleri, kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
 import { bosKasaOlcum, kasaSiniriOlcumden, type KasaOlcum } from './kasa';
 import { t } from '../i18n';
@@ -249,6 +250,8 @@ export function kayitVerisi(s: GameState): SaveData {
   // yüklenince yerde para yoktur → çift sayım olmaz.
   let yerde = 0;
   for (const c of s.coins) yerde += c.value;
+  // Tarama 2026-11-18 · kayıt #4: aynı kural Kat 2'nin yerdeki yığınlarına (init yığın üretmez → çift sayım yok).
+  for (const p of s.kat2Dunya.paralar) yerde += p.miktar;
   // D-015: tables/stations/hasWaiter KAYDEDİLMEZ — yüklemede padsDone'dan türetilir.
   return {
     ...defaultSave(),
@@ -298,7 +301,14 @@ export function kayitVerisi(s: GameState): SaveData {
     levelUp: s.levelUp && s.levelUp.amount > 0 ? { ...s.levelUp } : null,
     // Geçiş sürerken kayıt HEDEF katı yazar (perde inerken kapanırsa oyuncu vardığı katta açılır).
     kat: s.katGecis?.hedef ?? s.kat,
-    kat2: { ...s.kat2, padsDone: [...s.kat2.padsDone], masaSv: { ...s.kat2.masaSv }, yuk: { ...s.kat2.yuk } },
+    kat2: {
+      ...s.kat2,
+      padsDone: [...s.kat2.padsDone],
+      masaSv: { ...s.kat2.masaSv },
+      yuk: { ...s.kat2.yuk },
+      // Kayıt #2 (G-78'in Kat 2 karşılığı): kısmi ödenmiş pad / Sv / ocak / lavabo dolumu da gider.
+      padFill: { ...s.kat2Dunya.padFill },
+    },
     lastSaved: Date.now(),
   };
 }
@@ -456,6 +466,11 @@ export interface GameState {
   questBase: number;
   /** Toplam oyuncu XP'si (persist v17). Seviye `levelProgress(xp)` ile türetilir — ayrı saklanmaz. */
   xp: number;
+  /**
+   * `runTick` DIŞINDA verilmiş, seviye ekranının henüz görmediği XP (panel alımı, hedef, Kat 2 görevi /
+   * yükseltmesi). Sonraki karede `levelNoticeSystem` onu da sayar, sonra sıfırlanır (transient).
+   */
+  xpBekleyen: number;
   /** Oyuncu ayarları (persist v17): ses/müzik/bildirim. */
   settings: SaveSettings;
   /** Kozmetik mağaza (persist v19, WP6): ALAN başına seçili tema + sahiplikler (`kind:id:zN`). */
@@ -625,7 +640,7 @@ export interface GameState {
    * (korunum bozulmaz; çay ziyan = küçük bedel, istismarı engeller). Taşınan KİRLİLER kalır —
    * onlar zaten lavaboya gidiyor. Tepsi çayla doluyken müşteriler kalkarsa kilitlenme çözücüsü.
    */
-  emptyTray: (kind: 'tea' | 'food') => void;
+  emptyTray: (kind: 'tea' | 'food' | 'kahve') => void;
   /** Tepsi-boşalt butonu ilk-sefer spotlight'ını kapat (persist — bir daha çıkmaz). */
   markTrayTipSeen: () => void;
   /** G-63: bulaşık öğretme kartı kapatıldı (bir daha çıkmaz; anında kaydedilir). */
@@ -654,6 +669,9 @@ function gecerliLevelUp(v: unknown): LevelUpOdul | null {
   if (!sayi(o.level) || !sayi(o.amount) || !sayi(o.carryBefore) || !sayi(o.carryAfter) || o.amount! <= 0) return null;
   return { level: o.level!, amount: o.amount!, carryBefore: o.carryBefore!, carryAfter: o.carryAfter! };
 }
+
+/** Tick dışı XP: seviye ekranı sonraki karede görür (`xpBekleyen`). */
+const xpEkle = (s: { xp: number; xpBekleyen: number }, n: number) => ({ xp: s.xp + n, xpBekleyen: s.xpBekleyen + n });
 
 /** Bu süreden kısa yokluk çevrimdışı sayılmaz (sn). */
 const CEVRIMDISI_ESIK_SN = 30;
@@ -712,11 +730,40 @@ function ustaAcilabilir(s: { mastersOwned?: string[]; tables: number; tableLevel
 }
 
 /** S3: Sv tetiği dolan masaları bir seviye artırır (tavan `KAT2_SV_MAX`); yeni sözlük döner. */
-/** S3-D: açık katın görev hattı kayıttaki pad/Sv'ye hizalanır (ödülsüz) — yükleme, kat açılışı. */
-function kat2Hizali(k: Kat2Kayit): Kat2Kayit {
+/**
+ * S3-D: açık katın görev hattı — yükleme, kat açılışı. Hat kaydı YOKSA (S3 öncesi kayıt: `eski`) kayıttaki
+ * pad/Sv'ye hizalanır (ödülsüz). Varsa yalnız canlı oyunun adımı boş olayla koşar: tutarlı kayıt
+ * değişmez (tarama 2026-11-18 · kayıt #3 — hizalama arada kalan sayaç görevini ödülsüz atlıyordu).
+ */
+const BOS_K2_OLAY: Kat2GorevOlay = { servis: 0, garsonServis: 0, tavlaServis: 0, kalkis: 0, kazanc: 0 };
+function kat2Hizali(k: Kat2Kayit, eski = false): Kat2Kayit {
   if (!k.acik) return k;
-  const gorev = kat2GorevHizala(k.gorev, k, C.kat2Gorevler, KAT2_AYAR);
+  const gorev = k.gorev && !eski
+    ? kat2GorevIlerlet(k.gorev, BOS_K2_OLAY, k, C.kat2Gorevler, KAT2_AYAR).kayit
+    : kat2GorevHizala(k.gorev, k, C.kat2Gorevler, KAT2_AYAR);
   return gorev === k.gorev ? k : { ...k, gorev };
+}
+
+/**
+ * Kayıt #2: Kat 2 kısmi dolumları yüklemede dünyaya döner — her biri BUGÜNKÜ fiyatına kelepçeli
+ * (Kat 1 `kismiDolum`); artık var olmayan nokta (pad alınmış, Sv tavanda, hat bitmiş) düşer.
+ */
+function kat2DolumYukle(ham: Record<string, number> | undefined, k: Kat2Kayit, a: Kat2Ayar): Record<string, number> {
+  const out: Record<string, number> = {};
+  if (!ham || !k.acik) return out;
+  const pad = kat2SiradakiPad(a, k.padsDone);
+  const svler = kat2SvTetikleri(a, k.padsDone, k.masaSv ?? {});
+  const ocak = kat2OcakTetik(a, k.padsDone, k.yuk);
+  const lavabo = kat2LavaboTetik(a, k.padsDone, k.yuk);
+  for (const [id, v] of Object.entries(ham)) {
+    const fiyat = pad?.id === id ? pad.cost
+      : ocak?.id === id ? ocak.fiyat
+      : lavabo?.id === id ? lavabo.fiyat
+      : svler.find((t) => t.id === id)?.fiyat ?? null;
+    const f = kismiDolum(v, fiyat);
+    if (f > 0) out[id] = f;
+  }
+  return out;
 }
 
 export function kat2SvAtla(masaSv: Readonly<Record<string, number>> | undefined, ids: readonly string[]): Record<string, number> {
@@ -786,6 +833,7 @@ export const useGame = create<GameState>((set, get) => ({
   questPhaseT: 0,
   questDoneIndex: -1,
   xp: 0,
+  xpBekleyen: 0,
   settings: defaultSettings(),
   floorThemeByArea: Array.from({ length: MAX_AREAS }, (_, z) => defaultFloorTheme(z)),
   wallThemeByArea: Array.from({ length: MAX_AREAS }, () => 'krem'),
@@ -827,7 +875,8 @@ export const useGame = create<GameState>((set, get) => ({
   init: () => {
     const save: SaveData = loadSave();
     // D-191: açık katın hazır pad'leri (eski kayıtta yoksa) birleşir.
-    const kat2Kayit = kat2Hizali(kat2HazirEkle({ ...save.kat2, padsDone: [...save.kat2.padsDone] }, KAT2_HAZIR));
+    const { padFill: kat2Dolum, ...kat2Ham } = save.kat2;
+    const kat2Kayit = kat2Hizali(kat2HazirEkle({ ...kat2Ham, padsDone: [...kat2Ham.padsDone] }, KAT2_HAZIR), kat2GorevKaydiYok());
     const ilkKat = baslangicKati(save.kat, save.kat2);
     // D-015: masa/servis/personel padsDone'dan TÜRETİLİR (ayrı saklanmaz).
     const world: World = deriveWorld(save.padsDone);
@@ -988,6 +1037,7 @@ export const useGame = create<GameState>((set, get) => ({
       questPhaseT: 0,
       questDoneIndex: -1,
       xp: save.xp,
+      xpBekleyen: 0,
       settings: { ...save.settings },
       floorThemeByArea: Array.from({ length: MAX_AREAS }, (_, a) => save.floorThemeByArea[a] ?? defaultFloorTheme(a)),
       wallThemeByArea: Array.from({ length: MAX_AREAS }, (_, a) => save.wallThemeByArea[a] ?? 'krem'),
@@ -1032,7 +1082,10 @@ export const useGame = create<GameState>((set, get) => ({
       kat: ilkKat,
       kat2: kat2Kayit,
       katGecis: null,
-      kat2Dunya: yeniKat2Dunya(kat2Kayit.padsDone, kat2EtkinAyar(KAT2_AYAR, kat2Kayit.yuk)),
+      kat2Dunya: (() => {
+        const a = kat2EtkinAyar(KAT2_AYAR, kat2Kayit.yuk);
+        return { ...yeniKat2Dunya(kat2Kayit.padsDone, a), padFill: kat2DolumYukle(kat2Dolum, kat2Kayit, a) };
+      })(),
       kat1Akis: 0,
       kasaOlcum,
     });
@@ -1054,6 +1107,10 @@ export const useGame = create<GameState>((set, get) => ({
     // K2-2: geçiş sürerken girdi yok (perdenin arkasında yürünmez). Kat 2'deyken Kat 1 sistemleri
     // oyuncuyu `KAT1_DISI`nda görür (`tick.playerMoveSystem` kapısı) — Kat 1 kendi başına işler.
     const c = createTickCtx(gecis ? { ...s, inputKeyboard: [0, 0], inputJoystick: [0, 0] } : s, dt);
+    // Tarama 2026-11-18 · reklam #3: seviye ekranı (`levelNoticeSystem`) `c.xp`yi `c.s.xp`yle kıyaslar.
+    // Tick dışında verilen XP'yi de görsün diye kıyas tabanı bekleyen kadar geri alınır; `c.xp` aynı kalır.
+    if (s.xpBekleyen > 0) Object.assign(c, { s: { ...c.s, xp: s.xp - s.xpBekleyen } });
+    c.digerTepsi = kat2TepsiDolu(s.kat2Dunya);
     runTick(c);
 
     let kat = s.kat;
@@ -1090,6 +1147,7 @@ export const useGame = create<GameState>((set, get) => ({
           masaSv: kat2.masaSv,
           svCanli: kat2SvCanli(kat2, C.kat2Gorevler, KAT2_AYAR),
           yuk: kat2.yuk,
+          digerTepsi: c.tray + c.trayFood + c.carriedDirty + c.carriedDirtyFood,
         },
         dt,
         kat2EtkinAyar(KAT2_AYAR, kat2.yuk),
@@ -1245,6 +1303,8 @@ export const useGame = create<GameState>((set, get) => ({
         questPhaseT: c.questPhaseT,
         questDoneIndex: c.questDoneIndex,
         xp,
+        // Bu karede `runTick`ten SONRA eklenen XP (Kat 2 görev / ocak / lavabo) sonraki karenin seviye ekranına.
+        xpBekleyen: xp - c.xp,
         quest: c.quest,
         camFocus,
         camBekleyen: c.camBekleyen,
@@ -1284,7 +1344,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       stationLevels,
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
       cleanCups: s.cleanCups + C.cups.poolPerLevel, // havuz ocak seviyesiyle büyür (Faz 2e)
     });
     get().saveNow();
@@ -1328,7 +1388,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       goalsClaimed: [...(s.goalsClaimed ?? []), id],
       diamonds: s.diamonds.add(odul.diamonds),
-      xp: s.xp + C.xp.perQuest,
+      ...xpEkle(s, C.xp.perQuest),
     });
     get().saveNow();
     return true;
@@ -1352,7 +1412,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       mastersOwned: [...(s.mastersOwned ?? []), id],
       diamonds: s.diamonds.sub(fiyat),
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
     });
     get().saveNow();
     return true;
@@ -1368,7 +1428,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       mastersOwned: [...(s.mastersOwned ?? []), id],
       reklam: spendMasterAd(s.reklam, gun),
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
     });
     get().saveNow();
     return true;
@@ -1474,6 +1534,8 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   denemeKat1Bitir: () => {
+    const env = (import.meta as { env?: { DEV?: boolean; VITE_DENEME?: string } }).env;
+    if (env && env.VITE_DENEME !== '1' && !env.DEV) return; // yalnız deneme/dev derlemesi (tarama 2026-11-18 · W5 #3)
     const hepsi = (C.pads as readonly { id: string }[]).map((p) => p.id);
     set((s) => ({
       padsDone: [...new Set([...s.padsDone, ...hepsi])],
@@ -1633,7 +1695,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       charUpgrades: { ...s.charUpgrades, [stat]: tier + 1 },
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
     });
     get().saveNow();
     return true;
@@ -1648,7 +1710,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       waiterUpgrades: { ...s.waiterUpgrades, tray: tier + 1 },
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
     });
     get().saveNow();
     return true;
@@ -1661,7 +1723,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(n.fiyat),
       kat2: { ...s.kat2, yuk: { ...s.kat2.yuk, [tur]: (s.kat2.yuk?.[tur] ?? 0) + 1 } },
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
     });
     get().saveNow();
     return true;
@@ -1676,7 +1738,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       waiterUpgrades: { ...s.waiterUpgrades, dishCarry: tier + 1 },
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
     });
     get().saveNow();
     return true;
@@ -1691,7 +1753,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       waiterUpgrades: { ...s.waiterUpgrades, speed: tier + 1 },
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
     });
     get().saveNow();
     return true;
@@ -1706,7 +1768,7 @@ export const useGame = create<GameState>((set, get) => ({
     set({
       wallet: s.wallet.sub(cost),
       waiterUpgrades: { ...s.waiterUpgrades, dishSpeed: tier + 1 },
-      xp: s.xp + C.xp.perUpgrade,
+      ...xpEkle(s, C.xp.perUpgrade),
     });
     get().saveNow();
     return true;
@@ -1722,6 +1784,12 @@ export const useGame = create<GameState>((set, get) => ({
   // kirliler tepside KALIR.
   emptyTray: (kind) => {
     const s = get();
+    // Tarama 2026-11-18: Kat 2 kahvesi — fincanlar Kat 2'nin temiz havuzuna döner (kirli kalır).
+    if (kind === 'kahve') {
+      const d = kat2TepsiBosalt(s.kat2Dunya);
+      if (d !== s.kat2Dunya) set({ kat2Dunya: d });
+      return;
+    }
     const n = kind === 'food' ? s.trayFood : s.tray;
     if (n <= 0) return;
     set(

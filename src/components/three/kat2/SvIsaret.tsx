@@ -16,11 +16,24 @@ import { ETIKET_SERVIS, ISARET_R, MASA_ISARET_R } from '../../../game/markerFram
 import { GroundMarker } from '../GroundMarker';
 import { useMasaSvleri } from './masaSv';
 
+type Durum = ReturnType<typeof useGame.getState>;
+
+/** Cüzdanın sayısı — her `set`te işaret başına `Decimal.toNumber` yerine cüzdan kimliği başına bir kez. */
+let sonCuzdan: Durum['wallet'] | null = null;
+let sonSayi = 0;
+function cuzdan(s: Durum): number {
+  if (s.wallet !== sonCuzdan) {
+    sonCuzdan = s.wallet;
+    sonSayi = s.wallet.toNumber();
+  }
+  return sonSayi;
+}
+
 function SvIsareti({ t }: { t: Kat2SvTetik }) {
   const fill = useGame((s) => s.kat2Dunya.padFill[t.id] ?? 0);
   const kalan = Math.max(0, Math.ceil(t.fiyat - fill));
   // Boolean abonelik: cüzdan her tick değişir, işaret yalnız "yetiyor mu" değişince render olur.
-  const yetiyor = useGame((s) => s.wallet.toNumber() >= kalan);
+  const yetiyor = useGame((s) => cuzdan(s) >= kalan);
   return (
     <GroundMarker
       pos={[t.x, 0, t.z]}
@@ -49,7 +62,7 @@ export function Kat2OcakIsareti() {
   const t = kat2OcakTetik(AYAR, padsDone, yuk);
   const fill = useGame((s) => (t ? s.kat2Dunya.padFill[t.id] ?? 0 : 0));
   const kalan = t ? Math.max(0, Math.ceil(t.fiyat - fill)) : 0;
-  const yetiyor = useGame((s) => s.wallet.toNumber() >= kalan);
+  const yetiyor = useGame((s) => cuzdan(s) >= kalan);
   if (!t) return null;
   return (
     <GroundMarker
@@ -77,7 +90,7 @@ export function Kat2LavaboIsareti() {
   const t = kat2LavaboTetik(AYAR, padsDone, yuk);
   const fill = useGame((s) => (t ? s.kat2Dunya.padFill[t.id] ?? 0 : 0));
   const kalan = t ? Math.max(0, Math.ceil(t.fiyat - fill)) : 0;
-  const yetiyor = useGame((s) => s.wallet.toNumber() >= kalan);
+  const yetiyor = useGame((s) => cuzdan(s) >= kalan);
   if (!t) return null;
   return (
     <GroundMarker
@@ -95,11 +108,22 @@ export function Kat2LavaboIsareti() {
   );
 }
 
+/** `kat2SvCanli` yalnız `kat2` kaydı değişince yeniden hesaplanır (o nesne her tick değil, olayda değişir). */
+let sonKat2: Durum['kat2'] | null = null;
+let sonCanli = false;
+function svCanli(s: Durum): boolean {
+  if (s.kat2 !== sonKat2) {
+    sonKat2 = s.kat2;
+    sonCanli = kat2SvCanli(s.kat2, economyConfig.kat2Gorevler, AYAR);
+  }
+  return sonCanli;
+}
+
 export function Kat2SvIsaretleri() {
   const padsDone = useGame((s) => s.kat2.padsDone);
   const masaSv = useMasaSvleri();
   // D-124 + D-142 karşılığı: tek masa, yalnız Sv görevi aktifken (ya da hat bitince) — tick ile aynı kural.
-  const canli = useGame((s) => kat2SvCanli(s.kat2, economyConfig.kat2Gorevler, AYAR));
+  const canli = useGame(svCanli);
   const tetikler = kat2SvCanliTetik(AYAR, padsDone, masaSv, canli);
   return (
     <>

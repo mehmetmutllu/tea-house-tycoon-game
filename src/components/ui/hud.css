@@ -642,7 +642,8 @@
   flex: none;
   width: 64px;
   position: relative;
-  height: 13px;
+  /* Tarama-5 #2: 13 px'lik yatakta (iç 9 px) 14 px'lik sayaç kesiliyordu — `.big` ile aynı boy. */
+  height: 18px;
   border-radius: var(--rr);
   background: var(--oyuk);
   border: 2px solid var(--ot);
@@ -1878,6 +1879,34 @@
     max-height: 86vh;
     overflow-y: auto;
   }
+
+  /* Tarama-5 #7: Ayarlar'ın bölüm başlıkları ve KÜNYE tam satır — `sheet-pad` saydam olduğundan
+     `.sheet-body > .sheet-sec` kuralı onlara değmiyordu: başlık sağ sütuna, tablo sola düşüp kırpılıyordu. */
+  .sheet-body > .sheet-pad > .sheet-sec,
+  .sheet-body > .sheet-pad > .kunye {
+    grid-column: 1 / -1;
+  }
+  /* Boyu sabit ızgarada `overflow:hidden` kutunun satırı 0'a eziliyordu (ölçüm: 0 px, içerik 203). */
+  .sheet-body > .sheet-pad > .kunye {
+    overflow: visible;
+  }
+
+  /* Tarama-5 #1: geri bildirim / kafe adı kartı yatay telefonda ekrana sığar, gerekirse kayar —
+     Gönder ve Vazgeç ekranın altında kalıyordu. */
+  .modal-backdrop.kafe-adi-perde {
+    padding-top: 8px;
+  }
+  .kafe-adi-kart {
+    max-height: calc(100dvh - 16px);
+    overflow-y: auto;
+  }
+  .kafe-adi-kart > * {
+    flex-shrink: 0;
+  }
+  .geri-bildirim-girdi {
+    min-height: 0;
+    height: 76px;
+  }
 }
 
 /* ── B13 (T9d · D-146): DOKUNMA HEDEFİ ≥ 44 px ─────────────────────────────────────────────
@@ -2402,4 +2431,16 @@
 .kat1-akis {
   transition: opacity 0.35s ease;
   pointer-events: none;
+}
+
+/* Tarama-5 #4/#5: KÜNYE toplam kazanç ve mağaza fiyatı coin ikonuyla (₺ simgesi yok). */
+.kunye b.kunye-para,
+.fiyat-coin {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+/* Tarama-5 #9: paket afişinin rozeti tek satır. */
+.paket-afis .paket-ust {
+  white-space: nowrap;
 }

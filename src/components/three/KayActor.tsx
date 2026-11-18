@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type ReactNode } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, type ReactNode } from 'react';
 import { useGLTF, useAnimations } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import {
@@ -16,6 +16,7 @@ import {
   type AnimationClip,
 } from 'three';
 import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
+import { iskeletleriBirak, useKatGizli, useSokulurkenBirak } from './katKatmani';
 import { PALETTE } from '../../config/palette';
 import { govdeProfili, onlukParcasi, kumas, ONLUK_PARCALARI } from './onluk';
 import { kollariSiva, omuzHavlusu, HAVLU_KAYMA } from './patron';
@@ -393,8 +394,30 @@ function KayActorGovde({
     kiyafetTak(o, kind, gorunum);
     return o;
   }, [scene, kind, gorunum]);
+  // Klonun iskeletleri kendi kemik dokusunu (GPU) taşır; gövde sökülünce bırakılmazsa her Kat 2
+  // girişinde birikiyordu (perf W3). Kat 2 gizlenirken (Activity) değil, gerçekten sökülürken bırakılır.
+  const birak = useSokulurkenBirak();
+  useEffect(
+    () => () => {
+      if (birak()) iskeletleriBirak(govde);
+    },
+    [govde, birak],
+  );
 
-  const { actions } = useAnimations(klipler, ref);
+  const gizli = useKatGizli();
+
+  const { actions, mixer } = useAnimations(klipler, ref);
+  // Katı gizliyken (Kat 2'deyken Kat 1 personeli) karıştırıcı ilerlemez — drei'nin kare döngüsü
+  // `mixer.update`i çağırır, gizliyken boşa döner. Dönüşte animasyon kaldığı yerden sürer.
+  useLayoutEffect(() => {
+    const asil = mixer.update;
+    mixer.update = function (dt: number) {
+      return gizli() ? this : asil.call(this, dt);
+    };
+    return () => {
+      mixer.update = asil;
+    };
+  }, [mixer, gizli]);
 
   /**
    * Başlangıç: dur. Eylem HENÜZ YOKSA bu kanca sessizce hiçbir şey yapmaz — ve düzeltmesi
@@ -426,7 +449,7 @@ function KayActorGovde({
   const dunya = useRef(new Vector3());
   useFrame((_, dt) => {
     const g = ref.current;
-    if (!g || dt <= 0) return;
+    if (!g || dt <= 0 || gizli()) return;
     g.getWorldPosition(dunya.current);
     let hiz = 0;
     if (sonKonum.current) {
@@ -515,7 +538,7 @@ function KayActorGovde({
   useFrame(() => {
     const t = tepsiRef.current;
     const g = ref.current;
-    if (!t || !g) return;
+    if (!t || !g || gizli()) return;
     const [sol, sag] = eller;
     // Tek elde taşıma: karıştırıcı kolu bu karede yazdı; üstüne dünya eksenlerinde (aktörün ileri ve
     // yan ekseni) açılma eklenir. Yerel eksen kemikten kemiğe değişir, dünya ekseni değişmez.

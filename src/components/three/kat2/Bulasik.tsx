@@ -23,6 +23,7 @@ import { FRONT_TOP_Y } from "../kitchenLook";
 import { okeyGorunus, tavlaGorunus } from "./Esya";
 import { oturakYerleri } from "./yol";
 import { useMasaSvleri } from "./masaSv";
+import { masaBul } from "./masaIndeks";
 import { Fincan, KirliFincan, Kutu, Silindir } from "./parca";
 import { Kat2Personel } from "./Garson";
 
@@ -61,11 +62,9 @@ function yuva(
 }
 
 function MasaFincanlari({ yer, sv }: { yer: Kat2MasaYeri; sv: number }) {
-  const anahtar = useGame((s) => {
-    const m = s.kat2Dunya.masalar.find((x) => x.id === yer.id);
-    return `${m?.ictigi ?? 0}.${m?.kirli ?? 0}`;
-  });
-  const [ictigi, kirli] = anahtar.split(".").map(Number);
+  // Sayı seçiciler (her `set`te dizgi üretmez); masa `masaBul` ile tek haritadan.
+  const ictigi = useGame((s) => masaBul(s.kat2Dunya.masalar, yer.id)?.ictigi ?? 0);
+  const kirli = useGame((s) => masaBul(s.kat2Dunya.masalar, yer.id)?.kirli ?? 0);
   if (!ictigi && !kirli) return null;
   const boy = yer.tur === "okey" ? okeyGorunus(sv).boy : tavlaGorunus(sv).boy;
   const y = ustY(yer.tur, sv);

@@ -27,6 +27,8 @@ workflows:
         BUNDLE_ID: "com.mutlubadem.teahouse"
         # ads.config.ts `test` bayrağını kapatır: yalnız bu derleme gerçek AdMob birimlerini ister.
         VITE_REKLAM: "gercek"
+        # 1.1: Kat 2 kapısı (`kat.ts` kat2Etkin) üretimde yalnız bu bayrakla açılır.
+        VITE_KAT2: "1"
       node: 22
       xcode: latest
 
@@ -61,6 +63,14 @@ workflows:
         script: |
           grep -q "test:!1,birim" dist/assets/*.js || { echo "HATA: reklam test kipinde kaldi (VITE_REKLAM?)" >&2; exit 1; }
           echo "reklam: gercek birimler"
+
+      - name: Yayın derlemesinde Kat 2 açık, deneme düğmesi yok
+        # VITE_KAT2 pakete girmezse 1.1 mağazada Kat 2'siz çıkar (merdiven pad'i görünmez). Deneme APK'sının
+        # "Kat 1'i bitir" düğmesi (VITE_DENEME=1) yayın paketine asla sızmamalı.
+        script: |
+          grep -qE 'VITE_KAT2:.?1.?[,}]' dist/assets/*.js || { echo "HATA: VITE_KAT2=1 pakette yok (Kat 2 kapali kalir)" >&2; exit 1; }
+          if grep -q "set-deneme-kat1" dist/assets/*.js; then echo "HATA: deneme dugmesi (VITE_DENEME) pakette" >&2; exit 1; fi
+          echo "kat2: acik · deneme dugmesi: yok"
 
       - name: iCloud entitlement projede
         # Sprint A: bulut kaydı iCloud KVS'te (`eklentiler/bulut-kayit`). Entitlement dosyası ya da

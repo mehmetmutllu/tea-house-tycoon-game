@@ -5,7 +5,8 @@
  * elle girilir ve üçü de unutulursa paket SESSİZCE yanlış çıkar: test reklamı (gelir 0),
  * satın alma kapalı ("Mağaza hazır değil"). Bunlar ancak mağazada fark edilir.
  * Denetlenen: AndroidManifest AdMob uygulama kimliği · ads.config Android birimleri · RevenueCat goog_ anahtarı.
- * Geçerse gerçek reklam kipiyle (VITE_REKLAM=gercek) derler, kipi pakette doğrular ve imzalı AAB üretir:
+ * Geçerse gerçek reklam kipi + Kat 2 açık (VITE_REKLAM=gercek, VITE_KAT2=1) derler, ikisini ve deneme düğmesinin
+ * yokluğunu pakette doğrular, imzalı AAB üretir:
  * android/app/build/outputs/bundle/release/app-release.aab
  */
 import fs from 'node:fs';
@@ -45,11 +46,22 @@ if (!fs.existsSync(gsj) || !fs.readFileSync(gsj, 'utf8').includes('"package_name
   process.exit(1);
 }
 
-const kos = (k, cwd = KOK) => execSync(k, { cwd, stdio: 'inherit', env: { ...process.env, VITE_REKLAM: 'gercek' } });
+const kos = (k, cwd = KOK) => execSync(k, { cwd, stdio: 'inherit', env: { ...process.env, VITE_REKLAM: 'gercek', VITE_KAT2: '1' } });
 kos('npm run build');
-const js = fs.readdirSync(path.join(KOK, 'dist/assets')).filter((d) => d.endsWith('.js'));
-if (!js.some((d) => fs.readFileSync(path.join(KOK, 'dist/assets', d), 'utf8').includes('test:!1,birim'))) {
+const js = fs.readdirSync(path.join(KOK, 'dist/assets')).filter((d) => d.endsWith('.js'))
+  .map((d) => fs.readFileSync(path.join(KOK, 'dist/assets', d), 'utf8'));
+if (!js.some((k) => k.includes('test:!1,birim'))) {
   console.error('HATA: reklam test kipinde kaldı (VITE_REKLAM pakete girmedi)');
+  process.exit(1);
+}
+// 1.1: bayrak girmezse Play'deki sürümde Kat 2 kapalı kalır (merdiven pad'i çıkmaz).
+if (!js.some((k) => /VITE_KAT2:.?1.?[,}]/.test(k))) {
+  console.error('HATA: VITE_KAT2=1 pakete girmedi (Kat 2 kapalı kalır)');
+  process.exit(1);
+}
+// Kabukta VITE_DENEME=1 kalırsa deneme APK'sının "Kat 1'i bitir" düğmesi yayına sızar.
+if (js.some((k) => k.includes('set-deneme-kat1'))) {
+  console.error('HATA: deneme düğmesi (VITE_DENEME) pakette — kabuktaki VITE_DENEME’yi kaldır');
   process.exit(1);
 }
 kos('npx cap sync android');

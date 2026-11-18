@@ -36,4 +36,13 @@ export default defineConfig([
       'react-refresh/only-export-components': 'off',
     },
   },
+  {
+    // Kat 2 maket araçları (tools/kat2-*.tsx): tek seferlik kadraj sayfaları, HMR'li bileşen modülü değil;
+    // kadraj kamerası useThree'den alınıp yerinde ayarlanır (R3F kalıbı, yukarıdaki sahne bloğu gibi).
+    files: ['tools/kat2-*.tsx'],
+    rules: {
+      'react-hooks/immutability': 'off',
+      'react-refresh/only-export-components': 'off',
+    },
+  },
 ])

@@ -3,9 +3,10 @@ import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenC
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, QUEST_COMPLETE_DUR, QUEST_GAP_DUR, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
+import { CAM_FOCUS_TTL, adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, QUEST_COMPLETE_DUR, QUEST_GAP_DUR, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
 import { ogreticiAdimi, ogreticiMetni, yurudu } from '../../game/onboarding';
-import { kat2GorevGorunumu, type Kat2GorevGorunum } from '../../game/kat2Gorev';
+import { kat2GorevGorunumu, kat2Gorevleri, type Kat2GorevGorunum } from '../../game/kat2Gorev';
+import type { Kat2Ayar } from '../../game/kat2Dongu';
 import { LAYOUT } from '../../game/layout';
 import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
@@ -13,7 +14,7 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { odulAlindi, odulluIzleSonuc, odulluReklamHazir, panelKapandi, reklamAbone, reklamTercihleriGerekli, reklamTercihleriniAc, sogumaSifirla } from '../../game/ads';
 import { yasalAdres } from '../../config/yasal.config';
-import { screenPointer } from '../../game/screenPointer';
+import { merdivenRehberi, rehberHedefi, rehberOku, screenPointer } from '../../game/screenPointer';
 import { magazaDurumu, magazaYenile, satinAlimlariGeriYukle, urunFiyati, type SatinAlCevap } from '../../game/iap';
 import { useSatinAl } from './useSatinAl';
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
@@ -198,13 +199,34 @@ export function HUD() {
     const t = setTimeout(() => setBitisGorunur(false), 5000);
     return () => clearTimeout(t);
   }, [questBitti]);
+  // Tarama-4 #6: Kat 2 hattı bitince Kat 1'in hat sonu AYNEN — 5 sn kutlama bandı, sonra günlük görev bandı.
+  const kat2Bitti = kat2de && kat2Gorev == null && k2Kutlama == null;
+  const [k2BitisGorunur, setK2BitisGorunur] = useState(true);
+  if (!kat2Bitti && !k2BitisGorunur) setK2BitisGorunur(true);
+  useEffect(() => {
+    if (!kat2Bitti) return undefined;
+    const t = setTimeout(() => setK2BitisGorunur(false), 5000);
+    return () => clearTimeout(t);
+  }, [kat2Bitti]);
+  // Tarama-4 #1: Kat 1 hattı bitti ve merdiven pad'i açık → bant oyuncuyu merdivene çağırır (kenar oku da).
+  const merdivenCagir = useGame((s) => merdivenRehberi(s));
   const focusQuest = useGame((s) => s.focusQuest);
+  // Kenar oku / bant dokunuşu: Kat 1 hattı sürerken Kat 1 görevi, Kat 2'de Kat 2 görevi, hat sonunda merdiven.
+  const rehberOdak = () => {
+    const s = useGame.getState();
+    if (s.kat === 2) return kat2GorevOdak();
+    const h = rehberHedefi(s);
+    if (s.quest == null && h) useGame.setState({ camFocus: { pos: [h[0], 0, h[1]], ttl: CAM_FOCUS_TTL } });
+    else focusQuest();
+  };
   const hardReset = useGame((s) => s.hardReset);
   const charPanelSeen = useGame((s) => s.charPanelSeen);
   const markCharPanelSeen = useGame((s) => s.markCharPanelSeen);
   const tray = useGame((s) => s.tray);
   const trayFood = useGame((s) => s.trayFood);
   const emptyTray = useGame((s) => s.emptyTray);
+  // Tarama-4 #5: Kat 2'de tepsi sayacı ve "boşalt" düğmesi Kat 2'nin kahvesini gösterir (Kat 1'inkini değil).
+  const k2Tepsi = useGame((s) => (s.kat === 2 ? s.kat2Dunya.tepsi : 0));
   const trayTipSeen = useGame((s) => s.trayTipSeen);
   // Boolean seçilir (dizi değil): müşteri listesi her karede yenilenir, HUD yalnız cevap değişince çizer.
   const tepsiAni = useGame((s) =>
@@ -351,9 +373,26 @@ export function HUD() {
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+  // Tarama-4 #9: kat değişince açık panel / video kartı kapanır. Bu kapanış oyuncunun panel kapatması
+  // değil (perde iniyor) → geçişli reklam patlatmaz.
+  const katNo = useGame((s) => s.kat);
+  const katKapatti = useRef(false);
+  const oncekiKat = useRef(katNo);
+  useEffect(() => {
+    if (oncekiKat.current === katNo) return;
+    oncekiKat.current = katNo;
+    if (sheet != null) katKapatti.current = true;
+    setSheet(null);
+    setVideoAcik(false);
+    // `sheet` bilerek bağımlılıkta değil: yalnız KAT değişimi tetikler.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [katNo]);
   useEffect(() => {
     const onceki = oncekiSheet.current;
     oncekiSheet.current = sheet;
+    const katKapanisi = katKapatti.current;
+    katKapatti.current = false;
+    if (katKapanisi) return;
     if (onceki != null && sheet == null) void panelKapandi();
   }, [sheet]);
 
@@ -409,7 +448,7 @@ export function HUD() {
       </div>
 
       {/* Aktif adımın ekran-kenarı oku (hedef görüş alanı dışındaysa) */}
-      <EdgeArrow onClick={focusQuest} />
+      <EdgeArrow onClick={rehberOdak} />
 
       {/* ───────── SAĞ KENAR: genel bakış + tepsiyi boşalt ───────── */}
       <div className={`side-stack${traySpot ? ' spot-acik' : ''}`}>
@@ -436,7 +475,20 @@ export function HUD() {
             )}
           </button>
         )}
-        {trayFood > 0 && (
+        {kat2de && k2Tepsi > 0 && (
+          <button
+            className="round-btn tray-btn"
+            data-testid="empty-tray"
+            title={t('Kahveleri bırak')}
+            onClick={() => emptyTray('kahve')}
+          >
+            <TrayEmptyIcon size={24} />
+            <span className="tray-count" data-testid="tray-count">
+              {k2Tepsi}
+            </span>
+          </button>
+        )}
+        {!kat2de && trayFood > 0 && (
           <button
             className="round-btn tray-btn"
             data-testid="empty-tray-food"
@@ -452,7 +504,7 @@ export function HUD() {
             </span>
           </button>
         )}
-        {tray > 0 && (
+        {!kat2de && tray > 0 && (
           <button
             className="round-btn tray-btn"
             data-testid="empty-tray"
@@ -543,11 +595,15 @@ export function HUD() {
           </span>
         </button>
       ) : kat2de ? (
-        <div className="band idle" data-testid="kat-bandi">
-          <span className="band-body">
-            <span className="band-title">{t('Kat 2 — Oyun Salonu')}</span>
-          </span>
-        </div>
+        k2BitisGorunur ? (
+          <div className="band idle" data-testid="kat-bandi" data-gorev="bitti">
+            <span className="band-body">
+              <span className="band-title">{t('Kat 2 görevleri tamamlandı — salon senin.')}</span>
+            </span>
+          </div>
+        ) : (
+          <GunlukBant onClick={() => setSheet('quests')} />
+        )
       ) : quest ? (
         <button
           className={`band${quest.done ? ' done' : ''}`}
@@ -587,11 +643,23 @@ export function HUD() {
           </span>
         </button>
       ) : bitisGorunur ? (
-        <div className="band idle">
+        <div className="band idle" data-testid="hat-bitti">
           <span className="band-body">
             <span className="band-title">{t('Görev hattı tamamlandı — mekân senin.')}</span>
           </span>
         </div>
+      ) : merdivenCagir ? (
+        <button className="band" data-testid="merdiven-bandi" onClick={rehberOdak}>
+          <span className="band-photo">
+            <QuestPhoto target={{ type: 'pad', id: 'merdiven' }} size={38} />
+          </span>
+          <span className="band-body">
+            <span className="band-title">{t("Merdiveni onar, Kat 2'yi aç")}</span>
+          </span>
+          <span className="band-go">
+            <ChevronIcon size={18} />
+          </span>
+        </button>
       ) : (
         <GunlukBant onClick={() => setSheet('quests')} />
       )}
@@ -784,7 +852,7 @@ export function HUD() {
             <div className="sheet-sec">{t('KÜNYE')}</div>
             <div className="kunye" data-testid="kunye">
               <div><span>{t('Kayıt şeması')}</span><b>v{SAVE_VERSION}</b></div>
-              <div><span>{t('Toplam kazanç')}</span><b>{toplamKazancMetni} ₺</b></div>
+              <div><span>{t('Toplam kazanç')}</span><b className="kunye-para">{toplamKazancMetni} <CoinIcon size={14} /></b></div>
               <div><span>{t('Servis edilen çay')}</span><b>{fmt(stats.teasServed + stats.waiterServed)}</b></div>
               <div><span>{t('Yıkanan bulaşık')}</span><b>{fmt(stats.dishesWashed)}</b></div>
               <div><span>{t('Açılan nokta')}</span><b>{padsDone.length}</b></div>
@@ -979,11 +1047,14 @@ function EdgeArrow({ onClick }: { onClick: () => void }) {
       raf = requestAnimationFrame(loop);
       if (t - last < 50) return; // ~20Hz yeter (ok yumuşak kayar, CSS transition taşır)
       last = t;
-      const p = screenPointer;
-      const on = p.active && !p.onScreen;
+      // Kat 1 hattı sürerken Scene yazar; yazmıyorsa (hat sonu → merdiven · Kat 2 görevi) hedef burada izdüşer.
+      const sp = screenPointer;
+      const g = useGame.getState();
+      const p = sp.active ? sp : g.katGecis ? null : rehberOku(rehberHedefi(g), window.innerWidth, window.innerHeight);
+      const on = !!p && !p.onScreen;
       setShown(on);
       const el = ref.current;
-      if (on && el) {
+      if (on && p && el) {
         el.style.transform = `translate(-50%,-50%) translate(${p.x.toFixed(0)}px, ${p.y.toFixed(0)}px)`;
         const arrow = el.firstElementChild as HTMLElement | null;
         if (arrow) arrow.style.transform = `rotate(${p.angle.toFixed(0)}deg)`;
@@ -1220,9 +1291,16 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
   const quest = useGame((s) => s.quest);
   const focusQuest = useGame((s) => s.focusQuest);
   const padFills = useGame((s) => s.padFills);
-  const all = economyConfig.quests;
-  const done = all.slice(0, Math.min(questIndex, all.length));
-  const upcoming = all.slice(questIndex + 1, questIndex + 4);
+  // Tarama-4 #2: Kat 2'deyken MEKÂN bölümü Kat 2'nin görev hattını gösterir (Kat 1 listesinin aynısı).
+  const kat2de = useGame((s) => s.kat === 2);
+  const kat2Kayit = useGame((s) => s.kat2);
+  const kat2GorevOdak = useGame((s) => s.kat2GorevOdak);
+  const k2Hat = kat2Gorevleri(economyConfig.kat2Gorevler, economyConfig.kat2 as Kat2Ayar);
+  const k2Gorev = kat2de ? kat2GorevGorunumu(kat2Kayit, economyConfig.kat2Gorevler, economyConfig.kat2) : null;
+  const hatIdx = kat2de ? (kat2Kayit.gorev?.idx ?? 0) : questIndex;
+  const all: readonly { id: string; title: string; reward?: number | null }[] = kat2de ? k2Hat : economyConfig.quests;
+  const done = all.slice(0, Math.min(hatIdx, all.length));
+  const upcoming = all.slice(hatIdx + 1, hatIdx + 4);
   // GÜNLÜK GÖREVLER (D8) burada durur, beşinci bir sekme açılmadan: ikisi de "görev"dir, biri
   // hattın adımı biri günün işi. Sayaç ve eşik `dailyQuests.ts`te — panel yalnız çiziyor.
   const stats = useGame((s) => s.stats);
@@ -1307,8 +1385,44 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
         />
       )}
 
-      <div className="sheet-sec">{t('MEKÂN')}</div>
-      {quest ? (
+      <div className="sheet-sec">{kat2de ? t('Kat 2 — Oyun Salonu') : t('MEKÂN')}</div>
+      {kat2de ? (
+        k2Gorev ? (
+          <button
+            className="qbig"
+            data-testid="quest-active"
+            data-gorev={k2Gorev.id}
+            onClick={() => {
+              kat2GorevOdak();
+              onClose();
+            }}
+          >
+            <span className="qbig-photo">
+              <QuestPhoto target={k2Gorev.foto} size={62} />
+            </span>
+            <span className="qbig-body">
+              <span className="qbig-kicker">{t(k2Gorev.kicker)}</span>
+              <span className="qbig-title">{t(k2Gorev.title)}</span>
+              {k2Gorev.total != null && (
+                <span className="band-track big">
+                  <span
+                    className="band-fill"
+                    style={{ width: `${Math.min(100, ((k2Gorev.cur ?? 0) / k2Gorev.total) * 100)}%` }}
+                  />
+                  <span className="band-count">
+                    {k2Gorev.cur}/{k2Gorev.total}
+                  </span>
+                </span>
+              )}
+            </span>
+            <span className="qbig-reward">
+              <CoinIcon size={16} />+{fmt(k2Gorev.reward)}
+            </span>
+          </button>
+        ) : (
+          <div className="sheet-empty">{t('Kat 2 görevleri tamamlandı — salon senin.')}</div>
+        )
+      ) : quest ? (
         <button
           className="qbig"
           data-testid="quest-active"
@@ -1429,6 +1543,8 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
   const ustaSahip = mastersOwned.filter((id) => id.startsWith('table:')).length;
   const ustaBekleyen =
     tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length - ustaSahip;
+  // Tarama-4 #8: Usta yalnız Kat 1'de (mavi nokta orada) — Kat 2'deyken şerit "yanındaki noktaya git" demesin.
+  const kat2de = useGame((s) => s.kat === 2);
 
   return (
     <Sheet title={t('Hedefler')} testid="goals-panel" onClose={onClose} navda>
@@ -1456,24 +1572,26 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
       {/* USTA ŞERİDİ (D8 · plan §5 "Hedefler panelinden de toplu erişilir: Usta masalar 7/20").
           Burada SATIN ALINMAZ — alım mekânsaldır (masanın yanındaki 💎 noktası). Bu şerit
           koleksiyonun sayacıdır: kaç masa Usta oldu, kaçı sırada bekliyor, elmas yetiyor mu. */}
-      <div className="usta-strip" data-testid="usta-strip">
-        <span className="usta-count">
-          <b data-testid="usta-owned">{ustaSahip}</b>
-          <i>/{tables}</i>
-        </span>
-        <span className="usta-body">
-          <b>{t('Usta masalar')}</b>
-          <small>
-            {ustaBekleyen > 0
-              ? t('{1} masa hazır — yanındaki mavi noktaya git', ustaBekleyen)
-              : t('Masayı para tavanına çıkarınca Usta noktası açılır')}
-          </small>
-        </span>
-        <span className="usta-price" data-testid="usta-price">
-          <GemIcon size={14} />
-          {masterCost()}
-        </span>
-      </div>
+      {!kat2de && (
+        <div className="usta-strip" data-testid="usta-strip">
+          <span className="usta-count">
+            <b data-testid="usta-owned">{ustaSahip}</b>
+            <i>/{tables}</i>
+          </span>
+          <span className="usta-body">
+            <b>{t('Usta masalar')}</b>
+            <small>
+              {ustaBekleyen > 0
+                ? t('{1} masa hazır — yanındaki mavi noktaya git', ustaBekleyen)
+                : t('Masayı para tavanına çıkarınca Usta noktası açılır')}
+            </small>
+          </span>
+          <span className="usta-price" data-testid="usta-price">
+            <GemIcon size={14} />
+            {masterCost()}
+          </span>
+        </div>
+      )}
 
       <div className="sheet-sec">
         {t('KATEGORİLER')}{toplanabilir > 0 ? ` ${t('· {1} ÖDÜL HAZIR', toplanabilir)}` : ''}
@@ -1925,7 +2043,7 @@ function Paketler() {
             <GemPackArt kademe={2} size={64} />
           </span>
           <div className="paket-afis-govde">
-            <span className="paket-ust">{t('Bir kez alınabilir')}</span>
+            <span className="paket-ust">{t('Tek seferlik')}</span>
             <b className="paket-afis-ad">{t('Başlangıç Paketi')}</b>
             <span className="paket-afis-icerik">
               <GemIcon size={16} /> {P.starterDiamonds} + {t('Kurucu kıyafeti')}
@@ -2295,7 +2413,7 @@ function ShopPanel({ onClose }: { onClose: () => void }) {
                         ? t('Başlangıç Paketi\'nde')
                         : elmasli
                           ? t('{1} elmas', fmt(secili.cost))
-                          : t('{1} ₺', fmt(secili.cost))}
+                          : <span className="fiyat-coin"><CoinIcon size={14} />{fmt(secili.cost)}</span>}
                 </span>
               </div>
             )}

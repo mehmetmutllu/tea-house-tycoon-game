@@ -43,7 +43,6 @@ import {
   type Kat2MasaYeri,
   type MasaTuru,
 } from './kat';
-import { LAYOUT } from './layout';
 import { inFrame, masaCercevesi, masaEtiketi, padCercevesi, servisCercevesi } from './markerFrame';
 import { t } from '../i18n';
 import { yikamayaGit } from './rules';
@@ -365,6 +364,11 @@ export interface Kat2Girdi {
   padsDone: readonly string[];
   /** Tepsi kapasitesi (Kat 1 ile aynı karakter yükseltmesi). */
   tepsiKap: number;
+  /**
+   * Oyuncunun KAT 1 tepsisinde taşıdığı (çay + tost + kirli bardak). Tepsi tek: Kat 2 alımı kapasiteyi bununla
+   * paylaşır (tarama 2026-11-18 oynanış #5). Yok = 0.
+   */
+  digerTepsi?: number;
   /** Para mıknatısı yarıçapı (aynı karakter yükseltmesi). */
   miknatis: number;
   /** S3: masa id → Sv (1..5; yok = 1). Yalnız `Kat2Ayar.masaSv` varken etkili. */
@@ -414,6 +418,22 @@ export interface Kat2Cikti {
     /** Bulaşık: leğenden bu adımda temize dönen fincan (kim bırakmış olursa olsun). */
     temizDonen: number;
   };
+}
+
+/** Oyuncunun Kat 2 tepsisinde taşıdığı (kahve + kirli fincan). */
+export const kat2TepsiDolu = (d: Pick<Kat2Dunya, 'tepsi' | 'tepsiKirli'>): number => d.tepsi + (d.tepsiKirli ?? 0);
+
+/** Tek tepsinin boş yeri: kapasite − Kat 1'de taşınan − Kat 2'de taşınan (≥ 0). Kat 1 alımı da bunu kullanmalı. */
+export const kat2TepsiBos = (tepsiKap: number, digerTepsi: number, d: Pick<Kat2Dunya, 'tepsi' | 'tepsiKirli'>): number =>
+  Math.max(0, tepsiKap - digerTepsi - kat2TepsiDolu(d));
+
+/**
+ * Kat 2 kahvesini tepsiden boşalt (Kat 1 `emptyTray` karşılığı): fincanlar temiz havuza döner (bulaşık
+ * korunumu); kirli fincan boşaltılmaz (leğene götürülür). `d` değiştirilmez.
+ */
+export function kat2TepsiBosalt(d: Kat2Dunya): Kat2Dunya {
+  if (d.tepsi <= 0) return d;
+  return { ...d, tepsi: 0, temiz: d.temiz === undefined ? undefined : d.temiz + d.tepsi };
 }
 
 /** En az bir cezve ocağı açık mı (kahve istekleri bununla başlar). */
@@ -510,11 +530,15 @@ function kahveOde(d: Kat2Dunya, m: OkeyMasa, yer: Kat2MasaYeri, miktar: number, 
     m.birikim += miktar;
     return;
   }
-  const [px, pz] = paraDusmeYeri(yer);
-  const var_ = d.paralar.find((p) => p.x === px && p.z === pz);
-  if (var_) var_.miktar += miktar;
-  else d.paralar.push({ id: d.nextId++, x: px, z: pz, miktar });
+  yiginaEkle(d, ...paraDusmeYeri(yer), miktar);
   olay.dusen.push(miktar);
+}
+
+/** Noktadaki toplanmamış yığına ekler, yoksa açar — nokta başına tek yığın (liste sınırlı kalır, tarama 2026-11-18 #4). */
+function yiginaEkle(d: Kat2Dunya, x: number, z: number, miktar: number): void {
+  const y = d.paralar.find((p) => p.x === x && p.z === z);
+  if (y) y.miktar += miktar;
+  else d.paralar.push({ id: d.nextId++, x, z, miktar });
 }
 
 export function yeniKat2Dunya(padsDone: readonly string[], ayar: Kat2Ayar): Kat2Dunya {
@@ -549,10 +573,7 @@ function lavaboyaUgra(d: Kat2Dunya, kisi: number, l: { ugrama: number; ucret: nu
   d.lavaboSayac = sayac - n;
   if (n <= 0) return;
   const miktar = n * l.ucret;
-  const [x, z] = KAT2_LAVABO_YER;
-  const y = d.paralar.find((p) => p.x === x && p.z === z);
-  if (y) y.miktar += miktar;
-  else d.paralar.push({ id: d.nextId++, x, z, miktar });
+  yiginaEkle(d, KAT2_LAVABO_YER[0], KAT2_LAVABO_YER[1], miktar);
   olay.lavabo += miktar;
 }
 
@@ -679,11 +700,6 @@ function garsonKur(padsDone: readonly string[], ayar: Kat2Ayar, mevcut: readonly
 
 const garsonAyir = (gs: Kat2Garson[]): Pick<Kat2Dunya, 'garson' | 'garsonEk'> => ({ garson: gs[0] ?? null, garsonEk: gs.slice(1) });
 
-/**
- * Garsonun tavla masasına yaklaşma noktası: masanın +z önü (yığının düştüğü yüz), ayak izinin
- * şişkinliğinin (yarı + gövde yarıçapı) hemen dışı, kahve erişiminin içi.
- */
-const garsonMasaNoktasi = (m: Kat2MasaYeri): [number, number] => [m.x, m.z + (m.tur === 'tavla' ? TAVLA_YARI[1] : OKEY_YARI) + LAYOUT.playerRadius + 0.13];
 
 /**
  * Garsonların bir adımı: karar → yürüyüş → ocaktan alma. Servis masa döngüsünde (oyuncunun
@@ -698,7 +714,7 @@ const garsonMasaNoktasi = (m: Kat2MasaYeri): [number, number] => [m.x, m.z + (m.
 function garsonlarAdim(d: Kat2Dunya, gs: Kat2Garson[], padsDone: readonly string[], acikOcak: readonly boolean[], ga: Kat2GarsonAyar, dt: number, b?: Kat2BulasikAyar): void {
   const ag = kat2YolAgi(padsDone);
   const kirliHedef = new Set<string>();
-  const masaYolu = (x: number, z: number, id: string) => ag.uzunluk(x, z, ...garsonMasaNoktasi(MASA_YERI.get(id)!));
+  const masaYolu = (x: number, z: number, id: string) => ag.uzunluk(x, z, ...ag.masaNoktasi(MASA_YERI.get(id)!));
   const istekli = d.masalar
     .filter((m) => (ga.herMasa || m.tur === 'tavla') && m.durum === 'oyunda' && m.istek > 0)
     .sort((a, b) => a.sabir - b.sabir);
@@ -716,7 +732,7 @@ function garsonlarAdim(d: Kat2Dunya, gs: Kat2Garson[], padsDone: readonly string
       if (m) {
         hedef = m.id;
         alinan.add(m.id);
-        nokta = garsonMasaNoktasi(MASA_YERI.get(m.id)!);
+        nokta = ag.masaNoktasi(MASA_YERI.get(m.id)!);
       }
     } else if (b && kirliEl > 0 && (kirliEl >= b.garsonTasima || ihtiyac > 0 || !kirliMasa.length)) {
       // BULAŞIK (Kat 1 D-083): elindeki kirliyi önce leğene bırakır (servise kirliyle gitmez).
@@ -727,7 +743,7 @@ function garsonlarAdim(d: Kat2Dunya, gs: Kat2Garson[], padsDone: readonly string
       const m = kirliMasa.reduce((a, c) => (masaYolu(g.x, g.z, a.id) <= masaYolu(g.x, g.z, c.id) ? a : c));
       hedef = m.id;
       kirliHedef.add(m.id);
-      nokta = garsonMasaNoktasi(MASA_YERI.get(m.id)!);
+      nokta = ag.masaNoktasi(MASA_YERI.get(m.id)!);
     } else {
       if (ihtiyac > 0) {
         let en = -1;
@@ -807,7 +823,7 @@ function bulasikciAdim(d: Kat2Dunya, padsDone: readonly string[], b: Kat2Bulasik
   }
   const w: Kat2Bulasikci = d.bulasikci ? { ...d.bulasikci } : { x: KAT2_BULASIKCI_YER[0], z: KAT2_BULASIKCI_YER[1], kirli: 0 };
   const ag = kat2YolAgi(padsDone);
-  const masaYolu = (id: string) => ag.uzunluk(w.x, w.z, ...garsonMasaNoktasi(MASA_YERI.get(id)!));
+  const masaYolu = (id: string) => ag.uzunluk(w.x, w.z, ...ag.masaNoktasi(MASA_YERI.get(id)!));
   const kirliMasa = d.masalar.filter((m) => (m.kirli ?? 0) > 0);
   let hedef: string | null = null;
   let nokta: [number, number] = [KAT2_BULASIKCI_YER[0], KAT2_BULASIKCI_YER[1]];
@@ -817,7 +833,7 @@ function bulasikciAdim(d: Kat2Dunya, padsDone: readonly string[], b: Kat2Bulasik
   } else if (kirliMasa.length) {
     const m = kirliMasa.reduce((a, c) => (masaYolu(a.id) <= masaYolu(c.id) ? a : c));
     hedef = m.id;
-    nokta = garsonMasaNoktasi(MASA_YERI.get(m.id)!);
+    nokta = ag.masaNoktasi(MASA_YERI.get(m.id)!);
   }
   const kalan = Math.hypot(nokta[0] - w.x, nokta[1] - w.z);
   if (kalan > 0.1) {
@@ -1001,7 +1017,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
   d.ocaklar.forEach((o, k) => {
     const yer = OCAKLAR[k];
     if (acikOcak[k] && o.hazir > 0 && Math.hypot(g.x - yer.al[0], g.z - yer.al[1]) <= yer.erisim) {
-      const al = Math.min(o.hazir, g.tepsiKap - d.tepsi - (d.tepsiKirli ?? 0));
+      const al = Math.min(o.hazir, kat2TepsiBos(g.tepsiKap, g.digerTepsi ?? 0, d));
       if (al > 0) {
         o.hazir -= al;
         d.tepsi += al;
@@ -1108,8 +1124,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       olay.kacan += m.istek;
       if (tavla) olay.tavlaKacan += m.istek;
       const miktar = a.masaUcreti * svCarpan(kol?.ucretCarpan, sv) + m.birikim;
-      const [px, pz] = paraDusmeYeri(yer);
-      d.paralar.push({ id: d.nextId++, x: px, z: pz, miktar });
+      yiginaEkle(d, ...paraDusmeYeri(yer), miktar);
       olay.dusen.push(miktar);
       olay.kalkan.push(m.id);
       olay.kalkis += 1;
@@ -1129,7 +1144,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
   // leğen her `yikamaSn`de hepsini temize döndürür (Kat 1 D-143).
   if (b) {
     for (const m of d.masalar) {
-      const bos = g.tepsiKap - d.tepsi - (d.tepsiKirli ?? 0);
+      const bos = kat2TepsiBos(g.tepsiKap, g.digerTepsi ?? 0, d);
       if (bos <= 0) break;
       const yer = MASA_YERI.get(m.id);
       if (!(m.kirli ?? 0) || !yer || !masaErisimde(yer, g.x, g.z)) continue;

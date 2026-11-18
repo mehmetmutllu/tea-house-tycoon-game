@@ -42,6 +42,7 @@ import { LIGHTING, PALETTE } from '../../config/palette';
 import {
   ekipmanMi, basMi, kafaKucult, useKayKlipler, KLIP, LOKOMOSYON_YURUYUS, lokomosyonSec, YURUME_ESIGI,
 } from './KayActor';
+import { useKatGizli } from './katKatmani';
 import { WC_GECIS, wcOlcek, LAYOUT } from '../../game/layout';
 import { siparisDokusu } from './siparisBalonu';
 
@@ -380,9 +381,12 @@ export function Customers() {
   const { grup, yuvalar } = havuz;
   const gorus = useMemo(() => ({ frustum: new Frustum(), m: new Matrix4(), kure: new Sphere() }), []);
 
+  // Kat 2'deyken Kat 1 gizli: müşteri çizimi (anim/matris/balon) durur, sim sürer; dönüşte ilk kare tazeler.
+  const gizli = useKatGizli();
+  const balonSayac = useMemo(() => URUNLER.map(() => 0), []);
   useFrame((st, dt) => {
     const kapsul = bodyRef.current;
-    if (!kapsul) return;
+    if (!kapsul || gizli()) return;
     const npcs = useGame.getState().npcs;
     const n = Math.min(npcs.length, NPC_CAP);
     havuz.buyut(n); // havuz müşteri geldikçe büyür (gerekçe: YUVA_BASINA_KARE)
@@ -392,7 +396,7 @@ export function Customers() {
     gorus.m.multiplyMatrices(st.camera.projectionMatrix, st.camera.matrixWorldInverse);
     gorus.frustum.setFromProjectionMatrix(gorus.m);
     /** Ürün başına ayrı sayaç — her instanced mesh kendi `count`unu taşır. */
-    const bubbleCount = URUNLER.map(() => 0);
+    const bubbleCount = balonSayac.fill(0);
     let kapsulCount = 0;
 
     for (let i = 0; i < n; i++) {

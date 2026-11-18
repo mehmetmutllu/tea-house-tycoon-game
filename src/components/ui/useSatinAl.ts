@@ -8,6 +8,7 @@ import {
   islemdeUrun, magazaDurumu, satinAlDetay, satinAlmaAbone, satinAlmaSurumu, type SatinAlCevap,
 } from '../../game/iap';
 import type { SatinAlSonuc } from '../../game/satinAlimTipleri';
+import { odulAlindi } from '../../game/ads';
 
 /** Sonucun metni (Türkçe = i18n anahtarı; çağıran `t()` ile çevirir). `tamam`ın yerine ödül kartı çıkar. */
 const SONUC_METNI: Record<SatinAlSonuc, string> = {
@@ -24,6 +25,9 @@ export function useSatinAl() {
   const [sonuc, setSonuc] = useState<{ urun: string; sonuc: SatinAlSonuc } | null>(null);
   const al = useCallback(async (urun: string): Promise<SatinAlCevap> => {
     setSonuc(null);
+    // Tarama-6 #6: satın alma DENEMESİ başladıysa (sonuç ne olursa olsun: vazgeç · hata · bekliyor) bu
+    // panelin kapanışı geçişli reklam patlatmaz — oyuncu az önce mağaza ödeme ekranındaydı.
+    odulAlindi();
     const c = await satinAlDetay(urun);
     setSonuc({ urun, sonuc: c.sonuc });
     return c;

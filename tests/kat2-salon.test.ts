@@ -16,7 +16,7 @@ import {
   KAT2_SALON_PAD,
   OCAK,
   TAVLA_ERISIM,
-  TAVLA_PARA_DZ,
+  TAVLA_PARA_DX,
   TAVLA_YARI,
   kat2AcikAlan,
   kat2Adim,
@@ -195,7 +195,7 @@ describe('tavla masası — 2 kişi, kendi sayıları, ücret + kahve tek yığ�
     expect(istek).toBe(3); // 90 sn oyunda 25 sn'de bir, son 12,5 sn'de istenmez
     expect(servis).toBe(istek * TAVLA.istekAdet);
     expect(dusen[0]).toBe(TAVLA.masaUcreti + servis * TAVLA.kahveFiyat);
-    expect(d.paralar[0]).toMatchObject({ x: T1.x, z: T1.z + TAVLA_PARA_DZ });
+    expect(d.paralar[0]).toMatchObject({ x: T1.x - (Math.sign(T1.x) || 1) * TAVLA_PARA_DX, z: T1.z });
   });
 
   it('oyun süresi tavla sayısından (okeyinkinden değil); okey salonundaki masa okey sayısıyla', () => {

@@ -44,6 +44,7 @@ import { Bolmeler } from './kat2/Bolme';
 import { Kat2Garson } from './kat2/Garson';
 import { KahveBalonu } from './kat2/Balon';
 import { ParaYiginlari } from './kat2/Para';
+import { masaSirasi, oyundaMaskesi } from './kat2/masaIndeks';
 import { Kat2PadIsareti } from './kat2/PadIsaret';
 import { ArkaDuvarUstu } from './kat2/Dis';
 
@@ -383,14 +384,13 @@ export function MerdivenTamir({ pos }: { pos: [number, number, number] }) {
 
 /** Açık masalar: tür + durum İD ile bulunur (dizi sırasına güvenilmez — masa listesi büyüyor). */
 function Masalar({ padsDone, ilk }: { padsDone: readonly string[]; ilk: ReadonlySet<string> }) {
-  const oyunda = useGame((s) => s.kat2Dunya.masalar.filter((m) => m.durum === 'oyunda').map((m) => m.id).join(','));
-  const oynayan = new Set(oyunda.split(','));
+  const oyunda = useGame((s) => oyundaMaskesi(s.kat2Dunya.masalar));
   const masaSv = useMasaSvleri();
   return (
     <group>
       {KAT2_MASALAR.map((yer, i) => {
         if (!padsDone.includes(yer.id)) return null;
-        const oyn = oynayan.has(yer.id);
+        const oyn = (oyunda & (1 << masaSirasi(yer.id))) !== 0;
         const sv = masaSvOku(masaSv, yer.id);
         return (
           <group key={yer.id}>

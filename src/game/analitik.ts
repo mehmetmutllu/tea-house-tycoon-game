@@ -17,6 +17,7 @@ import { Capacitor, registerPlugin } from '@capacitor/core';
 import type { FirebaseAnalyticsPlugin } from '@capacitor-firebase/analytics';
 import { economyConfig, levelProgress } from '../config/economy.config';
 import { kat2Gorevleri } from './kat2Gorev';
+import { MERDIVEN_PAD } from './kat';
 import { useGame } from './store';
 
 type Durum = ReturnType<typeof useGame.getState>;
@@ -34,6 +35,11 @@ export interface AnalitikKesit {
   kat2Pads?: readonly string[];
   kat2MasaSv?: Readonly<Record<string, number>>;
   kat2GorevIdx?: number;
+  /**
+   * Tarama-6 #9: Kat 1 merdiven pad'inin dolumu. Gerçek açılışta merdiven bir önceki kesitte DOLMAKTAYDI
+   * (> 0); bulut kaydı yüklemesi Kat 2'yi dolum olmadan açar. Yok (eski çağıran/test) = denetlenmez.
+   */
+  merdivenDolum?: number;
 }
 
 export interface AnalitikOlay {
@@ -59,6 +65,7 @@ export function analitikKesiti(s: Durum): AnalitikKesit {
     kat2Pads: s.kat2.padsDone,
     kat2MasaSv: s.kat2.masaSv,
     kat2GorevIdx: s.kat2.gorev?.idx ?? 0,
+    merdivenDolum: s.padFills[MERDIVEN_PAD] ?? 0,
   };
 }
 
@@ -82,8 +89,11 @@ export function kat2AnalitikOlaylari(
   const svOnce = onceki.kat2MasaSv ?? {};
   const svAtlayan = Object.entries(simdiki.kat2MasaSv ?? {}).filter(([id, sv]) => sv > (svOnce[id] ?? 1));
   if (yeniPad.length > YUKLEME_ESIGI || gorevFarki > YUKLEME_ESIGI || svAtlayan.length > YUKLEME_ESIGI) return [];
+  // Kat 2 merdiven dolmadan açıldıysa bu bir YÜKLEME sıçramasıdır (bulut kaydı): Kat 2 olayı doğmaz.
+  const acildi = !onceki.kat2Acik && !!simdiki.kat2Acik;
+  if (acildi && onceki.merdivenDolum !== undefined && !(onceki.merdivenDolum > 0)) return [];
 
-  if (!onceki.kat2Acik && simdiki.kat2Acik) o.push({ ad: 'kat2_acildi', parametreler: { gorev_sira: simdiki.questIndex + 1 } });
+  if (acildi) o.push({ ad: 'kat2_acildi', parametreler: { gorev_sira: simdiki.questIndex + 1 } });
   if (onceki.kat !== undefined && simdiki.kat !== undefined && simdiki.kat !== onceki.kat && simdiki.katGecisi) {
     o.push({ ad: 'kat_gecis', parametreler: { kat: simdiki.kat } });
   }

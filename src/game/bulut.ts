@@ -15,7 +15,8 @@
  * sıfırlamasıdır (`bulutSifirla`). Bulut okunamadıysa hiç yazılmaz: bilinmeyen bir kaydı ezmemek için.
  *
  * Satın alımlar mağaza hesabının malıdır: bulut kaydı yüklenirken yereldeki satın alım bilgisi ve
- * ayarlar KORUNUR (birleştirilir), yoksa telefondaki reklamsızlık eski bir kayıtla düşebilirdi.
+ * ayarlar KORUNUR (birleştirilir), yoksa telefondaki reklamsızlık eski bir kayıtla düşebilirdi. Kat 2
+ * de yereldeki daha ileriyse korunur (`kat2Koru`).
  */
 import { registerPlugin } from '@capacitor/core';
 import { levelProgress } from '../config/economy.config';
@@ -23,7 +24,7 @@ import { playGamesConfig } from '../config/playGames.config';
 import { acikBasarimlar } from './basarim';
 import { D } from './decimal';
 import { magazaPlatformu, playGamesVar } from './platform';
-import { kayitKilitli, kayitMetni, kayitMetniCoz, type SaveData } from './save';
+import { kat2Koru, kayitKilitli, kayitMetni, kayitMetniCoz, type SaveData } from './save';
 import { t } from '../i18n';
 
 export interface PlayGamesArkaUcu {
@@ -191,7 +192,9 @@ export function bulutlaBirlestir(bulut: SaveData, yerel: SaveData): SaveData {
   const uzlasmaBasi = a.uzlasmaBasi === undefined ? b.uzlasmaBasi
     : b.uzlasmaBasi === undefined ? a.uzlasmaBasi : Math.max(a.uzlasmaBasi, b.uzlasmaBasi);
   const hakKimlik = b.hakKimlik ?? a.hakKimlik;
-  return {
+  // Kat 2 KAT BAZINDA birleşir (tarama 2026-11-18 · kayıt #1): bulutun Kat 2'si gerideyse (1.0.7 alanı
+  // hiç yazmaz) yereldeki korunur.
+  return kat2Koru({
     ...bulut,
     diamonds: tasinan > 0 ? D(bulut.diamonds).add(tasinan).toString() : bulut.diamonds,
     settings: { ...yerel.settings },
@@ -207,7 +210,7 @@ export function bulutlaBirlestir(bulut: SaveData, yerel: SaveData): SaveData {
       ...((a.baslangicElmas !== undefined || b.baslangicElmas !== undefined) && { baslangicElmas: !!a.baslangicElmas || !!b.baslangicElmas }),
       ...(hakKimlik !== undefined && { hakKimlik }),
     },
-  };
+  }, yerel);
 }
 
 /** Saved Games'in `progressValue`'su — Google'ın kendi çakışma çözümü de "en ileri"yi seçsin. */

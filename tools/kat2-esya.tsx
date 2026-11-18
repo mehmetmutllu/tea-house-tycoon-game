@@ -19,7 +19,6 @@ import { Model } from '../src/components/three/Model';
 import { KayActor } from '../src/components/three/KayActor';
 import { MaketCezveStation, MaketCounter, MaketPlant, MaketWall, MaketWallShelf } from '../src/components/three/maketParts';
 import { FLOOR_THEMES, LIGHTING, PALETTE, WALL_THEMES } from '../src/config/palette';
-import { CAMERA_LOOK_Y } from '../src/config/actor';
 import { CAMERA_FOV } from '../src/config/camera';
 import { KAY_F, KAY_R, Kutu, Sandalye, Silindir, type Oturak } from './kat2-ortak';
 

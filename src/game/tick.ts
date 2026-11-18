@@ -223,6 +223,8 @@ export interface TickCtx {
   autoCollectSum: number;
   autoCollectToastCooldown: number;
   trayCap: number;
+  /** Tarama 2026-11-18: oyuncunun Kat 2 tepsisinde taşıdığı (tek tepsi, iki kat) — Kat 1 alımı bu kadar az yer görür. */
+  digerTepsi: number;
   /** GLOBAL garson havuzu (B2): düz liste, uzunluk = tutulmuş garson sayısı. */
   waiters: Waiter[];
   /** Katın TEK bulaşıkçısı (yoksa null). */
@@ -341,6 +343,7 @@ export function createTickCtx(s: GameState, dt: number): TickCtx {
     autoCollectSum: s.autoCollectSum,
     autoCollectToastCooldown: s.autoCollectToastCooldown,
     trayCap: 0,
+    digerTepsi: 0,
     waiters: s.waiters,
     dishwasher: s.dishwasher,
     padGate: { padsDone: s.padsDone, tables: tableCount, stationLevel: s.stationLevels[0], lifetime: 0 },
@@ -850,7 +853,7 @@ function serveSystem(c: TickCtx): void {
   let tray = c.tray;
   let trayFood = c.trayFood;
   let xp = c.xp;
-  const trayCap = trayCapacityFor(s.charUpgrades.tray);
+  const trayCap = Math.max(0, trayCapacityFor(s.charUpgrades.tray) - c.digerTepsi);
   // Servise yaklaşınca HAZIR üründen tepsi dolar. PAYLAŞIMLI kapasite (2026-06-09): ürün + kirli
   // aynı tepsiyi paylaşır → toplam trayCap'i aşamaz. Karışık taşıma serbest (deadlock'u engeller).
   // B2: tek noktadan iki ürün alınabilir — çay tepsinin bardak bölmesine, tost tabak bölmesine.

@@ -32,6 +32,8 @@ import { KLIP, LOKOMOSYON_YURUYUS, basMi, ekipmanMi, kafaKucult, lokomosyonSec, 
 import type { Kat2MasaYeri } from '../../../game/kat';
 import { GRUP_ARA, GRUP_HIZ, gelisHizi, gelisOrani, grupYolu, oturakYerleri, yolKur, yolNoktasi, type Nokta, type Yol } from './yol';
 import { useMasaSv } from './masaSv';
+import { masaBul } from './masaIndeks';
+import { iskeletleriBirak, useSokulurkenBirak } from '../katKatmani';
 
 const AYAR = economyConfig.kat2;
 /** Grup en çok bu kadar sn önce merdivenden çıkmaya başlar (mantıktaki `bos` süresinin sonu). */
@@ -53,6 +55,8 @@ type Govde = {
   /** Başa eklenen eğim (bir sonraki karede geri alınır — klip başı yazmıyorsa birikmesin). */
   basEk: number;
   klip: string;
+  /** Gömlek renginin yazıldığı ziyaret (renk yalnız yeni grupta yazılır, her kare değil). */
+  renkZiyaret: number;
 };
 
 function govdeKur(kaynak: Group, klipler: AnimationClip[], faz: number): Govde {
@@ -110,7 +114,7 @@ function govdeKur(kaynak: Group, klipler: AnimationClip[], faz: number): Govde {
   }
   eylem[KLIP.dur]?.play();
   mixer.setTime(faz * 0.37);
-  return { kok, mixer, eylem, mat, bas, basEk: 0, klip: KLIP.dur };
+  return { kok, mixer, eylem, mat, bas, basEk: 0, klip: KLIP.dur, renkZiyaret: -1 };
 }
 
 function klipSec(g: Govde, ad: string, oran = 1) {
@@ -136,10 +140,15 @@ export function useKalkisIzle() {
   useEffect(
     () =>
       useGame.subscribe((s, o) => {
-        if (s.kat2Dunya === o.kat2Dunya) return;
-        const once = new Map(o.kat2Dunya.masalar.map((m) => [m.id, m.durum]));
-        const simdi = performance.now();
-        for (const m of s.kat2Dunya.masalar) if (m.durum !== 'oyunda' && once.get(m.id) === 'oyunda') kalkisAni.set(m.id, simdi);
+        const yeni = s.kat2Dunya.masalar;
+        const eski = o.kat2Dunya.masalar;
+        if (yeni === eski) return;
+        let simdi = 0;
+        for (const m of yeni) {
+          if (m.durum === 'oyunda' || masaBul(eski, m.id)?.durum !== 'oyunda') continue;
+          simdi ||= performance.now();
+          kalkisAni.set(m.id, simdi);
+        }
       }),
     [],
   );
@@ -165,10 +174,24 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
     return g;
   }, []);
   const govdeler = useRef<Govde[] | null>(null);
+  // Klon iskeletlerinin GPU kemik dokuları + gövdeye özel materyal: masa sökülünce bırakılır — eskiden
+  // her Kat 2 girişinde iskelet başına bir doku birikiyordu (perf W3). Kat gizlenirken (Activity) değil:
+  // dönüşte yeniden kurulum/derleme olmasın. Katmanın tamamı sökülürse `KatKatmani` bırakır.
+  const birak = useSokulurkenBirak();
+  useEffect(
+    () => () => {
+      if (!birak()) return;
+      for (const g of govdeler.current ?? []) {
+        iskeletleriBirak(g.kok);
+        g.mat.dispose();
+      }
+    },
+    [birak],
+  );
   const hal = useRef({ onceki: 'kapali', kip: 'yok', cikisT: -1, ziyaret: sira * 3, kalkis: kalkisAni.get(yer.id) ?? 0 });
 
   useFrame((st, dt) => {
-    const m = useGame.getState().kat2Dunya.masalar.find((x) => x.id === yer.id);
+    const m = masaBul(useGame.getState().kat2Dunya.masalar, yer.id);
     const durum = m?.durum ?? 'kapali';
     const h = hal.current;
     const ani = kalkisAni.get(yer.id) ?? 0;
@@ -212,7 +235,10 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
     }
     const zaman = st.clock.elapsedTime;
     govdeler.current.forEach((g, k) => {
-      g.mat.color.set(GOMLEK[(h.ziyaret * 4 + k * 3) % GOMLEK.length]);
+      if (g.renkZiyaret !== h.ziyaret) {
+        g.renkZiyaret = h.ziyaret;
+        g.mat.color.set(GOMLEK[(h.ziyaret * 4 + k * 3) % GOMLEK.length]);
+      }
       const yol = yollar[k];
       const [dx, dz] = oturaklar[k];
       const aciOtur = Math.atan2(-dx, -dz);

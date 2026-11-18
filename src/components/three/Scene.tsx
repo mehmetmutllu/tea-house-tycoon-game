@@ -1,4 +1,5 @@
-import { Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Activity, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { KatKatmani } from './katKatmani';
 import { Kat2Sahne } from './Kat2';
 import { MerdivenKovasi } from './kat2/MerdivenDonusum';
 import { merdivenTamirli } from '../../game/kat';
@@ -1393,15 +1394,27 @@ function MeasureGrid() {
   );
 }
 
-/** Kat 1'in dünyası: Kat 2'deyken çizilmez (takılı kalır — `visible` gölge haritasından da düşürür). */
-function Kat1Gorunur({ children }: { children: ReactNode }) {
-  const kat = useGame((g) => g.kat);
-  return <group visible={kat === 1}>{children}</group>;
-}
-
+/**
+ * Kat 2'nin dünyası. İlk girişe kadar hiç kurulmaz; ilk girişten sonra TAKILI-GİZLİ kalır (perf W3:
+ * her girişte ~2.400 nesneyi baştan kurmak 4× kısıkta 1,5 sn'lik tek kare donmasıydı).
+ * Gizliyken `Activity hidden`: useFrame ve store abonelikleri sökülür (Kat 1'e kare/`set` maliyeti
+ * bindirmez), nesneler ve kurulmuş gövdeler yerinde durur; dönüşte efektler yeniden bağlanır.
+ * Kat 2 kapanırsa (sıfırlama/kayıt yükleme) katman söner, sonraki girişte temiz kurulur.
+ */
 function Kat2Katman() {
   const kat = useGame((g) => g.kat);
-  return kat === 2 ? <Kat2Sahne /> : null;
+  const acik = useGame((g) => g.kat2.acik);
+  const [kurulu, setKurulu] = useState(false);
+  // Öğe sabit: kat değişince Kat 2 ağacı baştan render edilmesin (yalnız görünürlük + efektler değişir).
+  const sahne = useMemo(() => <Kat2Sahne />, []);
+  if (kat === 2 && !kurulu) setKurulu(true);
+  if (kat !== 2 && kurulu && !acik) setKurulu(false);
+  if (kat !== 2 && !kurulu) return null;
+  return (
+    <KatKatmani kat={2} saklar>
+      <Activity mode={kat === 2 ? 'visible' : 'hidden'}>{sahne}</Activity>
+    </KatKatmani>
+  );
 }
 
 export function Scene() {
@@ -1448,7 +1461,7 @@ export function Scene() {
       <SceneLights shadows={golgeAcik} />
       {/* K2-2: Kat 2'deyken Kat 1'in dünyası GİZLENİR ama takılı kalır (kat 1 kendi başına işler,
           geri inişte yeniden kurulum yok). Oyuncu, kamera ve simülasyon iki katta da aynı. */}
-      <Kat1Gorunur>
+      <KatKatmani kat={1}>
       <Ground />
       {/* BAHÇE (R4 · D-129) — açılmamış her yer. `Ground`dan SONRA çizilir: çim kilitli alanların
           çıplak ahşabını örter; açılan alan bahçeden düşer ve oynanabilir zemine döner. */}
@@ -1481,7 +1494,7 @@ export function Scene() {
       {import.meta.env.DEV && <MeasureGrid />}
       <QuestPointer />
       <OgreticiIz />
-      </Kat1Gorunur>
+      </KatKatmani>
       <Kat2Katman />
       <Player />
       <CameraRig />

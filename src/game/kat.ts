@@ -381,8 +381,6 @@ export const PARA_DUSME_DZ = OKEY_YARI + 0.35;
  */
 export const TAVLA_YARI: readonly [number, number] = [1.2, 0.6];
 export const TAVLA_ERISIM: readonly [number, number] = [TAVLA_YARI[0] + 0.7, TAVLA_YARI[1] + 0.7];
-/** Tavlada oturaklar yanlarda → yığın masanın +z önüne, ayak izinin kenarından aynı payla düşer. */
-export const TAVLA_PARA_DZ = TAVLA_YARI[1] + 0.35;
 
 /** Masa başına oturan kişi (D-181: okeyde 4, tavlada 2 — seviye ile değişmez). Görsel grup bunu okur. */
 export const KAT2_KISI: Readonly<Record<MasaTuru, number>> = { okey: 4, tavla: 2 };
@@ -395,9 +393,17 @@ export function masaErisimde(m: Kat2MasaYeri, x: number, z: number): boolean {
   return Math.max(dx, dz) <= OKEY_ERISIM;
 }
 
-/** Kalkan grubun yığınının düştüğü yer (masanın +z önü, türüne göre pay). */
+/**
+ * Tavla yığını sıraların arasına değil (serbest şerit 0,26 br — oraya yürünemiyordu, tarama 2026-11-18 #11),
+ * masanın salonun ortasına (x = 0) bakan YANINA düşer — Sv çerçevesi öbür yanda (`kat2SvTetikleri`). Pay: ayak
+ * izi + gövde yarıçapı + 0,13 → yürünen şeridin içi, oyuncu yığının üstüne basabilir.
+ */
+export const TAVLA_PARA_DX = TAVLA_YARI[0] + PR + 0.13;
+
+/** Kalkan grubun yığınının düştüğü yer: okeyde masanın +z önü; tavlada salon ortasına bakan yan. */
 export function paraDusmeYeri(m: Kat2MasaYeri): [number, number] {
-  return [m.x, m.z + (m.tur === 'tavla' ? TAVLA_PARA_DZ : PARA_DUSME_DZ)];
+  if (m.tur === 'tavla') return [m.x - (Math.sign(m.x) || 1) * TAVLA_PARA_DX, m.z];
+  return [m.x, m.z + PARA_DUSME_DZ];
 }
 
 /**
@@ -526,7 +532,16 @@ export interface Kat2YolAgi {
   nokta(x: number, z: number, tx: number, tz: number): [number, number];
   /** Hedefe yürüme uzunluğu (br; ulaşılamazsa sonsuz). */
   uzunluk(x: number, z: number, tx: number, tz: number): number;
+  /**
+   * Personelin (garson / bulaşıkçı) masaya yaklaşma noktası: masanın erişim kutusunun İÇİNDE, yürünür ve
+   * ocağa yürüyerek bağlı bir nokta. Önce masanın +z önü; oraya varılamıyorsa (tavla sıraları arası 0,26 br —
+   * tarama 2026-11-18 #1) ona en yakın uygun nokta.
+   */
+  masaNoktasi(m: Kat2MasaYeri): [number, number];
 }
+
+/** Yaklaşma noktası arama adımı (br). */
+const ARAMA_ADIM = 0.05;
 
 function izgaraKur(acikAlan: number, engeller: readonly Solid[]): NavGrid {
   const alan = kat2YurumeAlani(acikAlan);
@@ -664,6 +679,7 @@ function yolAgiKur(padsDone: readonly string[]): Kat2YolAgi {
   const engeller = kat2Engeller(padsDone);
   const g = izgaraKur(acikAlan, engeller);
   const katilar: Solid[] = [KUYU, ...kat2Duvarlar(acikAlan), ...engeller];
+  const alan = kat2YurumeAlani(acikAlan);
   const alanlar = new Map<string, Float64Array>();
   const alanOf = (tx: number, tz: number) => {
     const k = `${tx},${tz}`;
@@ -679,9 +695,45 @@ function yolAgiKur(padsDone: readonly string[]): Kat2YolAgi {
     const r = Math.floor(i / g.cols);
     return [g.minX + (i - r * g.cols + 0.5) * g.cell, g.minZ + (r + 0.5) * g.cell];
   };
+  // Ocağın önüne bağlı hücreler (personelin yürüdüğü bileşen); yaklaşma noktası bunların içinden seçilir.
+  let bagli: Float64Array | null = null;
+  const masaNoktalari = new Map<string, [number, number]>();
   return {
     acikAlan,
     engeller,
+    masaNoktasi(m) {
+      let n = masaNoktalari.get(m.id);
+      if (n) return n;
+      bagli ??= uzaklikAlani(g, enYakin(g, OCAKLAR[0].al[0], OCAKLAR[0].al[1], (i) => !g.blocked[i]));
+      const b = bagli;
+      // Nokta (hücre değil) aranır: erişim kutusunun kenarı ızgara hücre merkezlerine denk gelmeyebilir. Uygun nokta:
+      // gövde katılara değmez, yürüme alanında ve dibinde (≤ 1,5 hücre) ocağa yürüyerek bağlı AÇIK hücre var.
+      // Tavla sıraları arası şerit (0,26 br) hücreden ince → dibinde açık hücre yok, seçilmez (aktör ağzında takılırdı).
+      const uygun = (x: number, z: number) => {
+        if (!masaErisimde(m, x, z) || hitsSolid(x, z, katilar, PR)) return false;
+        const [kx, kz] = dikKelepce(x, z, alan);
+        if (kx !== x || kz !== z) return false;
+        const i = enYakin(g, x, z, (j) => !g.blocked[j]);
+        return i >= 0 && b[i] < SONSUZ && Math.hypot(merkez(i)[0] - x, merkez(i)[1] - z) <= g.cell * 1.5;
+      };
+      const on: [number, number] = [m.x, m.z + (m.tur === 'tavla' ? TAVLA_YARI[1] : OKEY_YARI) + PR + 0.13];
+      if (uygun(on[0], on[1])) n = on;
+      else {
+        const [ex, ez] = m.tur === 'tavla' ? TAVLA_ERISIM : [OKEY_ERISIM, OKEY_ERISIM];
+        let enD = SONSUZ;
+        for (let x = m.x - ex; x <= m.x + ex; x += ARAMA_ADIM)
+          for (let z = m.z - ez; z <= m.z + ez; z += ARAMA_ADIM) {
+            const d = (x - on[0]) ** 2 + (z - on[1]) ** 2;
+            if (d < enD && uygun(x, z)) {
+              enD = d;
+              n = [x, z];
+            }
+          }
+        n ??= on;
+      }
+      masaNoktalari.set(m.id, n);
+      return n;
+    },
     nokta(x, z, tx, tz) {
       if (gorusAcik(g, katilar, x, z, tx, tz)) return [tx, tz];
       const a = alanOf(tx, tz);

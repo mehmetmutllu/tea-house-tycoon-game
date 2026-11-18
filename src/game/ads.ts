@@ -373,6 +373,12 @@ export async function odulluIzleSonuc(): Promise<OdulluSonuc> {
     reklamAcikAyarla(false);
   }
   if (sonuc === 'odul') sayac.odullu++;
+  // Tarama-6 #4: ödüllü video da tam ekran reklamdır — izlendiyse (ödül ya da yarıda) ardından gelen ilk
+  // panel kapanışı reklamsız ve 3 dk soğuma yeniden başlar ("ödül ekranından sonra reklam yok").
+  if (sonuc !== 'gosterilemedi') {
+    panelOdul = true;
+    sonGecisli = Date.now();
+  }
   void odulluYukle();
   return sonuc;
 }
