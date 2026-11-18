@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-18 (5.) — **D-205 bitti**: Hedefler'in Mekân + Usta'sı ve KÜNYE Kat 2'yi de sayar, rapor `docs/kat2-hedefler-raporu.md` · 3 yeni KÜNYE metni ChatGPT turuna · açık: hedef çarpanı Kat 2 gelirine binmiyor (ayrı kol) · sıradaki: yeni deneme APK (orkestratör) + kullanıcının KOMPLE testi + README'de kalan kararlar 4-8)
+## ŞU AN (2026-11-19 — oturum kapandı · D-203 tarama + D-204 + D-205 kodda · deneme APK `TeaHouse-deneme-tam-2026-11-19.apk` masaüstünde · sıradaki: kullanıcının KOMPLE testi + aşağıdaki açık sorular)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -32,7 +32,11 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
-## ⏭️ SIRADAKİ ADIM — D-201 bitti (Parça 1 mantık + Parça 2 görsel, 2026-11-17; rapor `docs/kat2-isleyis-raporu.md` §Uygulama)
+## ⏭️ SIRADAKİ ADIM — kullanıcı test edip geri bildirim verecek
+**Açık sorular (kullanıcıya soruldu 2026-11-19, cevap bekliyor):** a) Hedef çarpanı Kat 2 gelirine de binsin mi (denge → ölç) ·
+b) Usta 💎 bahşiş Kat 2 masalarına da gelsin mi · c) `docs/tarama-2026-11-18/README.md` kalan 4-8 (tavla bandı 70 dk · gölge ·
+Kat 2 ilk giriş önden kurulum · ChatGPT metin turu + D-204/205 yeni metinleri · Play Console "₺"→"para" + `firestore.rules` deploy).
+(eski başlık: D-201 bitti, aşağısı bilgi)
 Kodda: config = K-Bt2 · zincirde garson ×3 + bulaşıkçı · bulaşık (masada fincan/telveli kirli, ön tezgâhta bakır leğen, bulaşıkçı
 NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası · pad etiketleri Kat 1 (Garson Tut / 2. Garson / 3. Garson /
 Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
