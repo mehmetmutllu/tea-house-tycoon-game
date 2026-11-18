@@ -5299,4 +5299,5 @@ Kullanıcı: "son bir tarama yap … istediğin kadar opus agent". Özet ve bulg
   Capacitor 8.6.2 · 1.1 hattına `VITE_KAT2=1` + bekçi.
 - Kat 2 bitişi 8,11 → 8,06 sa (yol düzeltmesi; denge sayısı değişmedi). Denge/ürün soruları (XP, günlük görev, çevrimdışı, tavla
   bandı, gölge, metin turu) README §Kullanıcı kararı bekleyenler — koda girmedi.
-
+- Sıra kilidi notu: `npm run sira` karma-commit uyarısı verdi (kod + `olcum-kat2-isleyis-final-tarama.txt` tek commit'te). Bilinçli:
+  bu bir hata düzeltmesi, denge kolu yok; ölçüm yalnız etkisini belgeliyor (karar paketi gerekmedi).
