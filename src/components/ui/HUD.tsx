@@ -1,5 +1,5 @@
 import { Suspense, lazy, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore, type ComponentProps, type ReactNode } from 'react';
-import { useGame, goalMetricsOf, tableThemeUnlocked, tableSoftMaxLevel, gorunenCuzdan } from '../../game/store';
+import { useGame, goalMetricsOf, kat2AcilanPad, tableThemeUnlocked, tableSoftMaxLevel, gorunenCuzdan } from '../../game/store';
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
@@ -856,6 +856,14 @@ export function HUD() {
               <div><span>{t('Servis edilen çay')}</span><b>{fmt(stats.teasServed + stats.waiterServed)}</b></div>
               <div><span>{t('Yıkanan bulaşık')}</span><b>{fmt(stats.dishesWashed)}</b></div>
               <div><span>{t('Açılan nokta')}</span><b>{padsDone.length}</b></div>
+              {/* D-205: Kat 2 açıldıysa aynı satırlar Kat 2 için (Hedefler'in saydığıyla aynı sayı). */}
+              {kat2Kayit.acik && (
+                <>
+                  <div><span>{t('Kat 2 · servis edilen kahve')}</span><b>{fmt((stats.kat2Elle ?? 0) + (stats.kat2Garson ?? 0))}</b></div>
+                  <div><span>{t('Kat 2 · yıkanan fincan')}</span><b>{fmt(stats.kat2Yikanan ?? 0)}</b></div>
+                  <div><span>{t('Kat 2 · açılan nokta')}</span><b>{kat2AcilanPad(kat2Kayit)}</b></div>
+                </>
+              )}
             </div>
             <PlayGamesBolumu />
             <GeriYukle />
@@ -1529,7 +1537,8 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
   const tables = useGame((s) => s.tables);
   const goalsClaimed = useGame((s) => s.goalsClaimed);
   const mastersOwned = useGame((s) => s.mastersOwned);
-  const metrics = goalMetricsOf({ stats, lifetime, padsDone, tableLevels, tables });
+  const kat2 = useGame((s) => s.kat2);
+  const metrics = goalMetricsOf({ stats, lifetime, padsDone, tableLevels, tables, kat2 });
   const claimGoal = useGame((s) => s.claimGoal);
   const xp = useGame((s) => s.xp);
   const lvl = levelProgress(xp);

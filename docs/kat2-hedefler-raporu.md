@@ -62,4 +62,33 @@ plan garsonunun taşımasını aşıyor; iki kolda aynı, bu turun konusu değil
 
 ## §Karar
 
-(boş — karar paketi bekliyor)
+**D-205 (kullanıcı 2026-11-18: "kat1de olan 2de de olsun" + "eklemek mantıklıysa ekle"): HEDEF-K2** — Mekân ve Usta Kat 2'yi
+Kat 1 kuralıyla sayar, KÜNYE Kat 2 satırlarını gösterir. Ayrı karar paketi sorulmadı (kural "Kat 2 = Kat 1 uyarlaması" + kullanıcının
+cümlesi). Ölçülen bedel yok (Kat 2 bitişi aynı, koleksiyon tavanı +%10 aynı); kazanç Kat 1 masalarını tavana çıkarmamış oyuncunun
+Usta kademelerini Kat 2'de toplaması (0-5 kademe · +%0-2 kalıcı gelir · 0-50 💎). Mekân sayıda etkisiz ama sayaç doğru olsun diye girdi.
+
+## §Uygulama (2026-11-18)
+
+- `store.ts`: `kat2AcilanPad(kat2)` (merdiven 1 + ücretli Kat 2 pad'i, `kat2.hazir` hariç) · `kat2UstaMasa(kat2)` (Sv5'teki açık
+  masa, hazır dahil); `goalMetricsOf` isteğe bağlı `kat2` alır (yoksa Kat 1 — eski çağıranlar değişmez). Store'un `claimGoal`u ve
+  HUD rozeti tam durumu geçirdiği için kendiliğinden görür; Hedefler paneli `kat2`yi geçirir.
+- `HUD.tsx` KÜNYE: Kat 2 açıksa üç satır (servis edilen kahve · yıkanan fincan · açılan nokta = `kat2AcilanPad`). `en.ts` üç metin.
+- Bekçi `tests/kat2-hedefler.test.ts` (8 test). Mutasyon 9/9 yakalandı: 1a hazır sayılır · 1b merdiven yok · 1c metrik eklemez ·
+  2a Sv tavanı yok · 2b açık masa şartı yok · 2c metrik eklemez · 3a panel `kat2` geçirmez · 3b KÜNYE satırı yok · 3c EN yok.
+  Araç mutasyonu: `HEDEF_MUT=hazir` → "kol formülü" damgası 3/3 kırıldı.
+
+**Final tam koşu** (`docs/olcum-kat2-hedef-final.txt`, `HEDEF_FINAL=1`: kod olduğu gibi, emülasyon kapalı; damgalar temiz —
+"kod metriği = kol formülü" ve "Kat 2 süresi = HEDEF-K2 ± %3" dahil):
+
+| ölçü | HEDEF-K2 (emüle) U0 · U10 · U20 | FİNAL (kod) U0 · U10 · U20 |
+|---|---|---|
+| Kat 2 biter | 7,91 · 8,44 · 8,34 sa | **7,91 · 8,44 · 8,34 sa** |
+| Usta kademe baş → son | 0→5 · 3→5 · 5→5 | **0→5 · 3→5 · 5→5** |
+| kalıcı çarpan sonda | +%10,0 (üçü) | **+%10,0 (üçü)** |
+| 💎 · Kat 1 arka plan coin/dk | 50 · 34 · 0 · 816 / 707 / 722 | **50 · 34 · 0 · 816 / 707 / 722** |
+
+Final emülasyonla birebir (kademe saatleri dahil).
+
+**Birebir olmayan (bilinçli, kapsam dışı):** hedef çarpanı (D-090 "coin'in yaratıldığı her yer") Kat 2 gelirine binmiyor — Kat 2'de
+oynayanın +%10'u yalnız Kat 1'den gelir; bağlamak ayrı bir denge kolu (ölçülmedi). Play/Game Center başarımları Kat 1'de (kapsam dışı).
+Hedefler'in "Usta" 💎 basamağı (`mastersOwned`, D-093) Kat 1 masalarına özgü; Kat 2 masası Usta bahşişi almıyor.

@@ -59,6 +59,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-18 (2.): ✅ Kat 2'nin son 2 metni ChatGPT turundan geçti · komple test için deneme APK masaüstünde (`TeaHouse-deneme-tam-2026-11-18.apk`) · vitest 2145 · duman 78/78 · sıradaki: kullanıcının testi → nihai → 1.1
   · 2026-11-18 (3.): ✅ son tarama (6 tarama + 5 düzeltme Opus ajanı) · kayıt/bulut Kat 2 kaybı · personel tüm masalara · tek tepsi · doku sızıntısı · yönlendirme · reklam soğuması · Capacitor 8.6.2 · D-203 · Kat 2 8,06 sa · vitest 2232 · duman 78/78 · APK …-18b
   · 2026-11-18 (4.): ✅ D-204 Kat 2 = Kat 1 (XP · günlük/Hedefler · çevrimdışı Sv/lavabo · İzle eki) · Kat 2 8,22 sa · günlük 7/7 · seviye 12→14 · rapor `docs/kat2-kat1-esit-raporu.md`
+  · 2026-11-18 (5.): ✅ D-205 Hedefler Mekân + Usta + KÜNYE Kat 2'yi sayar · Usta Kat 2'de 0-5 kademe (çarpan tavanı +%10 aynı) · Kat 2 süresi aynı · rapor `docs/kat2-hedefler-raporu.md`
   · 2026-11-16: ✅ Play için 1.0.7 (10007) AAB'si zip'ten masaüstüne çıkarıldı (App Store sürümü, Kat 2 yok) · kod değişikliği yok
   · 2026-11-15: ✅ G5 kol G2 config'te (hemen kahve + anında para, 90 sn oyun, ücret 38) · kahve seti: sap ustaya, servis tepsisi, kahveci usta · ön set seçimi bekliyor
   · 2026-11-14: ✅ Oyun testi G1-G4 (D-198) — kasa kalktı/Kat 1 parası akar · Kat 2 mutfağı Kat 1 kopyası + katı ön tezgâh · ön bölme 0,6 · grup tek sıra · G5 okey ölçüldü (karar bekliyor) · bekçi mutasyon 4/4

@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-18 (4.) — **D-204 bitti**: Kat 2 = Kat 1 (XP · günlük görev/Hedefler · çevrimdışı Sv/lavabo · İzle eki), rapor `docs/kat2-kat1-esit-raporu.md` · sıradaki: yeni deneme APK (orkestratör) + kullanıcının KOMPLE testi + README'de kalan kararlar 4-8)
+## ŞU AN (2026-11-18 (5.) — **D-205 bitti**: Hedefler'in Mekân + Usta'sı ve KÜNYE Kat 2'yi de sayar, rapor `docs/kat2-hedefler-raporu.md` · 3 yeni KÜNYE metni ChatGPT turuna · açık: hedef çarpanı Kat 2 gelirine binmiyor (ayrı kol) · sıradaki: yeni deneme APK (orkestratör) + kullanıcının KOMPLE testi + README'de kalan kararlar 4-8)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,

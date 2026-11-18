@@ -197,7 +197,7 @@ export {
 export type { ActiveSpot, GameNotice, LevelUpOdul, QuestView, QuestCtx, CamFocus } from './rules';
 
 import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
-import { GECIS_SN, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo, OCAKLAR } from './kat';
+import { GECIS_SN, KAT2_MASALAR, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo, OCAKLAR } from './kat';
 import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
 import { kat2EtkinAyar, kat2LavaboTetik, kat2OcakTetik, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2SvTetikleri, kat2TepsiBosalt, kat2TepsiDolu, kat2Tick, kat2YukSiradaki, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Cikti, type Kat2Dunya } from './kat2Dongu';
@@ -316,20 +316,39 @@ export function kayitVerisi(s: GameState): SaveData {
 /** D-204: Kat 2'nin Kat 1 sayaçlarına denk eylem sayaçları (eski bellek içi durumda yoksa 0). */
 type Kat2Sayaclari = Partial<Pick<SaveStats, 'kat2Elle' | 'kat2Garson' | 'kat2Yikanan' | 'kat2Para' | 'kat2Alinan'>>;
 
+type Kat2HedefGirdisi = Pick<Kat2Kayit, 'acik' | 'padsDone' | 'masaSv'>;
+
+/**
+ * D-205 (Kat 2 = Kat 1): Kat 2'nin "Mekân" payı — merdiven pad'i (ücretli; Kat 1 `padsDone`unda yok) + Kat 2'nin ücretli
+ * pad'leri. `kat2.hazir` merdivenle bedava gelir → sayılmaz (Kat 1'in başlangıç masası da `padsDone`ta yok).
+ */
+export function kat2AcilanPad(k?: Pick<Kat2HedefGirdisi, 'acik' | 'padsDone'>): number {
+  if (!k?.acik) return 0;
+  const hazir: readonly string[] = economyConfig.kat2.hazir;
+  return 1 + k.padsDone.filter((id) => !hazir.includes(id)).length;
+}
+
+/** D-205: Kat 2'nin "Usta" payı — Sv tavanındaki açık masa (hazır masa dahil; Kat 1'in başlangıç masası da sayılıyor). */
+export function kat2UstaMasa(k?: Kat2HedefGirdisi): number {
+  if (!k?.acik) return 0;
+  return KAT2_MASALAR.filter((m) => k.padsDone.includes(m.id) && masaSvOku(k.masaSv, m.id) >= KAT2_SV_MAX).length;
+}
+
 export function goalMetricsOf(s: {
   stats: { teasServed: number; waiterServed: number; dishesWashed: number } & Kat2Sayaclari;
   padsDone: readonly string[];
   lifetime: Decimal;
   tableLevels: readonly number[];
   tables: number;
+  kat2?: Kat2HedefGirdisi;
 }): GoalMetrics {
   const k = s.stats;
   return {
     served: k.teasServed + k.waiterServed + (k.kat2Elle ?? 0) + (k.kat2Garson ?? 0),
-    pads: s.padsDone.length,
+    pads: s.padsDone.length + kat2AcilanPad(s.kat2),
     lifetime: Math.max(0, Math.floor(s.lifetime.toNumber())),
     dishes: k.dishesWashed + (k.kat2Yikanan ?? 0),
-    masterTables: s.tableLevels.slice(0, s.tables).filter((l) => l >= tableSoftMaxLevel()).length,
+    masterTables: s.tableLevels.slice(0, s.tables).filter((l) => l >= tableSoftMaxLevel()).length + kat2UstaMasa(s.kat2),
   };
 }
 

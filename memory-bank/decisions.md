@@ -5312,3 +5312,12 @@ Kullanıcı: *"kat1de olan 2de de olsun"* (tarama README kalem 1-3). Rapor `docs
 - Ölçülen (tam): Kat 2 8,27 → 8,22 sa · seviye 12→12 / 12→14 (ödül 4.188) · 1 sa'te günlük 3/7 → 7/7 (💎 4,3 → 10/gün) ·
   Kat 2'de kapatanın dönüşü 16.920 → 19.205 (tavan; bitmiş Kat 2'de İzle eki zaten 0). Final = emülasyon birebir.
 - Bekçi `tests/kat2-kat1-esit.test.ts`, mutasyon 12/12.
+
+## D-205 · Hedefler'in Mekân + Usta'sı ve KÜNYE Kat 2'yi de sayar (2026-11-18)
+Kullanıcı: *"kat1de olan 2de de olsun"* + *"eklemek mantıklıysa ekle"*. Rapor `docs/kat2-hedefler-raporu.md`.
+- Mekân: + merdiven pad'i (ücretli, Kat 1 `padsDone`unda yok) + ücretli Kat 2 pad'leri; `kat2.hazir` sayılmaz (Kat 1 başlangıç
+  masası gibi). Usta: + Sv5'teki açık Kat 2 masası (hazır dahil). `store.kat2AcilanPad/kat2UstaMasa`; `goalMetricsOf({…, kat2})`.
+- KÜNYE: Kat 2 açıksa servis edilen kahve · yıkanan fincan · açılan nokta (TR+EN, ChatGPT turuna listelendi).
+- Ölçülen (tam, Kat 1'de tavandaki masa 0/10/20): Kat 2 7,91/8,44/8,34 sa iki kolda aynı · Usta 0→5 / 3→5 / 5→5 · çarpan sonda
+  +%10 (tavan aynı) · Mekân zaten 5/5 (Kat 1'in 24 pad'i = son kademe → etkisiz). Final = emülasyon birebir.
+- Açık: hedef çarpanı Kat 2 gelirine binmiyor (ayrı denge kolu). Bekçi `tests/kat2-hedefler.test.ts`, mutasyon 9/9.

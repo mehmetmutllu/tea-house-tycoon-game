@@ -1,0 +1,22 @@
+=== HEDEFLER: MEKÂN + USTA KAT 2'Yİ DE SAYSIN (D-205) ===
+Kip: tam · dt 0.1 · ufuk 16 sa · FİNAL (kod, emülasyon kapalı)
+Başlangıç: Kat 1 görev hattı sonu · karakter tavan · seviye 12 · Kat 2 ilk çıkış · Servis/Kazanç/Temizlik bitmiş · Kat 1'de tavandaki (L4) masa sayısı senaryo, kalanı L0.
+Hedef: 5 kategori × kademe · kademe başına kalıcı gelir +%0.40 · Mekân [3·6·10·16·24] · Usta [1·3·8·14·20] · Kat 1 pad 24 · Kat 1 masa 20 · Kat 2 masa 22
+
+--- §1 İLERLEME — Kat 2 ilk çıkıştan bitişe (zincir + bütün masalar Sv5 + yükseltmeler) ---
+kol            | zincir biter | KAT 2 BİTER | XP kazanılan | 💎 (hedeflerden) | Kat 1 arka plan coin/dk | Kat 2 coin/dk
+FİNAL·U0       |      4.72 sa |     7.91 sa |       30.281 |               50 |                     816 |         1.381
+FİNAL·U10      |      5.12 sa |     8.44 sa |       30.773 |               34 |                     707 |         1.352
+FİNAL·U20      |      5.03 sa |     8.34 sa |       30.471 |                0 |                     722 |         1.362
+
+--- §2 HEDEFLER — kategori başına toplanan kademe: başta → Kat 2 sonunda (Kat 2 süresince toplanan, saatiyle) ---
+kol            | Servis    | Mekân     | Kazanç    | Temizlik  | Usta      | metrik sonda: Mekân · Usta | kalıcı çarpan baş → son
+FİNAL·U0       | 5 → 5     | 5 → 5     | 5 → 5     | 5 → 5     | 0 → 5     |                    54 · 22 | +%8.0 → +%10.0
+FİNAL·U10      | 5 → 5     | 5 → 5     | 5 → 5     | 5 → 5     | 3 → 5     |                    54 · 32 | +%9.2 → +%10.0
+FİNAL·U20      | 5 → 5     | 5 → 5     | 5 → 5     | 5 → 5     | 5 → 5     |                    54 · 42 | +%10.0 → +%10.0
+Kat 2 süresince toplanan kademeler (kimlik @ saat):
+FİNAL·U0       | master:0 @ 4.91 · master:1 @ 5.29 · master:2 @ 6.25 · master:3 @ 7.06 · master:4 @ 7.70
+FİNAL·U10      | master:3 @ 5.93 · master:4 @ 7.08
+FİNAL·U20      | —
+
+(süre: 1540 sn)
