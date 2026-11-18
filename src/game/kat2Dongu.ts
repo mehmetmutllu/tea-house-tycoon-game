@@ -417,6 +417,10 @@ export interface Kat2Cikti {
     yikanan: number;
     /** Bulaşık: leğenden bu adımda temize dönen fincan (kim bırakmış olursa olsun). */
     temizDonen: number;
+    /** D-204: oyuncunun bu adımda ocaktan tepsiye aldığı kahve (Kat 1 `teaPickups`). */
+    alinan: number;
+    /** D-204: oyuncunun bu adımda topladığı para yığını sayısı (Kat 1 `coinsCollected`; bir yığın = bir para). */
+    toplanan: number;
   };
 }
 
@@ -601,7 +605,7 @@ export const masaSvOku = (masaSv: Readonly<Record<string, number>> | undefined, 
   Math.min(KAT2_SV_MAX, Math.max(1, Math.floor(masaSv?.[id] ?? 1)));
 
 /** Kolun bu Sv'deki çarpanı (kol/dizi yoksa 1 → ayar.masaSv yokken aritmetik birebir aynı). */
-const svCarpan = (dizi: readonly number[] | undefined, sv: number): number => dizi?.[sv - 1] ?? 1;
+export const svCarpan = (dizi: readonly number[] | undefined, sv: number): number => dizi?.[sv - 1] ?? 1;
 
 /** Bir Sv tetiği: çizilen çerçeve = dolum testi (D-121). `w`/`d` TAM genişlik/derinlik (yarısı `inFrame`e). */
 export interface Kat2SvTetik {
@@ -888,6 +892,8 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     lavaboYuk: false,
     yikanan: 0,
     temizDonen: 0,
+    alinan: 0,
+    toplanan: 0,
   };
   let kazanc = 0;
   let harcama = 0;
@@ -1021,6 +1027,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       if (al > 0) {
         o.hazir -= al;
         d.tepsi += al;
+        olay.alinan += al;
       }
     }
   });
@@ -1173,6 +1180,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
     d.paralar = d.paralar.filter((p) => {
       if (Math.hypot(g.x - p.x, g.z - p.z) <= g.miknatis) {
         kazanc += p.miktar;
+        olay.toplanan += 1;
         return false;
       }
       return true;

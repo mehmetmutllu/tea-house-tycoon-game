@@ -55,6 +55,17 @@ export interface SaveStats {
   /** ALAN-BAŞINA oyuncu el servisi (v23): alanlı serveTea görevleri YALNIZ o alandaki servisi
    *  sayar — eski global sayaç "Yeni salonda 5 çay" görevini 1. alanda da dolduruyordu. */
   teasServedByArea: number[];
+  /**
+   * D-204 (Kat 2 = Kat 1): Kat 2'nin Kat 1 sayaçlarına denk eylemleri — elle kahve · garsonun kahvesi · oyuncunun yıkadığı
+   * fincan · toplanan para yığını · ocaktan alınan kahve. Günlük görev + Hedefler Kat 1 sayacıyla TOPLAR (`store.dailyCountersOf`).
+   * Ayrı tutulur: Kat 1 görev hattı / pad kapısı / ses köprüsü Kat 1 sayaçlarını okur. ADDITIVE (eksik = 0) → saveVersion artmadı;
+   * 0'dan başladığı için günlük görevin gün başı tabanı sıçramaz.
+   */
+  kat2Elle: number;
+  kat2Garson: number;
+  kat2Yikanan: number;
+  kat2Para: number;
+  kat2Alinan: number;
 }
 
 export function defaultStats(): SaveStats {
@@ -67,6 +78,11 @@ export function defaultStats(): SaveStats {
     waiterServed: 0,
     waiterServedByService: [],
     teasServedByArea: [],
+    kat2Elle: 0,
+    kat2Garson: 0,
+    kat2Yikanan: 0,
+    kat2Para: 0,
+    kat2Alinan: 0,
   };
 }
 
@@ -654,6 +670,11 @@ export function kayitDogrula(d: SaveData): { data: SaveData; red: string[] } {
       waiterServed: negatifsiz(d.stats.waiterServed),
       waiterServedByService: sayiDizisi(d.stats.waiterServedByService),
       teasServedByArea: sayiDizisi(d.stats.teasServedByArea),
+      kat2Elle: negatifsiz(d.stats.kat2Elle),
+      kat2Garson: negatifsiz(d.stats.kat2Garson),
+      kat2Yikanan: negatifsiz(d.stats.kat2Yikanan),
+      kat2Para: negatifsiz(d.stats.kat2Para),
+      kat2Alinan: negatifsiz(d.stats.kat2Alinan),
     },
     questsDone: metinKumesi(d.questsDone),
     goalsClaimed: metinKumesi(d.goalsClaimed),

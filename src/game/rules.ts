@@ -30,7 +30,7 @@ import type { ReklamSayaci, SatinAlim, SaveStats } from './save';
 import { iapConfig } from '../config/iap.config';
 import { LAYOUT, LAVABO, servicePlace, type RVec3 } from './layout';
 import { KAT2_KISI, KAT2_LAVABO_PAD, KAT2_MASALAR, OCAK } from './kat';
-import type { Kat2Ayar } from './kat2Dongu';
+import { kat2EtkinAyar, masaSvOku, svCarpan, type Kat2Ayar, type Kat2YukSeviye } from './kat2Dongu';
 import { MAX_AREAS, THE_SERVICE, areaOfTable, areaTableStart, tostShare, isCounter } from './world';
 import { t } from '../i18n';
 
@@ -795,6 +795,9 @@ export function visiblePads(questIndex: number, g: GateState): PadDef[] {
 export interface CevrimdisiKat2 {
   acik: boolean;
   padsDone: readonly string[];
+  /** D-204: masa Sv'leri ve yükseltme alımları (`Kat2Kayit.masaSv` / `.yuk`) — oran bunlarla hesaplanır. */
+  masaSv?: Readonly<Record<string, number>>;
+  yuk?: Partial<Kat2YukSeviye>;
 }
 
 /**
@@ -803,17 +806,27 @@ export interface CevrimdisiKat2 {
  * Tavla sayıları config'te yoksa tavla masası gelir üretmez (`kat2Dongu` ile aynı kural). D-192: lavabo
  * açıksa kalkan her kişinin beklenen lavabo ücreti de girer.
  */
-export function kat2Oran(padsDone: readonly string[]): number {
-  const a: Kat2Ayar = C.kat2;
+export function kat2Oran(
+  padsDone: readonly string[],
+  masaSv?: Readonly<Record<string, number>>,
+  yuk?: Partial<Kat2YukSeviye>,
+): number {
+  // D-204 (Kat 2 = Kat 1): Kat 1'in oranı masa seviyesini ve lavabo seviyesini görür → Kat 2'ninki de masa Sv çarpanlarını
+  // (`kat2Dongu` masa döngüsüyle aynı) ve yükseltmeleri (`kat2EtkinAyar`: lavabo L2-L6 · ocak) görür.
+  const a: Kat2Ayar = kat2EtkinAyar(C.kat2, yuk);
   const ocak = padsDone.includes(OCAK.id);
   let oran = 0;
   for (const m of KAT2_MASALAR) {
     if (!padsDone.includes(m.id)) continue;
     const t = m.tur === 'tavla' ? a.tavla : a;
     if (!t) continue;
-    const istek = ocak ? Math.max(0, Math.floor((t.oturum - a.kahveSabir * 0.5) / t.kahveAralik)) : 0;
+    const sv = masaSvOku(masaSv, m.id);
+    const kol = a.masaSv?.[m.tur];
+    const oturum = t.oturum * svCarpan(kol?.oturumCarpan, sv);
+    const istek = ocak ? Math.max(0, Math.floor((oturum - a.kahveSabir * 0.5) / (t.kahveAralik * svCarpan(kol?.kahveAralikCarpan, sv)))) : 0;
     const lav = a.lavabo && padsDone.includes(KAT2_LAVABO_PAD) ? KAT2_KISI[m.tur] * a.lavabo.ugrama * a.lavabo.ucret : 0;
-    oran += (t.masaUcreti + istek * t.istekAdet * t.kahveFiyat + lav) / (a.gelisAralik + a.yurume + t.oturum);
+    const gelir = t.masaUcreti * svCarpan(kol?.ucretCarpan, sv) + istek * t.istekAdet * t.kahveFiyat * svCarpan(kol?.kahveFiyatCarpan, sv) + lav;
+    oran += gelir / (a.gelisAralik * svCarpan(kol?.gelisAralikCarpan, sv) + a.yurume + oturum);
   }
   return oran;
 }
@@ -833,7 +846,7 @@ function offlineRawCap(
   const sure = Math.min(elapsedSec, C.offline.baseCapHours * 3600);
   const raw1 = Math.floor(rate * C.offline.rateMult * sure);
   const k2 = kat2?.acik ? kat2 : null;
-  const raw2 = k2 ? Math.floor(kat2Oran(k2.padsDone) * C.offline.rateMult * sure) : 0;
+  const raw2 = k2 ? Math.floor(kat2Oran(k2.padsDone, k2.masaSv, k2.yuk) * C.offline.rateMult * sure) : 0;
   const pads = C.pads as readonly PadDef[];
   const k2Pads: readonly { id: string; cost: number }[] = k2 ? C.kat2.padler : [];
   const next = pads.find((p) => !p.optional && !padsDone.includes(p.id)) ?? k2Pads.find((p) => !k2!.padsDone.includes(p.id));

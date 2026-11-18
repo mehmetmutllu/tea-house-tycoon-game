@@ -5301,3 +5301,14 @@ Kullanıcı: "son bir tarama yap … istediğin kadar opus agent". Özet ve bulg
   bandı, gölge, metin turu) README §Kullanıcı kararı bekleyenler — koda girmedi.
 - Sıra kilidi notu: `npm run sira` karma-commit uyarısı verdi (kod + `olcum-kat2-isleyis-final-tarama.txt` tek commit'te). Bilinçli:
   bu bir hata düzeltmesi, denge kolu yok; ölçüm yalnız etkisini belgeliyor (karar paketi gerekmedi).
+
+## D-204 · Kat 2 = Kat 1: XP, günlük görev/Hedefler, çevrimdışı Sv/lavabo, İzle eki (2026-11-18)
+Kullanıcı: *"kat1de olan 2de de olsun"* (tarama README kalem 1-3). Rapor `docs/kat2-kat1-esit-raporu.md`.
+- XP Kat 1 kuralı: Kat 2 pad `perPad` · masa Sv `perUpgrade` · elle kahve `perTeaServed` · garson `perWaiterServed` · oyuncunun
+  yıkadığı `perDishWashed` (bulaşıkçı sayılmaz). `store.kat2OlayXp`.
+- Günlük + Hedefler: `SaveStats.kat2*` (additive, 0'dan) Kat 1 metriğine eklenir (tost hariç); arka planda yalnız garson. Kat 1
+  görev hattı/pad kapısı/ses Kat 1 sayaçlarını okur. Para = yığın sayısı. Başarımlar ve Mekân/Usta hedefleri Kat 1'de kaldı.
+- Çevrimdışı: `kat2Oran(padsDone, masaSv, yuk)` (Sv çarpanları + `kat2EtkinAyar`); İzle eki ≤ (claimMult − 1) × gösterilen.
+- Ölçülen (tam): Kat 2 8,27 → 8,22 sa · seviye 12→12 / 12→14 (ödül 4.188) · 1 sa'te günlük 3/7 → 7/7 (💎 4,3 → 10/gün) ·
+  Kat 2'de kapatanın dönüşü 16.920 → 19.205 (tavan; bitmiş Kat 2'de İzle eki zaten 0). Final = emülasyon birebir.
+- Bekçi `tests/kat2-kat1-esit.test.ts`, mutasyon 12/12.

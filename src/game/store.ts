@@ -200,7 +200,7 @@ import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
 import { GECIS_SN, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo, OCAKLAR } from './kat';
 import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
-import { kat2EtkinAyar, kat2LavaboTetik, kat2OcakTetik, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2SvTetikleri, kat2TepsiBosalt, kat2TepsiDolu, kat2Tick, kat2YukSiradaki, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Dunya } from './kat2Dongu';
+import { kat2EtkinAyar, kat2LavaboTetik, kat2OcakTetik, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2SvTetikleri, kat2TepsiBosalt, kat2TepsiDolu, kat2Tick, kat2YukSiradaki, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Cikti, type Kat2Dunya } from './kat2Dongu';
 import { kat2Gorevleri, kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
 import { bosKasaOlcum, kasaSiniriOlcumden, type KasaOlcum } from './kasa';
 import { t } from '../i18n';
@@ -313,19 +313,58 @@ export function kayitVerisi(s: GameState): SaveData {
   };
 }
 
+/** D-204: Kat 2'nin Kat 1 sayaçlarına denk eylem sayaçları (eski bellek içi durumda yoksa 0). */
+type Kat2Sayaclari = Partial<Pick<SaveStats, 'kat2Elle' | 'kat2Garson' | 'kat2Yikanan' | 'kat2Para' | 'kat2Alinan'>>;
+
 export function goalMetricsOf(s: {
-  stats: { teasServed: number; waiterServed: number; dishesWashed: number };
+  stats: { teasServed: number; waiterServed: number; dishesWashed: number } & Kat2Sayaclari;
   padsDone: readonly string[];
   lifetime: Decimal;
   tableLevels: readonly number[];
   tables: number;
 }): GoalMetrics {
+  const k = s.stats;
   return {
-    served: s.stats.teasServed + s.stats.waiterServed,
+    served: k.teasServed + k.waiterServed + (k.kat2Elle ?? 0) + (k.kat2Garson ?? 0),
     pads: s.padsDone.length,
     lifetime: Math.max(0, Math.floor(s.lifetime.toNumber())),
-    dishes: s.stats.dishesWashed,
+    dishes: k.dishesWashed + (k.kat2Yikanan ?? 0),
     masterTables: s.tableLevels.slice(0, s.tables).filter((l) => l >= tableSoftMaxLevel()).length,
+  };
+}
+
+/**
+ * D-204 (Kat 2 = Kat 1): bir Kat 2 adımının XP'si — Kat 1 kuralı birebir: pad `perPad` · masa Sv atlaması `perUpgrade` ·
+ * elle kahve `perTeaServed` · garsonun kahvesi `perWaiterServed` · oyuncunun yıkadığı fincan `perDishWashed` (bulaşıkçınınki
+ * olaya girmez). Ocak/lavabo yükseltmesi ve görev XP'si store'da ayrıca verilir (D-200/D-201/S3).
+ */
+export function kat2OlayXp(o: Pick<Kat2Cikti['olay'], 'padBitti' | 'svAtlayan' | 'servis' | 'garsonServis' | 'yikanan'>): number {
+  return (
+    (o.padBitti ? C.xp.perPad : 0) +
+    C.xp.perUpgrade * o.svAtlayan.length +
+    C.xp.perTeaServed * (o.servis - o.garsonServis) +
+    C.xp.perWaiterServed * o.garsonServis +
+    C.xp.perDishWashed * o.yikanan
+  );
+}
+
+/**
+ * D-204: Kat 2 adımının sayaçları (`SaveStats.kat2*`). Oyuncunun eli yalnız oyuncu Kat 2'deyken olay üretir; arka planda
+ * (oyuncu Kat 1'de) yalnız garson sayılır — Kat 1 garsonu da oyuncu Kat 2'deyken sayılıyor. Değişiklik yoksa AYNI nesne.
+ */
+export function kat2OlaySayac<T extends Kat2Sayaclari>(
+  st: T,
+  o: Pick<Kat2Cikti['olay'], 'servis' | 'garsonServis' | 'yikanan' | 'toplanan' | 'alinan'>,
+): T {
+  const elle = o.servis - o.garsonServis;
+  if (!elle && !o.garsonServis && !o.yikanan && !o.toplanan && !o.alinan) return st;
+  return {
+    ...st,
+    kat2Elle: (st.kat2Elle ?? 0) + elle,
+    kat2Garson: (st.kat2Garson ?? 0) + o.garsonServis,
+    kat2Yikanan: (st.kat2Yikanan ?? 0) + o.yikanan,
+    kat2Para: (st.kat2Para ?? 0) + o.toplanan,
+    kat2Alinan: (st.kat2Alinan ?? 0) + o.alinan,
   };
 }
 
@@ -337,18 +376,22 @@ export function dailyCountersOf(s: {
   stats: {
     teasServed: number; waiterServed: number; dishesWashed: number;
     coinsCollected: number; teaPickups: number; tostServed: number;
-  };
+  } & Kat2Sayaclari;
   lifetime: Decimal;
 }): DailyCounters {
+  // D-204: Kat 2'nin denk eylemi Kat 1'inkiyle aynı metriğe sayılır (kahve = çay; tostun Kat 2 karşılığı yok).
+  const k = s.stats;
+  const elle = k.teasServed + (k.kat2Elle ?? 0);
+  const garson = k.waiterServed + (k.kat2Garson ?? 0);
   return {
-    served: s.stats.teasServed + s.stats.waiterServed,
-    hand: s.stats.teasServed,
-    coins: s.stats.coinsCollected,
-    dishes: s.stats.dishesWashed,
+    served: elle + garson,
+    hand: elle,
+    coins: k.coinsCollected + (k.kat2Para ?? 0),
+    dishes: k.dishesWashed + (k.kat2Yikanan ?? 0),
     earn: Math.max(0, Math.floor(s.lifetime.toNumber())),
-    pickup: s.stats.teaPickups,
-    waiter: s.stats.waiterServed,
-    tost: s.stats.tostServed,
+    pickup: k.teaPickups + (k.kat2Alinan ?? 0),
+    waiter: garson,
+    tost: k.tostServed,
   };
 }
 
@@ -690,7 +733,7 @@ function cevrimdisiGelir(
   for (let i = 0; i < s.tables; i++) tipTotal += C.tables.tipBase * (s.tableLevels[i] ?? 0);
   const rate = incomeRate(s.tables, s.stationLevels[THE_SERVICE], tipTotal, s.lavaboLevel, collectionMult(s.goalsClaimed));
   // D-185: Kat 2 açıksa onun payı da sayılır, tavan Kat 1 bitmişse Kat 2'nin sıradaki pad'ine bakar.
-  const kat2 = { acik: s.kat2.acik && kat2Etkin(), padsDone: s.kat2.padsDone };
+  const kat2 = { acik: s.kat2.acik && kat2Etkin(), padsDone: s.kat2.padsDone, masaSv: s.kat2.masaSv, yuk: s.kat2.yuk };
   // F3b (D-150): "İzle"nin eki aynı oran ve aynı tavanla hesaplanır; 0 ise ekranda düğme yok.
   return { ...offlineEarnedSplit(rate, elapsed, s.padsDone, kat2), izleEki: offlineWatchExtra(rate, elapsed, s.padsDone, kat2) };
 }
@@ -702,15 +745,17 @@ function cevrimdisiGelir(
  */
 function cevrimdisiDagit(
   g: { wallet: Decimal; lifetime: Decimal; kasaOlcum: KasaOlcum; kat: KatNo },
-  r: { kazanc: number; kat1Pay: number },
-): { wallet: Decimal; lifetime: Decimal; cuzdana: number } {
+  r: { kazanc: number; kat1Pay: number; izleEki: number },
+): { wallet: Decimal; lifetime: Decimal; cuzdana: number; izleEki: number } {
   let cuzdana = r.kazanc;
   if (g.kat === 2 && r.kat1Pay > 0) {
     const sinir = kasaSiniriOlcumden(g.kasaOlcum, economyConfig.kasa);
     const kat1 = sinir === null ? r.kat1Pay : Math.min(r.kat1Pay, sinir.toNumber());
     cuzdana = r.kazanc - r.kat1Pay + Math.floor(kat1);
   }
-  return { wallet: g.wallet.add(cuzdana), lifetime: g.lifetime.add(cuzdana), cuzdana };
+  // D-204: "İzle" eki GÖSTERİLEN tutardan — izleyen en çok `claimMult` katını alır (Kat 1 kuralı); kesinti yoksa ek aynen kalır.
+  const izleEki = Math.max(0, Math.min(r.izleEki, (C.rewarded.claimMult - 1) * cuzdana));
+  return { wallet: g.wallet.add(cuzdana), lifetime: g.lifetime.add(cuzdana), cuzdana, izleEki };
 }
 
 /**
@@ -928,8 +973,7 @@ export const useGame = create<GameState>((set, get) => ({
           goalsClaimed: save.goalsClaimed ?? [], padsDone: save.padsDone, kat2: save.kat2 },
         elapsed,
       );
-      offlineIzleEki = r.izleEki;
-      ({ wallet, lifetime, cuzdana: offlineEarned } = cevrimdisiDagit({ wallet, lifetime, kasaOlcum, kat: ilkKat }, r));
+      ({ wallet, lifetime, cuzdana: offlineEarned, izleEki: offlineIzleEki } = cevrimdisiDagit({ wallet, lifetime, kasaOlcum, kat: ilkKat }, r));
     }
     // GÜN DÖNÜMÜ (D8): gece kapalıyken gün değiştiyse görevler BURADA yenilenir — çevrimdışı
     // gelir eklendikten SONRA. Sıra ölçülen arzın parçası: taban offline'dan önce alınsaydı
@@ -1122,7 +1166,12 @@ export const useGame = create<GameState>((set, get) => ({
     let kat2 = s.kat2;
     let kat2Dunya = s.kat2Dunya;
     let xp = c.xp;
+    let stats = c.stats;
     let k2olay: Kat2GorevOlay | null = null;
+    const kat2Say = (o: Kat2Cikti['olay']) => {
+      xp += kat2OlayXp(o);
+      stats = kat2OlaySayac(stats, o);
+    };
     if (kat === 2) {
       const j = s.inputJoystick;
       girdi = gecis ? [0, 0] : Math.hypot(j[0], j[1]) > 0.05 ? j : s.inputKeyboard;
@@ -1154,6 +1203,7 @@ export const useGame = create<GameState>((set, get) => ({
       );
       kat2Dunya = r.dunya;
       k2olay = { ...r.olay, kazanc: r.kazanc };
+      kat2Say(r.olay);
       if (r.harcama > 0) wallet = wallet.sub(r.harcama);
       if (r.kazanc > 0) {
         wallet = wallet.add(r.kazanc);
@@ -1185,6 +1235,7 @@ export const useGame = create<GameState>((set, get) => ({
       );
       kat2Dunya = r.dunya;
       k2olay = { ...r.olay, kazanc: 0 };
+      kat2Say(r.olay);
     }
     // S3-D: Kat 2 görev hattı (Kat 2'de VE arka planda) — durum bu adımın GÜNCEL pad/Sv'si.
     if (k2olay) {
@@ -1251,7 +1302,7 @@ export const useGame = create<GameState>((set, get) => ({
     const daily =
       s.daily.day === gun
         ? s.daily // sıcak yol: tek sayı karşılaştırması, nesne üretilmez
-        : rollDaily(s.daily, gun, dailyContextOf(s), dailyCountersOf({ stats: c.stats, lifetime: c.lifetime }));
+        : rollDaily(s.daily, gun, dailyContextOf(s), dailyCountersOf({ stats, lifetime: c.lifetime }));
 
     // Periyodik kayıt (sistemlerin dışında: store'un işi).
     let saveTimer = s.saveTimer - dt;
@@ -1291,7 +1342,7 @@ export const useGame = create<GameState>((set, get) => ({
         gelirIzi: c.gelirIzi,
         gelirIziT: c.gelirIziT,
         revealSeen: c.revealSeen,
-        stats: c.stats,
+        stats,
         daily,
         // `goalsClaimed` BİLEREK yok: hedefler tick'te değişmez, yalnız `claimGoal` yazar. Tick
         // bağlamına eklemek `tick.ts`e (denge dosyası) dokunmak olurdu ve buraya `undefined`
@@ -1303,7 +1354,7 @@ export const useGame = create<GameState>((set, get) => ({
         questPhaseT: c.questPhaseT,
         questDoneIndex: c.questDoneIndex,
         xp,
-        // Bu karede `runTick`ten SONRA eklenen XP (Kat 2 görev / ocak / lavabo) sonraki karenin seviye ekranına.
+        // Bu karede `runTick`ten SONRA eklenen XP (Kat 2 olayları / görev / ocak / lavabo) sonraki karenin seviye ekranına.
         xpBekleyen: xp - c.xp,
         quest: c.quest,
         camFocus,
@@ -1830,8 +1881,7 @@ export const useGame = create<GameState>((set, get) => ({
     if (elapsed <= CEVRIMDISI_ESIK_SN) return;
     const r = cevrimdisiGelir({ ...s, goalsClaimed: s.goalsClaimed ?? [] }, elapsed);
     if (r.kazanc <= 0) return;
-    const { wallet, lifetime, cuzdana: kazanc } = cevrimdisiDagit(s, r);
-    const izleEki = r.izleEki;
+    const { wallet, lifetime, cuzdana: kazanc, izleEki } = cevrimdisiDagit(s, r);
     // D8 sırası (init ile aynı): gün dönümü çevrimdışı gelirden SONRA — gece kazanılan ₺ bugünün
     // "kazan" görevini bedavaya doldurmasın. Gün değişmediyse `tick` zaten dokunmaz.
     const gun = dayIndex(Date.now());
