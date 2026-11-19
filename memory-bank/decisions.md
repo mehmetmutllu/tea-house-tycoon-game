@@ -5321,3 +5321,18 @@ Kullanıcı: *"kat1de olan 2de de olsun"* + *"eklemek mantıklıysa ekle"*. Rapo
 - Ölçülen (tam, Kat 1'de tavandaki masa 0/10/20): Kat 2 7,91/8,44/8,34 sa iki kolda aynı · Usta 0→5 / 3→5 / 5→5 · çarpan sonda
   +%10 (tavan aynı) · Mekân zaten 5/5 (Kat 1'in 24 pad'i = son kademe → etkisiz). Final = emülasyon birebir.
 - Açık: hedef çarpanı Kat 2 gelirine binmiyor (ayrı denge kolu). Bekçi `tests/kat2-hedefler.test.ts`, mutasyon 9/9.
+
+## D-207 · Kat 2 varışı kuyunun önünde (aday D) (2026-11-19)
+Kullanıcı: *"çıkınca duvar dibinde çıkmış oluyorum… çok düzgün bir görsel oluşmuyor"* → 7 aday + 3 iniş tetiği karesi
+(`docs/kareler/kat2-varis-pano*.png`, `docs/kat2-varis-adaylar.md`). Öneri B (ters kuyu) idi; kullanıcı **D**'yi seçti ("görsel daha iyi").
+- `VARIS[2]` = (0; `AGIZ.on` + 0,9): kuyu yerinde, oyuncu ön korkuluğun önünde salona bakarak belirir. Masa/pad kaymadı.
+- İniş değişmedi (kuyunun yanından arkadaki ağza itme, T1). Yanlışlıkla inme/uzun yol şikâyeti gelirse T2 (zemin "Kat 1") ya da T3 (HUD).
+- Bekçi `tests/kat2-altyapi.test.ts` "D-207", mutasyon 2/2.
+
+## D-208 · Gölge: küçük proplar gölge vermez, zayıf cihazda harita 1024; Kat 2 ön kurulumu (2026-11-19)
+Tarama README #5-6, kullanıcı öneriyi seçti. Rapor `docs/golge-raporu-s4.md` · `docs/kat2-onkurulum-notu.md`.
+- `golgeKurali.ts`: en uzun kenar < 0,35 ya da ikinci kenar < 0,075 → castShadow yok (+ elle: fincan/bardak/tepsi içi/korkuluk dikmesi…).
+  Kat 2 gölge çağrısı 220 → 142, Kat 1 321 → 277. Zayıf cihazda "oto" = gölge KAPALI kalır (D-125, kullanıcı 2026-11-19); elle açarsa 1024.
+- Kat 2, merdiven tamirliyken (`kat2.acik`) Kat 1'de boşta kademeli kurulur + 1×1 makasla ısıtılır, sonra `Activity hidden`.
+  İlk giriş en uzun kare dolu Kat 2 ~870 → ~690 ms, yeni tamirde ~320 → ~110 ms; Kat 1'de bir kez ~150-200 ms. Kalan: `kat2/Esya.tsx` seçicileri.
+- Bekçiler `tests/golge-s4.test.ts` (mutasyon 4/4) · `tests/kat2-onkurulum.test.ts` (mutasyon 5/5).

@@ -249,10 +249,14 @@ export function kat2Engeller(padsDone: readonly string[]): Solid[] {
 /** Oyuncu Kat 2'deyken Kat 1 sistemlerinin gördüğü konum: her masadan/pad'den/paradan uzak. */
 export const KAT1_DISI: Vec3 = [0, 0.6, 400];
 
-/** Varış noktaları: Kat 1'de merdivenin önü, Kat 2'de sahanlığın solu (kuyunun dışı). */
+/**
+ * Varış noktaları: Kat 1'de merdivenin önü; Kat 2'de kuyunun ÖN korkuluğunun önü, salona bakar (D-207, aday D:
+ * sahanlıktaki eski varış duvar dibindeydi, kadrajın %24'ü duvar arkası ağaçtı — `docs/kat2-varis-adaylar.md`).
+ * İniş değişmedi: kuyunun yanından arkadaki ağza yürünür.
+ */
 export const VARIS: Record<KatNo, Vec3> = {
   1: [0, 0.6, BAND.front + 1.4],
-  2: [-AGIZ.x - PR - 0.35, 0.6, (AGIZ.arka + AGIZ.sahanlik) / 2],
+  2: [0, 0.6, AGIZ.on + 0.9],
 };
 
 /** Geçiş: ekran YARI sürede kararır, kat değişir, YARI sürede açılır (sn). */

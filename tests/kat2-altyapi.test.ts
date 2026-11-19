@@ -253,6 +253,13 @@ describe('Kat 2\'de yürüyüş', () => {
     expect(z).toBeGreaterThanOrEqual(BAND.front);
   });
 
+  it('D-207: Kat 2 varışı kuyunun önünde, salona bakar (duvar dibinde değil)', () => {
+    const [vx, , vz] = VARIS[2];
+    expect(vz).toBeGreaterThan(AGIZ.on);
+    expect(vz - AGIZ.on).toBeLessThan(1.5);
+    expect(Math.abs(vx)).toBeLessThan(AGIZ.x);
+  });
+
   it('varış noktası yürünebilir ve tetiğin dışında', () => {
     const [vx, , vz] = VARIS[2];
     expect(kat2Adim(vx, vz, 0, 0)).toEqual([vx, vz]);
