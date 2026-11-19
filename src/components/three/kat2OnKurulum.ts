@@ -59,10 +59,10 @@ export function isitmaDilimi(meshler: readonly number[], bas: number, butce: num
 }
 
 /** Bir alt ağaçtaki mesh sayısı (ısıtma bütçesi için). */
-export function meshSayisi(kok: { traverse: (f: (n: { isMesh?: boolean }) => void) => void }): number {
+export function meshSayisi(kok: { traverse: (f: (n: object) => void) => void }): number {
   let n = 0;
   kok.traverse((o) => {
-    if (o.isMesh) n++;
+    if ((o as { isMesh?: boolean }).isMesh) n++;
   });
   return n;
 }

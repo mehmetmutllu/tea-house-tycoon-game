@@ -1342,6 +1342,9 @@ export const economyConfig = {
    * (kuyrukta). ÖDÜL TASLAK (kapı kapalı): Kat 1 M1 bandı — referans pad'in ~%15'i, 50'ye yuvarlı; Sv
    * ödülleri Sv fiyatı seçilince aynı kuralla yeniden yazılır. D-201: K-Bt2 fiyatlarıyla aynı kuralla yeniden yazıldı.
    * Bekçi `tests/kat2-gorev.test.ts`.
+   * D-206 (B-UCLU, `docs/kat2-carpan-usta-raporu.md`): uzun çok-pad'li görevler bölündü — k2_s2okey1/4 ve tavla
+   * görevleri üçe (k2_tavla3/5 · k2_tavla8/10); ödül aynı kural. En uzun görev 59,6 → ~20 dk. Kayıt kimlikle taşınır
+   * (`kat2Gorev.kat2GorevKaydiCoz`), araya görev eklemek eski kaydı kaydırmaz.
    */
   kat2Gorevler: [
     { id: 'k2_kahve1', kicker: 'İLK KAHVE', title: 'Okey masasına kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 1 }, reward: 1_300 },
@@ -1353,17 +1356,23 @@ export const economyConfig = {
     { id: 'k2_garson2', kicker: 'İKİNCİ GARSON', title: '2. Garsonu tut', hedef: { tip: 'pad', id: 'k2garson2' }, reward: 1_500 },
     { id: 'k2_salon2', kicker: 'OKEY SALONU', title: 'Okey salonunu aç', hedef: { tip: 'pad', id: 'k2salon2' }, reward: 1_500 },
     { id: 'k2_grup5', kicker: 'MİSAFİR', title: '5 misafir grubunu ağırla', hedef: { tip: 'sayac', sayac: 'kalkis', adet: 5 }, reward: 1_500 },
+    { id: 'k2_s2okey1', kicker: 'OKEY SALONU', title: 'Okey salonunda ilk masayı aç', hedef: { tip: 'pad', id: 'k2s2okey1' }, reward: 1_500 },
     { id: 'k2_s2okey2', kicker: 'OKEY SALONU', title: 'Okey salonunda 2 masa aç', hedef: { tip: 'pad', id: 'k2s2okey2' }, reward: 1_600 },
     { id: 'k2_bulasikci', kicker: 'BULAŞIKÇI', title: 'Bulaşıkçı Tut', hedef: { tip: 'pad', id: 'k2bulasikci' }, reward: 850 },
     { id: 'k2_cezve2', kicker: 'İKİNCİ OCAK', title: '2. ocağı kur', hedef: { tip: 'pad', id: 'k2cezve2' }, reward: 1_650 },
     { id: 'k2_kahve40', kicker: 'KAHVECİ', title: '40 kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 40 }, reward: 1_650 },
+    { id: 'k2_s2okey4', kicker: 'OKEY SALONU', title: 'Okey salonunda 4 masa aç', hedef: { tip: 'pad', id: 'k2s2okey4' }, reward: 1_750 },
     { id: 'k2_s2okey6', kicker: 'OKEY SALONU DOLU', title: 'Okey salonunu doldur', hedef: { tip: 'pad', id: 'k2s2okey6' }, reward: 1_900 },
     { id: 'k2_garson3', kicker: 'ÜÇÜNCÜ GARSON', title: '3. Garsonu tut', hedef: { tip: 'pad', id: 'k2garson3' }, reward: 1_950 },
     { id: 'k2_lavabo', kicker: 'LAVABO', title: 'Lavaboyu aç', hedef: { tip: 'pad', id: 'k2lavabo' }, reward: 1_950 },
     { id: 'k2_salon3', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesini aç', hedef: { tip: 'pad', id: 'k2salon3' }, reward: 2_050 },
     { id: 'k2_tavla1', kicker: 'TAVLA', title: 'İlk tavla masasını aç', hedef: { tip: 'pad', id: 'k2tavla1' }, reward: 2_050 },
     { id: 'k2_tavlaKahve', kicker: 'TAVLA', title: 'Tavla masalarına 10 kahve götür', hedef: { tip: 'sayac', sayac: 'tavlaKahve', adet: 10 }, reward: 2_100 },
+    { id: 'k2_tavla3', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 3 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla3' }, reward: 2_100 },
+    { id: 'k2_tavla5', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 5 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla5' }, reward: 2_200 },
     { id: 'k2_tavla6', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 6 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla6' }, reward: 2_250 },
+    { id: 'k2_tavla8', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 8 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla8' }, reward: 2_350 },
+    { id: 'k2_tavla10', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 10 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla10' }, reward: 2_400 },
     { id: 'k2_tavla12', kicker: 'KAT 2 TAMAM', title: 'Tavla köşesini doldur', hedef: { tip: 'pad', id: 'k2tavla12' }, reward: 2_500 },
     { id: 'k2_sv2', kicker: 'MASA SEVİYESİ', title: "Bir okey masasını Seviye 2'ye çıkar", hedef: { tip: 'masaSv', tur: 'okey', sv: 2, adet: 1 }, reward: 1_000 },
     { id: 'k2_sv5', kicker: 'GÖZDE MASA', title: "Bir masayı Seviye 5'e çıkar", hedef: { tip: 'masaSv', sv: 5, adet: 1 }, reward: 1_450 },

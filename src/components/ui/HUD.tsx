@@ -3,10 +3,11 @@ import { useGame, goalMetricsOf, kat2AcilanPad, tableThemeUnlocked, tableSoftMax
 import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } from '../../game/goals';
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
-import { CAM_FOCUS_TTL, adFreeDailyReady, cardQuestIndex, masterAdsLeft, masterCost, toastCizilir, questInTransition, QUEST_COMPLETE_DUR, QUEST_GAP_DUR, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
+import { CAM_FOCUS_TTL, adFreeDailyReady, cardQuestIndex, kat2UstaCarpan, masterAdsLeft, masterCost, toastCizilir, questInTransition, QUEST_COMPLETE_DUR, QUEST_GAP_DUR, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
 import { ogreticiAdimi, ogreticiMetni, yurudu } from '../../game/onboarding';
 import { kat2GorevGorunumu, kat2Gorevleri, type Kat2GorevGorunum } from '../../game/kat2Gorev';
-import type { Kat2Ayar } from '../../game/kat2Dongu';
+import { KAT2_USTA_ONEK, kat2UstaMasalari, kat2UstaUygun, type Kat2Ayar } from '../../game/kat2Dongu';
+import { KAT2_MASALAR } from '../../game/kat';
 import { LAYOUT } from '../../game/layout';
 import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
@@ -1210,7 +1211,11 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
   const izlenebilir = hazir && reklamHakki > 0 && !izleniyor;
   const fiyat = masterCost();
   const yeter = diamonds.toNumber() >= fiyat;
-  const masaNo = Number(id.split(':')[1] ?? 0) + 1;
+  // D-206: Kat 2 masası (`k2:<masaId>`) Kat 2 masa sırasıyla numaralanır; sözü bahşiş değil masa geliri (+%20).
+  const k2 = id.startsWith(KAT2_USTA_ONEK);
+  const masaNo = k2
+    ? KAT2_MASALAR.findIndex((m) => m.id === id.slice(KAT2_USTA_ONEK.length)) + 1
+    : Number(id.split(':')[1] ?? 0) + 1;
   const kat = sayi(economyConfig.master.tipMult);
   return (
     <div className="usta-backdrop" data-testid="master-bar" data-master={id} onClick={onClose}>
@@ -1222,7 +1227,11 @@ function UstaModal({ id, onClose }: { id: string; onClose: () => void }) {
           <GemIcon size={34} />
         </span>
         <span className="usta-head">{t('Masa')} {masaNo} {t('· Usta')}</span>
-        <span className="usta-note">{t('Bu masanın bahşişi kalıcı olarak ×{1} olur', kat)}</span>
+        <span className="usta-note">
+          {k2
+            ? t('Bu masanın geliri kalıcı olarak {1} artar', yuzde(kat2UstaCarpan() - 1))
+            : t('Bu masanın bahşişi kalıcı olarak ×{1} olur', kat)}
+        </span>
         <div className="usta-acts">
           <button
             className={`master-buy${yeter ? '' : ' off'}`}
@@ -1549,11 +1558,15 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
   const toplanabilir = goals.filter((g) => g.state === 'claimable').length;
   const bonus = collectionBonus(goalsClaimed);
   // Usta sayacı: sahip olunan KİMLİK listesinden türer (kayıtta "kaç Usta" alanı yok, D-093).
-  const ustaSahip = mastersOwned.filter((id) => id.startsWith('table:')).length;
-  const ustaBekleyen =
-    tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length - ustaSahip;
-  // Tarama-4 #8: Usta yalnız Kat 1'de (mavi nokta orada) — Kat 2'deyken şerit "yanındaki noktaya git" demesin.
+  // D-206: Kat 2'deyken şerit Kat 2'nin Usta masalarını sayar (nokta orada); Kat 1'de Kat 1'inkileri (Tarama-4 #8).
   const kat2de = useGame((s) => s.kat === 2);
+  const k2Masalar = kat2.padsDone.filter((id) => KAT2_MASALAR.some((m) => m.id === id));
+  const k2Usta = kat2UstaMasalari(mastersOwned);
+  const ustaSahip = kat2de ? k2Usta.length : mastersOwned.filter((id) => id.startsWith('table:')).length;
+  const ustaToplam = kat2de ? k2Masalar.length : tables;
+  const ustaBekleyen = kat2de
+    ? k2Masalar.filter((id) => kat2UstaUygun(kat2.padsDone, kat2.masaSv, id) && !k2Usta.includes(id)).length
+    : tableLevels.slice(0, tables).filter((l) => l >= tableSoftMaxLevel()).length - ustaSahip;
 
   return (
     <Sheet title={t('Hedefler')} testid="goals-panel" onClose={onClose} navda>
@@ -1581,26 +1594,24 @@ function GoalsSheet({ onClose }: { onClose: () => void }) {
       {/* USTA ŞERİDİ (D8 · plan §5 "Hedefler panelinden de toplu erişilir: Usta masalar 7/20").
           Burada SATIN ALINMAZ — alım mekânsaldır (masanın yanındaki 💎 noktası). Bu şerit
           koleksiyonun sayacıdır: kaç masa Usta oldu, kaçı sırada bekliyor, elmas yetiyor mu. */}
-      {!kat2de && (
-        <div className="usta-strip" data-testid="usta-strip">
-          <span className="usta-count">
-            <b data-testid="usta-owned">{ustaSahip}</b>
-            <i>/{tables}</i>
-          </span>
-          <span className="usta-body">
-            <b>{t('Usta masalar')}</b>
-            <small>
-              {ustaBekleyen > 0
-                ? t('{1} masa hazır — yanındaki mavi noktaya git', ustaBekleyen)
-                : t('Masayı para tavanına çıkarınca Usta noktası açılır')}
-            </small>
-          </span>
-          <span className="usta-price" data-testid="usta-price">
-            <GemIcon size={14} />
-            {masterCost()}
-          </span>
-        </div>
-      )}
+      <div className="usta-strip" data-testid="usta-strip">
+        <span className="usta-count">
+          <b data-testid="usta-owned">{ustaSahip}</b>
+          <i>/{ustaToplam}</i>
+        </span>
+        <span className="usta-body">
+          <b>{t('Usta masalar')}</b>
+          <small>
+            {ustaBekleyen > 0
+              ? t('{1} masa hazır — yanındaki mavi noktaya git', ustaBekleyen)
+              : t('Masayı para tavanına çıkarınca Usta noktası açılır')}
+          </small>
+        </span>
+        <span className="usta-price" data-testid="usta-price">
+          <GemIcon size={14} />
+          {masterCost()}
+        </span>
+      </div>
 
       <div className="sheet-sec">
         {t('KATEGORİLER')}{toplanabilir > 0 ? ` ${t('· {1} ÖDÜL HAZIR', toplanabilir)}` : ''}

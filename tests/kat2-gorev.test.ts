@@ -46,10 +46,11 @@ describe('Kat 2 görev hattı — config bekçisi', () => {
     expect(kat2GorevHatasi(G, AYAR_SV, HAZIR)).toBeNull();
   });
   // D-201: Kat 1 gibi garson/bulaşıkçı pad'lerinin kendi görevi (+4) → üst sınır 22.
-  it('15-22 görev (Sv hariç), Sv görevleri yalnız masaSv varken', () => {
+  it('15-28 görev (Sv hariç), Sv görevleri yalnız masaSv varken', () => {
     const svsiz = kat2Gorevleri(G, AYAR);
     expect(svsiz.length).toBeGreaterThanOrEqual(15);
-    expect(svsiz.length).toBeLessThanOrEqual(22);
+    // D-206 B-UCLU: uzun görevler bölündü (21 → 27).
+    expect(svsiz.length).toBeLessThanOrEqual(28);
     expect(svsiz.some((g) => g.hedef.tip === 'masaSv')).toBe(false);
     expect(kat2Gorevleri(G, AYAR_SV).length).toBe(G.length);
     // Config bugün masaSv taşımıyorsa oynanan hat Sv'siz (sözleşme: kapı ölçümden sonra).
@@ -201,9 +202,10 @@ describe('kat2GorevHizala (yükleme, ödülsüz)', () => {
 
 describe('kat2GorevGorunumu (HUD şeridi)', () => {
   it('pad görevi aradaki zincir pad\'lerini adım sayar', () => {
-    const i = G.findIndex((g) => g.id === 'k2_s2okey2');
-    const v = kat2GorevGorunumu({ padsDone: kadar('k2s2okey1'), gorev: { idx: i, sayac: {} } }, G, AYAR);
-    expect(v).toMatchObject({ id: 'k2_s2okey2', cur: 1, total: 2, reward: G[i].reward });
+    // D-206: k2_s2okey2 artık tek adım (k2_s2okey1 ayrı görev) — çok adımlı örnek k2_s2okey6 (s2okey5 + s2okey6).
+    const i = G.findIndex((g) => g.id === 'k2_s2okey6');
+    const v = kat2GorevGorunumu({ padsDone: kadar('k2s2okey5'), gorev: { idx: i, sayac: {} } }, G, AYAR);
+    expect(v).toMatchObject({ id: 'k2_s2okey6', cur: 1, total: 2, reward: G[i].reward });
   });
   it('tek adımlı pad görevi çubuksuz · sayaç görevi cur/total', () => {
     expect(kat2GorevGorunumu({ padsDone: [...HAZIR], gorev: { idx: 1, sayac: {} } }, G, AYAR)).toMatchObject({ cur: null, total: null });

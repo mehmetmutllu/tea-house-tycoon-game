@@ -790,6 +790,12 @@ function TableMasterSpots() {
   const kuruldu = useRef(false);
   useFrame((_, dt) => {
     const g = useGame.getState();
+    // D-206: Kat 2'de Usta noktalarını `kat2/SvIsaret.Kat2UstaIsaretleri` sürer — Kat 1 noktaları Kat 2 koordinatıyla
+    // ölçülmesin (iki yazar `dwellState`/`nearMaster`ı ezerdi). Gizlenirken kendi açtığını bırakır.
+    if (g.kat !== 1) {
+      if (son.current != null) { son.current = null; setNearMaster(null); }
+      return;
+    }
     const p = g.player;
 
     // G-14 ② — MODAL YAKLAŞINCA DEĞİL, DURUNCA AÇILIR (kullanıcı 2026-09-09).

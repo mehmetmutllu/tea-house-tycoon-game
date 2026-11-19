@@ -146,6 +146,31 @@ Birleşik etki ölçülmedi: Kat 2 ~7,9 → ~7,3 sa civarı beklenir. Final tam 
 
 ## Karar
 
+**D-206 (kullanıcı 2026-11-19): K2-CARPAN + U-ESIT + B-UCLU.** Commit #2'de uygulandı (notlar `docs/kat2-carpan-usta-uygulama-notlar.md`).
+
+Final tam koşu `docs/olcum-kat2-carpan-usta-final.txt` (`FINAL=1 OLCUM=tam`: emülasyon kapalı, Usta `buyMaster('k2:…')` ile; damgalar temiz):
+
+| | U0 | U20 |
+|---|---|---|
+| Kat 2 biter (sa) | **7,40** (TABAN 7,91 → −%6,5) | **7,74** (8,34 → −%7,2) |
+| Görev hattı biter (sa) | 4,66 | 4,92 |
+| Kat 2 coin/dk | 1.520 | 1.517 |
+| Usta (💎 harcanan) | 6 (150) | 4 (100) |
+| En uzun görev (dk) | 19,3 | 19,8 |
+| Görev ödülü toplamı | 49.200 | 49.200 |
+| Kat 1 arka plan coin/dk | 820 | 717 |
+
+- **Kod = emülasyon:** FINAL parmak izi src değişmeden önce aynı araçla ölçülen birleşik emülasyon kolu `A+U-ESIT+B-UCLU` ile birebir (`8f5788f8` / `ad92f37d`; `docs/olcum-kat2-carpan-usta-emu-birlesik.txt`).
+- Birleşik etki rapordaki "≈ −7–8" beklentisinin içinde. **U20'de −%7,2, D-150'nin %7 eşiğinin biraz üstünde** — kullanıcıya not.
+- **Çevrimdışı:** `kat2Oran` koleksiyon çarpanını görüyor, Usta'yı görmüyor. Sebep: Kat 1'in çevrimdışı oranı da Usta'yı görmüyor (`cevrimdisiGelir` tipTotal'ı Usta'sız kuruyor), aynı kural uygulandı (plan 3. maddeden sapma). Tavan bağladığı için ödenen 1 sa tutarı her durumda 19.205.
+- **Kayıt:** saveVersion artmadı. `mastersOwned` `k2:` kimliğiyle additive. Görev kaydı diske `son` (son tamamlanan görevin kimliği) ile yazılıyor. `son` alanı olmayan D-205 kaydı sabit D-205 sırasıyla yeni hatta oturuyor.
+
+**ChatGPT turuna (yeni metinler, TR → EN taslak):**
+- Okey salonunda ilk masayı aç → Unlock the first table in the Okey room
+- Okey salonunda 4 masa aç → Unlock 4 tables in the Okey room
+- Tavla köşesinde 3 / 5 / 8 / 10 masaya ulaş → Reach 3 / 5 / 8 / 10 tables in the backgammon corner
+- Bu masanın geliri kalıcı olarak {1} artar (Usta modalı, Kat 2) → This table's income goes up {1} for good
+
 ## Uygulama planı (commit #2 — seçilen kola göre)
 
 1. **`src/game/kat2Dongu.ts`**

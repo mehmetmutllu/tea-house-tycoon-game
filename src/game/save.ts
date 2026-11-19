@@ -14,6 +14,8 @@ import { D } from './decimal';
 import { kaliciOku, kaliciSil, kaliciYaz, kaliciYerelOku } from './kalicilik';
 import { KAT2_SV_MAX, defaultKat2, defaultKat2Gorev, type Kat2Kayit } from './kat';
 import { bosKasaOlcum, type KasaOlcum } from './kasa';
+import { kat2GorevKaydiCoz, kat2Gorevleri, type Kat2GorevDef } from './kat2Gorev';
+import type { Kat2Ayar } from './kat2Dongu';
 
 /**
  * KAYIT ŞEMASI SÜRÜMÜ. Bir denge sayısı değil, bu dosyanın kendi kavramı — bu yüzden
@@ -590,7 +592,11 @@ function kat2YukKaydi(v: unknown): NonNullable<Kat2Kayit['yuk']> {
 function kat2GorevKaydi(v: unknown): NonNullable<Kat2Kayit['gorev']> {
   if (!v || typeof v !== 'object' || Array.isArray(v)) return defaultKat2Gorev();
   const g = v as Record<string, unknown>;
-  return { idx: Math.floor(negatifsiz(g.idx)), sayac: sozluk(g.sayac, negatifsizSayiMi) };
+  // D-206: kayıt kimlikle bugünkü hatta oturur (`son` yoksa D-205 sırası) — araya görev eklemek kaydı kaydırmaz.
+  return kat2GorevKaydiCoz(
+    { idx: Math.floor(negatifsiz(g.idx)), sayac: sozluk(g.sayac, negatifsizSayiMi), son: typeof g.son === 'string' ? g.son : undefined },
+    kat2Gorevleri(C.kat2Gorevler as readonly Kat2GorevDef[], C.kat2 as unknown as Kat2Ayar),
+  );
 }
 
 /**

@@ -5336,3 +5336,11 @@ Tarama README #5-6, kullanıcı öneriyi seçti. Rapor `docs/golge-raporu-s4.md`
 - Kat 2, merdiven tamirliyken (`kat2.acik`) Kat 1'de boşta kademeli kurulur + 1×1 makasla ısıtılır, sonra `Activity hidden`.
   İlk giriş en uzun kare dolu Kat 2 ~870 → ~690 ms, yeni tamirde ~320 → ~110 ms; Kat 1'de bir kez ~150-200 ms. Kalan: `kat2/Esya.tsx` seçicileri.
 - Bekçiler `tests/golge-s4.test.ts` (mutasyon 4/4) · `tests/kat2-onkurulum.test.ts` (mutasyon 5/5).
+
+## D-206 · Kat 2 = Kat 1: hedef çarpanı + Usta (+%20) Kat 2'de · uzun görevler üçe bölündü (2026-11-19)
+Kullanıcı: *"genel olarak geliri etkileyen bir özellik olarak tanıtmış oluyoruz"* · *"ne varsa 2'de de olsun"*. Rapor `docs/kat2-carpan-usta-raporu.md`.
+- `collectionMult` Kat 2 yığınına biner (kalkış + kahve + lavabo; görev ödülü hariç), arka planda ve çevrimdışı `kat2Oran`da da.
+- Usta Kat 2: Sv5 masa 25 💎 / reklam hakkı → yığın +%20 (U-ESIT, Kat 1 Usta yüzdesi config'ten türer; lavaboya binmez). Kimlik `k2:<masaId>`
+  `mastersOwned`'da; saveVersion artmadı. Nokta Sv tetiğinin yerini devralır (Kat 1 D8 deseni). Çevrimdışı Usta'yı görmez (Kat 1 kuralı).
+- Görev bölme B-UCLU: 6 ara görev, en uzun görev 59,6 → 19,8 dk. Görev kaydına son biten kimlik (`son`) yazılır; eski kayıt eski sırayla yerleşir.
+- Final (tam): Kat 2 7,91 → 7,40 sa (U0, −%6,5) · 8,34 → 7,74 sa (U20, −%7,2). Bekçi `tests/kat2-carpan-usta.test.ts`, mutasyon 6/6.

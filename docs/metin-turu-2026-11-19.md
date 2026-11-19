@@ -22,3 +22,8 @@ ChatGPT sohbeti "Mikrometin önerileri" (2026-11-19). Uygulanan (TR anahtar → 
 | 21 | MEKÂN · Mekân · Tanınan/Büyüyen Mekân | **VENUE · Venue · Well-Known Venue · Growing Venue** |
 
 Play Console tarafı elle: `docs/play/basarim-duzeltme-2026-11-19.txt`.
+
+## Ek tur (D-206 metinleri) — ChatGPT "aynen kalsın" (hepsi)
+Okey salonunda ilk masayı aç / Unlock the first table in the Okey room · Okey salonunda 4 masa aç / Unlock 4 tables in the Okey room ·
+Tavla köşesinde 3·5·8·10 masaya ulaş / Reach 3·5·8·10 tables in the backgammon corner · Usta modalı "Bu masanın geliri kalıcı olarak {1}
+artar" / "This table's income goes up {1} for good".

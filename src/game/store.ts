@@ -134,6 +134,7 @@ import {
   tableSoftMaxLevel,
   masterUnlockedForTable,
   masterCost,
+  kat2UstaCarpan,
   masterAdsLeft,
   spendMasterAd,
   videoRights,
@@ -200,8 +201,8 @@ import { createTickCtx, runTick, BOS_LEGEN, type Legen } from './tick';
 import { GECIS_SN, KAT2_MASALAR, KAT2_SV_MAX, MERDIVEN_PAD, MERDIVEN_PAD_YER, VARIS, baslangicKati, defaultKat2, kat2AcikAlan, kat2Adim, kat2Engeller, kat2Etkin, kat2HazirEkle, merdivenPadAcik, merdivenTetik, type Kat2Kayit, type KatGecis, type KatNo, OCAKLAR } from './kat';
 import { inFrame, padCercevesi } from './markerFrame';
 import { attractRadiusFor, economyConfig, playerSpeedFor } from '../config/economy.config';
-import { kat2EtkinAyar, kat2LavaboTetik, kat2OcakTetik, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2SvTetikleri, kat2TepsiBosalt, kat2TepsiDolu, kat2Tick, kat2YukSiradaki, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Cikti, type Kat2Dunya } from './kat2Dongu';
-import { kat2Gorevleri, kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
+import { kat2EtkinAyar, kat2UstaMasalari, kat2UstaUygun, kat2LavaboTetik, kat2OcakTetik, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, kat2SvTetikleri, kat2TepsiBosalt, kat2TepsiDolu, kat2Tick, kat2YukSiradaki, masaSvOku, yeniKat2Dunya, type Kat2Ayar, type Kat2Cikti, type Kat2Dunya } from './kat2Dongu';
+import { kat2Gorevleri, kat2GorevKaydiYaz, kat2GorevHizala, kat2GorevIlerlet, kat2SvCanli, type Kat2GorevOlay } from './kat2Gorev';
 import { bosKasaOlcum, kasaSiniriOlcumden, type KasaOlcum } from './kasa';
 import { t } from '../i18n';
 
@@ -306,6 +307,8 @@ export function kayitVerisi(s: GameState): SaveData {
       padsDone: [...s.kat2.padsDone],
       masaSv: { ...s.kat2.masaSv },
       yuk: { ...s.kat2.yuk },
+      // D-206: görev kaydı son tamamlanan görevin KİMLİĞİYLE gider (araya görev girse de kaymaz).
+      ...(s.kat2.gorev ? { gorev: kat2GorevKaydiYaz(s.kat2.gorev, kat2Gorevleri(C.kat2Gorevler, KAT2_AYAR)) } : {}),
       // Kayıt #2 (G-78'in Kat 2 karşılığı): kısmi ödenmiş pad / Sv / ocak / lavabo dolumu da gider.
       padFill: { ...s.kat2Dunya.padFill },
     },
@@ -752,7 +755,8 @@ function cevrimdisiGelir(
   for (let i = 0; i < s.tables; i++) tipTotal += C.tables.tipBase * (s.tableLevels[i] ?? 0);
   const rate = incomeRate(s.tables, s.stationLevels[THE_SERVICE], tipTotal, s.lavaboLevel, collectionMult(s.goalsClaimed));
   // D-185: Kat 2 açıksa onun payı da sayılır, tavan Kat 1 bitmişse Kat 2'nin sıradaki pad'ine bakar.
-  const kat2 = { acik: s.kat2.acik && kat2Etkin(), padsDone: s.kat2.padsDone, masaSv: s.kat2.masaSv, yuk: s.kat2.yuk };
+  // D-206: Kat 2 oranı da koleksiyon çarpanını görür (Usta'yı görmez — Kat 1 oranı da görmüyor).
+  const kat2 = { acik: s.kat2.acik && kat2Etkin(), padsDone: s.kat2.padsDone, masaSv: s.kat2.masaSv, yuk: s.kat2.yuk, mult: collectionMult(s.goalsClaimed) };
   // F3b (D-150): "İzle"nin eki aynı oran ve aynı tavanla hesaplanır; 0 ise ekranda düğme yok.
   return { ...offlineEarnedSplit(rate, elapsed, s.padsDone, kat2), izleEki: offlineWatchExtra(rate, elapsed, s.padsDone, kat2) };
 }
@@ -785,9 +789,17 @@ function cevrimdisiDagit(
  */
 const izKaydir = (iz: readonly number[], odul: number): number[] => iz.map((v) => v + odul);
 
-/** Usta'nın 💎'dan bağımsız iki şartı: alınmamış olmalı ve masa ₺ tavanında olmalı (D-093). */
-function ustaAcilabilir(s: { mastersOwned?: string[]; tables: number; tableLevels: number[] }, id: string): boolean {
+/** D-206: `kat2Tick`in gelir girdisi — koleksiyon çarpanı (Kat 1 `incomeMult`) + Usta masaları (kimlikten türer). */
+function kat2GelirGirdisi(gelirCarpan: number, mastersOwned: readonly string[] | undefined) {
+  const ustaMasalar = kat2UstaMasalari(mastersOwned ?? []);
+  return { gelirCarpan, ustaMasalar, ustaCarpan: ustaMasalar.length ? kat2UstaCarpan() : 1 };
+}
+
+/** Usta'nın 💎'dan bağımsız iki şartı: alınmamış olmalı ve masa ₺ tavanında olmalı (D-093).
+ *  D-206: Kat 2 kimliği `k2:<masaId>` — masa açık ve Sv tavanında (`kat2UstaUygun`). */
+function ustaAcilabilir(s: { mastersOwned?: string[]; tables: number; tableLevels: number[]; kat2: Kat2Kayit }, id: string): boolean {
   if ((s.mastersOwned ?? []).includes(id)) return false;
+  if (id.startsWith('k2:')) return s.kat2.acik && kat2UstaUygun(s.kat2.padsDone, s.kat2.masaSv, id.slice('k2:'.length));
   const masaIdx = id.startsWith('table:') ? Number(id.slice('table:'.length)) : -1;
   if (!Number.isInteger(masaIdx) || masaIdx < 0 || masaIdx >= s.tables) return false;
   return masterUnlockedForTable(s.tableLevels[masaIdx] ?? 0);
@@ -1216,6 +1228,7 @@ export const useGame = create<GameState>((set, get) => ({
           svCanli: kat2SvCanli(kat2, C.kat2Gorevler, KAT2_AYAR),
           yuk: kat2.yuk,
           digerTepsi: c.tray + c.trayFood + c.carriedDirty + c.carriedDirtyFood,
+          ...kat2GelirGirdisi(c.incomeMult, s.mastersOwned),
         },
         dt,
         kat2EtkinAyar(KAT2_AYAR, kat2.yuk),
@@ -1248,7 +1261,8 @@ export const useGame = create<GameState>((set, get) => ({
       const r = kat2Tick(
         kat2Dunya,
         { x: KAT2_DISI[0], z: KAT2_DISI[1], durdu: true, cuzdan: 0, padsDone: kat2.padsDone,
-          tepsiKap: trayCapacityFor(s.charUpgrades.tray), miknatis: attractRadiusFor(s.charUpgrades.magnet), masaSv: kat2.masaSv },
+          tepsiKap: trayCapacityFor(s.charUpgrades.tray), miknatis: attractRadiusFor(s.charUpgrades.magnet), masaSv: kat2.masaSv,
+          ...kat2GelirGirdisi(c.incomeMult, s.mastersOwned) },
         dt,
         kat2EtkinAyar(KAT2_AYAR, kat2.yuk),
       );

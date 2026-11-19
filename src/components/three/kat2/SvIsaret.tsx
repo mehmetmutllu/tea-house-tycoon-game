@@ -7,12 +7,16 @@
  * `inFrame` ile test eder; burada `MASA_ISARET_R` + ok, `markerFrame(etiket)` aynı kutuyu çizer.
  * `ayar.masaSv` yoksa liste boş: işaret çizilmez, Kat 2 bugünkü görünüş.
  */
+import { useMemo, useRef } from 'react';
+import { useFrame } from '@react-three/fiber';
 import { useGame } from '../../../game/store';
 import { economyConfig } from '../../../config/economy.config';
 import { fmt } from '../../../game/decimal';
-import { kat2LavaboTetik, kat2OcakTetik, kat2SvCanliTetik, type Kat2Ayar, type Kat2SvTetik } from '../../../game/kat2Dongu';
+import { kat2LavaboTetik, kat2OcakTetik, kat2SvCanliTetik, kat2UstaNoktalari, type Kat2Ayar, type Kat2SvTetik } from '../../../game/kat2Dongu';
 import { kat2SvCanli } from '../../../game/kat2Gorev';
-import { ETIKET_SERVIS, ISARET_R, MASA_ISARET_R } from '../../../game/markerFrame';
+import { dwellState, ustaKaresi } from '../../../game/dwell';
+import { masterCost } from '../../../game/rules';
+import { ETIKET_SERVIS, ETIKET_USTA, ISARET_R, MASA_ISARET_R } from '../../../game/markerFrame';
 import { GroundMarker } from '../GroundMarker';
 import { useMasaSvleri } from './masaSv';
 
@@ -129,6 +133,66 @@ export function Kat2SvIsaretleri() {
     <>
       {tetikler.map((t) => (
         <SvIsareti key={`${t.id}:${t.sv}`} t={t} />
+      ))}
+    </>
+  );
+}
+
+/** Bu hızın altı "duruyor" sayılır (br/sn) — Kat 1 `Scene.TableMasterSpots` ile aynı. */
+const DURMA_HIZI = 0.35;
+
+/**
+ * D-206 KAT 2 USTA NOKTALARI — Kat 1 `Scene.TableMasterSpots`un birebir uyarlaması: Sv tavanındaki (Sv5) masanın
+ * Sv noktası kaybolur, aynı yerde 💎 kimliğiyle Usta noktası doğar (D8). Satın alma dwell'le OLMAZ: nokta yalnız
+ * yakınlık + bekleme bildirir, modalı HUD açar (`UstaModal`). Tetik kenar-kurulumlu (G-79 ②) ve çizilen çerçeve (K4).
+ * Usta alınan masanın noktası düşer; Kat 1'de de Usta masasının ayrı bir işareti yok.
+ */
+export function Kat2UstaIsaretleri() {
+  const padsDone = useGame((s) => s.kat2.padsDone);
+  const masaSv = useMasaSvleri();
+  const mastersOwned = useGame((s) => s.mastersOwned);
+  const yeter = useGame((s) => s.diamonds.toNumber() >= masterCost());
+  const setNearMaster = useGame((s) => s.setNearMaster);
+  const noktalar = useMemo(() => kat2UstaNoktalari(padsDone, masaSv, mastersOwned), [padsDone, masaSv, mastersOwned]);
+  const adaylar = useMemo(() => noktalar.map((n) => ({ id: n.id, pos: [n.x, 0, n.z] as [number, number, number] })), [noktalar]);
+
+  const son = useRef<string | null>(null);
+  const oncekiPos = useRef<[number, number]>([0, 0]);
+  const kuruldu = useRef(false);
+  useFrame((_, dt) => {
+    const g = useGame.getState();
+    if (g.kat !== 2) return;
+    const p = g.player;
+    const hiz = Math.hypot(p[0] - oncekiPos.current[0], p[2] - oncekiPos.current[1]) / Math.max(dt, 1e-4);
+    oncekiPos.current = [p[0], p[2]];
+    if (hiz >= DURMA_HIZI) kuruldu.current = true;
+    const duruyor = kuruldu.current && hiz < DURMA_HIZI;
+    const k = ustaKaresi(adaylar, p[0], p[2], duruyor, dt, { p: dwellState.p, kapali: g.ustaKapali });
+    dwellState.p = k.p;
+    dwellState.id = k.id;
+    if (k.kapali !== g.ustaKapali) useGame.setState({ ustaKapali: k.kapali });
+    if (k.acik !== son.current) {
+      son.current = k.acik;
+      setNearMaster(k.acik);
+    }
+  });
+
+  const fiyat = masterCost();
+  return (
+    <>
+      {adaylar.map((a) => (
+        <GroundMarker
+          key={a.id}
+          pos={a.pos}
+          label={ETIKET_USTA}
+          arrow
+          sub={String(fiyat)}
+          pip="gem"
+          tint="#4fc3f7"
+          dwellId={a.id}
+          radius={MASA_ISARET_R}
+          afford={yeter}
+        />
       ))}
     </>
   );

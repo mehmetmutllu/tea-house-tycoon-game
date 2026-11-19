@@ -43,7 +43,7 @@ import {
   type Kat2MasaYeri,
   type MasaTuru,
 } from './kat';
-import { inFrame, masaCercevesi, masaEtiketi, padCercevesi, servisCercevesi } from './markerFrame';
+import { inFrame, masaCercevesi, masaEtiketi, padCercevesi, servisCercevesi, ustaCercevesi } from './markerFrame';
 import { t } from '../i18n';
 import { yikamayaGit } from './rules';
 
@@ -377,6 +377,15 @@ export interface Kat2Girdi {
   svCanli?: boolean;
   /** D-200: yükseltme alım sayıları (ocak tetiği için; etkisi çağıranın `kat2EtkinAyar`ıyla). */
   yuk?: Partial<Kat2YukSeviye>;
+  /**
+   * D-206 (K2-CARPAN): hedef koleksiyon çarpanı (`goals.collectionMult`) — Kat 2'de düşen HER yığına (masa ücreti,
+   * kahve, lavabo) yaratıldığı yerde biner; Kat 1 `tick.ts` `incomeMult` deseni. Görev ödülüne binmez. Yok = 1.
+   */
+  gelirCarpan?: number;
+  /** D-206 (U-ESIT): Usta olan Kat 2 masaları (`mastersOwned`daki `k2:` kimliklerinin masa id'leri). Yok = hiçbiri. */
+  ustaMasalar?: readonly string[];
+  /** D-206: Usta masanın yığın çarpanı (`rules.kat2UstaCarpan()`; lavaboya binmez). Yok = 1. */
+  ustaCarpan?: number;
 }
 
 export interface Kat2Cikti {
@@ -529,11 +538,13 @@ export function kat2SiradakiPad(ayar: Kat2Ayar, padsDone: readonly string[]) {
  * Teslim edilen kahvenin parası. D-198 `kahveAninda`: masanın önündeki yığına hemen düşer (aynı yerde
  * toplanmamış yığın varsa ona eklenir — yığınlar üst üste binmesin); yoksa kalkış yığınına birikir.
  */
-function kahveOde(d: Kat2Dunya, m: OkeyMasa, yer: Kat2MasaYeri, miktar: number, ayar: Kat2Ayar, olay: Kat2Cikti['olay']): void {
+function kahveOde(d: Kat2Dunya, m: OkeyMasa, yer: Kat2MasaYeri, ham: number, ayar: Kat2Ayar, olay: Kat2Cikti['olay'], gelirK: number, ustaK: number): void {
   if (!ayar.kahveAninda) {
-    m.birikim += miktar;
+    // Birikim ham kalır; D-206 çarpanları kalkış yığınında bir kez biner.
+    m.birikim += ham;
     return;
   }
+  const miktar = ham * gelirK * ustaK;
   yiginaEkle(d, ...paraDusmeYeri(yer), miktar);
   olay.dusen.push(miktar);
 }
@@ -571,12 +582,13 @@ export function yeniKat2Dunya(padsDone: readonly string[], ayar: Kat2Ayar): Kat2
  * D-192: kalkan grubun `kisi` kişisinden uğrayan payı birikir; tam kişi olunca lavabonun önündeki TEK
  * yığına ücret eklenir (yığın yoksa açılır). Pad'in yeri açılınca boşalır, yığın oraya düşer.
  */
-function lavaboyaUgra(d: Kat2Dunya, kisi: number, l: { ugrama: number; ucret: number }, olay: Kat2Cikti['olay']): void {
+function lavaboyaUgra(d: Kat2Dunya, kisi: number, l: { ugrama: number; ucret: number }, olay: Kat2Cikti['olay'], gelirK: number): void {
   const sayac = (d.lavaboSayac ?? 0) + kisi * l.ugrama;
   const n = Math.floor(sayac + 1e-9);
   d.lavaboSayac = sayac - n;
   if (n <= 0) return;
-  const miktar = n * l.ucret;
+  // D-206: koleksiyon çarpanı lavaboya da biner (Kat 1 lavabo ücreti deseni); Usta binmez.
+  const miktar = n * l.ucret * gelirK;
   yiginaEkle(d, KAT2_LAVABO_YER[0], KAT2_LAVABO_YER[1], miktar);
   olay.lavabo += miktar;
 }
@@ -654,6 +666,47 @@ export function kat2SvTetikleri(ayar: Kat2Ayar, padsDone: readonly string[], mas
       d: 2 * c.hh,
       etiket: masaEtiketi(sv - 1),
     });
+  }
+  return out;
+}
+
+/** D-206: Kat 2 Usta kimliği `mastersOwned` içinde `'k2:<masaId>'` (Kat 1 `table:<i>` yanında; additive). */
+export const KAT2_USTA_ONEK = 'k2:';
+export const kat2UstaId = (masaId: string): string => KAT2_USTA_ONEK + masaId;
+/** `mastersOwned`dan Usta olan Kat 2 masaları (kimlikten TÜRER — D-093 deseni). */
+export const kat2UstaMasalari = (mastersOwned: readonly string[]): string[] =>
+  mastersOwned.filter((id) => id.startsWith(KAT2_USTA_ONEK)).map((id) => id.slice(KAT2_USTA_ONEK.length));
+
+/** D-206: Kat 2 masası Usta olabilir mi — açık ve Sv tavanında (Kat 1 "₺ tavanında" şartının karşılığı). */
+export function kat2UstaUygun(padsDone: readonly string[], masaSv: Readonly<Record<string, number>> | undefined, masaId: string): boolean {
+  return MASA_YERI.has(masaId) && padsDone.includes(masaId) && masaSvOku(masaSv, masaId) >= KAT2_SV_MAX;
+}
+
+export interface Kat2UstaNokta {
+  /** `'k2:' + masaId` — Usta kimliği (modal ve `buyMaster` bunu taşır). */
+  id: string;
+  masaId: string;
+  x: number;
+  z: number;
+}
+
+/**
+ * D-206 USTA NOKTALARI — Kat 1 D8 deseni: Sv tavanında masa noktası kaybolmaz, AYNI YERDE 💎 kimliğiyle devralır.
+ * Yer kuralı Sv tetiğinin (`kat2SvTetikleri`) aynısı, çerçeve Kat 1 Usta çerçevesi (`ustaCercevesi`): masanın uzak
+ * yanında, ayak izine `SV_BOSLUK`. Usta alınmış masa listeden düşer (Kat 1'de de nokta kaybolur, başka işaret yok).
+ */
+export function kat2UstaNoktalari(
+  padsDone: readonly string[],
+  masaSv: Readonly<Record<string, number>> | undefined,
+  mastersOwned: readonly string[],
+): Kat2UstaNokta[] {
+  const c = ustaCercevesi();
+  const out: Kat2UstaNokta[] = [];
+  for (const m of KAT2_MASALAR) {
+    if (!kat2UstaUygun(padsDone, masaSv, m.id) || mastersOwned.includes(kat2UstaId(m.id))) continue;
+    const yari = m.tur === 'tavla' ? TAVLA_YARI[0] : OKEY_YARI;
+    const s = m.x < 0 ? -1 : 1;
+    out.push({ id: kat2UstaId(m.id), masaId: m.id, x: m.x + s * (yari + SV_BOSLUK + c.hw), z: m.z });
   }
   return out;
 }
@@ -897,6 +950,9 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
   };
   let kazanc = 0;
   let harcama = 0;
+  // D-206: gelir çarpanları (yok = 1 → taban birebir).
+  const gelirK = g.gelirCarpan ?? 1;
+  const ustaK = (id: string): number => (g.ustaMasalar?.includes(id) ? g.ustaCarpan ?? 1 : 1);
   // Adımın başındaki açık ocaklar (bu adımda biten ocak pad'i bir sonraki adımda pişirmeye başlar).
   const acikOcak = OCAKLAR.map((o) => padsDone.includes(o.id));
   const ocak = acikOcak.some(Boolean);
@@ -1077,7 +1133,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
           const n = Math.min(d.tepsi, m.istek);
           d.tepsi -= n;
           m.istek -= n;
-          kahveOde(d, m, yer, n * kahveFiyat, ayar, olay);
+          kahveOde(d, m, yer, n * kahveFiyat, ayar, olay, gelirK, ustaK(m.id));
           if (b) fincanBirak(m, n);
           olay.servis += n;
           if (tavla) olay.tavlaServis += n;
@@ -1090,7 +1146,7 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
             const n = Math.min(gs.tepsi, m.istek);
             gs.tepsi -= n;
             m.istek -= n;
-            kahveOde(d, m, yer, n * kahveFiyat, ayar, olay);
+            kahveOde(d, m, yer, n * kahveFiyat, ayar, olay, gelirK, ustaK(m.id));
             if (b) {
               fincanBirak(m, n);
               if (b.teslimdeAl && ayar.garson) {
@@ -1130,12 +1186,12 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
       // Oyun bitti: ücret + kahve parası tek yığın, masa boşalır, yeni grup gelir.
       olay.kacan += m.istek;
       if (tavla) olay.tavlaKacan += m.istek;
-      const miktar = a.masaUcreti * svCarpan(kol?.ucretCarpan, sv) + m.birikim;
+      const miktar = (a.masaUcreti * svCarpan(kol?.ucretCarpan, sv) + m.birikim) * gelirK * ustaK(m.id);
       yiginaEkle(d, ...paraDusmeYeri(yer), miktar);
       olay.dusen.push(miktar);
       olay.kalkan.push(m.id);
       olay.kalkis += 1;
-      if (ayar.lavabo && padsDone.includes(KAT2_LAVABO_PAD)) lavaboyaUgra(d, KAT2_KISI[m.tur], ayar.lavabo, olay);
+      if (ayar.lavabo && padsDone.includes(KAT2_LAVABO_PAD)) lavaboyaUgra(d, KAT2_KISI[m.tur], ayar.lavabo, olay, gelirK);
       m.durum = 'bos';
       m.t += ayar.gelisAralik * svCarpan(kol?.gelisAralikCarpan, sv);
       m.istek = 0;

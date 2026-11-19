@@ -35,7 +35,7 @@ import { useGame } from '../../game/store';
 import { Dogus, OkeyMasa, SvSekme, TavlaMasa } from './kat2/Esya';
 import { KahveSeti, KahveUsta, Kat2Mutfak } from './kat2/Mutfak';
 import { FRONT_TOP_Y, kat2MutfakSeviyesi } from './kitchenLook';
-import { Kat2LavaboIsareti, Kat2OcakIsareti, Kat2SvIsaretleri } from './kat2/SvIsaret';
+import { Kat2LavaboIsareti, Kat2OcakIsareti, Kat2SvIsaretleri, Kat2UstaIsaretleri } from './kat2/SvIsaret';
 import { Kat2Bulasikci, MasaBulasiklari, YikamaYeri } from './kat2/Bulasik';
 import { useMasaSvleri } from './kat2/masaSv';
 import { KademeliOge } from './kat2/kademeliMontaj';
@@ -515,6 +515,7 @@ export function Kat2Sahne() {
           <ParaYiginlari />
           <Kat2PadIsareti />
           <Kat2SvIsaretleri />
+          <Kat2UstaIsaretleri />
           <Kat2OcakIsareti />
           <Kat2LavaboIsareti />
         </KademeliOge>

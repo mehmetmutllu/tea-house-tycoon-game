@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-19 — oturum kapandı · D-203 tarama + D-204 + D-205 kodda · deneme APK `TeaHouse-deneme-tam-2026-11-19.apk` masaüstünde · sıradaki: kullanıcının KOMPLE testi + aşağıdaki açık sorular)
+## ŞU AN (2026-11-19 gece — Kat 2 sprint S4 bitti · D-206 · D-207 · D-208 · sıradaki: yeni deneme APK + kullanıcının komple testi)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -32,18 +32,22 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   analitik. **Kural: Kat 2 = Kat 1 uyarlaması, seçenek sorulmaz** (hafıza feedback_kat2_kat1_uyarla).
 - Dev: `__kat2Sv(id, sv)` · `__game().kat2.{masaSv,gorev}` · Kat 2 karesi `__sinema({pos,bak,fov})` (`__devCam`/`__teleport` Kat 2'de etkisiz).
 
-## ⏭️ SIRADAKİ ADIM — kullanıcı test edip geri bildirim verecek
-**Açık sorular (kullanıcıya soruldu 2026-11-19, cevap bekliyor):** a) Hedef çarpanı Kat 2 gelirine de binsin mi (denge → ölç) ·
-b) Usta 💎 bahşiş Kat 2 masalarına da gelsin mi · c) `docs/tarama-2026-11-18/README.md` kalan 4-8 (tavla bandı 70 dk · gölge ·
-Kat 2 ilk giriş önden kurulum · ChatGPT metin turu + D-204/205 yeni metinleri · Play Console "₺"→"para" + `firestore.rules` deploy).
+## ✅ KAT 2 SPRINT S4 (2026-11-19) — plan `docs/sprintler/kat2-S4-plan.md`
+- D-206: hedef çarpanı + Usta (+%20, `k2:<masaId>`) Kat 2'de · uzun görevler üçe bölündü (en uzun 19,8 dk) · Kat 2 7,40/7,74 sa.
+- D-207: Kat 2 varışı kuyunun önünde (aday D; iniş arkadan itme, şikâyet gelirse T2 zemin "Kat 1" / T3 HUD düğmesi).
+- D-208: küçük proplar gölgesiz (Kat 2 gölge çağrısı −%35) · zayıf cihazda 1024, oto = kapalı kalır · Kat 2 merdiven açıkken arkada kurulur.
+- Metin turu (ChatGPT) uygulandı `docs/metin-turu-2026-11-19.md` · Firestore kuralı Firebase konsolunda yayınlandı (2026-11-19).
+- Play Console ELLE (kullanıcı/arkadaş): `docs/play/basarim-duzeltme-2026-11-19.txt` (₺ → para + EN adlar).
+
+## ⏭️ SIRADAKİ ADIM
+Yeni deneme APK (S4 dahil) → kullanıcı baştan sona oynar → geri bildirim → "nihai" → 1.1.
+**Açık:** Kat 2 ilk girişte hâlâ ~0,7 sn (dolu Kat 2) — kaynak `kat2/Esya.tsx` seçicileri (`docs/kat2-onkurulum-notu.md`) ·
+`Scene.tsx` tezgâh bardak/tabak + sokak saksıları hâlâ gölge veriyor (−19 çağrı) · Kat 2 KayKit masaları hiç gölge vermiyor (`Model.tsx`).
 (eski başlık: D-201 bitti, aşağısı bilgi)
 Kodda: config = K-Bt2 · zincirde garson ×3 + bulaşıkçı · bulaşık (masada fincan/telveli kirli, ön tezgâhta bakır leğen, bulaşıkçı
 NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası · pad etiketleri Kat 1 (Garson Tut / 2. Garson / 3. Garson /
 Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
 `docs/kareler/kat2-isleyis-gorsel-*.png`. **Son deneme APK (2026-11-18, tarama düzeltmeleri dahil):** masaüstü `TeaHouse-deneme-tam-2026-11-19.apk`. **Sıradaki:** kullanıcı baştan sona oynar → geri bildirim + README'deki kalan kararlar 4-8 (1-3 = D-204 bitti) → "nihai" → 1.1.
-Not: Kat 2 lavabosu L1'de artık Kat 1 L1 gibi 2 lavabo (D-193 karesi sabit seviye 2'ydi).
-**Yan bulgu ölçüldü (2026-11-18):** Kat 1 masaları L0/L2/L4 → Kat 2 8,11 / 7,26 / 6,69 sa · zincir 4,91 / 4,27 / 3,86 sa (rapor §Yan bulgu). Karar gerekmez.
-- D-200'ün 2 metni ChatGPT turundan geçti (2026-11-18): "Tavla {1}. masayı aç" / "Open backgammon table {1}" · "Garsonlar tüm masalara kahve götürür." / "Servers bring coffee to every table."
 - **Yayına kullanıcı "nihai" deyince** (2026-11-18). 1.1 listesi: `VITE_KAT2=1` · Game Center 6 başarım · "Yenilikler" TR+EN · iOS Codemagic + Play zip · tam test + eski kayıt açılışı.
 
 ## ✅ TUR — BULAŞIKÇI YIKAMA KURALI (D-202, 2026-11-17) · rapor `docs/bulasikci-raporu.md`

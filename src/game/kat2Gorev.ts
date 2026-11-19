@@ -49,6 +49,47 @@ export interface Kat2GorevDef {
 export interface Kat2GorevKayit {
   idx: number;
   sayac: Record<string, number>;
+  /**
+   * D-206: yalnız DİSKTE — son tamamlanan görevin kimliği ('' = hiçbiri). Yazarken `idx`ten türer
+   * (`kat2GorevKaydiYaz`), okurken `idx`i bugünkü hatta yeniden kurar (`kat2GorevKaydiCoz`): araya görev
+   * girse de kayıt kaymaz (Kat 1 D-088 "kayda index değil kimlik" deseni). Canlı durumda okunmaz.
+   */
+  son?: string;
+}
+
+/**
+ * D-206 GÖÇ TABLOSU: `son` alanı gelmeden önceki (D-205, deneme APK 2026-11-19) hattın kimlik sırası. `son`suz
+ * bir kayıttaki `idx` BU sıraya göre yazılmıştır. Sabittir — hat değişse de buraya dokunulmaz.
+ */
+export const KAT2_GOREV_SIRA_D205: readonly string[] = Object.freeze([
+  'k2_kahve1', 'k2_okey1', 'k2_topla', 'k2_kahve10', 'k2_garson', 'k2_okey4', 'k2_garson2', 'k2_salon2', 'k2_grup5',
+  'k2_s2okey2', 'k2_bulasikci', 'k2_cezve2', 'k2_kahve40', 'k2_s2okey6', 'k2_garson3', 'k2_lavabo', 'k2_salon3',
+  'k2_tavla1', 'k2_tavlaKahve', 'k2_tavla6', 'k2_tavla12', 'k2_sv2', 'k2_sv5',
+]);
+
+/** Diske yazılacak görev kaydı: `idx` + `sayac` + son tamamlanan görevin kimliği. */
+export function kat2GorevKaydiYaz(k: Kat2GorevKayit, hat: readonly Kat2GorevDef[]): Kat2GorevKayit {
+  return { idx: k.idx, sayac: { ...k.sayac }, son: k.idx > 0 ? hat[Math.min(k.idx, hat.length) - 1]?.id ?? '' : '' };
+}
+
+/**
+ * Diskteki görev kaydını BUGÜNKÜ hatta oturtur. `son` varsa ondan; yoksa (D-206 öncesi kayıt) `idx` D-205 sırasına
+ * göre okunur. Yeni idx = son tamamlanan görevin hemen ardı → o görevden SONRA eklenmiş görevler sıraya girer
+ * (ödülleri yeni; durumu zaten tamamsa yüklemedeki boş adım onları ödülsüz geçer), daha önce ödenen hiçbir görev
+ * yeniden açılmaz. Sayaç yalnız aktif görev aynı kaldıysa korunur. Kimlik bulunamazsa idx olduğu gibi (kelepçeli).
+ */
+export function kat2GorevKaydiCoz(ham: { idx: number; sayac: Record<string, number>; son?: string }, hat: readonly Kat2GorevDef[]): Kat2GorevKayit {
+  const idx = Math.max(0, Math.min(Math.floor(ham.idx) || 0, ham.son === undefined ? KAT2_GOREV_SIRA_D205.length : hat.length));
+  const sonId = ham.son !== undefined ? ham.son : idx > 0 ? KAT2_GOREV_SIRA_D205[idx - 1] : '';
+  const aktifId = ham.son !== undefined ? hat[idx]?.id : KAT2_GOREV_SIRA_D205[idx];
+  let yeni: number;
+  if (!sonId) yeni = 0;
+  else {
+    const i = hat.findIndex((g) => g.id === sonId);
+    yeni = i >= 0 ? i + 1 : Math.min(idx, hat.length);
+  }
+  const ayni = aktifId !== undefined && hat[yeni]?.id === aktifId;
+  return { idx: yeni, sayac: ayni ? ham.sayac : {} };
 }
 
 /** Görevin okuduğu durum — `Kat2Kayit`in yapısal alt kümesi. */

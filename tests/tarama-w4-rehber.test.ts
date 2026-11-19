@@ -106,9 +106,11 @@ describe('HUD bağlantıları (oynanış #2/#5/#6/#8/#9)', () => {
     expect(hud).toMatch(/\{!kat2de && tray > 0 && \(/);
     expect(hud).toMatch(/\{!kat2de && trayFood > 0 && \(/);
   });
-  it('Görevler paneli Kat 2\'de Kat 2 hattını listeler; Hedefler\'de Usta şeridi Kat 2\'de yok', () => {
+  it('Görevler paneli Kat 2\'de Kat 2 hattını listeler; Hedefler\'de Usta şeridi Kat 2\'de Kat 2\'nin Usta masalarını sayar (D-206)', () => {
     expect(hud).toMatch(/const all: [^=]+= kat2de \? k2Hat : economyConfig\.quests;/);
-    expect(hud).toMatch(/\{!kat2de && \(\s*<div className="usta-strip"/);
+    // #8'in sözü korunur (Kat 2'de şerit Kat 1'in noktasına yollamaz) — D-206'dan beri Kat 2'nin kendi Usta noktası var.
+    expect(hud).toMatch(/const ustaSahip = kat2de \? k2Usta\.length :/);
+    expect(hud).toMatch(/const ustaBekleyen = kat2de\s*\? k2Masalar\.filter/);
   });
   it('kat değişince panel/video kartı kapanır ve bu kapanış reklam patlatmaz', () => {
     expect(hud).toMatch(/setSheet\(null\);\s*setVideoAcik\(false\);/);

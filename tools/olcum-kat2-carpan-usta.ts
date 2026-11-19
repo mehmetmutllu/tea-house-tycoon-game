@@ -34,6 +34,14 @@
  *   kahve   — U-UCRET kahveyi de çarpar           → "U-UCRET bonusu = ½ × Usta masası kalkış ücreti" kırılır.
  *   sv4     — Usta Sv4 masaya da alınır           → "her Usta Sv5 masada" kırılır.
  *   gorev   — B kollarında bölme yapılmaz         → "B-*: hat uzunluğu" kırılır.
+ *
+ * FİNAL KİPİ (commit #2, D-206 = K2-CARPAN + U-ESIT + B-UCLU kodda): `FINAL=1` — emülasyon KAPALI, kod olduğu gibi.
+ *   Tek kol FINAL (U0 / U20): kanca yok, hat config'in kendisi, Usta store'un `buyMaster('k2:<masa>')`ıyla (aynı bot kuralı).
+ *   Damgalar: hat = D-205 hattı + B-UCLU · Usta Sv5'te ve alım kabul · kat2UstaCarpan = 1 + ESIT_PCT · kat2Oran(…, mult) =
+ *   aracın kopyası × mult (Usta'sız: Kat 1 çevrimdışı oranı da Usta'yı görmez) · parmak izi = emülasyonun A+U-ESIT+B-UCLU kolu
+ *   (src değişmeden önce aynı araçla OLCUM=tam ölçüldü — `EMU_IZ`). Commit #2'den sonra öteki kollar ANLAMSIZDIR
+ *   (kod zaten çarpanı/Usta'yı taşıyor; kanca üstüne bir kez daha uygular).
+ *   FINAL=1 OLCUM=tam npx tsx tools/olcum-kat2-carpan-usta.ts > docs/olcum-kat2-carpan-usta-final.txt
  */
 import { spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
@@ -69,13 +77,14 @@ import {
 import { kat2GorevHatasi, kat2Gorevleri, kat2SvCanli, type Kat2GorevDef } from '../src/game/kat2Gorev';
 import { claimableGoals, collectionMult, goalCategories } from '../src/game/goals';
 import { goalMetricsOf } from '../src/game/store';
-import { kat2Oran, incomeRate, offlineEarnedSplit } from '../src/game/rules';
+import { kat2Oran, kat2UstaCarpan, incomeRate, offlineEarnedSplit } from '../src/game/rules';
 import { THE_SERVICE, tostShare } from '../src/game/world';
 import { PRODUCTS } from '../src/config/economy.config';
 import { D } from '../src/game/decimal';
 import type { Vec3 } from '../src/game/types';
 
 const MUT = process.env.MUT ?? '';
+const FINAL = process.env.FINAL === '1';
 const ISCI = process.env.ISCI ?? '';
 const DT = 0.1;
 const UFUK = kisaDeger(16 * 3600, 0.5 * 3600);
@@ -121,18 +130,24 @@ const ARA_UCLU: Ara[] = [
   ara('k2_tavla12', 'k2_tavla10', 'TAVLA KÖŞESİ', 'Tavla köşesinde 10 masaya ulaş', 'k2tavla10'),
 ];
 function bolunmus(aralar: Ara[]): Kat2GorevDef[] {
-  const liste = [...(C.kat2Gorevler as readonly Kat2GorevDef[])];
+  const liste = [...ORIJINAL_GOREVLER];
   for (const a of aralar) liste.splice(liste.findIndex((x) => x.id === a.once), 0, a.gorev);
   return liste;
 }
-const ORIJINAL_GOREVLER = C.kat2Gorevler as readonly Kat2GorevDef[];
+/** D-205 hattı (bölmesiz). Commit #2'den sonra config B-UCLU'yu taşır → ara görevler süzülür (bölme kolları iki kez eklemesin). */
+const ARA_IDLER = new Set([...ARA_HEPSI, ...ARA_UCLU].map((a) => a.gorev.id));
+const CONFIG_GOREVLER = C.kat2Gorevler as readonly Kat2GorevDef[];
+const ORIJINAL_GOREVLER = CONFIG_GOREVLER.filter((x) => !ARA_IDLER.has(x.id));
+/** Emülasyonun A+U-ESIT+B-UCLU parmak izi (src değişmeden önce, OLCUM=tam) — FINAL kodu bunu vermeli. */
+const EMU_IZ: Record<number, string> = { 0: '8f5788f8', 20: 'ad92f37d' };
 
 // ---------------------------------------------------------------------------------------------
 // KOLLAR
 // ---------------------------------------------------------------------------------------------
 type UstaFormul = 'ucret' | 'esit';
-interface Kol { ad: string; kanca: boolean; carpan: boolean; usta: UstaFormul | null; doygun: boolean; bolme: Ara[] | null }
-const KOLLAR: Kol[] = [
+interface Kol { ad: string; kanca: boolean; carpan: boolean; usta: UstaFormul | null; doygun: boolean; bolme: Ara[] | null; final?: boolean }
+const FINAL_KOL: Kol = { ad: 'FINAL', kanca: false, carpan: false, usta: 'esit', doygun: false, bolme: null, final: true };
+const KOLLAR: Kol[] = FINAL ? [FINAL_KOL] : [
   { ad: 'TABAN', kanca: false, carpan: false, usta: null, doygun: false, bolme: null },
   { ad: 'KORUNUM', kanca: true, carpan: false, usta: null, doygun: false, bolme: null },
   { ad: 'K2-CARPAN', kanca: true, carpan: true, usta: null, doygun: false, bolme: null },
@@ -145,6 +160,8 @@ const KOLLAR: Kol[] = [
   { ad: 'B-TAVLA', kanca: false, carpan: false, usta: null, doygun: false, bolme: ARA_TAVLA },
   { ad: 'B-HEPSI', kanca: false, carpan: false, usta: null, doygun: false, bolme: ARA_HEPSI },
   { ad: 'B-UCLU', kanca: false, carpan: false, usta: null, doygun: false, bolme: ARA_UCLU },
+  /** D-206 kararı (kullanıcı 2026-11-19) — emülasyonla birleşik kol; commit #2'nin kodu bunu BİREBİR vermeli (FINAL kipi). */
+  { ad: 'A+U-ESIT+B-UCLU', kanca: true, carpan: true, usta: 'esit', doygun: false, bolme: ARA_UCLU },
 ];
 const K1_MASA = 20;
 /** Süzgeç (mutasyon gösterimi / hızlı bakış): `KOLLAR=TABAN,U-UCRET` · `SENARYO=0`. Rapor koşusunda verilmez. */
@@ -259,12 +276,13 @@ interface Sonuc {
   kalkis: number;
   korunumSapma: number;
   oran: { taban: number; kol: number; k1: number; cap: number; tabanKazanc: number; kolKazanc: number; splitKazanc: number };
+  oranKodFark: number; hatIdler: string[];
   yol: number; itme: number; iz: string;
 }
 
 function kos(kol: Kol, k1Tavan: number): Sonuc {
   // Görev hattı (bellekte) — kur()'dan ÖNCE: kat2Ac görev kaydını hat üstünden hizalar.
-  const liste = kol.bolme && MUT !== 'gorev' ? bolunmus(kol.bolme) : [...ORIJINAL_GOREVLER];
+  const liste = kol.final ? [...CONFIG_GOREVLER] : kol.bolme && MUT !== 'gorev' ? bolunmus(kol.bolme) : [...ORIJINAL_GOREVLER];
   (C as unknown as { kat2Gorevler: readonly Kat2GorevDef[] }).kat2Gorevler = liste;
   kur(k1Tavan);
   const hat = kat2Gorevleri(C.kat2Gorevler as readonly Kat2GorevDef[], CFG);
@@ -354,6 +372,13 @@ function kos(kol: Kol, k1Tavan: number): Sonuc {
       for (const m of kol.doygun ? uygun : uygun.slice(0, 1)) {
         const s1 = g();
         if (!kol.doygun && s1.diamonds.lt(USTA_FIYAT)) break;
+        if (kol.final) {
+          // Kod yolu: store'un kendi alımı (şartı kendisi denetler; ret = damga).
+          const ok = g().buyMaster(`k2:${m.id}`);
+          usta.push({ id: m.id, sa: t / 3600, sv: ok ? masaSvOku(masaSv, m.id) : -1 });
+          ustaSet.add(m.id);
+          continue;
+        }
         ustaSet.add(m.id);
         usta.push({ id: m.id, sa: t / 3600, sv: masaSvOku(masaSv, m.id) });
         useGame.setState({
@@ -466,7 +491,8 @@ function kos(kol: Kol, k1Tavan: number): Sonuc {
   const a = kat2EtkinAyar(CFG, son.yuk);
   const ocak = son.padsDone.includes(OCAKLAR[0].id);
   const m1 = kol.carpan && MUT !== 'carpan1' ? collectionMult(s.goalsClaimed) : 1;
-  let oranKol = 0, oranKopya = 0;
+  let oranKol = 0, oranKopya = 0, oranKopyaM = 0;
+  const mKodK = collectionMult(s.goalsClaimed);
   for (const m of KAT2_MASALAR) {
     if (!son.padsDone.includes(m.id)) continue;
     const tt = m.tur === 'tavla' ? a.tavla! : a;
@@ -482,9 +508,12 @@ function kos(kol: Kol, k1Tavan: number): Sonuc {
     const ucretK = ucret * (u && kol.usta === 'ucret' ? C.master.tipMult : u && kol.usta === 'esit' ? 1 + ESIT_PCT : 1);
     const kahveK = kahve * (u && kol.usta === 'esit' ? 1 + ESIT_PCT : 1);
     oranKopya += (ucret + kahve + lav) / dongu;
+    oranKopyaM += ((ucret + kahve + lav) * mKodK) / dongu;
     oranKol += ((ucretK + kahveK + lav) * m1) / dongu;
   }
   const oranTaban = kat2Oran(son.padsDone, son.masaSv, son.yuk);
+  const mKod = collectionMult(s.goalsClaimed);
+  const oranKod = kat2Oran(son.padsDone, son.masaSv, son.yuk, mKod);
   let tipTotal = 0;
   for (let i = 0; i < s.tables; i++) tipTotal += C.tables.tipBase * (s.tableLevels[i] ?? 0);
   const k1 = incomeRate(s.tables, s.stationLevels[THE_SERVICE], tipTotal, s.lavaboLevel, collectionMult(s.goalsClaimed));
@@ -512,6 +541,8 @@ function kos(kol: Kol, k1Tavan: number): Sonuc {
     oran: { taban: oranTaban * 60, kol: oranKol * 60, k1: k1 * 60, cap, tabanKazanc: Math.min(ham(oranTaban), cap), kolKazanc: Math.min(ham(oranKol), cap), splitKazanc: split.kazanc },
     yol, itme: enUzun, iz: izT.deger,
     ...(oranKopya && Math.abs(oranKopya - oranTaban) > 1e-9 ? { kopyaHatasi: oranKopya - oranTaban } : {}),
+    oranKodFark: oranKod - oranKopyaM,
+    hatIdler: hat.map((h) => `${h.id}:${h.reward}`),
   } as Sonuc;
 }
 
@@ -611,7 +642,7 @@ async function orkestra(): Promise<void> {
 
   console.log('');
   console.log('--- §4 GÖREVLER — görev başına süre (dk; önceki görev bitince başlar) · 15 dk eşiği ---');
-  for (const m of SENARYO) for (const ad of ['TABAN', 'B-TAVLA', 'B-HEPSI', 'B-UCLU']) {
+  for (const m of SENARYO) for (const ad of ['TABAN', 'B-TAVLA', 'B-HEPSI', 'B-UCLU', 'FINAL']) {
     const r = al(ad, m);
     if (!r) continue;
     const uzun = r.gorevler.filter((x) => x.dk > 15);
@@ -646,6 +677,18 @@ async function orkestra(): Promise<void> {
     if (!kol.kanca && !kol.bolme) damga(`${ad}: tavanlı taban hesabı = offlineEarnedSplit`, r.oran.tabanKazanc === r.oran.splitKazanc, `${r.oran.tabanKazanc} ≠ ${r.oran.splitKazanc}`);
     if (!KISA) damga(`${ad}: ufukta bitti (Kat 2 + görev hattı)`, Number.isFinite(r.bitis) && Number.isFinite(r.hatBitis), `${r.bitis} · ${r.hatBitis}`);
   }
+  if (FINAL) {
+    const beklenenHat = bolunmus(ARA_UCLU).map((h) => `${h.id}:${h.reward}`);
+    damga('FINAL: kat2UstaCarpan() = 1 + ESIT_PCT (aracın U-ESIT yüzdesi)', kat2UstaCarpan() === 1 + ESIT_PCT, `${kat2UstaCarpan()} ≠ ${1 + ESIT_PCT}`);
+    for (const r of sonuc.values()) {
+      const ad = `FINAL@U${r.k1Tavan}`;
+      damga(`${ad}: config hattı = D-205 + B-UCLU (kimlik + ödül)`, JSON.stringify(r.hatIdler) === JSON.stringify(beklenenHat), r.hatIdler.join(','));
+      damga(`${ad}: buyMaster('k2:…') her alımı kabul etti`, r.usta.every((x) => x.sv >= 0), r.usta.filter((x) => x.sv < 0).map((x) => x.id).join(','));
+      damga(`${ad}: kat2Oran(…, mult) = kopya × mult (Usta'sız)`, Math.abs(r.oranKodFark) <= 1e-9, String(r.oranKodFark));
+      const emu = EMU_IZ[r.k1Tavan];
+      if (!KISA && emu) damga(`${ad}: parmak izi = emülasyon A+U-ESIT+B-UCLU (kod = emülasyon)`, r.iz === emu, `${r.iz} ≠ ${emu}`);
+    }
+  }
   const ko = al('KORUNUM', 0), ta0 = al('TABAN', 0);
   if (ko && ta0) damga('KORUNUM: kanca kimlik çarpanla parmak izi = TABAN', ko.iz === ta0.iz && ko.bitis === ta0.bitis, `${ko.iz} ≠ ${ta0.iz}`);
   for (const m of SENARYO) {
@@ -657,6 +700,10 @@ async function orkestra(): Promise<void> {
       if (r && (!KISA || !gecEtkili(kol))) varyantDamgasi(`${kol.ad}@U${m}`, ta.iz, r.iz);
     }
   }
+
+  console.log('');
+  console.log('--- §5 PARMAK İZLERİ (emülasyon ↔ kod karşılaştırması: FINAL kipi) ---');
+  for (const r of sonuc.values()) console.log(`${r.kol}@U${r.k1Tavan}: iz ${r.iz} · Kat 2 biter ${Number(r.bitis ?? NaN).toFixed(1)} sn · hat biter ${Number(r.hatBitis ?? NaN).toFixed(1)} sn · görev ödülü ${r.gorevOdul} · Usta ${r.usta.map((x) => x.id).join(',')}`);
 
   console.log('');
   console.log(`(süre: ${((Date.now() - t0) / 1000).toFixed(0)} sn duvar saati)`);

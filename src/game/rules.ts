@@ -13,6 +13,7 @@ import {
   requiresMet,
   tableUpgradeCost,
   tableSeats,
+  tableTip,
   lavaboIncomePerCustomer,
   PRODUCTS,
   charNextCost,
@@ -319,6 +320,19 @@ export const masterUnlockedForTable = (level: number): boolean => level >= table
 
 /** Usta basamağının 💎 fiyatı (tempo kolu DEĞİL, kuyruk kolu — §2 Bulgu 6). */
 export const masterCost = (): number => C.master.diamondCost;
+
+/**
+ * D-206 (U-ESIT): Kat 2 Usta masasının yığın çarpanı = Kat 1'de Usta'nın ₺ tavanındaki bir masaya kattığı yüzde.
+ * Kat 2'de bahşiş yok; söz aynı kalsın diye yüzde Kat 1'in fiyat + bahşiş yapısından TÜRER (servis tavanda):
+ * p = bahşiş(L tavan) × (tipMult − 1) / (fiyat karışımı(servis tavan) + bahşiş(L tavan)). Bugün +%20.
+ * Ölçüm `tools/olcum-kat2-carpan-usta.ts` ESIT_PCT ile aynı ifade (rapor `docs/kat2-carpan-usta-raporu.md`).
+ */
+export function kat2UstaCarpan(): number {
+  const bahsis = tableTip(tableSoftMaxLevel());
+  const p = tostShare(stationSoftMaxLevel());
+  const fiyat = (1 - p) * PRODUCTS.tea.price + p * PRODUCTS.tost.price;
+  return 1 + (bahsis * (C.master.tipMult - 1)) / (fiyat + bahsis);
+}
 
 /** Bir masanın bahşiş çarpanı: Usta ise ölçülen doz, değilse 1 (taban birebir korunur). */
 export const masterTipMult = (isMaster: boolean): number => (isMaster ? C.master.tipMult : 1);
@@ -798,6 +812,8 @@ export interface CevrimdisiKat2 {
   /** D-204: masa Sv'leri ve yükseltme alımları (`Kat2Kayit.masaSv` / `.yuk`) — oran bunlarla hesaplanır. */
   masaSv?: Readonly<Record<string, number>>;
   yuk?: Partial<Kat2YukSeviye>;
+  /** D-206: koleksiyon çarpanı (Kat 1 oranına binen `collectionMult`'un aynısı). Yok = 1. */
+  mult?: number;
 }
 
 /**
@@ -810,7 +826,10 @@ export function kat2Oran(
   padsDone: readonly string[],
   masaSv?: Readonly<Record<string, number>>,
   yuk?: Partial<Kat2YukSeviye>,
+  mult = 1,
 ): number {
+  // D-206: koleksiyon çarpanı (`mult`) Kat 1 `incomeRate` gibi oranın tamamına biner. Usta GİRMEZ: Kat 1'in
+  // çevrimdışı oranı da Usta'yı görmüyor (`cevrimdisiGelir` tipTotal'ı tipBase × seviyeden kurar) — aynı kural.
   // D-204 (Kat 2 = Kat 1): Kat 1'in oranı masa seviyesini ve lavabo seviyesini görür → Kat 2'ninki de masa Sv çarpanlarını
   // (`kat2Dongu` masa döngüsüyle aynı) ve yükseltmeleri (`kat2EtkinAyar`: lavabo L2-L6 · ocak) görür.
   const a: Kat2Ayar = kat2EtkinAyar(C.kat2, yuk);
@@ -826,7 +845,7 @@ export function kat2Oran(
     const istek = ocak ? Math.max(0, Math.floor((oturum - a.kahveSabir * 0.5) / (t.kahveAralik * svCarpan(kol?.kahveAralikCarpan, sv)))) : 0;
     const lav = a.lavabo && padsDone.includes(KAT2_LAVABO_PAD) ? KAT2_KISI[m.tur] * a.lavabo.ugrama * a.lavabo.ucret : 0;
     const gelir = t.masaUcreti * svCarpan(kol?.ucretCarpan, sv) + istek * t.istekAdet * t.kahveFiyat * svCarpan(kol?.kahveFiyatCarpan, sv) + lav;
-    oran += gelir / (a.gelisAralik * svCarpan(kol?.gelisAralikCarpan, sv) + a.yurume + oturum);
+    oran += (gelir * mult) / (a.gelisAralik * svCarpan(kol?.gelisAralikCarpan, sv) + a.yurume + oturum);
   }
   return oran;
 }
@@ -846,7 +865,7 @@ function offlineRawCap(
   const sure = Math.min(elapsedSec, C.offline.baseCapHours * 3600);
   const raw1 = Math.floor(rate * C.offline.rateMult * sure);
   const k2 = kat2?.acik ? kat2 : null;
-  const raw2 = k2 ? Math.floor(kat2Oran(k2.padsDone, k2.masaSv, k2.yuk) * C.offline.rateMult * sure) : 0;
+  const raw2 = k2 ? Math.floor(kat2Oran(k2.padsDone, k2.masaSv, k2.yuk, k2.mult) * C.offline.rateMult * sure) : 0;
   const pads = C.pads as readonly PadDef[];
   const k2Pads: readonly { id: string; cost: number }[] = k2 ? C.kat2.padler : [];
   const next = pads.find((p) => !p.optional && !padsDone.includes(p.id)) ?? k2Pads.find((p) => !k2!.padsDone.includes(p.id));
