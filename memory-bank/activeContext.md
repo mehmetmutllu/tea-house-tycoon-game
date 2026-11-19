@@ -40,7 +40,7 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Play Console ELLE (kullanıcı/arkadaş): `docs/play/basarim-duzeltme-2026-11-19.txt` (₺ → para + EN adlar).
 
 ## ⏭️ SIRADAKİ ADIM
-Yeni deneme APK (S4 dahil) → kullanıcı baştan sona oynar → geri bildirim → "nihai" → 1.1.
+Deneme APK (S4 dahil) masaüstünde `TeaHouse-deneme-tam-2026-11-19b.apk` → kullanıcı baştan sona oynar → geri bildirim → "nihai" → 1.1.
 **Açık:** Kat 2 ilk girişte hâlâ ~0,7 sn (dolu Kat 2) — kaynak `kat2/Esya.tsx` seçicileri (`docs/kat2-onkurulum-notu.md`) ·
 `Scene.tsx` tezgâh bardak/tabak + sokak saksıları hâlâ gölge veriyor (−19 çağrı) · Kat 2 KayKit masaları hiç gölge vermiyor (`Model.tsx`).
 (eski başlık: D-201 bitti, aşağısı bilgi)
