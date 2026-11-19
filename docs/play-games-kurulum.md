@@ -41,9 +41,9 @@ kurulmaz, Ayarlar'da bölüm görünmez, oyun onsuz oynanır (emülatörde doğr
 | servis_6000 | Mahallenin Çaycısı | 6.000 servis yap. | 75 |
 | mekan_10 | Büyüyen Mekân | 10 nokta aç. | 50 |
 | mekan_24 | Dolu Kıraathane | 24 nokta aç. | 75 |
-| kazanc_10k | Kasa Doluyor | Toplam 10.000 ₺ kazan. | 25 |
-| kazanc_200k | Esnaf | Toplam 200.000 ₺ kazan. | 50 |
-| kazanc_600k | Köşenin Sahibi | Toplam 600.000 ₺ kazan. | 75 |
+| kazanc_10k | Kasa Doluyor | Toplam 10.000 para kazan. | 25 |
+| kazanc_200k | Esnaf | Toplam 200.000 para kazan. | 50 |
+| kazanc_600k | Köşenin Sahibi | Toplam 600.000 para kazan. | 75 |
 | ilk_usta | Usta Dokunuşu | İlk Usta yükseltmesini al. | 50 |
 | masa_8 | Özenli Masalar | 8 masayı son seviyeye çıkar. | 75 |
 | masa_20 | Eksiksiz Salon | 20 masayı son seviyeye çıkar. | 75 |

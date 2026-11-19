@@ -851,7 +851,7 @@ export function HUD() {
                 ile "Oyunu Sıfırla" arasında bir parmak boşluk vardı. */}
             <div className="sheet-sec">{t('KÜNYE')}</div>
             <div className="kunye" data-testid="kunye">
-              <div><span>{t('Kayıt şeması')}</span><b>v{SAVE_VERSION}</b></div>
+              <div><span>{t('Kayıt sürümü')}</span><b>v{SAVE_VERSION}</b></div>
               <div><span>{t('Toplam kazanç')}</span><b className="kunye-para">{toplamKazancMetni} <CoinIcon size={14} /></b></div>
               <div><span>{t('Servis edilen çay')}</span><b>{fmt(stats.teasServed + stats.waiterServed)}</b></div>
               <div><span>{t('Yıkanan bulaşık')}</span><b>{fmt(stats.dishesWashed)}</b></div>

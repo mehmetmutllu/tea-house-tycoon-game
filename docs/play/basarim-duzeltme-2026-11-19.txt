@@ -1,0 +1,13 @@
+PLAY CONSOLE — ELLE YAPILACAK DÜZELTME (Claude Play Console'a girmez)
+Yer: Play Console → Tea House Tycoon → Play Games Services → Achievements (Başarımlar)
+Her başarımda "Description" (Açıklama) alanını değiştirip kaydet, sonra Play Games Services → Publish.
+
+| Başarım (anahtar) | Ad              | ESKİ açıklama              | YENİ açıklama (TR)          | EN çevirisi (varsa)            |
+|-------------------|-----------------|----------------------------|-----------------------------|--------------------------------|
+| kazanc_10k        | Kasa Doluyor    | Toplam 10.000 ₺ kazan.     | Toplam 10.000 para kazan.   | Earn 10,000 coins in total.    |
+| kazanc_200k       | Esnaf           | Toplam 200.000 ₺ kazan.    | Toplam 200.000 para kazan.  | Earn 200,000 coins in total.   |
+| kazanc_600k       | Köşenin Sahibi  | Toplam 600.000 ₺ kazan.    | Toplam 600.000 para kazan.  | Earn 600,000 coins in total.   |
+
+EN çevirisinde ad değişikliği (ChatGPT turu 2026-11-19): "Köşenin Sahibi" EN adı "Master of the Place" → "Owner of the Corner".
+Ayrıca EN adı "Tanınan Mekân" → "Well-Known Venue", "Büyüyen Mekân" → "Growing Venue" (eskiden "Known Place" / "Growing Place").
+Oyunun kendi metinleri bu sürümde zaten düzeltildi; bu liste yalnız Play Console'daki kayıtlar için.
