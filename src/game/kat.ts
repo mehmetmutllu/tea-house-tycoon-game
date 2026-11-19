@@ -428,9 +428,13 @@ export const KAT2_ON_TEZGAH = { x0: -H - 0.3, x1: BAND.stairs.minX, z0: BAND.fro
 
 /**
  * Cezve ocağı (D-181 → D-198): ön tezgâhın ÜSTÜNDEKİ kahve seti (`kat2/Mutfak`). Oyuncu salondan,
- * setin önündeki noktadan kahve alır (`al` aynı kaldı — erişim ve garson yolu değişmedi).
+ * setin önündeki noktadan kahve alır. `al` aynı zamanda ocağın AÇMA pad'inin yeri (`kat2PadYeri`): S5 G-110
+ * ("açma noktası ön tezgâhın içinde kalıyor") — pad çerçevesi (±0,85) tezgâhın önünde, yürünür zeminde
+ * kalsın diye `OCAK_AL_DZ` (önceki 0,6'da çerçevenin arka 0,25'i tezgâhın altındaydı). Tezgâha yaslanan
+ * oyuncu (z = ön + 0,47) yine erişimde (0,58 < 0,9).
  */
-export const OCAK = { id: 'k2cezve', x: -7.4, z: (KAT2_ON_TEZGAH.z0 + KAT2_ON_TEZGAH.z1) / 2, al: [-7.4, BAND.front + 0.6] as [number, number], erisim: 0.9 } as const;
+export const OCAK_AL_DZ = 1.05;
+export const OCAK = { id: 'k2cezve', x: -7.4, z: (KAT2_ON_TEZGAH.z0 + KAT2_ON_TEZGAH.z1) / 2, al: [-7.4, BAND.front + OCAK_AL_DZ] as [number, number], erisim: 0.9 } as const;
 
 /**
  * Kat 2'nin BÜTÜN masa yerleri (N7): merdiven salonu 4 okey (yukarıdaki `OKEY_YER`, sıra korunur) ·

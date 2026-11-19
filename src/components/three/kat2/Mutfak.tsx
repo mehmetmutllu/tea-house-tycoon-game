@@ -7,7 +7,7 @@
  *    ocak yükseltmesiyle büyür (`kat2MutfakSeviyesi`, D-200). Aspiratör (davlumbaz) YOK — kullanıcı istemedi.
  *  · ÖN: bandın solunu kapatan servis tezgâhı (`kat.KAT2_ON_TEZGAH`, katı gövde). Her cezve ocağının
  *    (`OCAKLAR`) yerinde tezgâhın üstünde KAHVE SETİ: arka yarıda ısıtıcı + cezveler (sap ustaya dönük),
- *    ön kenarda servis tepsisi + hazır fincanlar. Arkada kahveci usta hazırlar, oyuncu/garson tepsiden alır.
+ *    iki yanında servis tepsileri + hazır fincanlar (G-126). Arkada kahveci usta hazırlar, oyuncu/garson tepsiden alır.
  *  · Ön set = KÖZ MANGALI (kullanıcı seçti 2026-11-17); mutfak seviyesiyle büyür (`MANGAL_SEVIYE`).
  *  · Ortadaki adalar YOK — Kat 1 mutfağından farkı bu (kullanıcı 2026-11-17: "karmaşık duruyor").
  */
@@ -20,6 +20,7 @@ import { FRONT_TOP_Y, kat2MutfakSeviyesi } from '../kitchenLook';
 import { KAT2_ON_TEZGAH, type Kat2Ocak } from '../../../game/kat';
 import { KayActor } from '../KayActor';
 import { Fincan, Kutu, Silindir } from './parca';
+import { FINCAN, SET_OLCEK, fincanYerleri, tepsiAraligi } from './esyaOlcu';
 
 /** Kat 2 mutfak zemini: koyu kahve + krem dama (kullanıcı 2026-11-17) — Kat 1'in klasik damasından ayrışır. */
 const KAT2_ZEMIN = 'koyuKahve';
@@ -142,35 +143,40 @@ function Mangal({ g, pisiyor }: { g: MangalGorunus; pisiyor: boolean }) {
   );
 }
 
-/** Set büyütmesi — tezgâh üstündeki tek "kahve buradan" işareti; uzak kadrajdan da okunmalı (G2 "nereden alacağım belli değil"). */
-const SET_OLCEK = 1.5;
-
 /**
- * SERVİS TEPSİSİ (oyun testi 2026-11-15: "masadan ben kahveleri alıp dağıtıma çıkacağım veya garson"): usta
- * pişeni tezgâhın ön kenarındaki pirinç tepsiye bırakır; oyuncu/garson oradan alır. Tepsi boşken de durur —
- * "kahve buradan alınır" işareti. Hazır fincanlar tepside, oyuncuya en yakın sıra.
+ * SERVİS TEPSİLERİ (oyun testi 2026-11-15: "masadan ben kahveleri alıp dağıtıma çıkacağım veya garson"): usta
+ * pişeni tezgâhtaki pirinç tepsiye bırakır; oyuncu/garson oradan alır. Tepsi boşken de durur — "kahve buradan alınır".
+ *
+ * G-126 (oyun testi 2026-11-20): ocak yükseldikçe kuyruk 9'a çıkıyor; fincanlar mangalın önünde tek sıra dizilince
+ * tepsiden taşıyordu. Artık mangalın SOLUNDA ve SAĞINDA birer tepsi, fincanlar ikişerli (ön/arka) sütunlar hâlinde
+ * mangala en yakın sütundan dışa doğru, iki yana sırayla dizilir. Sağ tepsi 2 sütun: 2. ocağın sağında leğenin
+ * ibriği var. Ölçüler `esyaOlcu.ts` (sığma bekçisi `tests/esya-s5.test.ts`). Alma noktası (`OCAKLAR.al`) aynı.
  */
-const TEPSI = { x: 0.15, z: 0.17, w: 1.1, d: 0.2 } as const;
-const FINCAN = { x: 0.15, z: 0.17, adim: 0.2, s: 1.3 } as const;
+const TEPSI_D = FINCAN.onZ - FINCAN.arkaZ + 2 * 0.1;
+const TEPSI_CZ = (FINCAN.onZ + FINCAN.arkaZ) / 2;
 
-function ServisTepsisi() {
+const KENAR_H = 0.024;
+function ServisTepsisi({ yan }: { yan: -1 | 1 }) {
+  const [x0, x1] = tepsiAraligi(yan);
+  const w = x1 - x0;
   return (
-    <group position={[TEPSI.x, 0, TEPSI.z]}>
-      <Kutu w={TEPSI.w} h={0.015} d={TEPSI.d} renk={PIRINC} pos={[0, 0.0075, 0]} />
-      {[-1, 1].map((k) => <Kutu key={`z${k}`} w={TEPSI.w} h={0.03} d={0.012} renk={PIRINC} pos={[0, 0.015, (k * TEPSI.d) / 2]} golge={false} />)}
-      {[-1, 1].map((k) => <Kutu key={`x${k}`} w={0.012} h={0.03} d={TEPSI.d} renk={PIRINC} pos={[(k * TEPSI.w) / 2, 0.015, 0]} golge={false} />)}
+    <group position={[(x0 + x1) / 2, 0, TEPSI_CZ]}>
+      <Kutu w={w} h={0.015} d={TEPSI_D} renk={PIRINC} pos={[0, 0.0075, 0]} />
+      {[-1, 1].map((k) => <Kutu key={`z${k}`} w={w} h={KENAR_H} d={0.012} renk={PIRINC} pos={[0, KENAR_H / 2, (k * TEPSI_D) / 2]} golge={false} />)}
+      {[-1, 1].map((k) => <Kutu key={`x${k}`} w={0.012} h={KENAR_H} d={TEPSI_D} renk={PIRINC} pos={[(k * w) / 2, KENAR_H / 2, 0]} golge={false} />)}
     </group>
   );
 }
 
-/** Bir ocağın tezgâh üstü seti. `hazir` fincan ön kenarda bekler; `pisiyor` iken cezve köpürür. */
+/** Bir ocağın tezgâh üstü seti. `hazir` fincan mangalın iki yanındaki tepsilerde bekler; `pisiyor` iken cezve köpürür. */
 export function KahveSeti({ ocak, hazir, pisiyor, seviye }: { ocak: Kat2Ocak; hazir: number; pisiyor: boolean; seviye: number }) {
   return (
     <group position={[ocak.x, FRONT_TOP_Y, TEZGAH_CZ]} scale={SET_OLCEK}>
       <Mangal g={MANGAL_SEVIYE[Math.min(Math.max(seviye, 1), MANGAL_SEVIYE.length) - 1]} pisiyor={pisiyor} />
-      <ServisTepsisi />
-      {Array.from({ length: hazir }, (_, i) => (
-        <Fincan key={i} pos={[FINCAN.x + i * FINCAN.adim - ((hazir - 1) * FINCAN.adim) / 2, 0.015, FINCAN.z]} s={FINCAN.s} />
+      <ServisTepsisi yan={-1} />
+      <ServisTepsisi yan={1} />
+      {fincanYerleri(hazir).map(([x, z], i) => (
+        <Fincan key={i} pos={[x, 0.015, z]} s={FINCAN.s} />
       ))}
     </group>
   );

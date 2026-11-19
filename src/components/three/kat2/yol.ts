@@ -23,9 +23,13 @@ export const oturakYerleri = (tur: 'okey' | 'tavla', sv = 1): [number, number][]
   return tur === 'okey' ? [[0, -r], [r, 0], [0, r], [-r, 0]] : [[r, 0], [-r, 0]];
 };
 
-/** Kuyunun içinde merdivenin basamak yüksekliği (z'ye göre). Kuyu dışı 0. */
+/**
+ * Kuyunun içinde merdivenin basamak yüksekliği (z'ye göre). Kuyu dışı 0. G-100: kuyunun ÖNÜ (z ≥ `AGIZ.on`)
+ * salon zeminidir — eskiden yalnız arka kenar sınırdı, merdiven hizasından (|x| < 2,3) salona geçen grup
+ * kuyu dibi yüksekliğinde (−3,2) zeminin ALTINDA yürüyüp görünmez oluyordu.
+ */
 export function merdivenY(x: number, z: number): number {
-  if (Math.abs(x) >= AGIZ.x || z <= AGIZ.arka) return 0;
+  if (Math.abs(x) >= AGIZ.x || z <= AGIZ.arka || z >= AGIZ.on) return 0;
   const u = Math.min(1, (z - AGIZ.arka) / (AGIZ.on - AGIZ.arka));
   return -3.2 * u;
 }
@@ -35,10 +39,20 @@ const GECIT_X = 0.9;
 /** Kuyunun yanından geçilen hat (korkuluk ±2,3, kova duvarı ±4,6). */
 const YAN_X = AGIZ.x + 0.6;
 const ON_Z = BAND.front + 0.6;
+/**
+ * G-99: ÇIKIŞ şeridi geliş şeridinin yanından (yeni grup gelirken eskisi iner; karşı karşıya iç içe
+ * geçmesinler): kuyuda +0,45 · kuyunun yanında +0,75 (kova duvarı ±4,6) · ön salona geçitte +0,7 ·
+ * kuyunun önünde +0,6 (bir sıra salona doğru).
+ */
+const CIKIS = { serit: 0.45, yan: 0.75, gecit: 0.7, on: 0.6 } as const;
 
-export function grupYolu(m: Kat2MasaYeri, oturak: [number, number], sira: number): Nokta[] {
+/** Merdiven dibinden (kuyu içi) oturağa giden yol. `cikis`: aynı güzergâhın çıkış şeridi (yönü çağıran çevirir — `cikisYolu`). */
+export function grupYolu(m: Kat2MasaYeri, oturak: [number, number], sira: number, cikis = false): Nokta[] {
   const s = m.x < 0 ? -1 : 1;
-  const serit = s * (0.6 + (sira % 2) * 0.9);
+  const ek = cikis ? CIKIS : { serit: 0, yan: 0, gecit: 0, on: 0 };
+  const serit = s * (0.6 + ek.serit + (sira % 2) * 0.9);
+  const yanX = YAN_X + ek.yan;
+  const onZ = ON_Z + ek.on;
   // Koridor masa ayak izinin (okey ±1,25) hemen önü: sıralar arasından yana geçilir (bekçi `kat2-yol`).
   const koridor = m.z - (m.tur === 'okey' ? 1.9 : 1.8);
   const [dx, dz] = oturak;
@@ -50,14 +64,14 @@ export function grupYolu(m: Kat2MasaYeri, oturak: [number, number], sira: number
   const xz: [number, number][] = [
     [serit, AGIZ.on - 0.25],
     [serit, AGIZ.sahanlik - 0.55],
-    [s * YAN_X, AGIZ.sahanlik - 0.55],
-    [s * YAN_X, ON_Z],
+    [s * yanX, AGIZ.sahanlik - 0.55],
+    [s * yanX, onZ],
   ];
   if (m.alan > 0) {
-    const gx = m.alan === 1 ? -GECIT_X : GECIT_X;
-    xz.push([gx, ON_Z], [gx, koridor]);
+    const gx = (m.alan === 1 ? -1 : 1) * (GECIT_X + ek.gecit);
+    xz.push([gx, onZ], [gx, koridor]);
   } else {
-    xz.push([s * YAN_X, koridor]);
+    xz.push([s * yanX, koridor]);
   }
   xz.push([ax, koridor], [ax, oz], [ox, oz]);
   const out: Nokta[] = [];
@@ -68,6 +82,12 @@ export function grupYolu(m: Kat2MasaYeri, oturak: [number, number], sira: number
   }
   return out;
 }
+
+/**
+ * G-99: kalkan grubun yolu — oturaktan çıkış şeridiyle kuyunun yanına, sahanlıktan merdivene, merdivenden
+ * AŞAĞI (kuyu dibi, zeminin altı). Grup salonda değil inerken kaybolur (`Grup` son `SONME` payında söndürür).
+ */
+export const cikisYolu = (m: Kat2MasaYeri, oturak: [number, number], sira: number): Nokta[] => grupYolu(m, oturak, sira, true).reverse();
 
 /** Grubun yürüme hızı (Kat 1 müşterisi `NPC_SPEED` 1,4); uzak masada süre yetmezse hızlanır. */
 export const GRUP_HIZ = 1.5;
@@ -113,3 +133,39 @@ export function yolNoktasi(y: Yol, u: number, out: Nokta): number {
   out[1] = merdivenY(out[0], out[2]);
   return Math.atan2(b[0] - a[0], b[2] - a[2]);
 }
+
+/** G-99: çıkışın son payı (sn) — kuyu dibinde, zeminin altında söner. */
+export const SONME_SN = 0.35;
+
+/**
+ * Çıkışta k. üyenin yerinin oranı (0 = oturak, 1 = kuyu dibi) ve ölçeği; `null` = yolu bitti (gizli).
+ * Üyeler `GRUP_ARA` arayla kalkar, `GRUP_HIZ`la yürür; yalnız yolun son `SONME_SN` payında söner.
+ */
+export function cikisPozu(boy: number, k: number, t: number): { u: number; olcek: number } | null {
+  const d = Math.max(0, t - k * GRUP_ARA) * GRUP_HIZ;
+  if (d >= boy) return null;
+  return { u: d / boy, olcek: Math.max(0.001, Math.min(1, (boy - d) / (GRUP_HIZ * SONME_SN))) };
+}
+
+/** Bütün grubun kuyuya inip söndüğü süre (sn). */
+export const cikisSuresi = (boylar: readonly number[]): number => Math.max(0, ...boylar.map((b, k) => k * GRUP_ARA + b / GRUP_HIZ));
+
+/**
+ * G-100: SIRADAKİ grubun gelişin başından geçen süresi (sn) — `null` = henüz yola çıkmadı. Geliş toplam
+ * `once + yurume` sürer ve `geliyor` bitince oturakta biter; grup `bos` bitmeden `once` sn önce merdivenden
+ * çıkar. Boş süre (`bosSure`, Sv ile kısalır: Sv5'te 1,5 sn) `once`tan kısaysa önceki grup daha OYNARKEN
+ * yola çıkar — yoksa ya yolun ortasında belirir ya da koşarak yetişmek zorunda kalırdı.
+ */
+export function gelisGecen(durum: string, t: number, once: number, yurume: number, bosSure: number): number | null {
+  if (durum === 'geliyor') return once + yurume - t;
+  if (durum === 'bos') return t <= once ? once - Math.max(0, t) : null;
+  if (durum === 'oyunda') {
+    const g = once - (t + bosSure);
+    return g >= 0 ? g : null;
+  }
+  return null;
+}
+
+/** Bütün üyelerin `GRUP_HIZ`la `GRUP_ARA` arayla yürüyüp yetişeceği erken çıkış (sn): en uzun (yol + sıra) − `yurume`. */
+export const gerekenOnce = (boylar: readonly number[], yurume: number): number =>
+  Math.max(0, ...boylar.map((b, k) => b / GRUP_HIZ + k * GRUP_ARA - yurume));

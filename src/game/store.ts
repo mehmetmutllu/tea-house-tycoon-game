@@ -1199,6 +1199,7 @@ export const useGame = create<GameState>((set, get) => ({
     let xp = c.xp;
     let stats = c.stats;
     let k2olay: Kat2GorevOlay | null = null;
+    let k2oto = 0;
     const kat2Say = (o: Kat2Cikti['olay']) => {
       xp += kat2OlayXp(o);
       stats = kat2OlaySayac(stats, o);
@@ -1227,6 +1228,7 @@ export const useGame = create<GameState>((set, get) => ({
           masaSv: kat2.masaSv,
           svCanli: kat2SvCanli(kat2, C.kat2Gorevler, KAT2_AYAR),
           yuk: kat2.yuk,
+          otoTopla: C.money.autoCollectAfter,
           digerTepsi: c.tray + c.trayFood + c.carriedDirty + c.carriedDirtyFood,
           ...kat2GelirGirdisi(c.incomeMult, s.mastersOwned),
         },
@@ -1235,6 +1237,7 @@ export const useGame = create<GameState>((set, get) => ({
       );
       kat2Dunya = r.dunya;
       k2olay = { ...r.olay, kazanc: r.kazanc };
+      k2oto = r.otoKazanc;
       kat2Say(r.olay);
       if (r.harcama > 0) wallet = wallet.sub(r.harcama);
       if (r.kazanc > 0) {
@@ -1262,6 +1265,7 @@ export const useGame = create<GameState>((set, get) => ({
         kat2Dunya,
         { x: KAT2_DISI[0], z: KAT2_DISI[1], durdu: true, cuzdan: 0, padsDone: kat2.padsDone,
           tepsiKap: trayCapacityFor(s.charUpgrades.tray), miknatis: attractRadiusFor(s.charUpgrades.magnet), masaSv: kat2.masaSv,
+          otoTopla: C.money.autoCollectAfter,
           ...kat2GelirGirdisi(c.incomeMult, s.mastersOwned) },
         dt,
         kat2EtkinAyar(KAT2_AYAR, kat2.yuk),
@@ -1269,6 +1273,14 @@ export const useGame = create<GameState>((set, get) => ({
       kat2Dunya = r.dunya;
       k2olay = { ...r.olay, kazanc: 0 };
       kat2Say(r.olay);
+      k2oto = r.otoKazanc;
+    }
+    // G-124 (S5): Kat 2 yığınlarının oto-toplaması — Kat 1 kuralı (oyuncu nerede olursa olsun) ve Kat 1'in TOPLU
+    // bildirimi: toplam `autoCollectSum`a eklenir, bir sonraki karede Kat 1 sistemi "Bekleyen paralar…" der.
+    if (k2oto > 0) {
+      wallet = wallet.add(k2oto);
+      lifetime = lifetime.add(k2oto);
+      c.autoCollectSum += k2oto;
     }
     // S3-D: Kat 2 görev hattı (Kat 2'de VE arka planda) — durum bu adımın GÜNCEL pad/Sv'si.
     if (k2olay) {

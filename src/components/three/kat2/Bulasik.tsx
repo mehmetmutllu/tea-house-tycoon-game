@@ -25,6 +25,7 @@ import { oturakYerleri } from "./yol";
 import { useMasaSvleri } from "./masaSv";
 import { masaBul } from "./masaIndeks";
 import { Fincan, KirliFincan, Kutu, Silindir } from "./parca";
+import { LEGEN_FINCAN, LEGEN_SU } from "./esyaOlcu";
 import { Kat2Personel } from "./Garson";
 
 /** Masa üstündeki fincan ölçeği (ocaktaki hazır fincanla aynı). */
@@ -177,7 +178,7 @@ export function YikamaYeri() {
             r2={0.335}
             h={0.01}
             renk="#8fc9d9"
-            pos={[0, y + 0.14, 0]}
+            pos={[0, y + LEGEN_SU, 0]}
             seg={18}
             golge={false}
           />
@@ -189,7 +190,7 @@ export function YikamaYeri() {
                 key={i}
                 pos={[
                   Math.cos(a) * r,
-                  y + 0.1 + (i % 2) * 0.03,
+                  y + LEGEN_FINCAN,
                   Math.sin(a) * r,
                 ]}
                 s={1.4}

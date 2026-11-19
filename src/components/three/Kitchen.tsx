@@ -25,6 +25,7 @@ import {
   ADA_UNITS,
   adaModeli,
   adaZ,
+  mutfakGovdeleri,
   mutfakSeviyesi,
   uniteModeli,
   uniteY,
@@ -113,6 +114,12 @@ function yedek(key: KitchenKey, olcek = KITCHEN_S) {
 
 /** Damacana rafının KayKit karşılığı yok — o ünite hep yedeğiyle (elle çizili) gelir. */
 const src = (key: KitchenKey): string | undefined => (key === 'waterRack' ? undefined : `${KAY}${key}.gltf`);
+
+/** S5 G-113: odanın bütün gövdeleri önden — seviye atlayınca ünite bir an greybox'a düşüp geri gelmesin. */
+for (const k of mutfakGovdeleri()) {
+  const u = src(k);
+  if (u) useGLTF.preload(u);
+}
 
 /**
  * Bir ünite — S22'den beri SEVİYEYE bağlı.

@@ -485,6 +485,21 @@ export function adaModeli(s: number, level: number): KitchenKey | null {
   return i < 0 ? null : ADA_ZINCIR[Math.min(i, ADA_ZINCIR.length - 1)];
 }
 
+/**
+ * ODANIN BÜTÜN GÖVDELERİ — her ünitenin zincirinin her üyesi + adalar (S5 G-113). `Kitchen` bunları ÖNDEN yükler:
+ * seviye atlayınca yeni gövde ilk kez istenirse `Model`in Suspense'i birkaç kare greybox yedeğe düşüyordu
+ * (oyun testi 2026-11-20: "cezve yükseltince arkadaki dolaplardan biri gidip geliyor"). Kat 1 servis + Kat 2 ocak.
+ */
+export function mutfakGovdeleri(): KitchenKey[] {
+  const s = new Set<KitchenKey>();
+  for (const u of KITCHEN_UNITS) {
+    s.add(u.key);
+    for (const k of KADEME_ZINCIR[u.key] ?? []) s.add(k);
+  }
+  for (const k of ADA_ZINCIR) s.add(k);
+  return [...s];
+}
+
 /** Ünitenin dünya AABB'si (çeyrek dönüş uygulanmış). */
 export function unitBox(u: KitchenUnit): {
   minX: number;

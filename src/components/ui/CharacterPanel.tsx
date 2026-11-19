@@ -357,7 +357,16 @@ function DishTab() {
 
 /** `ilkSekme`: B4 (T9d) — garson görevi paneli GARSON sekmesinde açar. Oyuncu sekmesinde de "Tepsi"
  *  satırı var; görev "garson tepsisi" derken panel oyuncununkinde açılınca yanlış alım yapılıyordu. */
-export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () => void; ilkSekme?: Tab }) {
+export function CharacterPanel({
+  onClose,
+  ilkSekme = 'player',
+  vurgu,
+}: {
+  onClose: () => void;
+  ilkSekme?: Tab;
+  /** G-93: aktif görevin istediği özellik — alınabilirken düğmesi nabız atar (Kat 1 sekme `spot` deseni). */
+  vurgu?: CharStat;
+}) {
   const wallet = useGame((s) => s.wallet);
   const charUpgrades = useGame((s) => s.charUpgrades);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
@@ -500,7 +509,7 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
                   </span>
                   {cost != null ? (
                     <button
-                      className="char-buy"
+                      className={`char-buy${afford && vurgu === stat ? ' vurgu' : ''}`}
                       data-testid={`char-buy-${stat}`}
                       disabled={!afford}
                       onClick={() => buyCharUpgrade(stat)}

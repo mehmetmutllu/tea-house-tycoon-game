@@ -564,7 +564,7 @@ export function MaketUyariSeridi({ x1, x2, z }: { x1: number; x2: number; z: num
 
 /**
  * Kilitli OBJENİN önünde tahta perde (D-191 P3): bantsız tahta + ortada yuvarlak levha — levhadaki simge
- * arkada ne olduğunu söyler. Kural (maketin kendi yorumu): *"kilitli ALAN hiç çizilmez; açık alanın içindeki
+ * arkada ne olduğunu söyler (lavabo = WC klozeti, S5 G-118). Kural (maketin kendi yorumu): *"kilitli ALAN hiç çizilmez; açık alanın içindeki
  * kilitli obje tadilat hâlinde durur."* Sarı-siyah bant beğenilmedi (2026-11-13), kalktı.
  */
 export type PerdeSimge = 'okey' | 'lavabo' | 'mutfak';
@@ -572,6 +572,38 @@ export type PerdeSimge = 'okey' | 'lavabo' | 'mutfak';
 const LEVHA_ZEMIN = '#f1e6cc';
 const SU = '#3d8fd1';
 const CAY = '#b3322b';
+
+/**
+ * WC levhası (S5 G-118: "damla simgesi → klozet ya da WC"; Kat 1 + Kat 2 lavabo perdesi): yandan klozet —
+ * sol arkada rezervuar + kapağı, oturak, altında yarım çanak, ayak. Mavi (eski damlanın rengi) kabartma.
+ */
+function KlozetSimge({ r, on }: { r: number; on: number }) {
+  const z = on - 0.01;
+  return (
+    <group>
+      <mesh position={[-r * 0.34, r * 0.2, z]}>
+        <boxGeometry args={[r * 0.26, r * 0.62, 0.02]} />
+        <meshStandardMaterial color={SU} />
+      </mesh>
+      <mesh position={[-r * 0.34, r * 0.54, z]}>
+        <boxGeometry args={[r * 0.34, r * 0.07, 0.02]} />
+        <meshStandardMaterial color={SU} />
+      </mesh>
+      <mesh position={[r * 0.08, -r * 0.06, z]}>
+        <boxGeometry args={[r * 0.8, r * 0.09, 0.02]} />
+        <meshStandardMaterial color={SU} />
+      </mesh>
+      <mesh position={[r * 0.1, -r * 0.1, z + 0.01]}>
+        <circleGeometry args={[r * 0.37, 16, Math.PI, Math.PI]} />
+        <meshStandardMaterial color={SU} />
+      </mesh>
+      <mesh position={[r * 0.04, -r * 0.55, z]}>
+        <boxGeometry args={[r * 0.3, r * 0.3, 0.02]} />
+        <meshStandardMaterial color={SU} />
+      </mesh>
+    </group>
+  );
+}
 
 /** Levha düzlemi XY'de (perde yüzü +z'ye bakar); simgeler levhanın önünde ince kabartma. */
 function PerdeLevhasi({ r, simge }: { r: number; simge: PerdeSimge }) {
@@ -598,19 +630,7 @@ function PerdeLevhasi({ r, simge }: { r: number; simge: PerdeSimge }) {
           </mesh>
         </>
       )}
-      {simge === 'lavabo' && (
-        <>
-          {/* su damlası: alt yuvarlak + yukarı sivrilen koni */}
-          <mesh position={[0, -r * 0.16, on - 0.01]} scale={[1, 1, 0.25]}>
-            <sphereGeometry args={[r * 0.36, 16, 10]} />
-            <meshStandardMaterial color={SU} />
-          </mesh>
-          <mesh position={[0, r * 0.26, on - 0.01]} scale={[1, 1, 0.25]}>
-            <coneGeometry args={[r * 0.31, r * 0.52, 16]} />
-            <meshStandardMaterial color={SU} />
-          </mesh>
-        </>
-      )}
+      {simge === 'lavabo' && <KlozetSimge r={r} on={on} />}
       {simge === 'mutfak' && (
         <>
           {/* ince belli çay bardağı (iki kesik koni) + tabak */}

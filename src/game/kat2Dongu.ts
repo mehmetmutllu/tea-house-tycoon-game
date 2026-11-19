@@ -301,6 +301,8 @@ export interface ParaYigini {
   x: number;
   z: number;
   miktar: number;
+  /** G-124: yerde bekleme süresi (sn; yok = 0). `Kat2Girdi.otoTopla`yı aşınca yığın kendiliğinden toplanır. */
+  yas?: number;
 }
 
 /** Bir cezve ocağının anlık hâli (sıra `kat.OCAKLAR`; kapalı ocak hazir 0). */
@@ -378,6 +380,12 @@ export interface Kat2Girdi {
   /** D-200: yükseltme alım sayıları (ocak tetiği için; etkisi çağıranın `kat2EtkinAyar`ıyla). */
   yuk?: Partial<Kat2YukSeviye>;
   /**
+   * G-124 (S5 · Kat 1 eşitliği): yerde bu kadar sn bekleyen yığın kendiliğinden cüzdana girer — Kat 1'in
+   * `money.autoCollectAfter` kuralı (sayı oradan, çağıran verir). Oyuncunun yerinden bağımsız (Kat 1'de de öyle).
+   * Yok / 0 = kapalı.
+   */
+  otoTopla?: number;
+  /**
    * D-206 (K2-CARPAN): hedef koleksiyon çarpanı (`goals.collectionMult`) — Kat 2'de düşen HER yığına (masa ücreti,
    * kahve, lavabo) yaratıldığı yerde biner; Kat 1 `tick.ts` `incomeMult` deseni. Görev ödülüne binmez. Yok = 1.
    */
@@ -395,6 +403,8 @@ export interface Kat2Cikti {
   kazanc: number;
   /** Pad'e akan para (cüzdandan −). */
   harcama: number;
+  /** G-124: bu adımda kendiliğinden toplanan yığınların ₺'si (`kazanc`a girmez; oyuncu Kat 1'deyken de okunur). */
+  otoKazanc: number;
   /** Bu adımda olanlar (ölçüm + görsel juice). */
   olay: {
     servis: number;
@@ -1232,6 +1242,9 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
   }
 
   // ---- PARA: mıknatıs yarıçapına giren yığın toplanır (yalnız oyuncu — garson para toplamaz).
+  // G-124: yerde `otoTopla` sn bekleyen yığın kendiliğinden toplanır (Kat 1 `autoCollectAfter`; sayaç `toplanan` ARTMAZ —
+  // o oyuncunun eli, Kat 1'de de `coinsCollected` artmaz).
+  let otoKazanc = 0;
   if (d.paralar.length) {
     d.paralar = d.paralar.filter((p) => {
       if (Math.hypot(g.x - p.x, g.z - p.z) <= g.miknatis) {
@@ -1239,10 +1252,16 @@ export function kat2Tick(d0: Kat2Dunya, g: Kat2Girdi, dt: number, ayar: Kat2Ayar
         olay.toplanan += 1;
         return false;
       }
+      // Yerinde güncellenir (kimlik korunur — `yiginaEkle`nin `miktar +=` deseni; ölçüm araçlarının yığın kancası da buna dayanır).
+      p.yas = (p.yas ?? 0) + dt;
+      if (g.otoTopla && g.otoTopla > 0 && p.yas >= g.otoTopla) {
+        otoKazanc += p.miktar;
+        return false;
+      }
       return true;
     });
   }
 
   Object.assign(d, garsonAyir(garsonlar));
-  return { dunya: d, padsDone, kazanc, harcama, olay };
+  return { dunya: d, padsDone, kazanc, harcama, otoKazanc, olay };
 }

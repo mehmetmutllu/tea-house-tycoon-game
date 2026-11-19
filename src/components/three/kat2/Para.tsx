@@ -4,8 +4,9 @@
  * kumar yok). Oyuncu mıknatıs yarıçapına girince toplanır: sikkeler oyuncuya uçar, başının
  * üstünde Kat 1'in "+para" yazısı (`.floater`) belirir.
  *
- * Yığın = sikke kuleleri (D-187 para A: Kat 1'in sikkesi, 2-4 sütun üst üste). Boy miktarla büyür
- * (kademeli), düşerken zıplar.
+ * Yığın = sikke kuleleri (D-187 para A: Kat 1'in sikkesi, 1-3 sütun üst üste). Boy miktarla büyür
+ * (kademeli), düşerken zıplar. G-98 (oyun testi 2026-11-20: "silindir yığınlar çok büyük"): sikke Kat 1'in
+ * yerdeki/uçan sikkesiyle BİREBİR aynı boyda (ölçek 1); yığının tavanı 3 sütun × en çok 5 sikke.
  */
 import { useEffect, useMemo, useRef, useState, type MutableRefObject } from 'react';
 import { useFrame } from '@react-three/fiber';
@@ -15,24 +16,27 @@ import { useGame } from '../../../game/store';
 import { fmt } from '../../../game/decimal';
 
 // Kat 1'in sikkesiyle aynı geometri/materyal (Coins.tsx) — iki katta para aynı görünür.
-const SIKKE_GEO = new CylinderGeometry(0.22, 0.22, 0.06, 16);
+const SIKKE_GEO = new CylinderGeometry(0.22, 0.22, 0.06, 16); // = SIKKE_R
 const SIKKE_MAT = new MeshStandardMaterial({ color: '#ffd700', metalness: 0.7, roughness: 0.25 });
 const UCAN_EN_COK = 64;
-/** Yığın Kat 1'in tek sikkesinden iri okunsun: seyrek + büyük para (kat2-plan §2). */
-const YIGIN_OLCEK = 1.35;
+/** G-98: sikke Kat 1'inkiyle aynı boyda (eski 1,35 yığını masanın yanında iri bir silindir gibi okutuyordu). */
+export const YIGIN_OLCEK = 1;
+/** Sikke yarıçapı ve kalınlığı (Kat 1 `Coins.COIN_GEO` ile aynı). */
+export const SIKKE_R = 0.22;
+const SIKKE_H = 0.062;
 
 /** Yığının "kademesi" 1..4 — boy miktarla büyür ama sınırlı (yığın masayı ezmesin). */
-function kademe(miktar: number): number {
+export function kademe(miktar: number): number {
   return miktar < 90 ? 1 : miktar < 130 ? 2 : miktar < 180 ? 3 : 4;
 }
 
-/** Bir yığının sikke yerleri (yerel): kademe kadar sütun, sütun boyu kademeyle büyür. */
-function sikkeYerleri(k: number): [number, number, number, number][] {
+/** Bir yığının sikke yerleri (yerel): sütun sayısı ve boyu kademeyle HAFİF büyür (tavan 3 sütun × 5 sikke). */
+export function sikkeYerleri(k: number): [number, number, number, number][] {
   const out: [number, number, number, number][] = [];
-  const sutun = [[0, 0], [0.34, 0.12], [-0.3, 0.16], [0.08, -0.32]].slice(0, Math.min(4, k + 1));
+  const sutun = [[0, 0], [0.22, 0.1], [-0.19, 0.13]].slice(0, Math.min(3, k));
   sutun.forEach(([x, z], i) => {
-    const boy = 3 + k * 2 - i * 2;
-    for (let j = 0; j < boy; j++) out.push([x + ((j * 7) % 3) * 0.01, 0.03 + j * 0.062, z, j * 0.7]);
+    const boy = Math.min(5, 1 + k) - i;
+    for (let j = 0; j < boy; j++) out.push([x + ((j * 7) % 3) * 0.01, 0.03 + j * SIKKE_H, z, j * 0.7]);
   });
   return out;
 }

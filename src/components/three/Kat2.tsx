@@ -21,7 +21,7 @@
  * D-201: bulaşık (`kat2/Bulasik`: masadaki fincan + telveli kirli, ön tezgâhta leğen, bulaşıkçı) · lavabo
  * seviyesiyle büyür + yükseltme noktası (`Kat2LavaboIsareti`).
  */
-import { Suspense, memo, useLayoutEffect, useRef } from 'react';
+import { Suspense, memo, useLayoutEffect, useRef, useState } from 'react';
 import { CylinderGeometry, MeshStandardMaterial, Object3D, type InstancedMesh } from 'three';
 import { FloorPattern } from './floorPattern';
 import { WallPanels, type WallSlab } from './wallPanel';
@@ -31,6 +31,8 @@ import { FLOOR_THEMES, PALETTE, WALL_THEMES, type FloorTheme } from '../../confi
 import { BAND, FLOOR_HALF } from '../../game/layout';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
 import { AGIZ, KAT2_ALANLAR, KAT2_LAVABO_PAD, KAT2_MASALAR, KOVA, OCAKLAR, kat2AcikAlan, type Dik } from '../../game/kat';
+import { DIS_PAY, KUYU_BASAMAK, KUYU_DERIN, KUYU_PERDE, KUYU_YANAK, disKenarlar, kuyuBasamakYariEn, type Kenar } from './kat2/yapiOlcu';
+import { TozDonusumu } from './kat2/TozDonusumu';
 import { useGame } from '../../game/store';
 import { Dogus, OkeyMasa, SvSekme, TavlaMasa } from './kat2/Esya';
 import { KahveSeti, KahveUsta, Kat2Mutfak } from './kat2/Mutfak';
@@ -54,48 +56,15 @@ const H = FLOOR_HALF;
 /** Kademeli ön kurulumda masaların ilk sırası (önce kabuk, mutfak, personel — `Kat2Sahne`). */
 const KADEME_MASA = 9;
 /** Dış duvar kat kenarının 0,5 dışında (Scene.Walls ile aynı). */
-const M = 0.5;
+const M = DIS_PAY;
 const BANT_ARKA = BAND.back;
 const TEMA = WALL_THEMES.krem;
 const ZEMIN = FLOOR_THEMES.parke;
 const SAP = '#bdb7ad';
 const KOYU = '#5d4037';
+const KUYU_RENK = '#5a4a3e';
 
-// ---- Duvar: açık dikdörtgenlerin BİRLEŞİMİNİN çevresi (maketin `cevre`/`hat`ı) ----
-type Kenar = { yon: 'x' | 'z'; c: number; a: number; b: number; dis: boolean; yan: boolean };
-
-function cikar(spans: [number, number][], a: number, b: number): [number, number][] {
-  return spans.flatMap(([s, e]) => {
-    if (b <= s || a >= e) return [[s, e]] as [number, number][];
-    const r: [number, number][] = [];
-    if (a > s) r.push([s, a]);
-    if (b < e) r.push([b, e]);
-    return r;
-  });
-}
-
-function cevre(diks: Dik[]): Kenar[] {
-  const out: Kenar[] = [];
-  diks.forEach((r, i) => {
-    const kenarlar = [
-      { yon: 'x' as const, c: r.z1, a: r.x0, b: r.x1, karsi: (o: Dik) => o.z0 === r.z1 },
-      { yon: 'x' as const, c: r.z0, a: r.x0, b: r.x1, karsi: (o: Dik) => o.z1 === r.z0 },
-      { yon: 'z' as const, c: r.x0, a: r.z0, b: r.z1, karsi: (o: Dik) => o.x1 === r.x0 },
-      { yon: 'z' as const, c: r.x1, a: r.z0, b: r.z1, karsi: (o: Dik) => o.x0 === r.x1 },
-    ];
-    for (const k of kenarlar) {
-      let sp: [number, number][] = [[k.a, k.b]];
-      diks.forEach((o, j) => {
-        if (j === i || !k.karsi(o)) return;
-        sp = k.yon === 'x' ? cikar(sp, o.x0, o.x1) : cikar(sp, o.z0, o.z1);
-      });
-      const dis = Math.abs(k.c) === H || k.c === BANT_ARKA;
-      for (const [a, b] of sp) out.push({ yon: k.yon, c: k.c, a, b, dis, yan: k.yon === 'z' && dis && b > BAND.front });
-    }
-  });
-  return out;
-}
-
+// ---- Duvar: açık dikdörtgenlerin BİRLEŞİMİNİN çevresi (`kat2/yapiOlcu`; G-116 hat başına tek parça) ----
 /** Yan duvarlarda pencere boşlukları (salon kısmında, 4,25 adımla). */
 function pencereler(k: Kenar): { a: number; b: number }[] {
   if (!k.yan) return [];
@@ -132,8 +101,7 @@ function hat(k: Kenar): WallSlab[] {
  * açık alana göre `Bolmeler`de çizilir (`kat.kat2Duvarlar`ın katı gövdeleriyle aynı kural).
  */
 function Duvarlar() {
-  const bant: Dik = { x0: -H, x1: H, z0: BANT_ARKA, z1: BAND.front };
-  const kenarlar = cevre([bant, ...KAT2_ALANLAR]).filter((k) => k.dis);
+  const kenarlar = disKenarlar(KAT2_ALANLAR);
   const camlar = kenarlar.flatMap((k) =>
     pencereler(k).map((g) => {
       const c = k.c + Math.sign(k.c) * M;
@@ -149,9 +117,9 @@ function Duvarlar() {
           <meshStandardMaterial color={PALETTE.glass} emissive={PALETTE.glass} emissiveIntensity={0.18} transparent opacity={0.34} />
         </mesh>
       ))}
-      {/* kovanın ara duvarları (Kat 1 ile aynı hat, 2,2) */}
-      <MaketWall x1={KOVA.x0} z1={BANT_ARKA} x2={KOVA.x0} z2={BAND.front} h={2.2} />
-      <MaketWall x1={KOVA.x1} z1={BANT_ARKA} x2={KOVA.x1} z2={BAND.front} h={2.2} />
+      {/* kovanın ara duvarları (Kat 1 ile aynı hat, 2,2) — G-116: arka uç dış duvarın eksenine kadar (arada çentik yok) */}
+      <MaketWall x1={KOVA.x0} z1={BANT_ARKA - M} x2={KOVA.x0} z2={BAND.front} h={2.2} />
+      <MaketWall x1={KOVA.x1} z1={BANT_ARKA - M} x2={KOVA.x1} z2={BAND.front} h={2.2} />
     </group>
   );
 }
@@ -297,22 +265,34 @@ function Baba({ x, z }: { x: number; z: number }) {
 }
 
 function MerdivenAgzi() {
-  const N = 14;
+  const N = KUYU_BASAMAK;
   const D = (AGIZ.on - AGIZ.arka) / N;
-  const h = 3.2 / N;
+  const h = KUYU_DERIN / N;
   const x = AGIZ.x;
   const yan = AGIZ.sahanlik;
+  const boy = AGIZ.on - AGIZ.arka;
   return (
     <group>
       {[-1, 1].map((s) => (
-        <mesh key={s} position={[s * x, -1.6, (AGIZ.arka + AGIZ.on) / 2]}>
-          <boxGeometry args={[0.05, 3.2, AGIZ.on - AGIZ.arka]} />
-          <meshStandardMaterial color="#5a4a3e" />
+        <mesh key={s} position={[s * x, -KUYU_DERIN / 2, (AGIZ.arka + AGIZ.on) / 2]}>
+          <boxGeometry args={[KUYU_YANAK, KUYU_DERIN, boy]} />
+          <meshStandardMaterial color={KUYU_RENK} />
         </mesh>
       ))}
+      {/* G-101: kuyu kapalı kabuk — arka/ön perde + dip; zeminin kenarından aşağı (dışarıya) bakan yarık kalmaz */}
+      {[AGIZ.arka - KUYU_PERDE / 2, AGIZ.on + KUYU_PERDE / 2].map((z) => (
+        <mesh key={z} position={[0, -KUYU_DERIN / 2, z]}>
+          <boxGeometry args={[2 * x + KUYU_YANAK, KUYU_DERIN, KUYU_PERDE]} />
+          <meshStandardMaterial color={KUYU_RENK} />
+        </mesh>
+      ))}
+      <mesh position={[0, -KUYU_DERIN - KUYU_PERDE / 2, (AGIZ.arka + AGIZ.on) / 2]}>
+        <boxGeometry args={[2 * x + KUYU_YANAK, KUYU_PERDE, boy + 2 * KUYU_PERDE]} />
+        <meshStandardMaterial color={KUYU_RENK} />
+      </mesh>
       {Array.from({ length: N }, (_, i) => (
         <mesh key={i} position={[0, -(i + 0.5) * h - 0.02, AGIZ.arka + (i + 0.5) * D]} receiveShadow>
-          <boxGeometry args={[x * 2 - 0.1, h, D]} />
+          <boxGeometry args={[2 * kuyuBasamakYariEn(x), h, D]} />
           <meshStandardMaterial color={i % 2 ? '#8a6a4f' : '#94735a'} />
         </mesh>
       ))}
@@ -444,18 +424,8 @@ function Ocak({ i, ilk }: { i: number; ilk: ReadonlySet<string> }) {
 /** D-201: lavabonun çizim seviyesi = L1 + alınan lavabo yükseltmesi (Kat 1 `wcSeviye` gibi; lavabo/kabin sayısı büyür). */
 const kat2LavaboSeviye = (yukLavabo: number | undefined): number => 1 + (yukLavabo ?? 0);
 
-/**
- * Bandın sağ arka köşesi: açıkken Kat 1'in lavabo odası (yerinde büyür), kapalıyken P3 perde (damla
- * levhası) + arkada kaba inşaat — perde 2,4, kamera üstünden içeriyi görür; boş oda okunmasın.
- */
-function Kat2Lavabo({ acik, ilk }: { acik: boolean; ilk: ReadonlySet<string> }) {
-  const seviye = useGame((s) => kat2LavaboSeviye(s.kat2.yuk?.lavabo));
-  if (acik)
-    return (
-      <Dogus dogus={!ilk.has(KAT2_LAVABO_PAD)} pos={[(KOVA.x1 + H) / 2, 0, (BANT_ARKA + BAND.front) / 2]}>
-        <MaketLavaboBlock seviye={seviye} />
-      </Dogus>
-    );
+/** Kapalı lavabonun tadilat takımı: P3 perde (WC levhası) + arkada kaba inşaat. */
+function LavaboTadilat() {
   return (
     <group>
       <MaketTadilatPerde x1={KOVA.x1 + 0.2} x2={H} z={BAND.front} simge="lavabo" />
@@ -463,6 +433,34 @@ function Kat2Lavabo({ acik, ilk }: { acik: boolean; ilk: ReadonlySet<string> }) 
       <MaketMoloz pos={[7.0, 0, BANT_ARKA + 3.3]} />
       <MaketCrates pos={[H - 1.3, 0, BANT_ARKA + 1.1]} />
     </group>
+  );
+}
+
+/** Lavabo köşesinin merkezi ve toz elipsi (perdenin hemen arkası — kameradan görünsün). */
+const LAVABO_MERKEZ: [number, number] = [(KOVA.x1 + H) / 2, (BANT_ARKA + BAND.front) / 2];
+const LAVABO_TOZ = { merkez: [LAVABO_MERKEZ[0], BAND.front - 1.4] as [number, number], yaricap: [4.2, 1.1] as [number, number], n: 16 };
+
+/**
+ * Bandın sağ arka köşesi: açıkken Kat 1'in lavabo odası (yerinde büyür), kapalıyken P3 perde (WC
+ * levhası) + arkada kaba inşaat — perde 2,4, kamera üstünden içeriyi görür; boş oda okunmasın.
+ * G-117: oturumda açılınca merdivenin dönüşümü — tadilat takımı gömülür, toz kalkar (`TozDonusumu`).
+ */
+function Kat2Lavabo({ acik, ilk }: { acik: boolean; ilk: ReadonlySet<string> }) {
+  const seviye = useGame((s) => kat2LavaboSeviye(s.kat2.yuk?.lavabo));
+  const [gecis, setGecis] = useState(true);
+  if (!acik) return <LavaboTadilat />;
+  const donusum = !ilk.has(KAT2_LAVABO_PAD);
+  return (
+    <>
+      <Dogus dogus={donusum} pos={[LAVABO_MERKEZ[0], 0, LAVABO_MERKEZ[1]]}>
+        <MaketLavaboBlock seviye={seviye} />
+      </Dogus>
+      {donusum && gecis && (
+        <TozDonusumu {...LAVABO_TOZ} bitti={() => setGecis(false)}>
+          <LavaboTadilat />
+        </TozDonusumu>
+      )}
+    </>
   );
 }
 

@@ -4,10 +4,14 @@ import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } fro
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
 import { CAM_FOCUS_TTL, adFreeDailyReady, cardQuestIndex, kat2UstaCarpan, masterAdsLeft, masterCost, toastCizilir, questInTransition, QUEST_COMPLETE_DUR, QUEST_GAP_DUR, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
-import { ogreticiAdimi, ogreticiMetni, yurudu } from '../../game/onboarding';
+import {
+  KAT2_IPUCU_METIN, KAT2_TANITIM_METIN, kat2IpucuAdimi, kat2IpucuHedefi, kat2NoktaBildirimi, kat2Noktalar, kat2TanitimAni,
+  kat2YeniNokta, ogreticiAdimi, ogreticiMetni, yurudu, type Kat2Ipucu,
+} from '../../game/onboarding';
+import { hedefEkranda } from '../../game/cameraView';
 import { kat2GorevGorunumu, kat2Gorevleri, type Kat2GorevGorunum } from '../../game/kat2Gorev';
 import { KAT2_USTA_ONEK, kat2UstaMasalari, kat2UstaUygun, type Kat2Ayar } from '../../game/kat2Dongu';
-import { KAT2_MASALAR } from '../../game/kat';
+import { KAT2_MASALAR, type Kat2Kayit } from '../../game/kat';
 import { LAYOUT } from '../../game/layout';
 import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
@@ -15,7 +19,7 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { odulAlindi, odulluIzleSonuc, odulluReklamHazir, panelKapandi, reklamAbone, reklamTercihleriGerekli, reklamTercihleriniAc, sogumaSifirla } from '../../game/ads';
 import { yasalAdres } from '../../config/yasal.config';
-import { merdivenRehberi, rehberHedefi, rehberOku, screenPointer } from '../../game/screenPointer';
+import { kat2GorevHedefi, merdivenRehberi, rehberHedefi, rehberOku, screenPointer } from '../../game/screenPointer';
 import { magazaDurumu, magazaYenile, satinAlimlariGeriYukle, urunFiyati, type SatinAlCevap } from '../../game/iap';
 import { useSatinAl } from './useSatinAl';
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
@@ -191,6 +195,8 @@ export function HUD() {
   useEffect(() => {
     k2OncekiGorev.current = kat2Gorev;
   });
+  // S5 · Kat 1 eşitliği: yeni nokta → kamera pan (G-107) · ilk çıkış tanıtım bandı (G-94) · ilk ipuçları (G-104).
+  const k2Ipucu = useKat2Rehber(k2Kutlama != null);
   const [bitisGorunur, setBitisGorunur] = useState(true);
   const questBitti = quest == null;
   // Hat yeniden uzarsa (yeni görev eklenirse) bant tekrar hak eder — render sırasında düzeltilir.
@@ -313,7 +319,8 @@ export function HUD() {
     tepsiIpucuHazir: !kat2de && tepsiAni && !trayTipSeen,
     seviyeVar: levelUp != null,
     baslangicTeklifHazir: teklifHazir,
-    ogreticiHazir: !kat2de && ogreticiAdim != null,
+    // G-104: Kat 2'de öğretici kanalını Kat 2'nin ilk ipucu kullanır (aynı sıra kuralı, aynı satır).
+    ogreticiHazir: kat2de ? k2Ipucu != null : ogreticiAdim != null,
   });
   const teklif = kanal === 'teklif-baslangic';
   const showOffline = kanal === 'cevrimdisi';
@@ -552,8 +559,15 @@ export function HUD() {
       )}
 
       {/* ───────── E5 ÖĞRETİCİ: bandın üstünde tek satır (+ ilk adımda sürükleyen el) ───────── */}
-      {kanal === 'ogretici' && ogreticiAdim && ogreticiMetinK && (
+      {kanal === 'ogretici' && ogreticiAdim && ogreticiMetinK && !kat2de && (
         <Ogretici adim={ogreticiAdim} metin={ogreticiMetinK} onAtla={ogreticiAtla} />
+      )}
+      {kanal === 'ogretici' && kat2de && k2Ipucu && (
+        <div className="ogretici" data-testid="kat2-ipucu" data-ipucu={k2Ipucu}>
+          <div className="ogretici-satir k2-ipucu" key={k2Ipucu}>
+            <span className="ogretici-metin">{t(KAT2_IPUCU_METIN[k2Ipucu])}</span>
+          </div>
+        </div>
       )}
 
       {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
@@ -737,6 +751,7 @@ export function HUD() {
         <Suspense fallback={null}>
           <CharacterPanel
             onClose={() => setSheet(null)}
+            vurgu={!kat2de && quest?.target.type === 'charStat' ? quest.target.stat : undefined}
             ilkSekme={quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed' ? 'waiter' : 'player'}
           />
         </Suspense>
@@ -944,6 +959,93 @@ export function HUD() {
       )}
     </div>
   );
+}
+
+const K2_AYAR = economyConfig.kat2 as Kat2Ayar;
+const K2_HAZIR: readonly string[] = economyConfig.kat2.hazir;
+
+/** Kat 2 kamerasını hedefe kısa kaydırır (Kat 1 `requestFocus`: hedef zaten ekrandaysa pan YOK — H1). */
+function kat2Pan(yer: readonly [number, number]): boolean {
+  if (hedefEkranda(yer[0], yer[1])) return false;
+  useGame.setState({ camFocus: { pos: [yer[0], 0, yer[1]], ttl: CAM_FOCUS_TTL, kat2: true } });
+  return true;
+}
+
+/** Kat 1 bildirim bandı (reveal) — sıraya girer, Kat 1 toast'larıyla aynı kuyruk. */
+function kat2Bildir(text: string) {
+  useGame.setState((s) => ({ noticeQueue: [...s.noticeQueue, { text: t(text), ttl: 4.5, kind: 'reveal' as const }] }));
+}
+
+/**
+ * S5 — KAT 2'DE KAT 1'İN REHBERLİĞİ (`docs/s5-ux-denetim.md`). Mantık saf ve `game/onboarding.ts`te; burada
+ * yalnız "ne zaman" (önceki ↔ şimdiki):
+ *  - G-107: yeni bir satın alma noktası belirince kamera kısa pan, sonra oyuncuya döner (Kat 1 reveal/alan panı).
+ *    Görev kutlaması sürerken ertelenir (Kat 1 G-44); kutlama bitince yeni görevin hedefine (Kat 1 görev panı),
+ *    o ekrandaysa ertelenen noktaya.
+ *  - G-94: ilk çıkışta perde açılınca "bu kat ne" bandı.
+ *  - G-104: ilk kahve / ilk bulaşık ipucu; belirdiği an kamera hedefe (Kat 1 G-63 `focusDish`).
+ * Dönüş: o an gösterilecek ipucu (kanal sırası HUD'da).
+ */
+function useKat2Rehber(kutlama: boolean): Kat2Ipucu | null {
+  const kat2 = useGame((s) => s.kat2) as Kat2Kayit;
+  const kat = useGame((s) => s.kat);
+  const gecis = useGame((s) => s.katGecis != null);
+  const ipucu = useGame((s) =>
+    kat2IpucuAdimi({
+      kat: s.kat,
+      gecis: s.katGecis != null,
+      padsDone: s.kat2.padsDone,
+      tepsi: s.kat2Dunya.tepsi,
+      tepsiKirli: s.kat2Dunya.tepsiKirli ?? 0,
+      alinan: s.stats.kat2Alinan ?? 0,
+      yikanan: s.stats.kat2Yikanan ?? 0,
+    }),
+  );
+  const noktalar = useRef<Set<string> | null>(null);
+  const bekleyen = useRef<[number, number] | null>(null);
+  const idx = kat2.gorev?.idx ?? 0;
+  const oncekiIdx = useRef(idx);
+  const oncekiKutlama = useRef(kutlama);
+  const oncekiGecis = useRef<{ kat: number; gecis: boolean } | null>(null);
+
+  useEffect(() => {
+    const n = kat2Noktalar(kat2, K2_AYAR);
+    const yeni = kat === 2 && !gecis ? kat2YeniNokta(noktalar.current, n) : null;
+    noktalar.current = new Set(n.keys());
+    const ilerledi = idx > oncekiIdx.current;
+    oncekiIdx.current = idx;
+    if (!yeni) return;
+    const metin = kat2NoktaBildirimi(yeni.anahtar);
+    if (metin) kat2Bildir(metin);
+    // Görev bu karede bittiyse kutlama henüz çizilmedi (HUD efektte açar) — o da ertelenir.
+    if (kutlama || ilerledi) bekleyen.current = yeni.yer;
+    else kat2Pan(yeni.yer);
+  }, [kat2, kat, gecis, idx, kutlama]);
+
+  useEffect(() => {
+    const bitti = oncekiKutlama.current && !kutlama;
+    oncekiKutlama.current = kutlama;
+    if (!bitti) return;
+    const b = bekleyen.current;
+    bekleyen.current = null;
+    if (useGame.getState().kat !== 2) return;
+    const h = kat2GorevHedefi(useGame.getState().kat2);
+    if (!(h && kat2Pan(h)) && b) kat2Pan(b);
+  }, [kutlama]);
+
+  useEffect(() => {
+    const simdi = { kat, gecis, hazirda: kat2.padsDone.every((id) => K2_HAZIR.includes(id)) };
+    if (kat2TanitimAni(oncekiGecis.current, simdi)) kat2Bildir(KAT2_TANITIM_METIN);
+    oncekiGecis.current = { kat, gecis };
+  }, [kat, gecis, kat2.padsDone]);
+
+  useEffect(() => {
+    if (!ipucu) return;
+    const h = kat2IpucuHedefi(ipucu, useGame.getState().kat2.padsDone);
+    if (h) kat2Pan(h);
+  }, [ipucu]);
+
+  return ipucu;
 }
 
 /**

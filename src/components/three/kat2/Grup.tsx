@@ -5,10 +5,14 @@
  * kalan süresini (`t`) tutar (`kat2Dongu`). Görsel bunlardan TÜRER, kendi saati yoktur:
  *  · geliyor : yolun neresinde olduğu = kalan süre / toplam süre (sahne sonradan açılsa da doğru yerde)
  *  · bos (son saniyeler) : grup merdivenden erken çıkmaya başlar — `yurume` (5 sn) uzak masaya
- *    yürümek için kısa; görsel süre `ONCE_EN_COK` kadar öne uzar, mantık değişmez.
+ *    yürümek için kısa; görsel süre yolun gerektirdiği kadar (en çok `ONCE_EN_COK`) öne uzar, mantık
+ *    değişmez. Boş süre kısaysa (Sv5: 1,5 sn) yeni grup önceki daha oynarken çıkış takımıyla yola çıkar.
  *  · oyunda : oturur, oynar (baş sallar, gövde hafif döner; masada taş/zar oynar — `Esya`).
- *  · oyun biter (oyunda → başka durum): KISA ÇIKIŞ — kalkar, geldiği yoldan döner; merdivene
- *    yetişemeyecek kadar uzaksa yolda söner. Durumda yok, yalnız görsel (rapora yazıldı).
+ *  · oyun biter (oyunda → başka durum): ÇIKIŞ (G-99) — kalkar, çıkış şeridinden kuyunun yanına,
+ *    sahanlıktan merdivene yürür ve İNERKEN (kuyu dibinde, zeminin altında) söner (`cikisYolu`).
+ *    Çıkan grup kendi gövde takımıyla yürür: kalkışta oturan takım çıkış takımı olur, yeni grup
+ *    öbür takımla gelir — Sv5'te boş süre 1,5 sn, iki grup aynı anda yolda (eskiden yeni geliş
+ *    çıkanı salonun ortasında silerdi). Durumda yok, yalnız görsel.
  *    Geçiş KAREDE değil store aboneliğinde yakalanır (`useKalkisIzle`): her durum yazımı görülür,
  *    kare atlansa, gövde henüz yüklenmese ya da birkaç tick tek karede koşsa da kalkış kaçmaz.
  *
@@ -19,7 +23,7 @@ import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
 import {
-  AnimationMixer, BufferAttribute, Color, Group, MathUtils, MeshStandardMaterial, SkinnedMesh,
+  AnimationMixer, BufferAttribute, Color, Group, MeshStandardMaterial, SkinnedMesh,
   type AnimationAction, type AnimationClip, type Bone, type BufferGeometry,
 } from 'three';
 import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
@@ -30,17 +34,18 @@ import { KAY_KOK, KAY_MUSTERI_GOVDE, KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, KAY_
 import { PALETTE } from '../../../config/palette';
 import { KLIP, LOKOMOSYON_YURUYUS, basMi, ekipmanMi, kafaKucult, lokomosyonSec, useKayKlipler } from '../KayActor';
 import type { Kat2MasaYeri } from '../../../game/kat';
-import { GRUP_ARA, GRUP_HIZ, gelisHizi, gelisOrani, grupYolu, oturakYerleri, yolKur, yolNoktasi, type Nokta, type Yol } from './yol';
+import { GRUP_HIZ, SONME_SN, cikisPozu, cikisSuresi, cikisYolu, gelisGecen, gelisHizi, gelisOrani, gerekenOnce, grupYolu, oturakYerleri, yolKur, yolNoktasi, type Nokta, type Yol } from './yol';
+import { svCarpan } from '../../../game/kat2Dongu';
 import { useMasaSv } from './masaSv';
 import { masaBul } from './masaIndeks';
 import { iskeletleriBirak, useSokulurkenBirak } from '../katKatmani';
 
 const AYAR = economyConfig.kat2;
-/** Grup en çok bu kadar sn önce merdivenden çıkmaya başlar (mantıktaki `bos` süresinin sonu). */
-const ONCE_EN_COK = 8;
-/** Kısa çıkış: en çok bu kadar sn yürür, sonra (merdivene yetişmediyse) söner. */
-const CIKIS_SN = 5.5;
-const SONME_SN = 0.35;
+/**
+ * Grup en çok bu kadar sn önce merdivenden çıkmaya başlar (mantıktaki `bos` süresinin sonu). Oyun 90 sn,
+ * çıkış ≤ ~30 sn: erken gelen, önceki grubun çıkışı bittikten sonra yola çıkar (iki takım yeter).
+ */
+const ONCE_EN_COK = 24;
 const GOMLEK = ['#c0504d', '#4f81bd', '#9bbb59', '#8064a2', '#f79646', '#4bacc6', '#d6b656', '#7f6084', '#e8e1d0', '#5b8a72'];
 
 type TurGeo = { bas: BufferGeometry | null; govde: BufferGeometry | null };
@@ -160,11 +165,13 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
   const sv = useMasaSv(yer.id);
   const oturaklar = useMemo(() => oturakYerleri(yer.tur, sv), [yer.tur, sv]);
   const yollar = useMemo<Yol[]>(() => oturaklar.map((o, k) => yolKur(grupYolu(yer, o, k))), [yer, oturaklar]);
-  const enUzun = Math.max(...yollar.map((y) => y.boy));
-  // Görsel geliş süresi: mantığın `yurume`si + merdivenden erken çıkış (çıkışla çakışmasın diye sınırlı).
-  const once = MathUtils.clamp(enUzun / GRUP_HIZ - AYAR.yurume, 0, Math.max(0, Math.min(ONCE_EN_COK, AYAR.gelisAralik - CIKIS_SN - SONME_SN - 0.5)));
-  const T = AYAR.yurume + once;
-  const gelHiz = gelisHizi(yollar.map((y) => y.boy), T);
+  const cikislar = useMemo<Yol[]>(() => oturaklar.map((o, k) => yolKur(cikisYolu(yer, o, k))), [yer, oturaklar]);
+  const boylar = useMemo(() => yollar.map((y) => y.boy), [yollar]);
+  const cikisSn = useMemo(() => cikisSuresi(cikislar.map((y) => y.boy)), [cikislar]);
+  // Görsel geliş: mantığın `yurume`si + merdivenden erken çıkış (en çok `ONCE_EN_COK`; masanın boş süresiyle
+  // ayrıca kısılır — `gelisGecen`). Çıkan grup ayrı takım olduğundan geliş onu beklemez.
+  const once = Math.min(gerekenOnce(boylar, AYAR.yurume), ONCE_EN_COK);
+  const bosSure = AYAR.gelisAralik * svCarpan(AYAR.masaSv?.[yer.tur]?.gelisAralikCarpan, sv);
 
   const kaynaklar = useGLTF(useMemo(() => KAY_MUSTERI_GOVDE.map((g) => `${KAY_KOK}${g}.glb`), []));
   const klipler = useKayKlipler();
@@ -173,7 +180,8 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
     g.userData.k2npc = true; // oyuncu silüeti (bölme adayı D) bu gövdeleri atlar
     return g;
   }, []);
-  const govdeler = useRef<Govde[] | null>(null);
+  // İki takım: masanınki (gelen/oturan) ve çıkanınki. Kalkışta yer değiştirir.
+  const takim = useRef<{ masa: Govde[] | null; cikan: Govde[] | null }>({ masa: null, cikan: null });
   // Klon iskeletlerinin GPU kemik dokuları + gövdeye özel materyal: masa sökülünce bırakılır — eskiden
   // her Kat 2 girişinde iskelet başına bir doku birikiyordu (perf W3). Kat gizlenirken (Activity) değil:
   // dönüşte yeniden kurulum/derleme olmasın. Katmanın tamamı sökülürse `KatKatmani` bırakır.
@@ -181,119 +189,123 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
   useEffect(
     () => () => {
       if (!birak()) return;
-      for (const g of govdeler.current ?? []) {
+      for (const g of [...(takim.current.masa ?? []), ...(takim.current.cikan ?? [])]) {
         iskeletleriBirak(g.kok);
         g.mat.dispose();
       }
     },
     [birak],
   );
-  const hal = useRef({ onceki: 'kapali', kip: 'yok', cikisT: -1, ziyaret: sira * 3, kalkis: kalkisAni.get(yer.id) ?? 0 });
+  const hal = useRef({ onceki: 'kapali', cikisT: -1, gelis: false, ziyaret: sira * 3, kalkis: kalkisAni.get(yer.id) ?? 0, once });
 
   useFrame((st, dt) => {
     const m = masaBul(useGame.getState().kat2Dunya.masalar, yer.id);
     const durum = m?.durum ?? 'kapali';
     const h = hal.current;
+    const tk = takim.current;
     const ani = kalkisAni.get(yer.id) ?? 0;
     if (ani !== h.kalkis) {
-      // Yeni kalkış: aradan geçen süre kadar ileriden başlar (gövde geç yüklendiyse yetişir).
+      // Yeni kalkış: oturan takım çıkış takımı olur, yoldaki (erken gelen) takım masanın takımı; çıkış aradan
+      // geçen süre kadar ileriden başlar (gövde geç yüklendiyse yetişir).
       h.kalkis = ani;
       const gecti = (performance.now() - ani) / 1000;
-      h.cikisT = gecti < CIKIS_SN ? Math.max(0, gecti - dt) : -1;
+      [tk.masa, tk.cikan] = [tk.cikan, tk.masa];
+      h.cikisT = gecti < cikisSn + SONME_SN ? Math.max(0, gecti - dt) : -1;
     }
-    if (durum === 'geliyor' && h.onceki !== 'geliyor') h.cikisT = -1;
+    // Boşa düşüş: kalkıştan değilse (masa yeni açıldı: ilk grup 3 sn'de) erken çıkış o boş süreye sığar.
+    if (durum === 'bos' && h.onceki !== 'bos' && m) h.once = h.onceki === 'oyunda' ? once : Math.min(once, Math.max(0, m.t));
+    if (durum === 'oyunda') h.once = once;
     h.onceki = durum;
     if (h.cikisT >= 0) h.cikisT += dt;
+    if (h.cikisT > cikisSn + SONME_SN) h.cikisT = -1;
 
-    // Hangi kip: gel (yol oranı) · otur · çık · yok
-    let kip: 'gel' | 'otur' | 'cik' | 'yok' = 'yok';
-    let gecen = 0;
-    if (h.cikisT >= 0 && h.cikisT < CIKIS_SN + SONME_SN) kip = 'cik';
-    else if (durum === 'oyunda') kip = 'otur';
-    else if (durum === 'geliyor' && m) {
-      kip = 'gel';
-      gecen = T - m.t;
-    } else if (durum === 'bos' && m && m.t <= once) {
-      kip = 'gel';
-      gecen = once - m.t;
-    }
-    if (h.cikisT >= CIKIS_SN + SONME_SN) h.cikisT = -1;
-    // Yeni grup (gömlek renkleri değişir): geliş, oturma ya da gelişin içinden başlamadıysa.
-    if (kip === 'gel' && h.kip !== 'gel' && h.kip !== 'otur') h.ziyaret++;
-    h.kip = kip;
-
-    if (kip === 'yok') {
-      if (govdeler.current) for (const g of govdeler.current) g.kok.visible = false;
-      return;
-    }
-    if (!govdeler.current) {
-      govdeler.current = yollar.map((_, k) => {
+    // Sıradaki grubun gelişi: oyun sürerken çıkış takımıyla (önceki çıkış bittiyse), sonra masanın takımıyla.
+    const gecen = m ? gelisGecen(durum, m.t, h.once, AYAR.yurume, bosSure) : null;
+    const erken = durum === 'oyunda' && gecen != null && h.cikisT < 0;
+    const kur = () =>
+      yollar.map((_, k) => {
         const g = govdeKur(kaynaklar[(sira * 2 + k) % kaynaklar.length].scene as Group, klipler, sira * 4 + k);
         kap.add(g.kok);
         return g;
       });
-    }
+    if ((durum === 'oyunda' || gecen != null) && !tk.masa) tk.masa = kur();
+    if (erken && !tk.cikan) tk.cikan = kur();
+    const gelen = erken ? tk.cikan : durum !== 'oyunda' && gecen != null ? tk.masa : null;
+    // Yeni grup (gömlek renkleri değişir) yola çıktığı an; kalkışta takım değişse de aynı grup sürer.
+    if (gelen && !h.gelis) h.ziyaret++;
+    h.gelis = !!gelen;
+
     const zaman = st.clock.elapsedTime;
-    govdeler.current.forEach((g, k) => {
-      if (g.renkZiyaret !== h.ziyaret) {
-        g.renkZiyaret = h.ziyaret;
-        g.mat.color.set(GOMLEK[(h.ziyaret * 4 + k * 3) % GOMLEK.length]);
-      }
-      const yol = yollar[k];
+    const gelHiz = gelisHizi(boylar, AYAR.yurume + h.once);
+    // Bekleyen geliş (kirli masa: grup oturmaz) yerinde yürümez, durur.
+    const bekliyor = durum === 'bos' && (m?.t ?? 1) <= 0;
+
+    /** Gövdeyi yol üstüne (ya da `u ≥ 1` oturağa) koyar. `u`: oturağa doğru oran; çıkışta yol ters (kuyuya doğru). */
+    const poz = (g: Govde, k: number, u: number, hiz: number, yol: Yol, olcek: number, cik: boolean, oyna: boolean) => {
       const [dx, dz] = oturaklar[k];
       const aciOtur = Math.atan2(-dx, -dz);
-      let olcek = 1;
-      if (kip === 'otur') {
+      if (u >= 1) {
         g.kok.position.set(yer.x + dx + Math.sin(aciOtur) * KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, yer.z + dz + Math.cos(aciOtur) * KAY_OTURMA_ILERI);
         // oynuyor hissi: gövde ıstakaya doğru hafifçe döner (oyuncu başına ayrı faz)
-        g.kok.rotation.y = aciOtur + 0.12 * Math.sin(zaman * 0.8 + k * 1.7 + sira);
+        g.kok.rotation.y = oyna ? aciOtur + 0.12 * Math.sin(zaman * 0.8 + k * 1.7 + sira) : aciOtur;
         klipSec(g, KLIP.otur);
       } else {
-        let u: number;
-        let hiz: number;
-        if (kip === 'gel') {
-          u = gelisOrani(yol.boy, k, gecen, gelHiz);
-          hiz = u < 1 ? gelHiz : 0;
-          if (u <= 0) {
-            g.kok.visible = false;
-            return;
-          }
-        } else {
-          // çıkış: oturaktan geldiği yola, merdivene doğru (ters yön)
-          const yuruyen = Math.max(0, h.cikisT - k * GRUP_ARA);
-          hiz = GRUP_HIZ;
-          u = 1 - (yuruyen * GRUP_HIZ) / yol.boy;
-          if (u <= 0) {
-            g.kok.visible = false;
-            return;
-          }
-          const kalan = h.cikisT - CIKIS_SN;
-          if (kalan > 0) olcek = Math.max(0.001, 1 - kalan / SONME_SN);
-        }
-        let aci = yolNoktasi(yol, u, _p);
-        if (kip === 'cik') aci += Math.PI;
-        if (u >= 1) {
-          g.kok.position.set(yer.x + dx + Math.sin(aciOtur) * KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, yer.z + dz + Math.cos(aciOtur) * KAY_OTURMA_ILERI);
-          g.kok.rotation.y = aciOtur;
-          klipSec(g, KLIP.otur);
-        } else {
-          g.kok.position.set(_p[0], _p[1], _p[2]);
-          let fark = aci - g.kok.rotation.y;
-          while (fark > Math.PI) fark -= Math.PI * 2;
-          while (fark < -Math.PI) fark += Math.PI * 2;
-          g.kok.rotation.y += fark * Math.min(1, dt * 10);
-          const sec = lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, hiz);
-          klipSec(g, sec.klip, sec.timeScale);
-        }
+        const aci = yolNoktasi(yol, cik ? 1 - u : u, _p);
+        g.kok.position.set(_p[0], _p[1], _p[2]);
+        let fark = aci - g.kok.rotation.y;
+        while (fark > Math.PI) fark -= Math.PI * 2;
+        while (fark < -Math.PI) fark += Math.PI * 2;
+        g.kok.rotation.y += fark * Math.min(1, dt * 10);
+        const sec = lokomosyonSec(LOKOMOSYON_YURUYUS.yuru, hiz);
+        klipSec(g, sec.klip, sec.timeScale);
       }
       g.kok.scale.setScalar(KAY_SCALE * olcek);
       g.kok.visible = true;
       if (g.bas) g.bas.rotation.x -= g.basEk;
       g.mixer.update(dt);
       // oturan baş: düşünür gibi hafif öne eğilip kalkar (klibin üstüne eklenir)
-      g.basEk = kip === 'otur' ? 0.16 * Math.max(0, Math.sin(zaman * 0.9 + k * 2.1 + sira * 0.7)) : 0;
+      g.basEk = oyna ? 0.16 * Math.max(0, Math.sin(zaman * 0.9 + k * 2.1 + sira * 0.7)) : 0;
       if (g.bas) g.bas.rotation.x += g.basEk;
+    };
+
+    // Gelen takım: yol oranıyla yürür (oturağa varan oturur, oyun başlayana dek oynamaz).
+    gelen?.forEach((g, k) => {
+      if (g.renkZiyaret !== h.ziyaret) {
+        g.renkZiyaret = h.ziyaret;
+        g.mat.color.set(GOMLEK[(h.ziyaret * 4 + k * 3) % GOMLEK.length]);
+      }
+      const u = gelisOrani(yollar[k].boy, k, gecen ?? 0, gelHiz);
+      if (u <= 0) {
+        g.kok.visible = false;
+        return;
+      }
+      poz(g, k, u, u < 1 && !bekliyor ? gelHiz : 0, yollar[k], 1, false, false);
     });
+    // Masanın takımı oyunda oturur; gelmiyorsa ve oyunda değilse gizli.
+    if (tk.masa && tk.masa !== gelen) {
+      tk.masa.forEach((g, k) => {
+        if (durum !== 'oyunda') {
+          g.kok.visible = false;
+          return;
+        }
+        if (g.renkZiyaret < 0) {
+          g.renkZiyaret = h.ziyaret;
+          g.mat.color.set(GOMLEK[(h.ziyaret * 4 + k * 3) % GOMLEK.length]);
+        }
+        poz(g, k, 1, 0, yollar[k], 1, false, true);
+      });
+    }
+    // Çıkan takım: kalkıştan sonra kuyuya iner (sırası gelmeyen üye hâlâ oturur: ilerleme 0 = oturak).
+    if (tk.cikan && tk.cikan !== gelen) {
+      tk.cikan.forEach((g, k) => {
+        const p = h.cikisT >= 0 ? cikisPozu(cikislar[k].boy, k, h.cikisT) : null;
+        if (!p) {
+          g.kok.visible = false;
+          return;
+        }
+        poz(g, k, 1 - p.u, p.u > 0 ? GRUP_HIZ : 0, cikislar[k], p.olcek, true, false);
+      });
+    }
   });
 
   return <primitive object={kap} />;

@@ -1,0 +1,17 @@
+=== T9d — q_tost5 ELLE SÜRESİ (oyunun kendi tick'i, görev hattının q_tost5 noktası) ===
+Dünya: 11 masa · 3 salon · tezgâh iç seviye 5 · garson 2 · oyuncu tepsisi kademe 2 · tavan 45 dk · tohum 3 · DT 1/60
+
+tohum | elle 1. / 3. / 5. tost (dk) | her tost 5. (elle) | her tost 5. (AFK) | tost payı | yürünen br | tepsi boşaltma
+20260924 | 0.6 / 2.9 / 4.5 | 2.9 | 2.6 | %23.5 | 857 | 0
+20260925 | 0.5 / 1.4 / 2.6 | 2.6 | 3.5 | %24.3 | 495 | 0
+20260926 | 1.2 / 2.7 / 7.2 | 1.4 | 1.2 | %23.2 | 1262 | 0
+
+§KOLLAR (ortalama, dk)
+V0  eski — yalnız oyuncunun tostu, 5  : 4.8
+V3  D-148 — yalnız oyuncunun tostu, 3: 2.3
+V1  her tost sayılır, 5 (oyuncu aktif): 2.3
+V1a her tost sayılır, 5 (oyuncu AFK)  : 2.4
+
+Not: bot süresi insanın alt sınırı değildir (bot tezgâhta bekler, sıcak tostu görünce koşmaz).
+
+✓ Damgalar temiz (tam koşu).

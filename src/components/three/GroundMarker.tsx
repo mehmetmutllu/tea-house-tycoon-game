@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { Text } from '@react-three/drei';
-import { MathUtils, MeshBasicMaterial, Path, Shape, type Group, type Mesh } from 'three';
+import { MathUtils, MeshBasicMaterial, Path, Shape, ShapeGeometry, Vector2, type Group, type Mesh } from 'three';
 import { activeStep, markerTier } from '../../game/activeStep';
 import { dwellState } from '../../game/dwell';
 import { useGame } from '../../game/store';
@@ -11,8 +11,10 @@ import {
   KENAR_PAYI,
   OK_BOSLUK,
   OK_GENIS,
-  inFrame,
+  dolumKesiti,
   markerFrame,
+  yuvarlakDikdortgen,
+  type Nokta,
 } from '../../game/markerFrame';
 import type { Vec3 } from '../../game/types';
 
@@ -21,25 +23,10 @@ import type { Vec3 } from '../../game/types';
 const GAME_FONT_3D = '/assets/fonts/Baloo2.ttf';
 
 /**
- * ÖLÇEK ARTIK MESAFEYE GÖRE DEĞİŞMEZ (kullanıcı 2026-09-09: "yaklaşınca büyümesi çirkin duruyor").
- * Eskiden işaret uzaktayken 0,55 ölçekte duruyor, oyuncu yaklaştıkça 1,00'e doğru büyüyordu —
- * yani ekranda sürekli nefes alan bir şey vardı. Artık boy SABİT; yalnız oyuncu işaretin
- * ÜZERİNDEYKEN hafif bir kabarma olur. Tek Odak (D-080) katmanlaması ölçekten değil, YAZIDAN
- * devam ediyor: uzaktaki işaret hâlâ yazısız çizilir.
+ * İŞARETİN BOYU HİÇ DEĞİŞMEZ (G-105, oyun testi 2026-11-20: "pad dolarken büyüyüp küçülmesin, yalnız içi
+ * dolsun"). Önce mesafeye göre büyüme kalkmıştı (2026-09-09); şimdi aktif adımın nabzı ve "üzerindesin"
+ * kabarması da kalktı. Aktif adım yazının sesinden (Tek Odak, D-080), oyuncunun üstünde olduğu dolumdan okunur.
  */
-const UZERINDE_BUYUME = 1.12;
-/**
- * "ÜZERİNDE" ARTIK ÇERÇEVENİN KENDİSİ — daire değil (S24 · D-121).
- *
- * Eskiden bu test kendi dairesini kuruyordu (`hw × 1,35`) ve ölçüm onun da **%34,3**'ünün
- * çerçeve dışında olduğunu gösterdi: ekran *"buradasın"* diye kabarırken dolum başlamıyor,
- * ya da tersi oluyordu. Artık kabarma ile dolum AYNI kutuya bakıyor; geriye küçük bir pay
- * kalıyor, o da yalnızca kenarda duran oyuncunun kabarmayı kırpık görmemesi için.
- */
-const UZERINDE_PAYI = 0.06;
-/** Nabız: aktif adımın işareti yalnızca bu kadar oynar (hafif — `feedback_visual_polish`). */
-const PULSE_AMP = 0.04;
-const PULSE_HZ = 0.52;
 /** Ses geçişi yumuşatma katsayısı (MathUtils.damp) — yaklaşınca "pat" diye açılmasın. */
 const SAY_DAMP = 14;
 /** Yazı bu ses seviyesinin üstünde çizilir. */
@@ -93,22 +80,9 @@ function gemShape(): Shape {
  * çizgilere border radius geldi ama içindeki kareye gelmedi... üstteki çizgilerin etrafından
  * taşıyor"). Zemin artık hem yuvarlak köşeli hem de çerçevenin İÇİNE gömülü (`ZEMIN_ICE`).
  */
+const sekil = (n: readonly Nokta[]): Shape => new Shape(n.map(([x, y]) => new Vector2(x, y)));
 function roundedRectShape(w: number, h: number, r: number): Shape {
-  const s = new Shape();
-  const hw = w / 2;
-  const hh = h / 2;
-  const rr = Math.min(r, hw, hh);
-  s.moveTo(-hw + rr, -hh);
-  s.lineTo(hw - rr, -hh);
-  s.quadraticCurveTo(hw, -hh, hw, -hh + rr);
-  s.lineTo(hw, hh - rr);
-  s.quadraticCurveTo(hw, hh, hw - rr, hh);
-  s.lineTo(-hw + rr, hh);
-  s.quadraticCurveTo(-hw, hh, -hw, hh - rr);
-  s.lineTo(-hw, -hh + rr);
-  s.quadraticCurveTo(-hw, -hh, -hw + rr, -hh);
-  s.closePath();
-  return s;
+  return sekil(yuvarlakDikdortgen(w, h, r));
 }
 
 /**
@@ -141,11 +115,15 @@ function okShape(en: number): Shape {
  *  yazmıyor, sıra verilmezse kameraya uzaklığa göre karışıp ok ve pul soluk görünüyordu (D-176). */
 const ON_KATMAN = 10;
 
+/** Kenarlığın İÇ çevresi — deliği ve dolumu AYNI noktalardan (G-105: dolum kenarı boşluksuz izler). */
+export function icCevre(w: number, h: number, r: number, k: number): Nokta[] {
+  return yuvarlakDikdortgen(w - 2 * k, h - 2 * k, Math.max(0.01, r - k));
+}
+
 /** Kesintisiz yuvarlak kenarlık: dış yuvarlak dikdörtgen − iç yuvarlak dikdörtgen. */
 function halkaShape(w: number, h: number, r: number, k: number): Shape {
   const s = roundedRectShape(w, h, r);
-  const ic = roundedRectShape(w - 2 * k, h - 2 * k, Math.max(0.01, r - k));
-  s.holes.push(new Path(ic.getPoints(12).reverse()));
+  s.holes.push(new Path(icCevre(w, h, r, k).map(([x, y]) => new Vector2(x, y)).reverse()));
   return s;
 }
 
@@ -199,11 +177,8 @@ export function GroundMarker({
   const yaziSol = -hw + KENAR_PAYI * r + okBlok;
   const okX = -hw + KENAR_PAYI * r + (OK_GENIS * r) / 2;
 
-  const scaleRef = useRef<Group>(null);
   const speakRef = useRef<Group>(null);
-  const fillRef = useRef<Mesh>(null);
   const say = useRef(0);
-  const buyume = useRef(1);
 
   const bracketMat = useMemo(
     () => new MeshBasicMaterial({ color: '#ffffff', transparent: true, opacity: 0.5, depthWrite: false }),
@@ -222,57 +197,39 @@ export function GroundMarker({
   const zeminW = 2 * (hw - hh * ZEMIN_ICE);
   const zeminH = 2 * (hh - hh * ZEMIN_ICE);
   const zemin = useMemo(() => roundedRectShape(zeminW, zeminH, hh * KOSE_R), [zeminW, zeminH, hh]);
+  // Dolum = kenarlığın iç çevresinin alttan `p` kesiti: kenara boşluksuz değer, köşede yuvarlanır (G-105).
+  const ic = useMemo(() => icCevre(2 * hw, 2 * hh, hh * KOSE_R, hh * CERCEVE), [hw, hh]);
+  const dolum = useMemo(() => (p > 0.001 ? sekil(dolumKesiti(ic, p)) : null), [ic, p]);
 
-  useFrame((state, dt) => {
+  useFrame((_, dt) => {
     const tier = markerTier(pos, activeStep, useGame.getState().player);
     say.current = MathUtils.damp(say.current, tier === 'sessiz' ? 0 : 1, SAY_DAMP, dt);
     const s = say.current;
-
-    if (scaleRef.current) {
-      const pulse = tier === 'aktif'
-        ? 1 + PULSE_AMP * Math.sin(state.clock.elapsedTime * PULSE_HZ * Math.PI * 2)
-        : 1;
-      const pl = useGame.getState().player;
-      const uzerinde = inFrame(pl[0], pl[2], pos, { hw, hh }, UZERINDE_PAYI);
-      buyume.current = MathUtils.damp(buyume.current, uzerinde ? UZERINDE_BUYUME : 1, 12, dt);
-      scaleRef.current.scale.setScalar(buyume.current * pulse);
-    }
     if (speakRef.current) speakRef.current.visible = s > TEXT_ON;
     const loud = tier === 'aktif' ? 1 : afford ? 0.95 : 0.72;
     bracketMat.opacity = 0.45 + (loud - 0.45) * s;
     plateMat.opacity = 0.1 + ((afford ? 0.34 : 0.24) - 0.1) * s;
   });
 
-  // Dolum: alttan üste (kare) — ölçekle birlikte kaydırılır ki alt kenara yapışsın.
-  const fillH = zeminH * 0.9;
-  useEffect(() => {
-    if (fillRef.current) {
-      fillRef.current.scale.y = p;
-      fillRef.current.position.y = -fillH / 2 + (fillH * p) / 2;
-    }
-  }, [p, fillH]);
-
   return (
     <group position={[pos[0], 0, pos[2]]} name={`isaret:${label}`} userData={{ olcum: { label, r, hw, hh, arrow } }}>
-      <group ref={scaleRef} name="isaret-olcek">
+      <group name="isaret-govde">
         {/* şeffaf koyu zemin — yazı ve çerçeve açık ahşabın üstünde okunsun */}
         <mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]} material={plateMat}>
           <shapeGeometry args={[zemin]} />
         </mesh>
 
-        {/* ₺ dolumu — ALTTAN ÜSTE */}
-        {p > 0.001 && (
-          <group position={[0, 0.035, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-            <mesh ref={fillRef}>
-              <planeGeometry args={[zeminW * 0.9, fillH]} />
-              <meshBasicMaterial color={tint} transparent opacity={0.42} depthWrite={false} />
-            </mesh>
-          </group>
+        {/* ₺ dolumu — ALTTAN ÜSTE, kenarlığın iç çevresini izler */}
+        {dolum && (
+          <mesh name="dolum" position={[0, 0.035, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+            <shapeGeometry args={[dolum]} />
+            <meshBasicMaterial color={tint} transparent opacity={0.42} depthWrite={false} />
+          </mesh>
         )}
 
         {/* BEKLEME dolumu (Usta) — aynı kare, aynı yön, YEŞİL. Oyuncu üstünde durdukça dolar,
             dolunca onay modali açılır. React'e dokunmaz: ölçek her karede `dwellState`ten yazılır. */}
-        {dwellId && <DwellFill w={zeminW * 0.9} h={fillH} dwellId={dwellId} />}
+        {dwellId && <DwellFill cevre={ic} dwellId={dwellId} />}
 
         {/* kesintisiz beyaz kenarlık (D-176) */}
         <mesh name="kenar" position={[0, 0.03, 0]} rotation={[-Math.PI / 2, 0, 0]} material={bracketMat}>
@@ -365,27 +322,28 @@ export function GroundMarker({
 }
 
 /**
- * Bekleme dolumu — `dwellState`i her karede okuyup yeşil dikdörtgeni alttan üste büyütür.
- * Ayrı bileşen ve `useFrame` içinde ölçek yazıyor, çünkü bunu React state'i ile yapmak saniyede
- * 60 render demekti (`activeStep`/`dwellState` deseni, D-038).
+ * Bekleme dolumu — `dwellState`i her karede okur; ₺ dolumuyla aynı kesit (kenarı izler, köşede yuvarlak).
+ * Geometri yalnız görünür adım (1/60) değişince yeniden kurulur; React'e dokunmaz (`activeStep`/`dwellState`, D-038).
  */
-function DwellFill({ w, h, dwellId }: { w: number; h: number; dwellId: string }) {
+function DwellFill({ cevre, dwellId }: { cevre: readonly Nokta[]; dwellId: string }) {
   const mesh = useRef<Mesh>(null);
+  const son = useRef(-1);
+  useEffect(() => () => mesh.current?.geometry.dispose(), []);
   useFrame(() => {
     const m = mesh.current;
     if (!m) return;
     const d = dwellState.id === dwellId ? dwellState.p : 0;
     m.visible = d > 0.005;
     if (!m.visible) return;
-    m.scale.y = d;
-    m.position.y = -h / 2 + (h * d) / 2;
+    const adim = Math.round(Math.min(1, d) * 60);
+    if (adim === son.current) return;
+    son.current = adim;
+    m.geometry.dispose();
+    m.geometry = new ShapeGeometry(sekil(dolumKesiti(cevre, adim / 60)));
   });
   return (
-    <group position={[0, 0.038, 0]} rotation={[-Math.PI / 2, 0, 0]}>
-      <mesh ref={mesh} visible={false}>
-        <planeGeometry args={[w, h]} />
-        <meshBasicMaterial color="#5ddb6a" transparent opacity={0.6} depthWrite={false} />
-      </mesh>
-    </group>
+    <mesh ref={mesh} name="bekleme-dolum" position={[0, 0.038, 0]} rotation={[-Math.PI / 2, 0, 0]} visible={false}>
+      <meshBasicMaterial color="#5ddb6a" transparent opacity={0.6} depthWrite={false} />
+    </mesh>
   );
 }

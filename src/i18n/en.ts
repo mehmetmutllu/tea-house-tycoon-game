@@ -500,4 +500,9 @@ export const en: Record<string, string> = {
   "Kat 2'deki tüm masaları aç.": "Unlock every table on Floor 2.",
   "Deneme: Kat 1'i bitir": "Test: finish Floor 1",
   "Merdivenin önüne atlar (yalnız deneme sürümü)": "Jumps to the stairs (test build only)",
+  // S5 (Kat 1 eşitliği) — ChatGPT turuna gidecek
+  "Oyun Salonu — okey ve tavla masaları": "Game Hall — okey and backgammon tables",
+  "Kahveleri buradan al": "Pick up coffee here",
+  "Bulaşıkları buraya koy": "Drop dirty cups here",
+  "Yeni: Cezve ocağını yükseltebilirsin ☕": "New: You can upgrade the Coffee Station ☕",
 };

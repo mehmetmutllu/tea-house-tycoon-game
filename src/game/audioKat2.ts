@@ -15,8 +15,8 @@ import type { SesTanim } from './audio';
 import type { Katman } from './audioSynth';
 
 export type Kat2SesId =
-  | 'k2takirti'  // okey taşı — oynayan okey masasından ara ara, yakınlığa göre kısık
-  | 'k2zar'      // tavla zarı — oynayan tavla masasından ara ara, yakınlığa göre kısık
+  | 'k2takirti'  // okey taşı — G-125: oyuna bağlı değil (ortam zamanlayıcısı kalktı), aday katalogda durur
+  | 'k2zar'      // tavla zarı — G-125: aynı
   | 'k2cezve'    // cezvede kahve hazır (fokurtu) — ocağa yakınlığa göre kısık
   | 'k2merdiven' // kat geçişi başladı
   | 'k2duvar'    // alanlar arası duvar gömüldü (salon açıldı)
@@ -191,12 +191,15 @@ export const KAT2_SES_KATALOG = Object.fromEntries(
   (Object.keys(KAT2_SES_ADAYLARI) as Kat2SesId[]).map((id) => [id, KAT2_SES_ADAYLARI[id].adaylar[KAT2_SECIM[id]]]),
 ) as Record<Kat2SesId, SesTanim>;
 
-// ---- ORTAM SESLERİ (takırtı + zar): sıklık ve yakınlık. Sunum sayısı, denge değil (`audio.ts` aralık deseni).
+// ---- SUNUM SAYILARI (denge değil; `audio.ts` aralık deseni).
+// G-125 (S5): takırtı/zar ORTAM zamanlayıcısı kalktı — iki ses yukarıda adaylarıyla durur (dinleme sayfası), oyuna bağlı değil.
 
-/** İki ortam sesi (takırtı/zar, HANGİ masadan olursa olsun) arasındaki en az süre (sn) — "sürekli değil". */
-export const ORTAM_ARALIK = 1.8;
-/** Bir masanın iki ortam sesi arası (sn), bu aralıkta rastgele. İlk ses de bu aralıkta gecikir. */
-export const MASA_ARALIK: readonly [number, number] = [7, 15];
+/**
+ * G-106 — Kat 2 para yığını toplanınca çalan "tık tık" zinciri: kaç tık ve arası (sn). Seri ivmesi (perdenin
+ * basamak basamak yükselmesi) Kat 1 `coin`inin kendi `seri` tanımından gelir; burada yalnız zincirin ritmi.
+ * `aralik` > coin kelepçesi (0,06 — yoksa tık yutulur) ve < seri penceresi (1,2 — yoksa basamak sıfırlanır).
+ */
+export const PARA_ZINCIR = { adet: 4, aralik: 0.09 } as const;
 /** Yakınlık kısması: YAKIN'a kadar tam, UZAK'ta sıfır (m), arası doğrusal. */
 export const YAKIN = 3;
 export const UZAK = 14;

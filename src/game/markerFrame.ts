@@ -101,3 +101,58 @@ export const lavaboCercevesi = (): Cerceve => markerFrame(ETIKET_LAVABO, ISARET_
 /** K4: Usta noktası masa noktasının biçimiyle aynı (G-14 ②) — tetik de aynı dikdörtgen. */
 export const ETIKET_USTA = t('Yükselt');
 export const ustaCercevesi = (): Cerceve => markerFrame(ETIKET_USTA, MASA_ISARET_R, true);
+
+/**
+ * G-105 (S5): DOLUM ÇERÇEVEYİ TAM İZLER. Eskiden dolum, iç zeminin %90'ı kadar DÜZ bir dikdörtgendi:
+ * kenarlıkla arasında boşluk kalıyor, yuvarlak köşede dolum köşeli görünüyordu (oyun testi 2026-11-20).
+ * Artık kenarlığın iç çevresi BURADA bir kez kurulur; hem kenarlığın deliği hem dolum aynı noktalardan
+ * çizilir, dolum o çevrenin `y ≤ üst` kesitidir. Köşeler gerçek çeyrek daire. Yalnız çizim: tetik kutusu
+ * yine `markerFrame`.
+ */
+export type Nokta = readonly [number, number];
+
+/** Yuvarlak köşeli dikdörtgenin çevresi (merkez 0,0; saat yönü tersine; köşe başına `seg` dilim). */
+export function yuvarlakDikdortgen(w: number, h: number, r: number, seg = 8): Nokta[] {
+  const hw = w / 2;
+  const hh = h / 2;
+  const rr = Math.max(1e-4, Math.min(r, hw, hh));
+  const koseler: [number, number, number][] = [
+    [hw - rr, -hh + rr, -Math.PI / 2],
+    [hw - rr, hh - rr, 0],
+    [-hw + rr, hh - rr, Math.PI / 2],
+    [-hw + rr, -hh + rr, Math.PI],
+  ];
+  const out: Nokta[] = [];
+  for (const [cx, cy, a0] of koseler)
+    for (let i = 0; i <= seg; i++) {
+      const a = a0 + (i / seg) * (Math.PI / 2);
+      out.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]);
+    }
+  return out;
+}
+
+/** Çevrenin alttan `p` (0..1) kadarı: `y ≤ alt + p·boy` yarı-düzlemiyle kesit (dışbükey çokgen → dışbükey). */
+export function dolumKesiti(cevre: readonly Nokta[], p: number): Nokta[] {
+  if (p <= 0 || cevre.length < 3) return [];
+  let alt = Infinity;
+  let ust = -Infinity;
+  for (const [, y] of cevre) {
+    alt = Math.min(alt, y);
+    ust = Math.max(ust, y);
+  }
+  if (p >= 1) return cevre.slice();
+  const sinir = alt + (ust - alt) * p;
+  const out: Nokta[] = [];
+  for (let i = 0; i < cevre.length; i++) {
+    const a = cevre[i];
+    const b = cevre[(i + 1) % cevre.length];
+    const aIc = a[1] <= sinir;
+    const bIc = b[1] <= sinir;
+    if (aIc) out.push(a);
+    if (aIc !== bIc) {
+      const t = (sinir - a[1]) / (b[1] - a[1]);
+      out.push([a[0] + (b[0] - a[0]) * t, sinir]);
+    }
+  }
+  return out;
+}

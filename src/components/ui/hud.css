@@ -2444,3 +2444,24 @@
 .paket-afis .paket-ust {
   white-space: nowrap;
 }
+
+/* ── S5 (Kat 1 eşitliği) ──────────────────────────────────────────────────────────────────────
+   G-93: karakter görevinin istediği yükseltme düğmesi, alınabilirken nabız atar — sekmenin `spot`
+   halkasının aynısı (navPulse), düğmenin içinde. Karartma yok: panel zaten oyuncunun açtığı ekran. */
+.char-buy.vurgu {
+  z-index: 1;
+}
+.char-buy.vurgu::after {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  border-radius: var(--rr);
+  border: 3px solid var(--ac);
+  pointer-events: none;
+  animation: navPulse 1s ease-in-out infinite;
+}
+/* G-104: Kat 2 ipucu satırı — öğretici satırının aynısı, "Atla" düğmesi yok (ipucu tek eylemle biter). */
+.ogretici-satir.k2-ipucu {
+  padding: 8px 14px;
+  min-height: 44px;
+}
