@@ -24,6 +24,9 @@ import {
   dishCarryMaxTier,
   dishSpeedMaxTier,
 } from '../../config/economy.config';
+import { kat2EtkinAyar, kat2SiradakiPad, yeniKat2Dunya, type Kat2Ayar } from '../../game/kat2Dongu';
+import { kat2GorevHizala, kat2Gorevleri } from '../../game/kat2Gorev';
+import { KAT2_MASALAR, KAT2_SV_MAX, type Kat2Kayit } from '../../game/kat';
 import './devSandbox.css';
 
 // Dahili seviyeler 0-tabanlı, ekranda +1 gösterilir. Tavan = ₺ ile çıkılabilen en yüksek seviye.
@@ -219,9 +222,9 @@ export function DevSandbox() {
       <div className="dsb-body">
         <Row title="Para">
           <div className="dsb-chips">
-            <button onClick={() => money(1000)}>+1K ₺</button>
-            <button onClick={() => money(100_000)}>+100K ₺</button>
-            <button onClick={() => money(10_000_000)}>+10M ₺</button>
+            <button onClick={() => money(1000)}>+1K coin</button>
+            <button onClick={() => money(100_000)}>+100K coin</button>
+            <button onClick={() => money(10_000_000)}>+10M coin</button>
             <button onClick={() => gems(100)}>+100 💎</button>
             <label className="dsb-toggle">
               <input
@@ -328,6 +331,8 @@ export function DevSandbox() {
             onChange={(v) => useGame.setState({ waiterUpgrades: { ...waiterUpgrades, dishSpeed: v } })}
           />
         </Row>
+
+        <Kat2Bolum />
 
         <Row title="İlerleme (pad zinciri)">
           <div className="dsb-chips">
@@ -464,5 +469,95 @@ export function DevSandbox() {
         </Row>
       </div>
     </div>
+  );
+}
+
+// ============================== KAT 2 (test ortamı, kullanıcı isteği 2026-11-19) ==============================
+const K2: Kat2Ayar = C.kat2 as unknown as Kat2Ayar;
+const K2_ZINCIR = (C.kat2.padler as readonly { id: string }[]).map((p) => p.id);
+const K2_YUK = [
+  ['ocak', 'Ocak (mutfak)'],
+  ['garsonHiz', 'Garson hız'],
+  ['garsonTepsi', 'Garson tepsi'],
+  ['lavabo', 'Lavabo'],
+] as const;
+const yukMax = (tur: (typeof K2_YUK)[number][0]) => (K2.yukseltme?.[tur]?.fiyat.length ?? 0);
+
+/** Kat 2 kaydını yazar; pad listesi değiştiyse dünya yeniden kurulur ve görev hattı ÖDÜLSÜZ hizalanır. */
+function k2Yaz(patch: Partial<Kat2Kayit>, padDegisti = false) {
+  const s = useGame.getState();
+  let kat2: Kat2Kayit = { ...s.kat2, ...patch };
+  if (padDegisti) kat2 = { ...kat2, gorev: kat2GorevHizala(kat2.gorev, kat2, C.kat2Gorevler, K2) };
+  useGame.setState(padDegisti || patch.yuk
+    ? { kat2, kat2Dunya: yeniKat2Dunya(kat2.padsDone, kat2EtkinAyar(K2, kat2.yuk)) }
+    : { kat2 });
+}
+
+function Kat2Bolum() {
+  const kat = useGame((s) => s.kat);
+  const k2 = useGame((s) => s.kat2);
+  const hat = kat2Gorevleri(C.kat2Gorevler, K2);
+  const gIdx = k2.gorev?.idx ?? 0;
+  const acikMasa = KAT2_MASALAR.filter((m) => k2.padsDone.includes(m.id));
+  const g = useGame.getState();
+
+  const padAc = (n: number) => {
+    let pads = [...k2.padsDone];
+    for (let i = 0; i < n; i++) {
+      const sp = kat2SiradakiPad(K2, pads);
+      if (!sp) break;
+      pads = [...pads, sp.id];
+    }
+    k2Yaz({ padsDone: pads }, true);
+  };
+  const tumMasaSv = (sv: number) =>
+    k2Yaz({ masaSv: Object.fromEntries(acikMasa.map((m) => [m.id, sv])) });
+  const gorevGit = (idx: number) => k2Yaz({ gorev: { idx: Math.max(0, Math.min(hat.length, idx)), sayac: {} } });
+
+  return (
+    <Row title="Kat 2">
+      <div className="dsb-chips">
+        <span className="dsb-step-label">
+          şu an Kat {kat} · {k2.acik ? 'açık' : 'kapalı'} · nokta {K2_ZINCIR.filter((id) => k2.padsDone.includes(id)).length}/{K2_ZINCIR.length} ·
+          görev {Math.min(gIdx + 1, hat.length)}/{hat.length}
+        </span>
+      </div>
+      <div className="dsb-chips">
+        <button onClick={() => g.denemeKat1Bitir()} title="Kat 1'in bütün noktaları + görevleri biter, merdiven önüne gidersin">Kat 1'i bitir</button>
+        <button onClick={() => window.__kat2?.(2)}>Kat 2'yi aç + çık</button>
+        <button disabled={!k2.acik || kat === 1} onClick={() => g.katDegistir(1)}>Kat 1'e in</button>
+        <button disabled={!k2.acik || kat === 2} onClick={() => g.katDegistir(2)}>Kat 2'ye çık</button>
+      </div>
+      <div className="dsb-chips">
+        <span className="dsb-step-label">noktalar</span>
+        <button disabled={!k2.acik} onClick={() => padAc(1)}>+1 sıradaki</button>
+        <button disabled={!k2.acik} onClick={() => padAc(5)}>+5</button>
+        <button disabled={!k2.acik} onClick={() => padAc(999)}>hepsi</button>
+        <button disabled={!k2.acik} onClick={() => k2Yaz({ padsDone: k2.padsDone.filter((id) => !K2_ZINCIR.includes(id)) }, true)}>sıfırla</button>
+      </div>
+      <div className="dsb-chips">
+        <span className="dsb-step-label">açık masalar ({acikMasa.length}) Sv</span>
+        {Array.from({ length: KAT2_SV_MAX }, (_, i) => i + 1).map((sv) => (
+          <button key={sv} disabled={!acikMasa.length} onClick={() => tumMasaSv(sv)}>Sv{sv}</button>
+        ))}
+      </div>
+      {K2_YUK.map(([tur, ad]) => (
+        <Stepper
+          key={tur}
+          label={ad}
+          value={k2.yuk?.[tur] ?? 0}
+          min={0}
+          max={yukMax(tur)}
+          onChange={(v) => k2Yaz({ yuk: { ...k2.yuk, [tur]: v } })}
+        />
+      ))}
+      <div className="dsb-chips">
+        <span className="dsb-step-label">görev</span>
+        <button onClick={() => gorevGit(gIdx - 1)}>◀</button>
+        <button onClick={() => gorevGit(gIdx + 1)}>▶</button>
+        <button onClick={() => gorevGit(hat.length)}>sona</button>
+        <span className="dsb-step-label">{hat[gIdx]?.title ?? 'hat bitti'}</span>
+      </div>
+    </Row>
   );
 }
