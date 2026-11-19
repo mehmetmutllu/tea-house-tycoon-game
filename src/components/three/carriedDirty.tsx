@@ -27,7 +27,7 @@ export function CarriedDirty({ cups, plates }: { cups: number; plates: number })
         if (i >= cups) {
           return (
             <group key={i} position={[x, 0.05, z]}>
-              <mesh castShadow>
+              <mesh>
                 <cylinderGeometry args={[0.075, 0.06, 0.03, 10]} />
                 <meshStandardMaterial color="#b3a896" roughness={0.9} />
               </mesh>
@@ -39,7 +39,7 @@ export function CarriedDirty({ cups, plates }: { cups: number; plates: number })
           );
         }
         return (
-          <mesh key={i} castShadow position={[x, 0.1, z]}>
+          <mesh key={i} position={[x, 0.1, z]}>
             <cylinderGeometry args={[0.05, 0.04, 0.14, 8]} />
             <meshStandardMaterial color="#8d8276" roughness={0.9} />
           </mesh>

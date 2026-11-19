@@ -1,10 +1,12 @@
 import { Activity, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { KatKatmani } from './katKatmani';
+import { ISITMA_MESH_BUTCESI, ISITMA_OTURMA_KARE, bostaCalistir, isitmaDilimi, isitmaParcalari, kat2ActivityGorunur, kat2KatmanKurulsunMu, meshSayisi } from './kat2OnKurulum';
+import { KademeliMontaj } from './kat2/kademeliMontaj';
 import { Kat2Sahne } from './Kat2';
 import { MerdivenKovasi } from './kat2/MerdivenDonusum';
 import { merdivenTamirli } from '../../game/kat';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Color, Fog, Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera } from 'three';
+import { Color, Fog, Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera, Vector4 } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, gateOf, tableNextCost, openServices, doorX as doorAt, entranceAt, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
@@ -1395,26 +1397,137 @@ function MeasureGrid() {
 }
 
 /**
- * Kat 2'nin dünyası. İlk girişe kadar hiç kurulmaz; ilk girişten sonra TAKILI-GİZLİ kalır (perf W3:
- * her girişte ~2.400 nesneyi baştan kurmak 4× kısıkta 1,5 sn'lik tek kare donmasıydı).
- * Gizliyken `Activity hidden`: useFrame ve store abonelikleri sökülür (Kat 1'e kare/`set` maliyeti
- * bindirmez), nesneler ve kurulmuş gövdeler yerinde durur; dönüşte efektler yeniden bağlanır.
- * Kat 2 kapanırsa (sıfırlama/kayıt yükleme) katman söner, sonraki girişte temiz kurulur.
+ * Kat 2'nin dünyası. Merdiven tamir edilmeden hiç kurulmaz; tamirden sonra Kat 1'deyken arkada ÖN KURULUR
+ * (`kat2OnKurulum.ts`) ve TAKILI-GİZLİ kalır — ilk çıkış yalnız görünür olmaktır (tarama #6). Ön kurulum:
+ *  1. ağaç `Activity visible` kurulur (katman kökü Kat 1'de görünmez; efektler bir kez bağlanır); masalar
+ *     kare başına bir tane (`kat2/kademeliMontaj.tsx`) — tek commit'te kurulum Kat 1'de uzun bir kare olurdu;
+ *  2. `Kat2Isitici`: programlar bloklamadan derlenir, parçalar birkaç kareye yayılarak bir kez çizilir;
+ *  3. `Activity hidden`: useFrame ve store abonelikleri sökülü (Kat 1'e kare/`set` maliyeti bindirmez).
+ * Kat 2 kapanırsa (sıfırlama/kayıt yükleme) katman söner, sonraki tamirde temiz kurulur.
  */
 function Kat2Katman() {
   const kat = useGame((g) => g.kat);
   const acik = useGame((g) => g.kat2.acik);
-  const [kurulu, setKurulu] = useState(false);
+  const [onKurulumZamani, setOnKurulumZamani] = useState(false);
+  const [isindi, setIsindi] = useState(false);
+  useEffect(() => {
+    if (!acik || onKurulumZamani) return;
+    return bostaCalistir(() => setOnKurulumZamani(true));
+  }, [acik, onKurulumZamani]);
+  if (!acik && (onKurulumZamani || isindi)) {
+    setOnKurulumZamani(false);
+    setIsindi(false);
+  }
+  // Ön kurulum bitmeden girildiyse kalan kurulum giriş karesinde olur (eski yol); dönüşte sökülmesin.
+  if (acik && kat === 2 && !(onKurulumZamani && isindi)) {
+    setOnKurulumZamani(true);
+    setIsindi(true);
+  }
   // Öğe sabit: kat değişince Kat 2 ağacı baştan render edilmesin (yalnız görünürlük + efektler değişir).
   const sahne = useMemo(() => <Kat2Sahne />, []);
-  if (kat === 2 && !kurulu) setKurulu(true);
-  if (kat !== 2 && kurulu && !acik) setKurulu(false);
-  if (kat !== 2 && !kurulu) return null;
+  if (!kat2KatmanKurulsunMu(kat, acik, onKurulumZamani)) return null;
   return (
-    <KatKatmani kat={2} saklar>
-      <Activity mode={kat === 2 ? 'visible' : 'hidden'}>{sahne}</Activity>
-    </KatKatmani>
+    <>
+      <KatKatmani kat={2} saklar>
+        <KademeliMontaj acik={kat !== 2 && !isindi}>
+          <Activity mode={kat2ActivityGorunur(kat, isindi) ? 'visible' : 'hidden'}>{sahne}</Activity>
+        </KademeliMontaj>
+      </KatKatmani>
+      {!isindi && <Kat2Isitici bitti={() => setIsindi(true)} />}
+    </>
   );
+}
+
+/**
+ * Kat 2 ön kurulumunun ISITMA adımı (Kat 1'deyken, ağaç oturduktan sonra) — ilk gerçek karede yapılacak
+ * kurulumu önden, dilimli yapar:
+ *  1. `compileAsync` (kare başına bir dilim): Kat 2 materyallerinin programları ekranın ışık/sis/ton
+ *     eşlemesiyle derlenir; KHR_parallel_shader_compile varsa ana iş parçacığı derlemeyi beklemez.
+ *  2. Kare başına bir dilim (≤ `ISITMA_MESH_BUTCESI` mesh) varsayılan tampona 1×1 piksellik makasla çizilir:
+ *     geometri tamponu, VAO, iskelet dokusu, gölge derinlik materyali. Dilim çizilirken Kat 1 ve Kat 2'nin
+ *     diğer parçaları gizli, görüş kesmesi kapalı (kamera dışı da kurulsun). Ana çizim (`SahneCizimi`,
+ *     öncelik 1) aynı karede tamponu baştan temizleyip çizer; gölge haritası her karede yeniden çizilir —
+ *     ısıtma ekrana sızmaz.
+ */
+function Kat2Isitici({ bitti }: { bitti: () => void }) {
+  const d = useRef({
+    parcalar: [] as Object3D[],
+    meshler: [] as number[],
+    i: 0,
+    son: -1,
+    bekle: 0,
+    derlenen: [] as Promise<unknown>[],
+    evre: 'otur' as 'otur' | 'derle' | 'derleniyor' | 'isit',
+  });
+  const makas = useMemo(() => new Vector4(), []);
+  useFrame(({ gl, scene, camera }) => {
+    const r = d.current;
+    if (useGame.getState().kat !== 1 || r.evre === 'derleniyor') return;
+    const kok = scene.getObjectByName('kat2');
+    const govde = kok?.children[0];
+    if (!kok || !govde) return;
+    if (r.evre === 'otur') {
+      // Kademeli masalar ve Suspense'li parçalar (GLB) gelsin: mesh sayısı birkaç kare sabit kalsın.
+      const n = meshSayisi(govde);
+      if (n !== r.son) {
+        r.son = n;
+        r.bekle = 0;
+        return;
+      }
+      if (++r.bekle < ISITMA_OTURMA_KARE) return;
+      r.parcalar = isitmaParcalari(govde, ISITMA_MESH_BUTCESI);
+      r.meshler = r.parcalar.map(meshSayisi);
+      r.evre = 'derle';
+      return;
+    }
+    if (r.evre === 'derle') {
+      // Programların hazırlanması da dilimli (tek seferde ~1.000 materyal Kat 1'de ~0,3 sn'lik kare oluyordu).
+      const dilim = isitmaDilimi(r.meshler, r.i, ISITMA_MESH_BUTCESI);
+      for (let k = dilim.bas; k < dilim.son; k++) r.derlenen.push(gl.compileAsync(r.parcalar[k], camera, scene));
+      r.i = dilim.son;
+      if (r.i < r.parcalar.length) return;
+      r.evre = 'derleniyor';
+      r.i = 0;
+      const sonra = () => {
+        r.evre = 'isit';
+      };
+      Promise.all(r.derlenen).then(sonra, sonra);
+      return;
+    }
+    const parca = isitmaDilimi(r.meshler, r.i, ISITMA_MESH_BUTCESI);
+    const kat1 = scene.getObjectByName('kat1');
+    const gorunur = r.parcalar.map((c) => c.visible);
+    const kesme: Object3D[] = [];
+    for (const c of r.parcalar) c.visible = false;
+    for (let k = parca.bas; k < parca.son; k++) {
+      const c = r.parcalar[k];
+      c.visible = gorunur[k];
+      c.traverse((n) => {
+        if (n.frustumCulled) {
+          n.frustumCulled = false;
+          kesme.push(n);
+        }
+      });
+    }
+    const kokGorunur = kok.visible;
+    const kat1Gorunur = kat1?.visible ?? false;
+    const makasAcik = gl.getScissorTest();
+    gl.getScissor(makas);
+    kok.visible = true;
+    if (kat1) kat1.visible = false;
+    gl.setScissorTest(true);
+    gl.setScissor(0, 0, 1, 1);
+    gl.render(scene, camera);
+    gl.setScissor(makas);
+    gl.setScissorTest(makasAcik);
+    kok.visible = kokGorunur;
+    if (kat1) kat1.visible = kat1Gorunur;
+    r.parcalar.forEach((c, k) => (c.visible = gorunur[k]));
+    for (const n of kesme) n.frustumCulled = true;
+    r.i = parca.son;
+    if (r.i >= r.parcalar.length) bitti();
+  });
+  return null;
 }
 
 export function Scene() {

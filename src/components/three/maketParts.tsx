@@ -481,7 +481,6 @@ export function MaketMerdivenHarap({ pos }: { pos: [number, number, number] }) {
             key={`m${i}`}
             position={[prnd(i * 3 + 2, -1.9, 1.9), (st + 1) * STEP_H + 0.04, -STEP_D / 2 - st * STEP_D]}
             rotation={[0, prnd(i * 3 + 3, 0, 3), 0]}
-            castShadow
           >
             <boxGeometry args={[prnd(i * 5 + 1, 0.14, 0.3), 0.06, prnd(i * 5 + 2, 0.12, 0.22)]} />
             <meshStandardMaterial color={i % 2 ? '#cfd8dc' : '#b0bec5'} />
@@ -726,7 +725,7 @@ export function MaketWallShelf({
             </mesh>
           ))}
           {Array.from({ length: n }, (_, i) => (
-            <mesh key={i} position={[-(n - 1) * 0.095 + i * 0.19, dy + 0.085, 0.16]} castShadow>
+            <mesh key={i} position={[-(n - 1) * 0.095 + i * 0.19, dy + 0.085, 0.16]}>
               <cylinderGeometry args={[0.045, 0.062, 0.11, 8]} />
               <meshStandardMaterial color={dy ? MC.cupTea : '#dfe6ea'} />
             </mesh>

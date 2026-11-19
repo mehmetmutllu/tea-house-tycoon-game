@@ -92,3 +92,15 @@ export function golgeAcikMi(tercih: 'oto' | 'acik' | 'kapali', sinif: CihazSinif
   if (tercih === 'kapali') return false;
   return sinif !== 'zayif';
 }
+
+/**
+ * GÖLGE HARİTASI KENARI (S4 · tarama 3-performans #1c). Zayıf sınıfta gölge açıksa (oyuncu
+ * "açık" dediyse) harita 1024'e iner: bellek 16 → 4 MB, gölge geçişinin doldurma işi ¼. Güçlü ve
+ * henüz ölçülmemiş cihaz tabanı (palette.ts LIGHTING, 2048) korur — D-054'teki "merdiven kenar"
+ * şikâyeti 1024'tendi, o yüzden kenar yalnız kaldıramayan cihazda iner.
+ */
+export const GOLGE_HARITA_ZAYIF = 1024;
+
+export function golgeHaritasi(sinif: CihazSinifi, taban: number): number {
+  return sinif === 'zayif' ? Math.min(taban, GOLGE_HARITA_ZAYIF) : taban;
+}

@@ -1,0 +1,7959 @@
+{
+ "etiket": "sonra",
+ "harita": 2048,
+ "durumlar": {
+  "K1": {
+   "envanter": {
+    "mesh": 665,
+    "cast": 272,
+    "kova": {
+     "BoxGeometry|buyuk": 70,
+     "ConeGeometry|buyuk": 1,
+     "CylinderGeometry|buyuk": 18,
+     "CylinderGeometry|kucuk": 14,
+     "SphereGeometry|buyuk": 3,
+     "BoxGeometry|ince": 7,
+     "CylinderGeometry|ince": 9,
+     "BufferGeometry|buyuk": 148,
+     "BoxGeometry|kucuk": 1,
+     "CapsuleGeometry|buyuk": 1
+    },
+    "ornek": [
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       1,
+       1
+      ],
+      "p": [
+       0,
+       0,
+       0
+      ],
+      "renk": "ffffff",
+      "n": 35,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "ConeGeometry",
+      "d": [
+       1.95,
+       1.901,
+       1
+      ],
+      "p": [
+       0,
+       0,
+       0
+      ],
+      "renk": "ffffff",
+      "n": 70,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       1,
+       1
+      ],
+      "p": [
+       0,
+       0,
+       0
+      ],
+      "renk": "ffffff",
+      "n": 66,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       6.4,
+       1.9,
+       0.18
+      ],
+      "p": [
+       0,
+       2.57,
+       17.9
+      ],
+      "renk": "2e6b4f",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       5,
+       0.55,
+       0.06
+      ],
+      "p": [
+       0,
+       2.92,
+       17.95
+      ],
+      "renk": "",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.72,
+       0.72,
+       0.06
+      ],
+      "p": [
+       -2.3,
+       0.42,
+       18.65
+      ],
+      "renk": "8d6e63",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.4,
+       0.18,
+       0.18
+      ],
+      "p": [
+       -2.3,
+       0.2,
+       18.65
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.34,
+       0.3,
+       0.3
+      ],
+      "p": [
+       -2.85,
+       0.17,
+       18.65
+      ],
+      "renk": "7a5230",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.34,
+       0.3,
+       0.3
+      ],
+      "p": [
+       -1.75,
+       0.17,
+       18.65
+      ],
+      "renk": "7a5230",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.72,
+       0.72,
+       0.06
+      ],
+      "p": [
+       2.3,
+       0.42,
+       18.65
+      ],
+      "renk": "8d6e63",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.4,
+       0.18,
+       0.18
+      ],
+      "p": [
+       2.3,
+       0.2,
+       18.65
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.34,
+       0.3,
+       0.3
+      ],
+      "p": [
+       1.75,
+       0.17,
+       18.65
+      ],
+      "renk": "7a5230",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.34,
+       0.3,
+       0.3
+      ],
+      "p": [
+       2.85,
+       0.17,
+       18.65
+      ],
+      "renk": "7a5230",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.36,
+       0.32,
+       0.32
+      ],
+      "p": [
+       -1.7,
+       0.18,
+       17.92
+      ],
+      "renk": "7a5230",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "SphereGeometry",
+      "d": [
+       0.4,
+       0.4,
+       0.4
+      ],
+      "p": [
+       -1.7,
+       0.46,
+       17.92
+      ],
+      "renk": "3f7d44",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.36,
+       0.32,
+       0.32
+      ],
+      "p": [
+       1.7,
+       0.18,
+       17.92
+      ],
+      "renk": "7a5230",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "SphereGeometry",
+      "d": [
+       0.4,
+       0.4,
+       0.4
+      ],
+      "p": [
+       1.7,
+       0.46,
+       17.92
+      ],
+      "renk": "3f7d44",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.32,
+       0.06
+      ],
+      "p": [
+       -11.11,
+       1.95,
+       -17.13
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.32,
+       0.06
+      ],
+      "p": [
+       -11.11,
+       1.4,
+       -17.13
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.32,
+       0.06
+      ],
+      "p": [
+       -9.31,
+       1.95,
+       -17.13
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.32,
+       0.06
+      ],
+      "p": [
+       -9.31,
+       1.4,
+       -17.13
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       0.1,
+       -10.43
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0,
+       0.19,
+       -10.43
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       0.31,
+       -10.89
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       3.2,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0.7,
+       0.4,
+       -10.89
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       0.52,
+       -11.35
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       0.72,
+       -11.81
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0,
+       0.81,
+       -11.81
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       0.93,
+       -12.27
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0,
+       1.02,
+       -12.27
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       1.14,
+       -12.73
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       1.35,
+       -13.19
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0,
+       1.43,
+       -13.19
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       1.55,
+       -13.65
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0,
+       1.64,
+       -13.65
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       1.76,
+       -14.11
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0,
+       1.85,
+       -14.11
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       1.97,
+       -14.57
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       2.17,
+       -15.03
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0,
+       2.26,
+       -15.03
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       2.38,
+       -15.49
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0,
+       2.47,
+       -15.49
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       2.59,
+       -15.95
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.46,
+       0.207
+      ],
+      "p": [
+       0,
+       2.8,
+       -16.41
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       3.2,
+       0.46,
+       0.035
+      ],
+      "p": [
+       0.7,
+       2.88,
+       -16.41
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       2.9,
+       0.6
+      ],
+      "p": [
+       0,
+       1.45,
+       -16.94
+      ],
+      "renk": "6d6155",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.6,
+       0.035
+      ],
+      "p": [
+       0,
+       2.88,
+       -16.94
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       0.08,
+       0.08
+      ],
+      "p": [
+       -2.2,
+       0.71,
+       -10.43
+      ],
+      "renk": "6b5442",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       0.08,
+       0.08
+      ],
+      "p": [
+       -2.2,
+       1.54,
+       -12.27
+      ],
+      "renk": "6b5442",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       0.08,
+       0.08
+      ],
+      "p": [
+       -2.2,
+       2.99,
+       -15.49
+      ],
+      "renk": "6b5442",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       0.08,
+       0.08
+      ],
+      "p": [
+       2.2,
+       0.71,
+       -10.43
+      ],
+      "renk": "6b5442",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       0.08,
+       0.08
+      ],
+      "p": [
+       2.2,
+       1.54,
+       -12.27
+      ],
+      "renk": "6b5442",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       0.08,
+       0.08
+      ],
+      "p": [
+       2.2,
+       2.99,
+       -15.49
+      ],
+      "renk": "6b5442",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       3.2,
+       0.1,
+       0.09
+      ],
+      "p": [
+       -2.2,
+       1.35,
+       -11.5
+      ],
+      "renk": "6b5442",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       3,
+       0.3,
+       0.07
+      ],
+      "p": [
+       -1.5,
+       0.42,
+       -11.7
+      ],
+      "renk": "8a7b68",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.4,
+       0.4,
+       0.32
+      ],
+      "p": [
+       1.7,
+       0.16,
+       -10.7
+      ],
+      "renk": "546e7a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       1.05,
+       0.1,
+       0.087
+      ],
+      "p": [
+       -4.2,
+       0.53,
+       -9.9
+      ],
+      "renk": "37474f",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       1.05,
+       0.1,
+       0.087
+      ],
+      "p": [
+       4.2,
+       0.53,
+       -9.9
+      ],
+      "renk": "37474f",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.64,
+       0.36,
+       0.36
+      ],
+      "p": [
+       -3.6,
+       0.34,
+       -10.05
+      ],
+      "renk": "e0611f",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.64,
+       0.36,
+       0.36
+      ],
+      "p": [
+       0,
+       0.34,
+       -10.05
+      ],
+      "renk": "e0611f",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.64,
+       0.36,
+       0.36
+      ],
+      "p": [
+       3.6,
+       0.34,
+       -10.05
+      ],
+      "renk": "e0611f",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       5,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       6.5,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       8,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.32,
+       0.04
+      ],
+      "p": [
+       5.75,
+       0.98,
+       -15.71
+      ],
+      "renk": "7fa99b",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.32,
+       0.04
+      ],
+      "p": [
+       7.15,
+       0.98,
+       -16.07
+      ],
+      "renk": "7fa99b",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.8,
+       0.55,
+       0.18
+      ],
+      "p": [
+       0,
+       2.92,
+       17.5
+      ],
+      "renk": "e6d7b8",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.5,
+       0.32,
+       0.13
+      ],
+      "p": [
+       -17.32,
+       1.53,
+       15.55
+      ],
+      "renk": "3a5570",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.46,
+       0.28,
+       0.12
+      ],
+      "p": [
+       -17.32,
+       1.55,
+       15.05
+      ],
+      "renk": "6d4c41",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.6,
+       0.4,
+       0.4
+      ],
+      "p": [
+       -3.2,
+       0.3,
+       16.2
+      ],
+      "renk": "5c6b73",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.42,
+       0.42,
+       0.06
+      ],
+      "p": [
+       -3.2,
+       0.63,
+       16.2
+      ],
+      "renk": "465259",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.51,
+       0.34,
+       0.34
+      ],
+      "p": [
+       14.6,
+       0.26,
+       13
+      ],
+      "renk": "5c6b73",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.357,
+       0.357,
+       0.051
+      ],
+      "p": [
+       14.6,
+       0.54,
+       13
+      ],
+      "renk": "465259",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.9,
+       0.42,
+       0.34
+      ],
+      "p": [
+       -17.14,
+       0.17,
+       10.9
+      ],
+      "renk": "4e342e",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.98,
+       0.48,
+       0.06
+      ],
+      "p": [
+       -17.14,
+       0.42,
+       10.9
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.482,
+       0.83,
+       0.07
+      ],
+      "p": [
+       -17.12,
+       0.93,
+       10.9
+      ],
+      "renk": "263238",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.5,
+       0.12
+      ],
+      "p": [
+       17.29,
+       0.3,
+       7.4
+      ],
+      "renk": "e4e0d6",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.46,
+       0.437,
+       0.05
+      ],
+      "p": [
+       1.9,
+       0.03,
+       15.7
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.44,
+       0.22,
+       0.15
+      ],
+      "p": [
+       2.01,
+       0.9,
+       15.72
+      ],
+      "renk": "3a5570",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.6,
+       0.34,
+       0.323
+      ],
+      "p": [
+       -1.9,
+       0.3,
+       15.7
+      ],
+      "renk": "b87333",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.86,
+       0.09,
+       0.09
+      ],
+      "p": [
+       -1.86,
+       0.61,
+       15.87
+      ],
+      "renk": "3a5570",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.86,
+       0.09,
+       0.09
+      ],
+      "p": [
+       -1.93,
+       0.61,
+       15.57
+      ],
+      "renk": "3f7d44",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BufferGeometry",
+      "d": [
+       7.66,
+       2.55,
+       1.27
+      ],
+      "p": [
+       0,
+       0,
+       -3.8
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BufferGeometry",
+      "d": [
+       7.66,
+       2.55,
+       1.27
+      ],
+      "p": [
+       0,
+       0,
+       -3.8
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.34,
+       0.3,
+       0.285
+      ],
+      "p": [
+       -10.85,
+       1.07,
+       -10.25
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.34,
+       0.3,
+       0.285
+      ],
+      "p": [
+       -10.52,
+       1.07,
+       -10.25
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.26,
+       0.2,
+       0.2
+      ],
+      "p": [
+       -10.16,
+       1,
+       -10.16
+      ],
+      "renk": "d4af37",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.124,
+       0.124,
+       0.1
+      ],
+      "p": [
+       -9.78,
+       0.95,
+       -10.44
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.124,
+       0.124,
+       0.1
+      ],
+      "p": [
+       -9.59,
+       0.95,
+       -10.44
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.124,
+       0.124,
+       0.1
+      ],
+      "p": [
+       -9.4,
+       0.95,
+       -10.44
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.124,
+       0.124,
+       0.1
+      ],
+      "p": [
+       -9.21,
+       0.95,
+       -10.44
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.124,
+       0.124,
+       0.1
+      ],
+      "p": [
+       -9.78,
+       0.95,
+       -10.22
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.124,
+       0.124,
+       0.1
+      ],
+      "p": [
+       -9.59,
+       0.95,
+       -10.22
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.124,
+       0.124,
+       0.1
+      ],
+      "p": [
+       -9.4,
+       0.95,
+       -10.22
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.124,
+       0.124,
+       0.1
+      ],
+      "p": [
+       -9.21,
+       0.95,
+       -10.22
+      ],
+      "renk": "ece4d4",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.52,
+       0.38,
+       0.035
+      ],
+      "p": [
+       -8.9,
+       0.92,
+       -10.28
+      ],
+      "renk": "b87333",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.11,
+       0.11,
+       0.11
+      ],
+      "p": [
+       -9.04,
+       0.99,
+       -10.38
+      ],
+      "renk": "b3a48c",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.11,
+       0.11,
+       0.11
+      ],
+      "p": [
+       -8.88,
+       0.99,
+       -10.38
+      ],
+      "renk": "b3a48c",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.11,
+       0.11,
+       0.11
+      ],
+      "p": [
+       -8.72,
+       0.99,
+       -10.38
+      ],
+      "renk": "b3a48c",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.11,
+       0.11,
+       0.11
+      ],
+      "p": [
+       -9.04,
+       0.99,
+       -10.18
+      ],
+      "renk": "b3a48c",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.11,
+       0.11,
+       0.11
+      ],
+      "p": [
+       -8.88,
+       0.99,
+       -10.18
+      ],
+      "renk": "b3a48c",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.7,
+       0.68,
+       0.68
+      ],
+      "p": [
+       -12.45,
+       1.25,
+       -10.3
+      ],
+      "renk": "b08d57",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "SphereGeometry",
+      "d": [
+       0.36,
+       0.36,
+       0.36
+      ],
+      "p": [
+       -12.45,
+       1.72,
+       -10.3
+      ],
+      "renk": "b08d57",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.227,
+       0.217
+      ],
+      "p": [
+       -12.3,
+       0.04,
+       -11.3
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.227,
+       0.217
+      ],
+      "p": [
+       -12.3,
+       0.04,
+       -11.3
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.808,
+       0.709,
+       0.584
+      ],
+      "p": [
+       -12.3,
+       0.04,
+       -11.3
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -12.3,
+       0.04,
+       -11.3
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Barbarian_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -12.3,
+       0.04,
+       -11.3
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Barbarian_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -12.3,
+       0.04,
+       -11.3
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Barbarian_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.556,
+       1.556,
+       0.04
+      ],
+      "p": [
+       -11.7,
+       0.75,
+       11.7
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.556,
+       1.556,
+       0.04
+      ],
+      "p": [
+       -5.3,
+       0.75,
+       11.7
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.556,
+       1.556,
+       0.04
+      ],
+      "p": [
+       -11.7,
+       0.75,
+       5.3
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.556,
+       1.556,
+       0.04
+      ],
+      "p": [
+       -5.3,
+       0.75,
+       5.3
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.556,
+       1.556,
+       0.04
+      ],
+      "p": [
+       5.3,
+       0.75,
+       11.7
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.556,
+       1.556,
+       0.04
+      ],
+      "p": [
+       11.7,
+       0.75,
+       11.7
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.556,
+       1.556,
+       0.04
+      ],
+      "p": [
+       5.3,
+       0.75,
+       5.3
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.556,
+       1.556,
+       0.04
+      ],
+      "p": [
+       11.7,
+       0.75,
+       5.3
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       -5.3,
+       0.75,
+       -1.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       -5.3,
+       0.75,
+       -5.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       5.3,
+       0.75,
+       -1.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       5.3,
+       0.75,
+       -5.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       -8.5,
+       0.75,
+       -1.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       -8.5,
+       0.75,
+       -5.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       8.5,
+       0.75,
+       -1.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       8.5,
+       0.75,
+       -5.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       -11.7,
+       0.75,
+       -1.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       -11.7,
+       0.75,
+       -5.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       11.7,
+       0.75,
+       -1.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.972,
+       0.972,
+       0.04
+      ],
+      "p": [
+       11.7,
+       0.75,
+       -5.8
+      ],
+      "renk": "5a93cf",
+      "n": 1,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -3.95,
+       0,
+       10.7
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       -3.95,
+       0,
+       10.7
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -10.29,
+       0,
+       4.11
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       -10.29,
+       0,
+       4.11
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       4.25,
+       0,
+       10.42
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       4.25,
+       0,
+       10.42
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       1.86,
+       0,
+       14.84
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       1.86,
+       0,
+       14.84
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       0.05,
+       0,
+       19.77
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       0.05,
+       0,
+       19.77
+      ],
+      "renk": "d35400",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       12.85,
+       0,
+       -2.68
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       12.85,
+       0,
+       -2.68
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       11.65,
+       0,
+       -4.85
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       11.65,
+       0,
+       -4.85
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       -1.28,
+       0,
+       15.52
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       -1.28,
+       0,
+       15.52
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -4.25,
+       0,
+       0.4
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       -4.25,
+       0,
+       0.4
+      ],
+      "renk": "2980b9",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       -3.95,
+       0,
+       5.14
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       -3.95,
+       0,
+       5.14
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -6.95,
+       0,
+       7.45
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       -6.95,
+       0,
+       7.45
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -4.49,
+       0,
+       9.91
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       -4.49,
+       0,
+       9.91
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       -10.49,
+       0,
+       9.01
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       -10.49,
+       0,
+       9.01
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       0.05,
+       0,
+       19.77
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       0.05,
+       0,
+       19.77
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -11.7,
+       0.07,
+       -2.8
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       -11.7,
+       0.07,
+       -2.8
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -11.7,
+       0.07,
+       -1.04
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       -11.7,
+       0.07,
+       -1.04
+      ],
+      "renk": "8e44ad",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       -1.55,
+       0,
+       15.25
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       -1.55,
+       0,
+       15.25
+      ],
+      "renk": "d35400",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       6.49,
+       0.07,
+       5.3
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       6.49,
+       0.07,
+       5.3
+      ],
+      "renk": "d35400",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       3.85,
+       0,
+       7.19
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       3.85,
+       0,
+       7.19
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       11.7,
+       0.07,
+       -2.8
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       11.7,
+       0.07,
+       -2.8
+      ],
+      "renk": "2980b9",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       11.7,
+       0.07,
+       -1.04
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       11.7,
+       0.07,
+       -1.04
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       -3.97,
+       0,
+       10.86
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       -3.97,
+       0,
+       10.86
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       11.7,
+       0.07,
+       6.49
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       11.7,
+       0.07,
+       6.49
+      ],
+      "renk": "d35400",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       -5.3,
+       0.07,
+       -4.8
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       -5.3,
+       0.07,
+       -4.8
+      ],
+      "renk": "2980b9",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -11.7,
+       0.07,
+       12.89
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       -11.7,
+       0.07,
+       12.89
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -10.51,
+       0.07,
+       11.7
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       -10.51,
+       0.07,
+       11.7
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       12.89,
+       0.07,
+       5.3
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       12.89,
+       0.07,
+       5.3
+      ],
+      "renk": "2980b9",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       10.51,
+       0.07,
+       5.3
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       10.51,
+       0.07,
+       5.3
+      ],
+      "renk": "d35400",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       5.3,
+       0.07,
+       -2.8
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       5.3,
+       0.07,
+       -2.8
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -3.95,
+       0,
+       9.84
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       -3.95,
+       0,
+       9.84
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -6.49,
+       0.07,
+       5.3
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       -6.49,
+       0.07,
+       5.3
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       4.11,
+       0.07,
+       11.7
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       4.11,
+       0.07,
+       11.7
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       5.3,
+       0.07,
+       -4.8
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       5.3,
+       0.07,
+       -4.8
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       -11.7,
+       0.07,
+       10.51
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       -11.7,
+       0.07,
+       10.51
+      ],
+      "renk": "d35400",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       11.7,
+       0.07,
+       12.89
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       11.7,
+       0.07,
+       12.89
+      ],
+      "renk": "d35400",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       10.51,
+       0.07,
+       11.7
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       10.51,
+       0.07,
+       11.7
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       -7.4,
+       0,
+       -2.6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       -7.4,
+       0,
+       -2.6
+      ],
+      "renk": "2980b9",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -8.5,
+       0.07,
+       -1.04
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       -8.5,
+       0.07,
+       -1.04
+      ],
+      "renk": "8e44ad",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       -12.89,
+       0.07,
+       11.7
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       -12.89,
+       0.07,
+       11.7
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       11.7,
+       0.07,
+       10.51
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       11.7,
+       0.07,
+       10.51
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       12.89,
+       0.07,
+       11.7
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       12.89,
+       0.07,
+       11.7
+      ],
+      "renk": "8e44ad",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       -7.55,
+       0,
+       4.16
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       -7.55,
+       0,
+       4.16
+      ],
+      "renk": "2980b9",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -7.14,
+       0,
+       4.57
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       -7.14,
+       0,
+       4.57
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       -5.3,
+       0.07,
+       12.89
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       -5.3,
+       0.07,
+       12.89
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -5.3,
+       0.07,
+       10.51
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       -5.3,
+       0.07,
+       10.51
+      ],
+      "renk": "2980b9",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -4.11,
+       0.07,
+       11.7
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       -4.11,
+       0.07,
+       11.7
+      ],
+      "renk": "d35400",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       4.58,
+       0,
+       7.62
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       4.58,
+       0,
+       7.62
+      ],
+      "renk": "2980b9",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -0.05,
+       0,
+       7.97
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       -0.05,
+       0,
+       7.97
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       -5.42,
+       0,
+       14.08
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       -5.42,
+       0,
+       14.08
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       3.54,
+       0,
+       14.96
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       3.54,
+       0,
+       14.96
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -0.05,
+       0,
+       14.6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.544,
+       0.996,
+       0.562
+      ],
+      "p": [
+       -0.05,
+       0,
+       14.6
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       -0.05,
+       0,
+       15.16
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       -0.05,
+       0,
+       15.16
+      ],
+      "renk": "8e44ad",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -0.03,
+       0,
+       16.84
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       -0.03,
+       0,
+       16.84
+      ],
+      "renk": "c0392b",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       0.07,
+       0,
+       17.39
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       0.07,
+       0,
+       17.39
+      ],
+      "renk": "27ae60",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       0,
+       0,
+       19.19
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       0,
+       0,
+       19.19
+      ],
+      "renk": "16a085",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "CapsuleGeometry",
+      "d": [
+       1.75,
+       0.6,
+       0.571
+      ],
+      "p": [
+       0,
+       0,
+       0
+      ],
+      "renk": "ffffff",
+      "n": 0,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.44,
+       0.44,
+       0.06
+      ],
+      "p": [
+       0,
+       0,
+       0
+      ],
+      "renk": "ffd700",
+      "n": 28,
+      "ad": "kat1"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       0.57,
+       0,
+       0.27
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       0.57,
+       0,
+       0.27
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.734,
+       0.627,
+       0.618
+      ],
+      "p": [
+       0.57,
+       0,
+       0.27
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       0.57,
+       0,
+       0.27
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Knight_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       0.57,
+       0,
+       0.27
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       0.57,
+       0,
+       0.27
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       -12.65,
+       0,
+       -6.94
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       -12.65,
+       0,
+       -6.94
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.734,
+       0.627,
+       0.618
+      ],
+      "p": [
+       -12.65,
+       0,
+       -6.94
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -12.65,
+       0,
+       -6.94
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Knight_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       -12.65,
+       0,
+       -6.94
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       -12.65,
+       0,
+       -6.94
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.4,
+       0.24,
+       0.04
+      ],
+      "p": [
+       -12.61,
+       0.65,
+       -6.52
+      ],
+      "renk": "6d4c41",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       -12.65,
+       0,
+       -3.46
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       -12.65,
+       0,
+       -3.46
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.734,
+       0.627,
+       0.618
+      ],
+      "p": [
+       -12.65,
+       0,
+       -3.46
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -12.65,
+       0,
+       -3.46
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Knight_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       -12.65,
+       0,
+       -3.46
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       -12.65,
+       0,
+       -3.46
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.702,
+       0.237,
+       0.235
+      ],
+      "p": [
+       -6.9,
+       0,
+       -7.75
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Rogue_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.702,
+       0.237,
+       0.235
+      ],
+      "p": [
+       -6.9,
+       0,
+       -7.75
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Rogue_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.702,
+       0.693,
+       0.562
+      ],
+      "p": [
+       -6.9,
+       0,
+       -7.75
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Rogue_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -6.9,
+       0,
+       -7.75
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rogue_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.422,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -6.9,
+       0,
+       -7.75
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Rogue_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.422,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -6.9,
+       0,
+       -7.75
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Rogue_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.237,
+       0.235
+      ],
+      "p": [
+       0,
+       0,
+       6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Ranger_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.237,
+       0.235
+      ],
+      "p": [
+       0,
+       0,
+       6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Ranger_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.807,
+       0.786,
+       0.554
+      ],
+      "p": [
+       0,
+       0,
+       6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Ranger_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       0,
+       0,
+       6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Ranger_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.422,
+       0.324,
+       0.195
+      ],
+      "p": [
+       0,
+       0,
+       6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Ranger_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.422,
+       0.324,
+       0.195
+      ],
+      "p": [
+       0,
+       0,
+       6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Ranger_LegRight"
+     }
+    ]
+   },
+   "perf1": {
+    "kareMs": 87,
+    "isMsP50": 71.3,
+    "cagriToplam": 488,
+    "cagriAna": 213,
+    "cagriGolge": 276,
+    "donukKareMs": 51.3
+   },
+   "perf2": {
+    "kareMs": 80.8,
+    "isMsP50": 66.7,
+    "cagriToplam": 475,
+    "cagriAna": 199,
+    "cagriGolge": 277,
+    "donukKareMs": 51.9
+   }
+  },
+  "K2": {
+   "envanter": {
+    "mesh": 1181,
+    "cast": 143,
+    "kova": {
+     "BoxGeometry|buyuk": 49,
+     "ConeGeometry|buyuk": 1,
+     "BufferGeometry|buyuk": 50,
+     "CylinderGeometry|buyuk": 3,
+     "BoxGeometry|ince": 40
+    },
+    "ornek": [
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       4.6,
+       0.16,
+       0.1
+      ],
+      "p": [
+       0,
+       1,
+       -10.2
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       5,
+       0.16,
+       0.1
+      ],
+      "p": [
+       -2.3,
+       1,
+       -12.7
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       5,
+       0.16,
+       0.1
+      ],
+      "p": [
+       2.3,
+       1,
+       -12.7
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.12,
+       0.18,
+       0.18
+      ],
+      "p": [
+       -2.3,
+       0.56,
+       -10.2
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.12,
+       0.18,
+       0.18
+      ],
+      "p": [
+       2.3,
+       0.56,
+       -10.2
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.12,
+       0.18,
+       0.18
+      ],
+      "p": [
+       -2.3,
+       0.56,
+       -15.2
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.12,
+       0.18,
+       0.18
+      ],
+      "p": [
+       2.3,
+       0.56,
+       -15.2
+      ],
+      "renk": "5d4037",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       1,
+       1
+      ],
+      "p": [
+       0,
+       -3.2,
+       0
+      ],
+      "renk": "ffffff",
+      "n": 35,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "ConeGeometry",
+      "d": [
+       1.95,
+       1.901,
+       1
+      ],
+      "p": [
+       0,
+       -3.2,
+       0
+      ],
+      "renk": "ffffff",
+      "n": 70,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1,
+       1,
+       1
+      ],
+      "p": [
+       0,
+       -3.2,
+       0
+      ],
+      "renk": "ffffff",
+      "n": 66,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.5,
+       0.54,
+       0.3
+      ],
+      "p": [
+       -7.03,
+       1.14,
+       -10.35
+      ],
+      "renk": "c9a227",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.65,
+       0.3,
+       0.022
+      ],
+      "p": [
+       -7.18,
+       0.91,
+       -9.95
+      ],
+      "renk": "c9a227",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.227,
+       0.217
+      ],
+      "p": [
+       -7.03,
+       0,
+       -11.05
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.227,
+       0.217
+      ],
+      "p": [
+       -7.03,
+       0,
+       -11.05
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.808,
+       0.709,
+       0.584
+      ],
+      "p": [
+       -7.03,
+       0,
+       -11.05
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -7.03,
+       0,
+       -11.05
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Barbarian_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -7.03,
+       0,
+       -11.05
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Barbarian_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -7.03,
+       0,
+       -11.05
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Barbarian_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.5,
+       0.54,
+       0.3
+      ],
+      "p": [
+       -12.82,
+       1.14,
+       -10.35
+      ],
+      "renk": "c9a227",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.65,
+       0.3,
+       0.022
+      ],
+      "p": [
+       -12.97,
+       0.91,
+       -9.95
+      ],
+      "renk": "c9a227",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.227,
+       0.217
+      ],
+      "p": [
+       -12.82,
+       0,
+       -11.05
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.227,
+       0.217
+      ],
+      "p": [
+       -12.82,
+       0,
+       -11.05
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.808,
+       0.709,
+       0.584
+      ],
+      "p": [
+       -12.82,
+       0,
+       -11.05
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Barbarian_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -12.82,
+       0,
+       -11.05
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Barbarian_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -12.82,
+       0,
+       -11.05
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Barbarian_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -12.82,
+       0,
+       -11.05
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Barbarian_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.32,
+       0.06
+      ],
+      "p": [
+       -11.11,
+       1.95,
+       -17.13
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.32,
+       0.06
+      ],
+      "p": [
+       -11.11,
+       1.4,
+       -17.13
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.32,
+       0.06
+      ],
+      "p": [
+       -9.31,
+       1.95,
+       -17.13
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.6,
+       0.32,
+       0.06
+      ],
+      "p": [
+       -9.31,
+       1.4,
+       -17.13
+      ],
+      "renk": "9c6f4a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.972,
+       0.957,
+       0.216
+      ],
+      "p": [
+       -10.3,
+       1.01,
+       -10.2
+      ],
+      "renk": "b87333",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.567,
+       0.405,
+       0.04
+      ],
+      "p": [
+       -9.41,
+       0.92,
+       -10.2
+      ],
+      "renk": "8a6a4f",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       5,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       6.5,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       8,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       9.5,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       11,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.6,
+       0.05
+      ],
+      "p": [
+       12.5,
+       0.98,
+       -16.51
+      ],
+      "renk": "6f978a",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.32,
+       0.04
+      ],
+      "p": [
+       5.75,
+       0.98,
+       -15.71
+      ],
+      "renk": "7fa99b",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.32,
+       0.04
+      ],
+      "p": [
+       7.25,
+       0.98,
+       -15.71
+      ],
+      "renk": "7fa99b",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.32,
+       0.04
+      ],
+      "p": [
+       8.65,
+       0.98,
+       -16.07
+      ],
+      "renk": "7fa99b",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.32,
+       0.04
+      ],
+      "p": [
+       10.25,
+       0.98,
+       -15.71
+      ],
+      "renk": "7fa99b",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.64,
+       1.32,
+       0.04
+      ],
+      "p": [
+       11.75,
+       0.98,
+       -15.71
+      ],
+      "renk": "7fa99b",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -13.6,
+       0.36,
+       -4.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -12.4,
+       0.36,
+       -4.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -13.6,
+       0.36,
+       -2.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -12.4,
+       0.36,
+       -2.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       -13,
+       0.66,
+       -3.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       -13,
+       0.73,
+       -3.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -7.1,
+       0.36,
+       -4.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -5.9,
+       0.36,
+       -4.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -7.1,
+       0.36,
+       -2.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -5.9,
+       0.36,
+       -2.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       -6.5,
+       0.66,
+       -3.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       -6.5,
+       0.73,
+       -3.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.905,
+       0.855,
+       0.819
+      ],
+      "p": [
+       -6.5,
+       0.07,
+       -4.33
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.041,
+       0.606
+      ],
+      "p": [
+       -6.5,
+       0.07,
+       -4.33
+      ],
+      "renk": "d6b656",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.835,
+       0.782
+      ],
+      "p": [
+       -5.67,
+       0.07,
+       -3.5
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.107,
+       0.584
+      ],
+      "p": [
+       -5.67,
+       0.07,
+       -3.5
+      ],
+      "renk": "5b8a72",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       -6.5,
+       0.07,
+       -2.67
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.045,
+       0.554
+      ],
+      "p": [
+       -6.5,
+       0.07,
+       -2.67
+      ],
+      "renk": "9bbb59",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -7.33,
+       0.07,
+       -3.5
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       1.542,
+       1.033,
+       0.618
+      ],
+      "p": [
+       -7.33,
+       0.07,
+       -3.5
+      ],
+      "renk": "4bacc6",
+      "n": 1,
+      "ad": "Rig_Medium"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       5.9,
+       0.36,
+       -4.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       7.1,
+       0.36,
+       -4.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       5.9,
+       0.36,
+       -2.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       7.1,
+       0.36,
+       -2.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       6.5,
+       0.66,
+       -3.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       6.5,
+       0.73,
+       -3.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       12.4,
+       0.36,
+       -4.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       13.6,
+       0.36,
+       -4.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       12.4,
+       0.36,
+       -2.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       13.6,
+       0.36,
+       -2.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       13,
+       0.66,
+       -3.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       13,
+       0.73,
+       -3.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -13.6,
+       0.36,
+       1.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -12.4,
+       0.36,
+       1.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -13.6,
+       0.36,
+       3.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -12.4,
+       0.36,
+       3.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       -13,
+       0.66,
+       2.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       -13,
+       0.73,
+       2.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -13.6,
+       0.36,
+       7.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -12.4,
+       0.36,
+       7.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -13.6,
+       0.36,
+       9.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -12.4,
+       0.36,
+       9.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       -13,
+       0.66,
+       8.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       -13,
+       0.73,
+       8.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -13.6,
+       0.36,
+       13.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -12.4,
+       0.36,
+       13.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -13.6,
+       0.36,
+       15.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -12.4,
+       0.36,
+       15.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       -13,
+       0.66,
+       14.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       -13,
+       0.73,
+       14.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -7.1,
+       0.36,
+       1.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -5.9,
+       0.36,
+       1.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -7.1,
+       0.36,
+       3.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -5.9,
+       0.36,
+       3.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       -6.5,
+       0.66,
+       2.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       -6.5,
+       0.73,
+       2.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -7.1,
+       0.36,
+       7.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -5.9,
+       0.36,
+       7.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -7.1,
+       0.36,
+       9.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -5.9,
+       0.36,
+       9.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       -6.5,
+       0.66,
+       8.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       -6.5,
+       0.73,
+       8.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -7.1,
+       0.36,
+       13.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -5.9,
+       0.36,
+       13.9
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -7.1,
+       0.36,
+       15.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       0.73,
+       0.092,
+       0.092
+      ],
+      "p": [
+       -5.9,
+       0.36,
+       15.1
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.196,
+       1.196,
+       0.1
+      ],
+      "p": [
+       -6.5,
+       0.66,
+       14.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": false,
+      "tip": "BoxGeometry",
+      "d": [
+       1.334,
+       1.334,
+       0.04
+      ],
+      "p": [
+       -6.5,
+       0.73,
+       14.5
+      ],
+      "renk": "6b4026",
+      "n": 1,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.594,
+       0.594,
+       0.081
+      ],
+      "p": [
+       -6.5,
+       0,
+       -1.9
+      ],
+      "renk": "ffd700",
+      "n": 32,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": true,
+      "skin": false,
+      "tip": "CylinderGeometry",
+      "d": [
+       0.594,
+       0.594,
+       0.081
+      ],
+      "p": [
+       13.4,
+       0,
+       -8.6
+      ],
+      "renk": "ffd700",
+      "n": 32,
+      "ad": ""
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       -2.2,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       -2.2,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.734,
+       0.627,
+       0.618
+      ],
+      "p": [
+       -2.2,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       -2.2,
+       0,
+       -6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Knight_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       -2.2,
+       0,
+       -6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       -2.2,
+       0,
+       -6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       0,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       0,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.734,
+       0.627,
+       0.618
+      ],
+      "p": [
+       0,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       0,
+       0,
+       -6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Knight_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       0,
+       0,
+       -6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       0,
+       0,
+       -6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       2.2,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.73,
+       0.247,
+       0.235
+      ],
+      "p": [
+       2.2,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.734,
+       0.627,
+       0.618
+      ],
+      "p": [
+       2.2,
+       0,
+       -6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Knight_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.863,
+       0.848,
+       0.805
+      ],
+      "p": [
+       2.2,
+       0,
+       -6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Knight_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       2.2,
+       0,
+       -6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.42,
+       0.339,
+       0.195
+      ],
+      "p": [
+       2.2,
+       0,
+       -6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Knight_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.702,
+       0.237,
+       0.235
+      ],
+      "p": [
+       -10.3,
+       0,
+       -7.6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Rogue_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.702,
+       0.237,
+       0.235
+      ],
+      "p": [
+       -10.3,
+       0,
+       -7.6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Rogue_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.702,
+       0.693,
+       0.562
+      ],
+      "p": [
+       -10.3,
+       0,
+       -7.6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Rogue_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.908,
+       0.906,
+       0.894
+      ],
+      "p": [
+       -10.3,
+       0,
+       -7.6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Rogue_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.422,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -10.3,
+       0,
+       -7.6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Rogue_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.422,
+       0.324,
+       0.195
+      ],
+      "p": [
+       -10.3,
+       0,
+       -7.6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Rogue_LegRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.237,
+       0.235
+      ],
+      "p": [
+       2,
+       0,
+       6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Ranger_ArmLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.701,
+       0.237,
+       0.235
+      ],
+      "p": [
+       2,
+       0,
+       6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Ranger_ArmRight"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.807,
+       0.786,
+       0.554
+      ],
+      "p": [
+       2,
+       0,
+       6
+      ],
+      "renk": "f3ecd9",
+      "n": 1,
+      "ad": "Ranger_Body"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.862,
+       0.858,
+       0.812
+      ],
+      "p": [
+       2,
+       0,
+       6
+      ],
+      "renk": "ffffff",
+      "n": 1,
+      "ad": "Ranger_Head"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.422,
+       0.324,
+       0.195
+      ],
+      "p": [
+       2,
+       0,
+       6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Ranger_LegLeft"
+     },
+     {
+      "cast": true,
+      "inst": false,
+      "skin": true,
+      "tip": "BufferGeometry",
+      "d": [
+       0.422,
+       0.324,
+       0.195
+      ],
+      "p": [
+       2,
+       0,
+       6
+      ],
+      "renk": "3e3a36",
+      "n": 1,
+      "ad": "Ranger_LegRight"
+     }
+    ]
+   },
+   "perf1": {
+    "kareMs": 55.7,
+    "isMsP50": 50.6,
+    "cagriToplam": 297,
+    "cagriAna": 156,
+    "cagriGolge": 141,
+    "donukKareMs": 43
+   },
+   "perf2": {
+    "kareMs": 56.1,
+    "isMsP50": 44,
+    "cagriToplam": 297,
+    "cagriAna": 154,
+    "cagriGolge": 143,
+    "donukKareMs": 42.6
+   }
+  }
+ },
+ "hatalar": []
+}

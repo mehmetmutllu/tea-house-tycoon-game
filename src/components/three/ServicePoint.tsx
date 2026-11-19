@@ -192,7 +192,7 @@ export function ServicePoint({
                 <meshStandardMaterial color={color} metalness={0.6} roughness={0.3} />
               </mesh>
               {/* musluk */}
-              <mesh castShadow position={[0, 0.9 + bodyH * 0.4, 0.34]} rotation={[Math.PI / 2, 0, 0]}>
+              <mesh position={[0, 0.9 + bodyH * 0.4, 0.34]} rotation={[Math.PI / 2, 0, 0]}>
                 <cylinderGeometry args={[0.04, 0.04, 0.2, 8]} />
                 <meshStandardMaterial color="#5d4037" />
               </mesh>
@@ -221,7 +221,7 @@ export function ServicePoint({
             {istif && (
               <group position={[yer('bardakIstifi').x, 0.93, yer('bardakIstifi').z]}>
                 {[0, 1, 2].map((k) => (
-                  <mesh key={k} castShadow position={[0, 0.05 + k * 0.08, 0]}>
+                  <mesh key={k} position={[0, 0.05 + k * 0.08, 0]}>
                     <cylinderGeometry args={[0.07, 0.055, 0.1, 8]} />
                     <meshStandardMaterial color={PALETTE.plate} />
                   </mesh>
@@ -232,7 +232,7 @@ export function ServicePoint({
             {/* L3 — SÜRAHİ: tablanın arka sırasında, servis istasyonununkiyle aynı biçim. */}
             {surahi && (
               <group position={[yer('surahi').x, 0.9, yer('surahi').z]}>
-                <mesh castShadow position={[0, 0.17, 0]}>
+                <mesh position={[0, 0.17, 0]}>
                   <cylinderGeometry args={[0.12, 0.14, 0.32, 10]} />
                   <meshStandardMaterial color={PALETTE.plate} />
                 </mesh>
@@ -276,7 +276,7 @@ export function ServicePoint({
                   <meshStandardMaterial color={PALETTE.breadCrate} />
                 </mesh>
                 {[-0.1, 0.04, 0.18].map((bx, i) => (
-                  <mesh key={i} castShadow position={[bx - 0.04, 0.94, (i % 2) * 0.1 - 0.05]}>
+                  <mesh key={i} position={[bx - 0.04, 0.94, (i % 2) * 0.1 - 0.05]}>
                     <sphereGeometry args={[0.06, 8, 6]} />
                     <meshStandardMaterial color={PALETTE.bread} />
                   </mesh>
@@ -286,7 +286,7 @@ export function ServicePoint({
 
             {/* HAZIR ÇAY — ÖN sıra (oyuncunun aldığı yüz), en çok 4 bardak çizilir. */}
             {Array.from({ length: Math.min(readyTea, 4) }).map((_, i) => (
-              <mesh key={`t${i}`} castShadow position={[-1.0 + i * 0.24, 0.96, 0.24]}>
+              <mesh key={`t${i}`} position={[-1.0 + i * 0.24, 0.96, 0.24]}>
                 <cylinderGeometry args={[0.06, 0.05, 0.16, 8]} />
                 <meshStandardMaterial color="#c0392b" emissive="#7a1f17" emissiveIntensity={0.25} />
               </mesh>

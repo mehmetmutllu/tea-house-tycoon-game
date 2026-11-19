@@ -72,9 +72,9 @@ export function Dishes() {
   });
   return (
     <>
-      {/* bardak (çay) + tabak diski (tost) castShadow; kırıntı gölge atmaz (eski mesh'le birebir) */}
-      <instancedMesh ref={cupRef} args={[CUP_GEO, CUP_MAT, DISH_CAP]} castShadow frustumCulled={false} />
-      <instancedMesh ref={discRef} args={[PLATE_GEO, PLATE_MAT, DISH_CAP]} castShadow frustumCulled={false} />
+      {/* bardak, tabak, kırıntı gölge DÖKMEZ — küçük prop (S4, `golgeKurali.ts`) */}
+      <instancedMesh ref={cupRef} args={[CUP_GEO, CUP_MAT, DISH_CAP]} frustumCulled={false} />
+      <instancedMesh ref={discRef} args={[PLATE_GEO, PLATE_MAT, DISH_CAP]} frustumCulled={false} />
       <instancedMesh ref={crumbRef} args={[CRUMB_GEO, CRUMB_MAT, DISH_CAP]} frustumCulled={false} />
       {dirty.map((i) => (
         <StinkCloud key={i} pos={LAYOUT.tables[i].table} />

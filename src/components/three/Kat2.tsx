@@ -21,7 +21,7 @@
  * D-201: bulaşık (`kat2/Bulasik`: masadaki fincan + telveli kirli, ön tezgâhta leğen, bulaşıkçı) · lavabo
  * seviyesiyle büyür + yükseltme noktası (`Kat2LavaboIsareti`).
  */
-import { Suspense, useLayoutEffect, useRef } from 'react';
+import { Suspense, memo, useLayoutEffect, useRef } from 'react';
 import { CylinderGeometry, MeshStandardMaterial, Object3D, type InstancedMesh } from 'three';
 import { FloorPattern } from './floorPattern';
 import { WallPanels, type WallSlab } from './wallPanel';
@@ -38,6 +38,7 @@ import { FRONT_TOP_Y, kat2MutfakSeviyesi } from './kitchenLook';
 import { Kat2LavaboIsareti, Kat2OcakIsareti, Kat2SvIsaretleri } from './kat2/SvIsaret';
 import { Kat2Bulasikci, MasaBulasiklari, YikamaYeri } from './kat2/Bulasik';
 import { useMasaSvleri } from './kat2/masaSv';
+import { KademeliOge } from './kat2/kademeliMontaj';
 import { masaSvOku } from '../../game/kat2Dongu';
 import { MasaGrubu, useKalkisIzle } from './kat2/Grup';
 import { Bolmeler } from './kat2/Bolme';
@@ -47,8 +48,11 @@ import { ParaYiginlari } from './kat2/Para';
 import { masaSirasi, oyundaMaskesi } from './kat2/masaIndeks';
 import { Kat2PadIsareti } from './kat2/PadIsaret';
 import { ArkaDuvarUstu } from './kat2/Dis';
+import { silindirGolgeVerir } from './golgeKurali';
 
 const H = FLOOR_HALF;
+/** Kademeli ön kurulumda masaların ilk sırası (önce kabuk, mutfak, personel — `Kat2Sahne`). */
+const KADEME_MASA = 9;
 /** Dış duvar kat kenarının 0,5 dışında (Scene.Walls ile aynı). */
 const M = 0.5;
 const BANT_ARKA = BAND.back;
@@ -214,7 +218,7 @@ function Zemin({ acikAlan }: { acikAlan: number }) {
 // ---- Merdiven ağzı: kuyu + basamaklar + kalın ahşap korkuluk + topuzlu babalar (D-181 merdiven 2) ----
 function Silindir({ r, h, renk, pos }: { r: number; h: number; renk: string; pos: [number, number, number] }) {
   return (
-    <mesh position={pos} castShadow>
+    <mesh position={pos} castShadow={silindirGolgeVerir(r, r, h)}>
       <cylinderGeometry args={[r, r, h, 8]} />
       <meshStandardMaterial color={renk} />
     </mesh>
@@ -271,8 +275,8 @@ function Dikmeler({ x1, z1, x2, z2, n }: { x1: number; z1: number; x2: number; z
   }, [x1, z1, x2, z2, n]);
   return (
     <>
-      <instancedMesh ref={govde} args={[DIKME_GEO, DIKME_MAT, n + 1]} castShadow />
-      <instancedMesh ref={bogum} args={[DIKME_BOGUM, DIKME_MAT, n + 1]} castShadow />
+      <instancedMesh ref={govde} args={[DIKME_GEO, DIKME_MAT, n + 1]} />
+      <instancedMesh ref={bogum} args={[DIKME_BOGUM, DIKME_MAT, n + 1]} />
     </>
   );
 }
@@ -284,7 +288,7 @@ function Baba({ x, z }: { x: number; z: number }) {
         <boxGeometry args={[0.18, 1.12, 0.18]} />
         <meshStandardMaterial color={KOYU} />
       </mesh>
-      <mesh position={[0, 1.2, 0]} castShadow>
+      <mesh position={[0, 1.2, 0]}>
         <sphereGeometry args={[0.1, 12, 8]} />
         <meshStandardMaterial color="#8a5a3b" />
       </mesh>
@@ -382,6 +386,24 @@ export function MerdivenTamir({ pos }: { pos: [number, number, number] }) {
   );
 }
 
+/**
+ * Bir masa satırı. `memo`: bir masanın oyunda/Sv durumu değişince yalnız o satır çizilir — liste
+ * (ve Kat 2'ye dönüşte bayat aboneliklerin tazelenmesi) 22 masayı baştan render etmez.
+ */
+const MasaSatiri = memo(function MasaSatiri({ yer, i, oyn, sv, dogus }: { yer: (typeof KAT2_MASALAR)[number]; i: number; oyn: boolean; sv: number; dogus: boolean }) {
+  return (
+    <group>
+      <Dogus dogus={dogus} pos={[yer.x, 0, yer.z]}>
+        <SvSekme sv={sv} pos={[yer.x, 0, yer.z]}>
+          {yer.tur === 'okey' ? <OkeyMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} /> : <TavlaMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} />}
+        </SvSekme>
+      </Dogus>
+      <MasaGrubu yer={yer} sira={i} />
+      <KahveBalonu yer={yer} />
+    </group>
+  );
+});
+
 /** Açık masalar: tür + durum İD ile bulunur (dizi sırasına güvenilmez — masa listesi büyüyor). */
 function Masalar({ padsDone, ilk }: { padsDone: readonly string[]; ilk: ReadonlySet<string> }) {
   const oyunda = useGame((s) => oyundaMaskesi(s.kat2Dunya.masalar));
@@ -392,16 +414,11 @@ function Masalar({ padsDone, ilk }: { padsDone: readonly string[]; ilk: Readonly
         if (!padsDone.includes(yer.id)) return null;
         const oyn = (oyunda & (1 << masaSirasi(yer.id))) !== 0;
         const sv = masaSvOku(masaSv, yer.id);
+        // Ön kurulumda (Kat 1'in arkasında) masalar kare başına bir tane kurulur — `kat2/kademeliMontaj.tsx`.
         return (
-          <group key={yer.id}>
-            <Dogus dogus={!ilk.has(yer.id)} pos={[yer.x, 0, yer.z]}>
-              <SvSekme sv={sv} pos={[yer.x, 0, yer.z]}>
-                {yer.tur === 'okey' ? <OkeyMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} /> : <TavlaMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} />}
-              </SvSekme>
-            </Dogus>
-            <MasaGrubu yer={yer} sira={i} />
-            <KahveBalonu yer={yer} />
-          </group>
+          <KademeliOge key={yer.id} sira={KADEME_MASA + i}>
+            <MasaSatiri yer={yer} i={i} oyn={oyn} sv={sv} dogus={!ilk.has(yer.id)} />
+          </KademeliOge>
         );
       })}
     </group>
@@ -458,36 +475,56 @@ export function Kat2Sahne() {
   // Kata girildiğinde açık olanlar doğrudan tam boy; oturumda açılanlar yerinde büyüyerek belirir.
   const ilk = useRef<ReadonlySet<string>>(new Set(padsDone));
   return (
+    // Ön kurulumda (Kat 1'in arkasında) parçalar kare başına bir sıra açılır — `kat2/kademeliMontaj.tsx`;
+    // oyuncu Kat 2'deyken hepsi hemen.
     <group>
-      <Zemin acikAlan={acikAlan} />
-      <Duvarlar />
-      <Bolmeler acikAlan={acikAlan} />
-      <MerdivenAgzi />
-      <ArkaDuvarUstu />
-      {OCAKLAR.map((o, i) => (padsDone.includes(o.id) ? <Ocak key={o.id} i={i} ilk={ilk.current} /> : null))}
-      {ocak ? (
-        <>
-          <Kat2Mutfak />
-          <YikamaYeri />
-        </>
-      ) : (
-        <MaketTadilatPerde x1={-H} x2={KOVA.x0 - 0.2} z={BAND.front} simge="mutfak" />
-      )}
-      <Kat2Lavabo acik={padsDone.includes(KAT2_LAVABO_PAD)} ilk={ilk.current} />
-      <MaketPlant pos={[salon.x0 + 0.8, 0, salon.z0 + 0.8]} big />
-      <MaketPlant pos={[salon.x1 - 0.8, 0, salon.z0 + 0.8]} big />
-      <MaketPlant pos={[salon.x0 + 0.8, 0, salon.z1 - 0.8]} />
-      <MaketPlant pos={[salon.x1 - 0.8, 0, salon.z1 - 0.8]} />
+      <KademeliOge sira={0}>
+        <Zemin acikAlan={acikAlan} />
+      </KademeliOge>
+      <KademeliOge sira={1}>
+        <Duvarlar />
+        <Bolmeler acikAlan={acikAlan} />
+      </KademeliOge>
+      <KademeliOge sira={2}>
+        <MerdivenAgzi />
+        <ArkaDuvarUstu />
+      </KademeliOge>
+      <KademeliOge sira={3}>
+        {OCAKLAR.map((o, i) => (padsDone.includes(o.id) ? <Ocak key={o.id} i={i} ilk={ilk.current} /> : null))}
+      </KademeliOge>
+      <KademeliOge sira={4}>
+        {ocak ? (
+          <>
+            <Kat2Mutfak />
+            <YikamaYeri />
+          </>
+        ) : (
+          <MaketTadilatPerde x1={-H} x2={KOVA.x0 - 0.2} z={BAND.front} simge="mutfak" />
+        )}
+      </KademeliOge>
+      <KademeliOge sira={5}>
+        <Kat2Lavabo acik={padsDone.includes(KAT2_LAVABO_PAD)} ilk={ilk.current} />
+        <MaketPlant pos={[salon.x0 + 0.8, 0, salon.z0 + 0.8]} big />
+        <MaketPlant pos={[salon.x1 - 0.8, 0, salon.z0 + 0.8]} big />
+        <MaketPlant pos={[salon.x0 + 0.8, 0, salon.z1 - 0.8]} />
+        <MaketPlant pos={[salon.x1 - 0.8, 0, salon.z1 - 0.8]} />
+      </KademeliOge>
       <Suspense fallback={null}>
         <Masalar padsDone={padsDone} ilk={ilk.current} />
-        <ParaYiginlari />
-        <Kat2PadIsareti />
-        <Kat2SvIsaretleri />
-        <Kat2OcakIsareti />
-        <Kat2LavaboIsareti />
-        <Kat2Garson />
-        <MasaBulasiklari />
-        <Kat2Bulasikci />
+        <KademeliOge sira={6}>
+          <ParaYiginlari />
+          <Kat2PadIsareti />
+          <Kat2SvIsaretleri />
+          <Kat2OcakIsareti />
+          <Kat2LavaboIsareti />
+        </KademeliOge>
+        <KademeliOge sira={7}>
+          <Kat2Garson />
+        </KademeliOge>
+        <KademeliOge sira={8}>
+          <MasaBulasiklari />
+          <Kat2Bulasikci />
+        </KademeliOge>
       </Suspense>
     </group>
   );

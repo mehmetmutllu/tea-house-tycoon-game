@@ -25,12 +25,12 @@ function WaiterTray({ tea, food }: { tea: number; food: number }) {
       {Array.from({ length: count }, (_, i) => {
         const x = (i - (count - 1) / 2) * 0.13;
         return i < tea ? (
-          <mesh key={i} castShadow position={[x, 0.1, 0]}>
+          <mesh key={i} position={[x, 0.1, 0]}>
             <cylinderGeometry args={[0.045, 0.036, 0.13, 8]} />
             <meshStandardMaterial color="#c0392b" emissive="#7a1f17" emissiveIntensity={0.25} />
           </mesh>
         ) : (
-          <mesh key={i} castShadow position={[x, 0.06, 0]}>
+          <mesh key={i} position={[x, 0.06, 0]}>
             <boxGeometry args={[0.11, 0.05, 0.12]} />
             <meshStandardMaterial color={PALETTE.toast} roughness={0.7} />
           </mesh>

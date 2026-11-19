@@ -8,6 +8,7 @@ import { cizilenDekor } from '../../game/vitrin';
 import { onizlemeGrubuKaydet } from './DekorCekimi';
 import { Model } from './Model';
 import { DECOR_S, DUVAR_GOLGE, LAMBA_YER_S } from './decorLook';
+import { golgeVerir, silindirGolgeVerir } from './golgeKurali';
 import {
   DOLAP_UST, FURNITURE, GRAMOFON, HALI_S, HOLIDAY, KANARYA, KOLTUK_S, MASA_S, MASA_UST, RADYO, SAAT, SEMAVER,
   TABLO, YERLESIM, YILBASI_MODEL, YILBASI_S,
@@ -30,7 +31,7 @@ const metal = { metalness: 0.55, roughness: 0.35 } as const;
 /** Bakır parlak ama koyulaşmasın: ortam ışığında tam metal kahverengi fıçıya dönüyordu. */
 const bakirMetal = { metalness: 0.3, roughness: 0.4 } as const;
 
-function Kutu({ w, h, d, renk, pos, golge = true }: { w: number; h: number; d: number; renk: string; pos: [number, number, number]; golge?: boolean }) {
+function Kutu({ w, h, d, renk, pos, golge = golgeVerir(w, h, d) }: { w: number; h: number; d: number; renk: string; pos: [number, number, number]; golge?: boolean }) {
   return (
     <mesh castShadow={golge} position={pos}>
       <boxGeometry args={[w, h, d]} />
@@ -43,7 +44,7 @@ function Silindir({
   r1, r2, h, renk, pos, seg = 12, rot, m,
 }: { r1: number; r2: number; h: number; renk: string; pos: [number, number, number]; seg?: number; rot?: [number, number, number]; m?: { metalness: number; roughness: number } }) {
   return (
-    <mesh castShadow position={pos} rotation={rot}>
+    <mesh castShadow={silindirGolgeVerir(r1, r2, h)} position={pos} rotation={rot}>
       <cylinderGeometry args={[r1, r2, h, seg]} />
       <meshStandardMaterial color={renk} flatShading {...m} />
     </mesh>

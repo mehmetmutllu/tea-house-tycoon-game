@@ -12,18 +12,34 @@
  * uymaz ve kartın işi ışığı değil RENGİ göstermek.
  * Fog/arka plan burada DEĞİL — onlar dünyaya ait; önizleme küçük bir kesit, sisi olmaz.
  */
+import { useEffect, useRef } from 'react';
+import type { DirectionalLight } from 'three';
 import { LIGHTING } from '../../config/palette';
 import { devPerfKol } from '../../game/devPerf';
+import { cihazSinifiOku, golgeHaritasi } from '../../game/cihazSinifi';
 
 export function SceneLights({ shadows = false }: { shadows?: boolean } = {}) {
   // DEV — F2 ölçüm kolu gölge haritasının kenarını değiştirebilir (`?f2golge=512`).
   // Harita belleği kenarın KARESİYLE büyür: 2048 → 16 MB, 1024 → 4 MB, 512 → 1 MB.
   // Üretimde `devPerfKol()` çağrılmaz, değer palette.ts'ten gelir.
-  const harita = (import.meta.env.DEV ? devPerfKol()?.golgeHarita : 0) || LIGHTING.shadowMapSize;
+  // Zayıf cihaz sınıfında 1024 (S4 · #1c, `golgeHaritasi`). Sınıf ölçülünce Scene yeniden
+  // çizer ve burası yeni sınıfı okur.
+  const harita = (import.meta.env.DEV ? devPerfKol()?.golgeHarita : 0) || golgeHaritasi(cihazSinifiOku(), LIGHTING.shadowMapSize);
+  // three gölge haritasını İLK gölge karesinde `mapSize` ile bir kez kurar; kenar sonradan
+  // değişirse (çalışırken zayıf damgası) eski hedef atılmalı ki yeni boyutla yeniden kurulsun.
+  const gunes = useRef<DirectionalLight>(null);
+  useEffect(() => {
+    const g = gunes.current?.shadow;
+    if (g?.map && g.map.width !== harita) {
+      g.map.dispose();
+      g.map = null;
+    }
+  }, [harita]);
   return (
     <>
       <hemisphereLight args={[LIGHTING.skyColor, LIGHTING.groundColor, LIGHTING.hemiIntensity]} />
       <directionalLight
+        ref={gunes}
         position={LIGHTING.sunPos}
         color={LIGHTING.sunColor}
         intensity={LIGHTING.sunIntensity}

@@ -1,0 +1,43 @@
+{
+ "etiket": "once",
+ "harita": 2048,
+ "durumlar": {
+  "K1": {
+   "perf1": {
+    "kareMs": 78.9,
+    "isMsP50": 65.3,
+    "cagriToplam": 529,
+    "cagriAna": 203,
+    "cagriGolge": 326,
+    "donukKareMs": 50
+   },
+   "perf2": {
+    "kareMs": 74.8,
+    "isMsP50": 69.7,
+    "cagriToplam": 510,
+    "cagriAna": 194,
+    "cagriGolge": 316,
+    "donukKareMs": 40.4
+   }
+  },
+  "K2": {
+   "perf1": {
+    "kareMs": 56.4,
+    "isMsP50": 46.2,
+    "cagriToplam": 375,
+    "cagriAna": 154,
+    "cagriGolge": 220,
+    "donukKareMs": 38.8
+   },
+   "perf2": {
+    "kareMs": 57.9,
+    "isMsP50": 54,
+    "cagriToplam": 374,
+    "cagriAna": 155,
+    "cagriGolge": 220,
+    "donukKareMs": 42.6
+   }
+  }
+ },
+ "hatalar": []
+}

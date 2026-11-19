@@ -284,7 +284,7 @@ export function CupTray({
         const pz = (row - 0.5) * rowSpacing;
         if (isFood) {
           return (
-            <mesh key={k} castShadow position={[px, 0.06, pz]}>
+            <mesh key={k} position={[px, 0.06, pz]}>
               <boxGeometry args={[0.14, 0.05, 0.11]} />
               <meshStandardMaterial color={PALETTE.toast} roughness={0.7} />
             </mesh>
@@ -294,7 +294,7 @@ export function CupTray({
           // Kirli tabak: yayvan disk + üstünde kırıntı (bardak silüetinden net ayrışır).
           return (
             <group key={k} position={[px, 0.05, pz]}>
-              <mesh castShadow>
+              <mesh>
                 <cylinderGeometry args={[0.075, 0.06, 0.03, 10]} />
                 <meshStandardMaterial color="#b3a896" roughness={0.9} />
               </mesh>
@@ -307,7 +307,7 @@ export function CupTray({
         }
         if (!isDirty) return <CayBardagi key={k} g={g} position={[px, 0, pz]} />;
         return (
-          <mesh key={k} castShadow position={[px, 0.1, pz]}>
+          <mesh key={k} position={[px, 0.1, pz]}>
             <cylinderGeometry args={[0.05, 0.04, 0.14, 8]} />
             <meshStandardMaterial color="#8d8276" roughness={0.9} />
           </mesh>

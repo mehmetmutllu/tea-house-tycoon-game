@@ -85,20 +85,20 @@ function Askilik() {
         <cylinderGeometry args={[0.2, 0.23, 0.05, 10]} />
         <meshStandardMaterial color={PALETTE.doorWood} />
       </mesh>
-      <mesh castShadow position={[0, 0.68, 0]}>
+      <mesh position={[0, 0.68, 0]}>
         <cylinderGeometry args={[0.035, 0.035, 1.3, 8]} />
         <meshStandardMaterial color={PALETTE.doorWood} />
       </mesh>
       {[0, 1, 2, 3].map((i) => {
         const a = (i * Math.PI) / 2;
         return (
-          <mesh key={i} castShadow position={[Math.cos(a) * 0.11, 1.22, -Math.sin(a) * 0.11]} rotation={[0, a, 0.35]}>
+          <mesh key={i} position={[Math.cos(a) * 0.11, 1.22, -Math.sin(a) * 0.11]} rotation={[0, a, 0.35]}>
             <boxGeometry args={[0.22, 0.035, 0.035]} />
             <meshStandardMaterial color={PALETTE.doorWood} />
           </mesh>
         );
       })}
-      <mesh castShadow position={[0, 1.35, 0]}>
+      <mesh position={[0, 1.35, 0]}>
         <sphereGeometry args={[0.045, 8, 6]} />
         <meshStandardMaterial color={PALETTE.brass} metalness={0.5} roughness={0.4} />
       </mesh>
@@ -109,7 +109,7 @@ function Askilik() {
         <boxGeometry args={[0.22, 0.44, 0.15]} />
         <meshStandardMaterial color={PALETTE.coat} flatShading />
       </mesh>
-      <mesh castShadow position={[0.11, 1.13, 0.02]}>
+      <mesh position={[0.11, 1.13, 0.02]}>
         <boxGeometry args={[0.14, 0.12, 0.12]} />
         <meshStandardMaterial color={PALETTE.coatAlt} flatShading />
       </mesh>
@@ -532,7 +532,7 @@ function TvUnitesi({ len }: { len: number }) {
         </mesh>
       ))}
       {/* ayak: ekranı üniteye bağlar (havada durmasın) */}
-      <mesh castShadow position={[0, UH + 0.08, D / 2]}>
+      <mesh position={[0, UH + 0.08, D / 2]}>
         <boxGeometry args={[0.26, 0.1, 0.16]} />
         <meshStandardMaterial color={PALETTE.tvFrame} />
       </mesh>

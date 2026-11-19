@@ -3,6 +3,7 @@
  * oyuna taşındı; tek fark: oyun ağacına girer). Ölçü yazmaz, yalnız ilkel kutu/silindir.
  */
 import { MeshStandardMaterial } from 'three';
+import { golgeVerir, silindirGolgeVerir } from '../golgeKurali';
 
 type V3 = [number, number, number];
 
@@ -21,7 +22,8 @@ export function renkMat(renk: string, em = 0): MeshStandardMaterial {
   return m;
 }
 
-export function Kutu({ w, h, d, renk, pos, rot, golge = true }: { w: number; h: number; d: number; renk: string; pos: V3; rot?: V3; golge?: boolean }) {
+/** `golge` verilmezse BOYUT karar verir (`golgeKurali.ts`): küçük/ince parça gölge dökmez. */
+export function Kutu({ w, h, d, renk, pos, rot, golge = golgeVerir(w, h, d) }: { w: number; h: number; d: number; renk: string; pos: V3; rot?: V3; golge?: boolean }) {
   return (
     <mesh position={pos} rotation={rot} castShadow={golge} receiveShadow material={renkMat(renk)}>
       <boxGeometry args={[w, h, d]} />
@@ -29,7 +31,7 @@ export function Kutu({ w, h, d, renk, pos, rot, golge = true }: { w: number; h: 
   );
 }
 
-export function Silindir({ r1, r2, h, renk, pos, seg = 10, rot, em, golge = true }: { r1: number; r2: number; h: number; renk: string; pos: V3; seg?: number; rot?: V3; em?: number; golge?: boolean }) {
+export function Silindir({ r1, r2, h, renk, pos, seg = 10, rot, em, golge = silindirGolgeVerir(r1, r2, h) }: { r1: number; r2: number; h: number; renk: string; pos: V3; seg?: number; rot?: V3; em?: number; golge?: boolean }) {
   return (
     <mesh position={pos} rotation={rot} castShadow={golge} material={renkMat(renk, em)}>
       <cylinderGeometry args={[r1, r2, h, seg]} />
