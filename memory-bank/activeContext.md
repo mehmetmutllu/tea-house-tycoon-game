@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-19 gece — Kat 2 sprint S4 bitti · D-206 · D-207 · D-208 · sıradaki: yeni deneme APK + kullanıcının komple testi)
+## ŞU AN (2026-11-20 gece — oyun testi G-92…G-130 → sprint S5 YARIM, dal `s5-wip` · sıradaki: S5'i bitir)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -39,20 +39,21 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Metin turu (ChatGPT) uygulandı `docs/metin-turu-2026-11-19.md` · Firestore kuralı Firebase konsolunda yayınlandı (2026-11-19).
 - Play Console ELLE (kullanıcı/arkadaş): `docs/play/basarim-duzeltme-2026-11-19.txt` (₺ → para + EN adlar).
 
-## ⏭️ SIRADAKİ ADIM
-Deneme APK (S4 dahil) masaüstünde `TeaHouse-deneme-tam-2026-11-19b.apk` → kullanıcı baştan sona oynar → geri bildirim → "nihai" → 1.1.
-**Açık:** Kat 2 ilk girişte hâlâ ~0,7 sn (dolu Kat 2) — kaynak `kat2/Esya.tsx` seçicileri (`docs/kat2-onkurulum-notu.md`) ·
-`Scene.tsx` tezgâh bardak/tabak + sokak saksıları hâlâ gölge veriyor (−19 çağrı) · Kat 2 KayKit masaları hiç gölge vermiyor (`Model.tsx`).
-(eski başlık: D-201 bitti, aşağısı bilgi)
-Kodda: config = K-Bt2 · zincirde garson ×3 + bulaşıkçı · bulaşık (masada fincan/telveli kirli, ön tezgâhta bakır leğen, bulaşıkçı
-NPC, tepsilerde kirli) · lavabo L1-L6 seviyeyle büyür + "Yükselt" noktası · pad etiketleri Kat 1 (Garson Tut / 2. Garson / 3. Garson /
-Bulaşıkçı Tut). Bekçi `tests/kat2-isleyis.test.ts` · final `docs/olcum-kat2-isleyis-final.txt` (8,11 sa) · kareler
-`docs/kareler/kat2-isleyis-gorsel-*.png`. **Son deneme APK (2026-11-18, tarama düzeltmeleri dahil):** masaüstü `TeaHouse-deneme-tam-2026-11-19.apk`. **Sıradaki:** kullanıcı baştan sona oynar → geri bildirim + README'deki kalan kararlar 4-8 (1-3 = D-204 bitti) → "nihai" → 1.1.
+## ⏭️ SIRADAKİ ADIM — S5'i BİTİR (ilk iş)
+Kullanıcı tarayıcıda oynadı (dev paneli Kat 2 bölümüyle, `npm run dev`), 39 madde: `docs/geribildirim-oyun-testi-2026-11-20.md`.
+Plan + ajan sahipliği `docs/sprintler/kat2-S5-plan.md`. Bütün iş **`s5-wip` dalında** (4145a56; main'e girmedi). Devir notları
+`docs/sprintler/s5-{yapi,esya,npc,ux,olcum,tasarim}-notlar.md`. Dalda vitest 2356/2356 yeşil, **duman koşulmadı**, tsc temiz.
+1. `git switch s5-wip` → duman (bir ajan "at App" hatası gördü) → eksik "sonra" kareleri (yapi: `tools/s5-yapi-kare.mjs`) → kontrol.
+2. Bitmeyenler: G-107 kamera pan canlıda çalışmıyor (ux notu) · G-108 garson çarpışması (`tick.ts` navStep `player` argümanı; önce
+   ölçüm hazır `docs/s5-npc/*-once.txt`) · G-109 kahveci yürüsün · G-99/100 bekçi testi yok · ölçüm determinizm sorunu (olcum notu).
+3. Tasarım panoları: G-102/G-111 hazır (`docs/kareler/s5-tasarim-g10*.png`), kalan `SORU=G112,G114,G115,G129,G120 node tools/s5-tasarim-cek.mjs`.
+4. KARAR PAKETİNE (kullanıcıya sor): G-124 otomatik toplama Kat 2 ARKA PLAN parasını cüzdana sokuyor (D-185'e aykırı denge değişikliği —
+   kalsın mı) · G-121 bölme 0,6 mı 1,2 mi · G-127 "ortadaki tepsi" = bakır leğen mi · G-92 tepsi 25 + tamamlama eşiği (ölçüldü,
+   `docs/olcum-s5-kat1.txt`) · G-95/96/97/103/119/122/123/128 ölçüm kolları · tasarım adayları · ChatGPT'ye 4 yeni metin (ux notu).
+5. Bitince main'e birleştir, yeni deneme APK.
+**Not:** 2026-11-20 `node_modules` yarım kalmıştı (ajanların paralel sunucuları) → `npm ci` ile düzeldi; çalışan vite süreçleri kilit tutar.
+`tests/tetik-s24.test.ts` CRLF uyarısı verdi (bekçi CRLF'e duyarlı olabilir) — dalda kontrol et.
 - **Yayına kullanıcı "nihai" deyince** (2026-11-18). 1.1 listesi: `VITE_KAT2=1` · Game Center 6 başarım · "Yenilikler" TR+EN · iOS Codemagic + Play zip · tam test + eski kayıt açılışı.
-
-## ✅ TUR — BULAŞIKÇI YIKAMA KURALI (D-202, 2026-11-17) · rapor `docs/bulasikci-raporu.md`
-Bulaşıkçı temiz bardak ≤ 2 olunca elindekini götürür (Kat 1 + Kat 2). Bekçi `tests/bulasikci-kurali.test.ts`. Araç
-`tools/olcum-bulasikci.ts` (`BULASIK_FINAL=1` = config) · Kat 2 `IS_DW=1`. Deneme APK (masaüstü …-17b) bu kuralla yeniden derlendi.
 
 ## KULLANICIYA HATIRLAT
 - 2026-11-13 kontrol: a) AdMob → Gizlilik ve mesajlaşma → Avrupa tüzükleri → Ayarlar → "Reklam kaynaklarını otomatikman
