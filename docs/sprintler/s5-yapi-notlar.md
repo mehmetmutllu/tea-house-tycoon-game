@@ -10,11 +10,13 @@
 - **G-121** bütün bölmeler alçak `ON_BOLME_H` 0,6 (`Bolme.tsx AlcakBolme` yatay/dikey). Not: kullanıcı "lavabo karşısındaki gibi" dedi → 0,6 alındı, brifteki 1,2 değil.
 - Mutasyon 2/2 yakalandı (G-121 yan bölme 3,2 · G-101 basamak dar).
 
-## Yarım / yeniden koşulacak
-- **Duman koşulmadı** (`DUMAN_PORT=41xx npm run duman`).
-- **Sonra kareleri + pano yok**: ilk "sonra" turu paralel ajanların HMR yeniden yüklemesiyle Kat 1'e düştü (çöp; `docs/kareler/s5-yapi-sonra-*` yeniden çekilmeli). Araç artık kendi sunucusunu HMR kapalı kaldırıyor:
-  `node tools/s5-yapi-kare.mjs sonra merdiven-kose,ocak2-pad,salon2-genis,ust-0-17,yan-0-17,yan-17-0,lavabo-perde,kat1-wc-perde,lavabo-donusum,lavabo-acik` → pano `docs/kareler/s5-yapi-pano.png`. Son koşuda bir sayfa hatası (`at App`) görüldü, kaynağı incelenmedi — duman bunu göstermeli.
-- Önce kareleri: `docs/kareler/s5-yapi-once-*` (G-118 damla önce = `once-salon2-genis`). `tools/_s5-yapi-mutfak-seri.mjs` G-113 seri aracı (silinebilir).
+## Devam turu (2026-11-20) — kareler + pano
+- Sonra kareleri yeniden çekildi (YAPI_PORT=4157, HMR kapalı; sayfa hatası YOK): `docs/kareler/s5-yapi-sonra-*`.
+  Pano `docs/kareler/s5-yapi-pano.png` (1568×921, önce|sonra). Bakıldı: G-101 yarık kapalı · G-110 pad tezgâh önünde ·
+  G-116 köşe/kavşak binme yok · G-117 toz + iskele sönümü dönüşüm ortasında görünüyor · G-118 klozet simgesi (Kat 2 + Kat 1) ·
+  G-121 sol dikey bölme artık alçak. Kod değişikliği gerekmedi.
+- Vitest `s5-yapi` + `kat2-*`: 19 dosya / 287 yeşil. Duman orkestratörde 78/78.
+- `tools/_s5-yapi-mutfak-seri.mjs` silinebilir (G-113 seri aracı).
 
 ## Riskler
 - Paylaşılan dosyalara dokunuldu: `Kitchen.tsx`, `kitchenLook.ts` (yalnız ekleme), `maketParts.tsx` (levha), `kat.ts` (yalnız OCAK yer sabiti).

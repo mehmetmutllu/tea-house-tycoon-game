@@ -21,6 +21,7 @@ import { KAT2_ON_TEZGAH, type Kat2Ocak } from '../../../game/kat';
 import { KayActor } from '../KayActor';
 import { Fincan, Kutu, Silindir } from './parca';
 import { FINCAN, SET_OLCEK, fincanYerleri, tepsiAraligi } from './esyaOlcu';
+import { kahveBekleyen, ustaFazAdimi, ustaPozu, ustaYolu } from './kahveUstaYol';
 
 /** Kat 2 mutfak zemini: koyu kahve + krem dama (kullanıcı 2026-11-17) — Kat 1'in klasik damasından ayrışır. */
 const KAT2_ZEMIN = 'koyuKahve';
@@ -183,13 +184,33 @@ export function KahveSeti({ ocak, hazir, pisiyor, seviye }: { ocak: Kat2Ocak; ha
 }
 
 /**
- * KAHVECİ USTA — Kat 1 çaycısının (Scene `KitchenHand`, D-023) karşılığı: tezgâhın arkasında, setinin başında
- * oyuncuya dönük durur; cezve pişerken çalışır. SALT GÖRSEL (kahve mekaniği `kat2Dongu`'da).
+ * KAHVECİ USTA — Kat 1 çaycısının (Scene `KitchenHand`, D-023) karşılığı. G-109: çaycı gibi tezgâhın arkasında
+ * setinin iki yanı arasında gidip gelir, uçlarda tezgâha dönüp iş yapar; tempo bekleyen kahveden, yük yokken
+ * olduğu yerde durur (`kahveUstaYol`). SALT GÖRSEL (kahve mekaniği `kat2Dongu`'da).
  */
 export function KahveUsta({ ocak, pisiyor }: { ocak: Kat2Ocak; pisiyor: boolean }) {
+  const ref = useRef<Group>(null);
+  const yol = ustaYolu(ocak);
+  const bekleyen = useGame((s) => kahveBekleyen(s.kat2Dunya.masalar));
+  const calisiyor = bekleyen > 0 || pisiyor;
+  // Faz 0 = yolun ortası (eski sabit duruş): kat açılınca usta yerinden kaymış görünmez.
+  const faz = useRef(0);
+  useFrame((st, dt) => {
+    const g = ref.current;
+    if (!g) return;
+    faz.current += ustaFazAdimi(dt, bekleyen > 0 ? bekleyen : pisiyor ? 1 : 0);
+    const p = ustaPozu(yol, faz.current, calisiyor);
+    g.position.x = p.x;
+    g.position.z = p.z;
+    g.rotation.y = p.aci;
+    // Kat 1 ile aynı: uçta hafif eğilip kalkar, yürürken hafif zıplar.
+    const t = st.clock.elapsedTime;
+    g.position.y = !calisiyor ? -0.04 : p.duruyor ? -0.04 + Math.sin(t * 3) * 0.02 : Math.abs(Math.sin(t * 7)) * 0.04;
+  });
+  const bas = ustaPozu(yol, 0, false);
   return (
-    <group position={[ocak.x + 0.25 * SET_OLCEK, 0, T.z0 - 0.45]}>
-      <KayActor kind="kitchenHand" hal={pisiyor ? 'calis' : 'dur'} />
+    <group ref={ref} position={[bas.x, 0, bas.z]}>
+      <KayActor kind="kitchenHand" hal={calisiyor ? 'calis' : 'dur'} />
     </group>
   );
 }

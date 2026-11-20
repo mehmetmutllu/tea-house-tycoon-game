@@ -5,8 +5,8 @@ import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '
 import { dailyCountersOf } from '../../game/store';
 import { CAM_FOCUS_TTL, adFreeDailyReady, cardQuestIndex, kat2UstaCarpan, masterAdsLeft, masterCost, toastCizilir, questInTransition, QUEST_COMPLETE_DUR, QUEST_GAP_DUR, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
 import {
-  KAT2_IPUCU_METIN, KAT2_TANITIM_METIN, kat2IpucuAdimi, kat2IpucuHedefi, kat2NoktaBildirimi, kat2Noktalar, kat2TanitimAni,
-  kat2YeniNokta, ogreticiAdimi, ogreticiMetni, yurudu, type Kat2Ipucu,
+  KAT2_IPUCU_METIN, KAT2_TANITIM_METIN, kat2IpucuAdimi, kat2IpucuHedefi, kat2Noktalar, kat2TanitimAni,
+  kat2NoktaTepkisi, kat2YeniNoktalar, ogreticiAdimi, ogreticiMetni, yurudu, type Kat2Ipucu,
 } from '../../game/onboarding';
 import { hedefEkranda } from '../../game/cameraView';
 import { kat2GorevGorunumu, kat2Gorevleri, type Kat2GorevGorunum } from '../../game/kat2Gorev';
@@ -1010,13 +1010,12 @@ function useKat2Rehber(kutlama: boolean): Kat2Ipucu | null {
 
   useEffect(() => {
     const n = kat2Noktalar(kat2, K2_AYAR);
-    const yeni = kat === 2 && !gecis ? kat2YeniNokta(noktalar.current, n) : null;
+    const yeni = kat === 2 && !gecis ? kat2NoktaTepkisi(kat2YeniNoktalar(noktalar.current, n)) : null;
     noktalar.current = new Set(n.keys());
     const ilerledi = idx > oncekiIdx.current;
     oncekiIdx.current = idx;
     if (!yeni) return;
-    const metin = kat2NoktaBildirimi(yeni.anahtar);
-    if (metin) kat2Bildir(metin);
+    for (const metin of yeni.bildirimler) kat2Bildir(metin);
     // Görev bu karede bittiyse kutlama henüz çizilmedi (HUD efektte açar) — o da ertelenir.
     if (kutlama || ilerledi) bekleyen.current = yeni.yer;
     else kat2Pan(yeni.yer);

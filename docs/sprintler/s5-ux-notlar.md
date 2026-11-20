@@ -13,8 +13,14 @@ Commit yok (brif). tsc temiz; ilgili 8 test dosyası yeşil (144). Tam `vitest` 
 - Testler: yeni `tests/s5-ux.test.ts`; `tests/kat2-ses.test.ts` güncellendi; `tests/ogretici-e5.test.ts` regex Kat 2 koluna genişledi. Mutasyon 7/7 yakalandı (script: scratchpad `s5ux-mut.py`; liste: oto kapalı · store arka plan okumaz · zincir tek tık · oto sesli · ipucu sırası · tanıtım yüklemede · purchase yok).
 - Denetim tablosu: `docs/s5-ux-denetim.md`. Kare aracı: `tools/s5-ux-kare.mjs` (port 5167).
 
-## Yarım
-- **G-107** yeni nokta panı: mantık + birim testi var (`kat2Noktalar`, `kat2YeniNokta`, HUD `useKat2Rehber`), ama CANLI karede (araç birden çok pad'i aynı anda açıyor: nokta kümesi `pad:k2okey1` → `pad:k2garson2, ocak:k2ocakYuk`) 3,5 sn içinde ne `camFocus` ne ocak bildirimi görüldü. Sıradaki adım: `useKat2Rehber` nokta efektine log koy; şüpheliler (a) görev idx aynı karede ilerleyip `ilerledi` → erteleme, kutlama ise HUD'da hiç başlamıyor olabilir (idx birden çok atladı); (b) `kat2Bildir` kuyruğu tick'in `noticeQueue` yazımıyla eziliyor olabilir. Aracı tek pad açarak da dene.
+## G-107 (devam turu 2026-11-20) — BİTTİ
+- **Kök neden:** `kat2YeniNokta` aynı karede beliren noktalardan YALNIZ İLKİNİ döndürüyordu. `k2okey4` iki nokta açar (`pad:k2garson2` + `ocak:k2ocakYuk`); Map sırasında pad önde → ocak bildirimi hiç kuyruğa girmiyordu. Şüpheler (a) idx çoklu atlama ve (b) kuyruk ezilmesi canlı logla ELENDİ: kutlama idx 0→5 atlamada da açılıyor, `kat2Bildir` kuyruğu korunuyor (tick aynı kuyruğu kopyalayıp geri yazıyor, eşzamanlı). Eski aracın pan görmemesi aracın kendisinden (çok pad + `hedefEkranda`).
+- **Düzeltme:** `onboarding.ts` `kat2YeniNoktalar` (hepsi) + `kat2NoktaTepkisi` (her bildirim + kamera hedefi: bildirimli nokta önce). HUD `useKat2Rehber` bunları kullanır. Geçici loglar silindi.
+- **Canlı kanıt** (`tools/s5-ux-g107.mjs`, gerçek satın alma: oyuncu k2okey4 pad'inde durur): pad +0 sn → görev bandı · +1,2–1,4 sn camFocus (0,-6) = yeni görev hedefi (Kat 1 G-44 sırası) · +3,6 sn "Yeni: Cezve ocağını yükseltebilirsin ☕". Kareler `docs/kareler/s5-ux-g107-{a-bitti,b-pan,c-bildirim}.png`.
+- **Bekçi:** `tests/s5-ux.test.ts` "tek pad iki nokta açınca…" + "bildirimsiz tek nokta". Mutasyon 3/3 (yalnız ilk nokta · tepki ilk bildirim · kamera hep ilk).
+
+## Açık (ESYA'ya öneri)
+- G-124 oto-toplanan yığın `kat2/Para.tsx`te oyuncuya uçar + "+X" yazar — oto-toplamada uçuş/yazı olmamalı (Kat 1 toplu bildirim). Dokunulmadı.
 
 ## Ölçüm (G-124)
 - ÖNCE (bu değişiklikten önce, `FINAL=1 OLCUM=tam`): `docs/olcum-s5-ux-g124-once.txt` — U0: Kat 2 biter 7,40 sa · iz 8f5788f8; U20: 7,74 sa · iz ad92f37d. Damgalar temiz.
@@ -25,5 +31,10 @@ Commit yok (brif). tsc temiz; ilgili 8 test dosyası yeşil (144). Tam `vitest` 
 - Oto-toplanan yığın `kat2/Para.tsx`'te oyuncuya uçar + "+X" yazar (ESYA'nın dosyası; öneri denetim #20).
 - `useKat2Rehber` ipucu panı `hedefEkranda` kapısından geçer; hedef ekrandaysa kamera kıpırdamaz (Kat 1 H1).
 
-## ChatGPT turuna (TR → EN, `src/i18n/en.ts` sonu)
-"Oyun Salonu — okey ve tavla masaları" · "Kahveleri buradan al" · "Bulaşıkları buraya koy" · "Yeni: Cezve ocağını yükseltebilirsin ☕"
+## ChatGPT turuna (karar paketi; şu anki hâl `src/i18n/en.ts` 504-507)
+| TR (anahtar) | EN (şimdiki) | Nerede |
+|---|---|---|
+| Oyun Salonu — okey ve tavla masaları | Game Hall — okey and backgammon tables | G-94 ilk çıkış bandı |
+| Kahveleri buradan al | Pick up coffee here | G-104 ipucu |
+| Bulaşıkları buraya koy | Drop dirty cups here | G-104 ipucu |
+| Yeni: Cezve ocağını yükseltebilirsin ☕ | New: You can upgrade the Coffee Station ☕ | G-107 bildirim |

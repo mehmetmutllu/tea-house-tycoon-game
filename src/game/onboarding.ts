@@ -168,14 +168,27 @@ export function kat2Noktalar(k: Pick<Kat2Kayit, 'padsDone' | 'masaSv' | 'yuk' | 
   return out;
 }
 
-/** Öncekinde olmayan ilk nokta (anahtar + yer) ya da null. İlk ölçüm (önceki yok) yeni sayılmaz. SAF. */
-export function kat2YeniNokta(
+/** Öncekinde olmayan TÜM noktalar (sahnedeki sırayla). İlk ölçüm (önceki yok) yeni sayılmaz. SAF. */
+export function kat2YeniNoktalar(
   onceki: ReadonlySet<string> | null,
   simdi: ReadonlyMap<string, [number, number]>,
-): { anahtar: string; yer: [number, number] } | null {
-  if (!onceki) return null;
-  for (const [anahtar, yer] of simdi) if (!onceki.has(anahtar)) return { anahtar, yer };
-  return null;
+): { anahtar: string; yer: [number, number] }[] {
+  if (!onceki) return [];
+  return [...simdi].filter(([a]) => !onceki.has(a)).map(([anahtar, yer]) => ({ anahtar, yer }));
+}
+
+/**
+ * Aynı karede belirenlerin tepkisi: HER yeni noktanın bildirimi (tek pad iki nokta açabilir — `k2okey4`
+ * sıradaki pad'i VE ocak yükseltmesini birlikte getirir; yalnız ilkine bakmak ocak bildirimini yutuyordu)
+ * ve tek kamera hedefi — bildirimi olan nokta önce (bant neyi söylüyorsa kamera onu gösterir). SAF.
+ */
+export function kat2NoktaTepkisi(
+  yeniler: readonly { anahtar: string; yer: [number, number] }[],
+): { yer: [number, number]; bildirimler: string[] } | null {
+  if (yeniler.length === 0) return null;
+  const bildirimler = yeniler.map((y) => kat2NoktaBildirimi(y.anahtar)).filter((m): m is string => m != null);
+  const hedef = yeniler.find((y) => kat2NoktaBildirimi(y.anahtar) != null) ?? yeniler[0];
+  return { yer: hedef.yer, bildirimler };
 }
 
 /**

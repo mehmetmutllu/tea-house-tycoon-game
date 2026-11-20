@@ -13,7 +13,7 @@ import { KAT2_YIKAMA_YER, OCAKLAR, VARIS } from '../src/game/kat';
 import { kat2PadYeri, kat2SiradakiPad, kat2Tick, yeniKat2Dunya, type Kat2Ayar, type Kat2Girdi } from '../src/game/kat2Dongu';
 import {
   KAT2_IPUCU_METIN, KAT2_TANITIM_METIN, kat2IpucuAdimi, kat2IpucuHedefi, kat2NoktaBildirimi, kat2Noktalar, kat2TanitimAni,
-  kat2YeniNokta, type Kat2IpucuGirdi,
+  kat2NoktaTepkisi, kat2YeniNoktalar, type Kat2IpucuGirdi,
 } from '../src/game/onboarding';
 import { en } from '../src/i18n/en';
 import type { Vec3 } from '../src/game/types';
@@ -105,14 +105,32 @@ describe('G-107 · yeni nokta', () => {
     const k1 = { ...k, padsDone: [...HAZIR, p0.id] };
     const n1 = kat2Noktalar(k1, AYAR);
     const p1 = kat2SiradakiPad(AYAR, k1.padsDone);
-    const yeni = kat2YeniNokta(new Set(n0.keys()), n1);
-    if (p1) expect(yeni).toEqual({ anahtar: `pad:${p1.id}`, yer: kat2PadYeri(p1.id) });
+    const yeni = kat2YeniNoktalar(new Set(n0.keys()), n1);
+    if (p1) expect(yeni).toEqual([{ anahtar: `pad:${p1.id}`, yer: kat2PadYeri(p1.id) }]);
   });
   it('ilk ölçüm ve değişmeyen küme yeni sayılmaz', () => {
     const n = new Map<string, [number, number]>([['pad:a', [1, 2]]]);
-    expect(kat2YeniNokta(null, n)).toBeNull();
-    expect(kat2YeniNokta(new Set(['pad:a']), n)).toBeNull();
-    expect(kat2YeniNokta(new Set(['pad:a', 'sv:b']), n)).toBeNull();
+    expect(kat2YeniNoktalar(null, n)).toEqual([]);
+    expect(kat2YeniNoktalar(new Set(['pad:a']), n)).toEqual([]);
+    expect(kat2YeniNoktalar(new Set(['pad:a', 'sv:b']), n)).toEqual([]);
+    expect(kat2NoktaTepkisi([])).toBeNull();
+  });
+  // Kök neden (canlı 2026-11-20, tools/s5-ux-g107.mjs): k2okey4 tek pad'i İKİ nokta açar (sıradaki pad + ocak
+  // yükseltmesi); yalnız ilk yeni noktaya bakılınca ocak bildirimi hiç çıkmıyordu.
+  it('tek pad iki nokta açınca (k2okey4 → sıradaki pad + ocak) ocak bildirimi yutulmaz, kamera ocağa', () => {
+    const i = AYAR.padler.findIndex((p) => p.id === 'k2okey4');
+    const once = [...HAZIR, ...AYAR.padler.slice(0, i).map((p) => p.id)];
+    const k = { padsDone: once, masaSv: {}, yuk: {}, gorev: { idx: 5, sayac: {} } };
+    const n0 = kat2Noktalar(k, AYAR);
+    const n1 = kat2Noktalar({ ...k, padsDone: [...once, 'k2okey4'], gorev: { idx: 6, sayac: {} } }, AYAR);
+    const yeniler = kat2YeniNoktalar(new Set(n0.keys()), n1);
+    expect(yeniler.map((y) => y.anahtar.split(':')[0]).sort()).toEqual(['ocak', 'pad']);
+    const t = kat2NoktaTepkisi(yeniler)!;
+    expect(t.bildirimler).toEqual([kat2NoktaBildirimi('ocak:k2ocakYuk')]);
+    expect(t.yer).toEqual(n1.get(yeniler.find((y) => y.anahtar.startsWith('ocak:'))!.anahtar));
+  });
+  it('bildirimsiz tek nokta: kamera ona, bant yok', () => {
+    expect(kat2NoktaTepkisi([{ anahtar: 'pad:a', yer: [1, 2] }])).toEqual({ yer: [1, 2], bildirimler: [] });
   });
   it('bildirim yalnız görevin söylemediği ocak yükseltmesinde (Kat 1 reveal: görev kapsıyorsa toast yok)', () => {
     expect(kat2NoktaBildirimi('ocak:k2ocakYuk')).toBeTruthy();
