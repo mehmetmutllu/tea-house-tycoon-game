@@ -17,6 +17,14 @@
  *           G119-K2T aynı, "bütün masalar" = Kat 2'nin bütün masaları (k2tavla12) → Sv3.
  *         Emülasyon kollarında hat = bugünkü hat − Sv görevleri (+ bitmeyen bir bekletme görevi; store'un kendi Sv noktası hiç canlanmaz).
  *         Sv görevlerinin ödülü (2.450) bu kollarda düşmez — karşılaştırma SV-EMU0'a göre okunur.
+ *   G-103b kol G103-GARSON = yavaş oyuncu: ilk garson gelince oyuncu kahve/kirli TAŞIMAZ (yalnız para + alım); G-128 sayımı açık
+ *         (yoksa k2_kahve40 kilitlenir) → G128-SAY'a göre okunur. §3 "tepside" payı oyuncu + garson tepsisi diye ayrılır.
+ *   G-124 Kat 2 yığınlarının oto-toplaması (180 sn, Kat 1 `autoCollectAfter`; S5'te koda girdi). Kollar 20 dk Kat 2 / 10 dk Kat 1
+ *         döngüsüyle: G124-ACIK (bugün) · G124-KAPALI (her adım yığın yaşı 0 = S5 öncesi) · G124-KAT2-KAPALI (sürekli Kat 2,
+ *         kapalı — bot yığını 180 sn dolmadan topladığından iz TABAN'la aynı çıkmalı; bulgu damgası). Kat 1'de bot yok, oyuncu varışta durur.
+ *   DETERMİNİZM (2026-11-20): b8ba9f6a ↔ 5eb3f5c2 farkı RASTGELELİK DEĞİL — kod değişti (S5 YAPI G-110 `kat.OCAK_AL_DZ` 0,6→1,05:
+ *         ocak alma noktası kaydı; 4713156 + yalnız o dosya = 5eb3f5c2). Saat ±12 sa / ±3 gün kaydırıldı: iz aynı. Çıktıdaki
+ *         "Kod:" satırı ölçülen kodu (HEAD + src farkı) damgalar; iki çıktı yalnız aynı "Kod:" satırıyla karşılaştırılır.
  *   G-123 tavla pad'leri: o andaki coin/dk ve biriktirme dk'sı; >10 dk biriktirme pencereleri (TABAN alım günlüğünden).
  *   G-128 görev 'servis' sayacı bugün yalnız oyuncuyu sayar (`kat2Gorev.kat2GorevArtisi`: servis − garsonServis) · kol G128-SAY =
  *         garsonların servisi de sayılır (araç, aktif görev servis sayacıyken adımın `stats.kat2Garson` artışını sayaca ekler).
@@ -29,11 +37,13 @@
  *   say0   — G128-SAY kancası 0 ekler        → "varyant etkili (G128-SAY)" ve "G128-SAY: garson servisi sayaca girdi" kırılır.
  *   cap    — K2 tavanı hep Sv5 (kural yok)   → "G119-K2: Sv3 ilk alımı k2s2okey6'dan sonra" kırılır.
  *   aninda — G96-KALKIS kahveAninda'yı kapatmaz → "G96-KALKIS: servis anında yığın yok" kırılır.
+ *   oto    — G124-KAPALI yığın yaşını sıfırlamaz → "G124-KAPALI: Kat 1'deyken Kat 2 oto geliri = 0" kırılır.
  */
-import { spawn } from 'node:child_process';
+import { execSync, spawn } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { KISA, botDamgasi, damga, damgaOzeti, izOlustur, kipBandi, kisaDeger, seedRandom, takilmaDamgasi, varyantDamgasi } from './olcum-lib';
 import {
+  attractRadiusFor,
   charMaxTier,
   dishCarryMaxTier,
   dishSpeedMaxTier,
@@ -103,6 +113,9 @@ interface Kol {
   ayar?: () => void;          // config'e bellekte uygulanan değişiklik (kur'dan önce)
   sv?: SvKural;               // Sv emülasyonu (yoksa store'un kendi Sv'si)
   say?: number;               // G-128 kancası: garson servisinin sayaca giren katsayısı (0 = KORUNUM)
+  garsoncu?: boolean;         // G-103: ilk garson (k2garson) gelince oyuncu kahve/kirli TAŞIMAZ (yalnız para + alım)
+  ziyaret?: readonly [number, number]; // G-124: döngü — [Kat 2'de sn, Kat 1'de sn] (Kat 1'de oyuncu varışta durur)
+  otoKapali?: boolean;        // G-124: Kat 2 yığınlarının oto-toplaması kapalı (her adım yığın yaşı 0 — S5 öncesi)
 }
 const KOLLAR: Kol[] = [
   { ad: 'TABAN' },
@@ -116,6 +129,13 @@ const KOLLAR: Kol[] = [
   { ad: 'G119-K2', sv: 'k2' },
   { ad: 'G119-K2T', sv: 'k2t' },
   { ad: 'G128-SAY', say: MUT === 'say0' ? 0 : 1 },
+  // G-103 yavaş oyuncu: garson gelince oyuncu kahve taşımaz. k2_kahve40 yalnız oyuncu servisini saydığından hat kilitlenmesin
+  // diye G-128 sayımı açık (garson servisi de sayar) — karşılaştırma G128-SAY'a göre okunur.
+  { ad: 'G103-GARSON', garsoncu: true, say: 1 },
+  // G-124: 20 dk Kat 2 / 10 dk Kat 1 döngüsü; oto-toplama açık (bugün, S5 G-124) · kapalı (S5 öncesi) · sürekli Kat 2'de kapalı.
+  { ad: 'G124-ACIK', ziyaret: [1200, 600] },
+  { ad: 'G124-KAPALI', ziyaret: [1200, 600], otoKapali: MUT !== 'oto' },
+  { ad: 'G124-KAT2-KAPALI', otoKapali: true },
 ];
 function dozUygula(aralik: number): void {
   const f = dozFiyat(aralik);
@@ -205,6 +225,7 @@ function kur(): void {
 // İŞÇİ
 // ---------------------------------------------------------------------------------------------
 const TEPSI = trayCapacityFor(charMaxTier('tray'));
+const MIKNATIS = attractRadiusFor(charMaxTier('magnet'));
 const YIKAMA: readonly [number, number] = [KAT2_YIKAMA_YER[0], KAT2_YIKAMA_YER[1] + 0.8];
 const uz = (a: readonly number[], b: readonly number[]) => Math.hypot(a[0] - b[0], a[1] - b[1]);
 const PARA_ANAHTAR = new Map<string, string>(KAT2_MASALAR.map((m) => [paraDusmeYeri(m).join(','), m.id]));
@@ -220,7 +241,9 @@ interface Sonuc {
   bekleme: { servisAdet: number; servisToplam: number; kacanAdet: number; kacanToplam: number; integral: number };
   ilkIstek: { n: number; toplam: number; enUzun: number };
   ilkServis: { n: number; toplam: number; enUzun: number };
-  pay: { tasima: number; hazir: number; temizYok: number; pisiyor: number };
+  pay: { tasima: number; tasimaOyuncu: number; tasimaGarson: number; hazir: number; temizYok: number; pisiyor: number };
+  k1: { sn: number; k2oto: number; k1gelir: number; donusYigin: number; donusN: number; k2otoK2de: number };
+  elleGarsonSonra: number; garsonSonraSn: number;
   temizSifirSn: number; kirliBlokMasaSn: number; bosMasaSn: number;
   servisYigini: number; kalkisYigini: number;
   svIlkGorulme: number; svIlkAlim: number; svZincirOncesi: number; svAlim: number; sv3Ilk: number; k2s2okey6At: number; sv2Ilk: number; k2s2okey3At: number;
@@ -253,7 +276,10 @@ function kos(kol: Kol): Sonuc {
   const bek = { servisAdet: 0, servisToplam: 0, kacanAdet: 0, kacanToplam: 0, integral: 0 };
   const ilkIstek = { n: 0, toplam: 0, enUzun: 0 };
   const ilkServis = { n: 0, toplam: 0, enUzun: 0 };
-  const pay = { tasima: 0, hazir: 0, temizYok: 0, pisiyor: 0 };
+  const pay = { tasima: 0, tasimaOyuncu: 0, tasimaGarson: 0, hazir: 0, temizYok: 0, pisiyor: 0 };
+  const k1 = { sn: 0, k2oto: 0, k1gelir: 0, donusYigin: 0, donusN: 0, k2otoK2de: 0 };
+  let elleGarsonSonra = 0, garsonSonraSn = 0;
+  let katSimdi = 2;
   let temizSifirSn = 0, kirliBlokMasaSn = 0, bosMasaSn = 0, servisYigini = 0, kalkisYigini = 0;
   const istekBas = new Map<string, number>();
   const oturdu = new Map<string, number>();
@@ -290,8 +316,20 @@ function kos(kol: Kol): Sonuc {
 
     if (Math.round(t / DT) % 10 === 0) topla();
 
+    // ---- G-124 ziyaret döngüsü: Kat 2'de z[0] sn, Kat 1'de z[1] sn (Kat 1'de oyuncu varışta durur, bot yok).
+    const z0 = kol.ziyaret;
+    const katIstek = z0 && (t % (z0[0] + z0[1])) >= z0[0] ? 1 : 2;
+    const gecti = katIstek !== katSimdi;
+    if (gecti) {
+      if (katIstek === 2) { k1.donusYigin += d.paralar.reduce((a, p) => a + p.miktar, 0); k1.donusN += 1; }
+      useGame.setState({ kat: katIstek, player: [...VARIS[katIstek]] as Vec3 });
+      g().setKeyboardInput(0, 0);
+      katSimdi = katIstek;
+    }
+    const kat1de = katSimdi === 1;
+
     let alindi = false;
-    for (const tur of ['garsonHiz', 'garsonTepsi'] as const) {
+    if (!kat1de) for (const tur of ['garsonHiz', 'garsonTepsi'] as const) {
       const n = kat2YukSiradaki(CFG, padsDone, k2.yuk, tur);
       if (n?.acik && cuzdan >= n.fiyat) {
         const ok = g().kat2GarsonYukAl(tur);
@@ -335,7 +373,16 @@ function kos(kol: Kol): Sonuc {
       return (hazir.length ? hazir : acikOcak).reduce((a, c) => (uz([x, z], a.al) <= uz([x, z], c.al) ? a : c)).al;
     };
     let hedef: readonly [number, number] | null;
-    if (ucuz && cuzdan >= ucuz.kalan - 1e-9) hedef = ucuz.yer;
+    const kahveYok = !!kol.garsoncu && padsDone.includes('k2garson');
+    if (kat1de) hedef = null;
+    else if (ucuz && cuzdan >= ucuz.kalan - 1e-9) hedef = ucuz.yer;
+    else if (kahveYok) {
+      // Yavaş oyuncu: para + alım; elde kalan (garson gelmeden alınmış) kahve/kirli bitirilir, yenisi alınmaz.
+      if (d.paralar.length) hedef = d.paralar.map((p) => [p.x, p.z] as [number, number]).reduce((a, c) => (uz([x, z], a) <= uz([x, z], c) ? a : c));
+      else if (d.tepsi > 0 && bekleyen.length) hedef = masaNok(bekleyen.reduce((a, c) => (a.sabir <= c.sabir ? a : c)).id);
+      else if (kirliEl > 0) hedef = YIKAMA;
+      else hedef = null;
+    }
     else if (d.paralar.length) hedef = d.paralar.map((p) => [p.x, p.z] as [number, number]).reduce((a, c) => (uz([x, z], a) <= uz([x, z], c) ? a : c));
     else if (d.tepsi > 0 && bekleyen.length) hedef = masaNok(bekleyen.reduce((a, c) => (a.sabir <= c.sabir ? a : c)).id);
     else if (kirliEl > 0 && (d.tepsi === 0 || kirliEl + d.tepsi >= TEPSI)) hedef = YIKAMA;
@@ -368,11 +415,33 @@ function kos(kol: Kol): Sonuc {
     const sv0 = Object.values(s0.kat2.masaSv ?? {}).reduce((a, b) => a + b, 0);
     const yuk0 = Object.values(s0.kat2.yuk ?? {}).reduce((a: number, b) => a + (b as number), 0);
     const gars0 = (s0.stats as unknown as Record<string, number>).kat2Garson ?? 0;
+    const elle0 = (s0.stats as unknown as Record<string, number>).kat2Elle ?? 0;
+    const yig0 = new Set(s0.kat2Dunya.paralar);
+    const idx0 = s0.kat2.gorev?.idx ?? 0;
+    let k1Adim = 0;
     g().tick(DT);
     let s1 = g();
+    if (kol.otoKapali) for (const p of s1.kat2Dunya.paralar) p.yas = 0;
+    {
+      // Kat 2'deyken kendiliğinden toplanan: yok olan yığın oyuncunun mıknatısında değilse oto-toplamadır.
+      // Kat 1'deyken oyuncu Kat 2'den uzakta: yok olan her yığın oto-toplamadır.
+      const yig1 = new Set(s1.kat2Dunya.paralar);
+      let oto = 0;
+      for (const p of yig0) if (!yig1.has(p) && (kat1de || Math.hypot(s1.player[0] - p.x, s1.player[2] - p.z) > MIKNATIS + 0.05)) oto += p.miktar;
+      if (kat1de) {
+        let odul = 0;
+        for (let i = idx0; i < (s1.kat2.gorev?.idx ?? 0); i++) odul += hat[i]?.reward ?? 0;
+        k1Adim = s1.lifetime.toNumber() - l0 - oto - odul;
+        k1.sn += DT; k1.k2oto += oto; k1.k1gelir += k1Adim;
+      } else k1.k2otoK2de += oto;
+    }
+    if (padsDone.includes('k2garson')) {
+      garsonSonraSn += DT;
+      elleGarsonSonra += ((s1.stats as unknown as Record<string, number>).kat2Elle ?? 0) - elle0;
+    }
 
     // ---- Sv EMÜLASYONU: kat2Tick'in Sv dolumu birebir (durunca, çerçevede, fiyat / SV_DOLUM_SN).
-    if (emu && svT && Math.hypot(ix, iz) <= 0.1 && inFrame(s1.player[0], s1.player[2], [svT.x, 0, svT.z], { hw: svT.w / 2, hh: svT.d / 2 })) {
+    if (emu && svT && !kat1de && Math.hypot(ix, iz) <= 0.1 && inFrame(s1.player[0], s1.player[2], [svT.x, 0, svT.z], { hw: svT.w / 2, hh: svT.d / 2 })) {
       const hizSv = svT.fiyat / (ayar.masaSv?.[svT.tur].dolumSn ?? SV_DOLUM_SN);
       let fill = svFill.get(svT.id) ?? 0;
       const amt = Math.min(hizSv * DT, s1.wallet.toNumber(), svT.fiyat - fill);
@@ -443,10 +512,10 @@ function kos(kol: Kol): Sonuc {
     for (const m of d1.masalar) if (m.durum === 'oyunda') P += m.istek;
     bek.integral += P * DT;
     if (P > 0) {
-      const tepside = d1.tepsi + [d1.garson, ...(d1.garsonEk ?? [])].reduce((a, gs) => a + (gs?.tepsi ?? 0), 0);
+      const garsonda = [d1.garson, ...(d1.garsonEk ?? [])].reduce((a, gs) => a + (gs?.tepsi ?? 0), 0);
       const hazir = d1.ocaklar.reduce((a, o, k) => a + (s1.kat2.padsDone.includes(OCAKLAR[k].id) ? o.hazir : 0), 0);
-      const a1 = Math.min(P, tepside), a2 = Math.min(P - a1, hazir), kalan = P - a1 - a2;
-      pay.tasima += a1 * DT; pay.hazir += a2 * DT;
+      const a0 = Math.min(P, d1.tepsi), a0g = Math.min(P - a0, garsonda), a1 = a0 + a0g, a2 = Math.min(P - a1, hazir), kalan = P - a1 - a2;
+      pay.tasima += a1 * DT; pay.tasimaOyuncu += a0 * DT; pay.tasimaGarson += a0g * DT; pay.hazir += a2 * DT;
       if (ayar.bulasik && (d1.temiz ?? 0) <= 0) pay.temizYok += kalan * DT; else pay.pisiyor += kalan * DT;
     }
     if (ayar.bulasik && (d1.temiz ?? 0) <= 0) temizSifirSn += DT;
@@ -497,12 +566,12 @@ function kos(kol: Kol): Sonuc {
       gorevOdul += hat[gorevIdx]?.reward ?? 0;
     }
     if (Number.isNaN(hatBitis) && gorevIdx >= gercekHatUzun) hatBitis = tt;
-    const adim = Math.hypot(s1.player[0] - x, s1.player[2] - z);
+    const adim = gecti ? 0 : Math.hypot(s1.player[0] - x, s1.player[2] - z);
     yol += adim;
     itme = Math.hypot(ix, iz) > 0.1 && adim < 1e-4 ? itme + DT : 0;
     enUzun = Math.max(enUzun, itme);
     const akis = Math.max(0, s1.kat1Akis - a0);
-    kat2Gelir += Math.max(0, lt1 - l0 - akis);
+    kat2Gelir += Math.max(0, lt1 - l0 - akis - k1Adim);
     if (Math.round(t / DT) % 50 === 0) izT.ekle(s1.wallet.toNumber(), s1.kat2.padsDone.length, s1.xp, s1.player[0], s1.player[2], sv1);
   }
   topla();
@@ -518,7 +587,7 @@ function kos(kol: Kol): Sonuc {
     kat2Gelir, lifetimeArtis: s.lifetime.toNumber() - lt0, gorevOdul,
     elle: (st.kat2Elle ?? 0) - s0e.elle, garson: (st.kat2Garson ?? 0) - s0e.garson, toplanan: (st.kat2Para ?? 0) - s0e.para, alinan: (st.kat2Alinan ?? 0) - s0e.alinan,
     servisSure: zincir, elleZincir, toplananZincir,
-    bekleme: bek, ilkIstek, ilkServis, pay, temizSifirSn, kirliBlokMasaSn, bosMasaSn, servisYigini, kalkisYigini,
+    bekleme: bek, ilkIstek, ilkServis, pay, k1, elleGarsonSonra, garsonSonraSn, temizSifirSn, kirliBlokMasaSn, bosMasaSn, servisYigini, kalkisYigini,
     svIlkGorulme, svIlkAlim, svZincirOncesi, svAlim, sv3Ilk, k2s2okey6At, sv2Ilk, k2s2okey3At,
     alimlar, gorevler, sayEklenen, yol, itme: enUzun, iz: izT.deger,
   };
@@ -533,6 +602,18 @@ if (ISCI) {
   console.log('@@SONUC ' + JSON.stringify(r));
 } else {
   await orkestra();
+}
+
+/** Ölçülen kodun kimliği: HEAD + çalışma ağacındaki src/ farkının özeti (paralel ajanlar src'yi değiştirirken iki koşu karşılaştırılabilsin). */
+function kodDamgasi(): string {
+  try {
+    const bas = execSync('git rev-parse --short HEAD').toString().trim();
+    const fark = execSync('git diff HEAD -- src').toString();
+    const iz = izOlustur();
+    for (let i = 0; i < fark.length; i++) iz.ekle(fark.charCodeAt(i) / 1000);
+    const dosya = execSync('git diff --name-only HEAD -- src').toString().trim().split(/\r?\n/).filter(Boolean);
+    return `${bas}${dosya.length ? ` + src farkı ${iz.deger} (${dosya.map((f) => f.replace('src/', '')).join(', ')})` : ' (src temiz)'}`;
+  } catch { return '?'; }
 }
 
 function isciKos(is: string): Promise<Sonuc> {
@@ -551,6 +632,7 @@ function isciKos(is: string): Promise<Sonuc> {
 
 async function orkestra(): Promise<void> {
   kipBandi();
+  const kod = kodDamgasi(); // koşu BAŞINDA: alt süreçler bu kodu yükler (paralel ajanlar src'yi koşu sırasında değiştirebilir)
   const t0 = Date.now();
   const PARALEL = Number(process.env.PARALEL ?? 11);
   const sonuc = new Map<string, Sonuc>();
@@ -571,6 +653,7 @@ async function orkestra(): Promise<void> {
   const ta = al('TABAN');
 
   console.log('=== S5 KAT 2 DENGE (G-95/96/97 · G-103 · G-119/122 · G-123 · G-128) — varyant kapısı · D-084 ===');
+  console.log(`Kod: ${kod}${kod === kodDamgasi() ? '' : ` → koşu sonunda ${kodDamgasi()} (alt süreçler baştakini yükledi)`}`);
   console.log(`Kip: ${KISA ? 'kisa' : 'tam'} · dt ${DT} · ufuk ${UFUK / 3600} sa · ${isler.length} koşu · başlangıç D-205/D-206 kur() (U0)${MUT ? ` · MUTASYON ${MUT}` : ''}`);
   const d18 = dozFiyat(18), d12 = dozFiyat(12);
   console.log(`Bugün: ilkKahve ${CFG.ilkKahve} sn · kahveAninda ${CFG.kahveAninda} · kahveAralik ${CFG.kahveAralik} · sabır ${CFG.kahveSabir} · okey ${CFG.kahveFiyat}/fincan ×${CFG.istekAdet} · tavla ${TAVLA.kahveFiyat} ×1 · masa ücreti okey ${CFG.masaUcreti} tavla ${(CFG.tavla as { masaUcreti: number }).masaUcreti}`);
@@ -598,12 +681,13 @@ async function orkestra(): Promise<void> {
 
   console.log('');
   console.log('--- §3 DARBOĞAZ (G-103) — bekleyen kahvenin fincan-saniyesi nerede? (arz sırayla: tepside → ocakta hazır → temiz fincan yok / pişiyor) ---');
-  console.log('kol              | taşımada (tepside) | ocakta hazır, alınmadı | temiz fincan yok (bulaşık) | pişiyor (demleme/kuyruk) | temiz=0 süre % | boş masanın kirli-bloklu süresi %');
+  console.log('kol              | taşımada (tepside) = oyuncu + garson | ocakta hazır, alınmadı | temiz fincan yok (bulaşık) | pişiyor (demleme/kuyruk) | temiz=0 süre % | boş masanın kirli-bloklu süresi % | bekleme/fincan sn | kaçan % | oyuncu servis/dk garson sonrası');
   for (const k of KOLLAR) {
     const r = al(k.ad);
     if (!r) continue;
     const p = r.pay, T = p.tasima + p.hazir + p.temizYok + p.pisiyor;
-    console.log(`${k.ad.padEnd(16)} | ${yz(p.tasima, T).padStart(18)} | ${yz(p.hazir, T).padStart(22)} | ${yz(p.temizYok, T).padStart(26)} | ${yz(p.pisiyor, T).padStart(24)} | ${yz(r.temizSifirSn, r.sure).padStart(14)} | ${yz(r.kirliBlokMasaSn, r.bosMasaSn)}`);
+    const b = r.bekleme;
+    console.log(`${k.ad.padEnd(16)} | ${yz(p.tasima, T).padStart(6)} = ${yz(p.tasimaOyuncu, T).padStart(6)} + ${yz(p.tasimaGarson, T).padStart(6)} | ${yz(p.hazir, T).padStart(22)} | ${yz(p.temizYok, T).padStart(26)} | ${yz(p.pisiyor, T).padStart(24)} | ${yz(r.temizSifirSn, r.sure).padStart(14)} | ${yz(r.kirliBlokMasaSn, r.bosMasaSn).padStart(6)} | ${f1(b.servisToplam / b.servisAdet).padStart(5)} | ${yz(b.kacanAdet, b.kacanAdet + b.servisAdet).padStart(5)} | ${f2(r.elleGarsonSonra / Math.max(1e-9, r.garsonSonraSn / 60))}`);
   }
 
   console.log('');
@@ -642,6 +726,15 @@ async function orkestra(): Promise<void> {
     const en = r.gorevler.reduce((a, b) => (b.dk > a.dk ? b : a), { id: '—', dk: -1 });
     console.log(`${ad.padEnd(9)} | ${say.map((x) => `${x.id} ${f1(x.dk)}`).join(' · ')} | en uzun ${en.id} ${f1(en.dk)} · >15 dk: ${r.gorevler.filter((x) => x.dk > 15).length} · hat ${sa(r.hatBitis)} sa · sayaca eklenen garson servisi ${f0(r.sayEklenen)}`);
   }
+  console.log('');
+  console.log('--- §6b G-124 — Kat 2 yığınlarının oto-toplaması (180 sn, Kat 1 kuralı); ziyaret = 20 dk Kat 2 / 10 dk Kat 1 ---');
+  console.log("kol              | KAT 2 BİTER sa | Δ% TABAN | Kat 1'deyken coin/dk: toplam = Kat 2 oto + Kat 1 | Kat 2'ye dönüşte yerde bekleyen coin (ort) | Kat 2'deyken oto-toplanan coin/dk");
+  for (const ad of ['TABAN', 'G124-ACIK', 'G124-KAPALI', 'G124-KAT2-KAPALI']) {
+    const r = al(ad);
+    if (!r) continue;
+    const m1 = r.k1.sn / 60, m2 = (r.sure - r.k1.sn) / 60;
+    console.log(`${ad.padEnd(16)} | ${sa(r.bitis).padStart(14)} | ${(ta ? dY(r.bitis, ta.bitis) : '—').padStart(8)} | ${m1 ? `${f0((r.k1.k2oto + r.k1.k1gelir) / m1)} = ${f0(r.k1.k2oto / m1)} + ${f0(r.k1.k1gelir / m1)}` : '—'} | ${r.k1.donusN ? f0(r.k1.donusYigin / r.k1.donusN) : '—'} | ${f0(r.k1.k2otoK2de / m2)}`);
+  }
   if (ta) console.log('TABAN bütün görevler: ' + ta.gorevler.map((x) => `${x.id} ${f1(x.dk)}${x.dk > 15 ? '!' : ''}`).join(' · '));
 
   // ---- DAMGALAR
@@ -655,7 +748,7 @@ async function orkestra(): Promise<void> {
   const ko = al('KORUNUM');
   if (ko && ta) damga('KORUNUM: G-128 kancası ×0 → parmak izi = TABAN', ko.iz === ta.iz && ko.bitis === ta.bitis, `${ko.iz} ≠ ${ta.iz}`);
   if (ta) for (const k of KOLLAR) {
-    if (k.ad === 'TABAN' || k.ad === 'KORUNUM') continue;
+    if (k.ad === 'TABAN' || k.ad === 'KORUNUM' || k.ad === 'G124-KAT2-KAPALI') continue;
     const r = al(k.ad);
     if (r && (!KISA || !['G119-K2', 'G119-K2T', 'SV-EMU0'].includes(k.ad))) varyantDamgasi(k.ad, ta.iz, r.iz);
   }
@@ -670,6 +763,16 @@ async function orkestra(): Promise<void> {
     damga('G119-K2: Sv2 ilk alımı k2s2okey3\'ten sonra', !Number.isFinite(k2.sv2Ilk) || (Number.isFinite(k2.k2s2okey3At) && k2.sv2Ilk >= k2.k2s2okey3At), `Sv2 ${sa(k2.sv2Ilk)} · okey3 ${sa(k2.k2s2okey3At)}`);
     if (!KISA) damga('G119-K2: Sv zincir bitmeden alındı', k2.svZincirOncesi > 0, '0');
   }
+  const gk = al('G103-GARSON');
+  if (gk) damga('G103-GARSON: garson sonrası oyuncu servisi ≤ %5 (oyuncu kahve taşımadı)', gk.elleGarsonSonra <= 0.05 * Math.max(1, gk.garson), `oyuncu ${gk.elleGarsonSonra} · garson ${gk.garson}`);
+  if (ta) damga('TABAN: taşıma payı = oyuncu + garson', Math.abs(ta.pay.tasima - ta.pay.tasimaOyuncu - ta.pay.tasimaGarson) < 1e-6, '');
+  const ga = al('G124-ACIK'), gkap = al('G124-KAPALI');
+  if (ga) damga("G124-ACIK: Kat 1'deyken Kat 2 oto geliri > 0", ga.k1.k2oto > 0, `${ga.k1.k2oto}`);
+  if (gkap) damga("G124-KAPALI: Kat 1'deyken Kat 2 oto geliri = 0", gkap.k1.k2oto === 0, `${gkap.k1.k2oto}`);
+  const k2k = al('G124-KAT2-KAPALI');
+  if (k2k) damga("G124-KAT2-KAPALI: Kat 2'de oto-toplama yok", k2k.k1.k2otoK2de === 0, `${k2k.k1.k2otoK2de}`);
+  // Bulgu damgası: sürekli Kat 2'de oynayan bot her yığını 180 sn dolmadan topluyor → oto-toplama hiç devreye girmez.
+  if (k2k && ta) damga("G124-KAT2-KAPALI: sürekli Kat 2'de oto-toplama etkisiz (iz = TABAN)", k2k.iz === ta.iz, `${k2k.iz} ≠ ${ta.iz} — Kat 2'deyken oto ${ta.k1.k2otoK2de}`);
   if (e0 && ta && !KISA) damga('SV-EMU0: emülasyon = TABAN (Kat 2 biter ±%2)', Math.abs(e0.bitis - ta.bitis) <= 0.02 * ta.bitis, `${sa(e0.bitis)} ≠ ${sa(ta.bitis)}`);
 
   console.log('');
