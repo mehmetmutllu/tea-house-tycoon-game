@@ -8,6 +8,7 @@ import {
   charLevel,
   charValue,
   charNextCost,
+  charTamamlanir,
   charMaxTier,
   trayCapacityFor,
   waiterTrayCapacityFor,
@@ -357,11 +358,21 @@ function DishTab() {
 
 /** `ilkSekme`: B4 (T9d) — garson görevi paneli GARSON sekmesinde açar. Oyuncu sekmesinde de "Tepsi"
  *  satırı var; görev "garson tepsisi" derken panel oyuncununkinde açılınca yanlış alım yapılıyordu. */
-export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () => void; ilkSekme?: Tab }) {
+export function CharacterPanel({
+  onClose,
+  ilkSekme = 'player',
+  vurgu,
+}: {
+  onClose: () => void;
+  ilkSekme?: Tab;
+  /** G-93: aktif görevin istediği özellik — alınabilirken düğmesi nabız atar (Kat 1 sekme `spot` deseni). */
+  vurgu?: CharStat;
+}) {
   const wallet = useGame((s) => s.wallet);
   const charUpgrades = useGame((s) => s.charUpgrades);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const buyCharUpgrade = useGame((s) => s.buyCharUpgrade);
+  const questId = useGame((s) => economyConfig.quests[s.questIndex]?.id);
   const padsDone = useGame((s) => s.padsDone);
   // Vitrin OYUNCUNUN KENDİ salonunu gösterir: satın aldığı zemin ve duvar teması burada da
   // geçerli (mağaza önizlemeleriyle aynı kaynak). Karakter, kendi kıraathanesinde duruyor.
@@ -479,7 +490,9 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
               const cost = charNextCost(stat, tier);
               const cur = charValue(stat, tier);
               const next = tier < max ? charValue(stat, tier + 1) : null;
-              const afford = cost != null && cash >= cost;
+              // G-92: ilk tepsi tamamlaması — eksik oyunca ödenir, düğme açık ve "eksik" satırı yok.
+              const tamamla = charTamamlanir(stat, tier, cash, questId);
+              const afford = cost != null && (cash >= cost || tamamla);
               return (
                 <div className="char-stat" key={stat}>
                   <span className="char-stat-icon">{icon}</span>
@@ -496,11 +509,11 @@ export function CharacterPanel({ onClose, ilkSekme = 'player' }: { onClose: () =
                         </>
                       )}
                     </span>
-                    <Eksik cost={cost} cash={cash} />
+                    <Eksik cost={tamamla ? null : cost} cash={cash} />
                   </span>
                   {cost != null ? (
                     <button
-                      className="char-buy"
+                      className={`char-buy${afford && vurgu === stat ? ' vurgu' : ''}`}
                       data-testid={`char-buy-${stat}`}
                       disabled={!afford}
                       onClick={() => buyCharUpgrade(stat)}

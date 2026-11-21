@@ -16,6 +16,9 @@
  */
 import { ONBOARDING, type OgreticiAdim } from '../config/onboarding';
 import { economyConfig as C } from '../config/economy.config';
+import { KAT2_YIKAMA_YER, OCAKLAR, type Kat2Kayit } from './kat';
+import { kat2LavaboTetik, kat2OcakTetik, kat2PadYeri, kat2SiradakiPad, kat2SvCanliTetik, type Kat2Ayar } from './kat2Dongu';
+import { kat2SvCanli } from './kat2Gorev';
 
 /** Öğretici görevlerinin hattaki index'leri (config sırasıyla). */
 const GOREV_INDEX: readonly number[] = ONBOARDING.gorevler.map((g) => C.quests.findIndex((q) => q.id === g.gorev));
@@ -104,3 +107,109 @@ export function ogreticiMetni(adim: OgreticiAdim, w: Pick<OgreticiDunya, 'tray' 
   if (adim === 'para' && w.coins.length === 0) return 'para-bekle';
   return adim;
 }
+
+// ───────────────────────── KAT 2 (S5 · Kat 1 eşitliği — `docs/s5-ux-denetim.md`) ─────────────────────────
+
+/**
+ * G-104 — KAT 2 İLK İPUÇLARI. Kat 1'de "Ocağa git, yanında dur" satırı (E5) ve bulaşık öğretme kartı (G-63)
+ * ilk kahve/ilk bulaşıkta konuşuyordu; Kat 2'de ikisinin karşılığı yoktu. Kat 1 deseniyle: adım SAYAÇTAN
+ * değil oyuncunun yaptığından türer (hiç kahve almadı · elinde kirli var ama hiç yıkamadı), kayıtta yeni
+ * alan yok; oyuncu bir kez yapınca satır yapısal olarak kaybolur. Bulaşık önce: elde kirli varken yol leğen.
+ */
+export type Kat2Ipucu = 'k2-kahve' | 'k2-bulasik';
+
+export interface Kat2IpucuGirdi {
+  kat: number;
+  gecis: boolean;
+  padsDone: readonly string[];
+  /** Kat 2 tepsisindeki kahve / kirli fincan. */
+  tepsi: number;
+  tepsiKirli: number;
+  /** Ömür boyu: ocaktan alınan kahve (`stats.kat2Alinan`) · oyuncunun leğene bıraktığı kirli (`stats.kat2Yikanan`). */
+  alinan: number;
+  yikanan: number;
+}
+
+export function kat2IpucuAdimi(g: Kat2IpucuGirdi): Kat2Ipucu | null {
+  if (g.kat !== 2 || g.gecis) return null;
+  if (g.tepsiKirli > 0 && g.yikanan <= 0) return 'k2-bulasik';
+  if (g.alinan <= 0 && g.tepsi <= 0 && OCAKLAR.some((o) => g.padsDone.includes(o.id))) return 'k2-kahve';
+  return null;
+}
+
+/** Satırın metni (TR anahtar; `t()` çevirir). "Buradan/buraya": kamera ipucu belirince hedefe gider (Kat 1 G-63). */
+export const KAT2_IPUCU_METIN: Record<Kat2Ipucu, string> = {
+  'k2-kahve': 'Kahveleri buradan al',
+  'k2-bulasik': 'Bulaşıkları buraya koy',
+};
+
+/** İpucunun dünya hedefi [x, z]: açık ilk ocağın alma noktası · yıkama yeri (leğen). */
+export function kat2IpucuHedefi(i: Kat2Ipucu, padsDone: readonly string[]): [number, number] | null {
+  if (i === 'k2-bulasik') return [KAT2_YIKAMA_YER[0], KAT2_YIKAMA_YER[1]];
+  const o = OCAKLAR.find((x) => padsDone.includes(x.id));
+  return o ? [o.al[0], o.al[1]] : null;
+}
+
+/**
+ * G-107 — KAT 2'DE ŞU AN ÇİZİLEN SATIN ALMA NOKTALARI: sıradaki pad · canlı Sv noktaları · ocak ve lavabo
+ * yükseltme noktası. Sahnenin çizdiği kuralların AYNISI (`PadIsaret` · `SvIsaret`), yani "yeni nokta" = ekranda
+ * yeni beliren işaret. Anahtar türü taşır (Kat 1 `revealKeys`in `tableUp:` / `upgrade:` / `opt:` deseni).
+ */
+export function kat2Noktalar(k: Pick<Kat2Kayit, 'padsDone' | 'masaSv' | 'yuk' | 'gorev'>, ayar: Kat2Ayar): Map<string, [number, number]> {
+  const out = new Map<string, [number, number]>();
+  const pad = kat2SiradakiPad(ayar, k.padsDone);
+  if (pad) out.set(`pad:${pad.id}`, kat2PadYeri(pad.id));
+  const canli = kat2SvCanli(k, C.kat2Gorevler, ayar);
+  for (const t of kat2SvCanliTetik(ayar, k.padsDone, k.masaSv ?? {}, canli)) out.set(`sv:${t.id}`, [t.x, t.z]);
+  const o = kat2OcakTetik(ayar, k.padsDone, k.yuk);
+  if (o) out.set(`ocak:${o.id}`, [o.x, o.z]);
+  const l = kat2LavaboTetik(ayar, k.padsDone, k.yuk);
+  if (l) out.set(`lavabo:${l.id}`, [l.x, l.z]);
+  return out;
+}
+
+/** Öncekinde olmayan TÜM noktalar (sahnedeki sırayla). İlk ölçüm (önceki yok) yeni sayılmaz. SAF. */
+export function kat2YeniNoktalar(
+  onceki: ReadonlySet<string> | null,
+  simdi: ReadonlyMap<string, [number, number]>,
+): { anahtar: string; yer: [number, number] }[] {
+  if (!onceki) return [];
+  return [...simdi].filter(([a]) => !onceki.has(a)).map(([anahtar, yer]) => ({ anahtar, yer }));
+}
+
+/**
+ * Aynı karede belirenlerin tepkisi: HER yeni noktanın bildirimi (tek pad iki nokta açabilir — `k2okey4`
+ * sıradaki pad'i VE ocak yükseltmesini birlikte getirir; yalnız ilkine bakmak ocak bildirimini yutuyordu)
+ * ve tek kamera hedefi — bildirimi olan nokta önce (bant neyi söylüyorsa kamera onu gösterir). SAF.
+ */
+export function kat2NoktaTepkisi(
+  yeniler: readonly { anahtar: string; yer: [number, number] }[],
+): { yer: [number, number]; bildirimler: string[] } | null {
+  if (yeniler.length === 0) return null;
+  const bildirimler = yeniler.map((y) => kat2NoktaBildirimi(y.anahtar)).filter((m): m is string => m != null);
+  const hedef = yeniler.find((y) => kat2NoktaBildirimi(y.anahtar) != null) ?? yeniler[0];
+  return { yer: hedef.yer, bildirimler };
+}
+
+/**
+ * Yeni noktanın bildirimi (Kat 1 reveal toast'ı): yalnız GÖREVİN söylemediği yükseltme noktası — ocak.
+ * Pad ve Sv noktalarını görev bandı zaten söylüyor (Kat 1 `questCoveredReveals`: görev kapsıyorsa toast yok,
+ * yalnız kamera); lavabonun Kat 1'de de bildirimi yok.
+ */
+export function kat2NoktaBildirimi(anahtar: string): string | null {
+  return anahtar.startsWith('ocak:') ? 'Yeni: Cezve ocağını yükseltebilirsin ☕' : null;
+}
+
+/**
+ * G-94 — KAT 2 TANITIM BANDI: perde açılıp oyuncu Kat 2'de belirince "bu kat ne" (Kat 1'de yeni şey açılınca
+ * çıkan bildirim bandı). Kat 1'in "yeni kat" sesiyle (`kat2Ses` `k2yeniKat`) aynı an: kat henüz boşken
+ * (yalnız hazır pad'ler — ilk çıkış) geçiş BİTTİĞİ kare. Yükleme anı (geçişsiz) sayılmaz. SAF.
+ */
+export function kat2TanitimAni(
+  onceki: { kat: number; gecis: boolean } | null,
+  simdi: { kat: number; gecis: boolean; hazirda: boolean },
+): boolean {
+  return !!onceki && onceki.gecis && !simdi.gecis && simdi.kat === 2 && simdi.hazirda;
+}
+
+export const KAT2_TANITIM_METIN = 'Oyun Salonu — okey ve tavla masaları';

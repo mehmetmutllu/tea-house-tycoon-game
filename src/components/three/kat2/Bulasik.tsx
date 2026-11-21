@@ -4,7 +4,7 @@
  * toplar, ön tezgâhtaki LEĞENE bırakır (`legen`), leğen `yikamaSn`de hepsini temize döndürür.
  *
  * Yalnız SUNUM: durumu okur, üretmez. Dil Kat 1'in bulaşığı: kirli gri (Kat 1 kirli bardağı) + dipte telve;
- * leğende yığın sayıyla büyür, boşaldığı an su-mavisi halka (Kat 1 `DishSink.Yikama`).
+ * leğende yığın sayıyla büyür (bakırın üstüne oturur, su yok — G-127), boşaldığı an su-mavisi halka (Kat 1 `DishSink.Yikama`).
  */
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
@@ -25,6 +25,7 @@ import { oturakYerleri } from "./yol";
 import { useMasaSvleri } from "./masaSv";
 import { masaBul } from "./masaIndeks";
 import { Fincan, KirliFincan, Kutu, Silindir } from "./parca";
+import { LEGEN_AGIZ, LEGEN_FINCAN } from "./esyaOlcu";
 import { Kat2Personel } from "./Garson";
 
 /** Masa üstündeki fincan ölçeği (ocaktaki hazır fincanla aynı). */
@@ -142,8 +143,8 @@ function Yikama({ bekleyen, y }: { bekleyen: number; y: number }) {
 }
 
 /**
- * YIKAMA YERİ: ön tezgâhın üstünde iki ocağın ortasında bakır leğen + su + yanında ibrik ve temiz fincan
- * süzgeci. Leğende bekleyen kirliler suyun üstünde halka dizilir (sayıyla büyür, toplu yıkamada boşalır).
+ * YIKAMA YERİ: ön tezgâhın üstünde iki ocağın ortasında bakır leğen + yanında ibrik ve temiz fincan süzgeci.
+ * Leğende bekleyen kirliler bakırın ÜSTÜNE halka dizilir (tepsiye bırakılmış gibi; sayıyla büyür, toplu yıkamada boşalır).
  */
 export function YikamaYeri() {
   const legen = useGame((s) => s.kat2Dunya.legen ?? 0);
@@ -159,12 +160,12 @@ export function YikamaYeri() {
           <Silindir
             r1={0.36}
             r2={0.24}
-            h={0.16}
+            h={LEGEN_AGIZ}
             renk="#b87333"
-            pos={[0, y + 0.08, 0]}
+            pos={[0, y + LEGEN_AGIZ / 2, 0]}
             seg={18}
           />
-          <mesh position={[0, y + 0.162, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <mesh position={[0, y + LEGEN_AGIZ + 0.002, 0]} rotation={[Math.PI / 2, 0, 0]}>
             <torusGeometry args={[0.36, 0.025, 6, 20]} />
             <meshStandardMaterial
               color="#c98a4b"
@@ -172,15 +173,6 @@ export function YikamaYeri() {
               roughness={0.45}
             />
           </mesh>
-          <Silindir
-            r1={0.335}
-            r2={0.335}
-            h={0.01}
-            renk="#8fc9d9"
-            pos={[0, y + 0.14, 0]}
-            seg={18}
-            golge={false}
-          />
           {Array.from({ length: n }, (_, i) => {
             const a = (i / Math.max(n, 1)) * Math.PI * 2;
             const r = n > 1 ? 0.19 : 0;
@@ -189,7 +181,7 @@ export function YikamaYeri() {
                 key={i}
                 pos={[
                   Math.cos(a) * r,
-                  y + 0.1 + (i % 2) * 0.03,
+                  y + LEGEN_FINCAN,
                   Math.sin(a) * r,
                 ]}
                 s={1.4}

@@ -4,10 +4,14 @@ import { claimableGoals, collectionBonus, goalViewsForPanel, type GoalView } fro
 import { dailyViews, claimableDailyCount, dayIndex, type DailyQuestView } from '../../game/dailyQuests';
 import { dailyCountersOf } from '../../game/store';
 import { CAM_FOCUS_TTL, adFreeDailyReady, cardQuestIndex, kat2UstaCarpan, masterAdsLeft, masterCost, toastCizilir, questInTransition, QUEST_COMPLETE_DUR, QUEST_GAP_DUR, videoReward, videoRights, type GameNotice, type QuestView } from '../../game/rules';
-import { ogreticiAdimi, ogreticiMetni, yurudu } from '../../game/onboarding';
+import {
+  KAT2_IPUCU_METIN, KAT2_TANITIM_METIN, kat2IpucuAdimi, kat2IpucuHedefi, kat2Noktalar, kat2TanitimAni,
+  kat2NoktaTepkisi, kat2YeniNoktalar, ogreticiAdimi, ogreticiMetni, yurudu, type Kat2Ipucu,
+} from '../../game/onboarding';
+import { hedefEkranda } from '../../game/cameraView';
 import { kat2GorevGorunumu, kat2Gorevleri, type Kat2GorevGorunum } from '../../game/kat2Gorev';
 import { KAT2_USTA_ONEK, kat2UstaMasalari, kat2UstaUygun, type Kat2Ayar } from '../../game/kat2Dongu';
-import { KAT2_MASALAR } from '../../game/kat';
+import { KAT2_MASALAR, type Kat2Kayit } from '../../game/kat';
 import { LAYOUT } from '../../game/layout';
 import { Ogretici } from './Ogretici';
 import { ekranKanali, geriTusu, tepsiIpucuZamani } from '../../game/ekranKanali';
@@ -15,7 +19,7 @@ import { Capacitor } from '@capacitor/core';
 import { App as CapApp } from '@capacitor/app';
 import { odulAlindi, odulluIzleSonuc, odulluReklamHazir, panelKapandi, reklamAbone, reklamTercihleriGerekli, reklamTercihleriniAc, sogumaSifirla } from '../../game/ads';
 import { yasalAdres } from '../../config/yasal.config';
-import { merdivenRehberi, rehberHedefi, rehberOku, screenPointer } from '../../game/screenPointer';
+import { kat2GorevHedefi, merdivenRehberi, rehberHedefi, rehberOku, screenPointer } from '../../game/screenPointer';
 import { magazaDurumu, magazaYenile, satinAlimlariGeriYukle, urunFiyati, type SatinAlCevap } from '../../game/iap';
 import { useSatinAl } from './useSatinAl';
 import { basarimlariGoster, bulutAbone, bulutSifirla, bulutSurumu, girisYap, playGamesDurumu } from '../../game/bulut';
@@ -65,6 +69,8 @@ import './hud.css';
 import { KafeAdiKutusu } from './KafeAdiKutusu';
 import { Kat1Akis } from './Kat1Akis';
 import { GeriBildirimKutusu } from './GeriBildirimKutusu';
+import { GorevKarti } from './GorevKarti';
+import { gunlukOzeti, kartVerisi, kat1Hat, kat2Hat, sekmeDuzeni, type KartVerisi, type SekmeBolumu } from './gorevPano';
 
 /* ── 3D ÖNİZLEMELER AYRI PARÇADA (Faz F kod-bölme) ──────────────────────────────────────────
    Karakter paneli ve mağaza önizlemeleri kendi <Canvas>ını kurar → r3f + three'yi çeker. Arayüz
@@ -124,6 +130,16 @@ function gorevTutari(q: QuestView, padFills: Record<string, number>): number | n
   if (q.cost == null) return null;
   if (q.target.type !== 'pad') return q.cost;
   return Math.max(0, Math.ceil(q.cost - (padFills[q.target.id] ?? 0)));
+}
+
+/** G-120: iki katın hattı, görev arayüzünün okuduğu tek biçimde (config sabit — bir kez). */
+const K1_HAT = kat1Hat(economyConfig.quests);
+const K2_HAT = kat2Hat(kat2Gorevleri(economyConfig.kat2Gorevler, economyConfig.kat2 as Kat2Ayar));
+
+/** Kartın üst satırı: "GÖREV 4/29" (Kat 2'de "KAT 2 · GÖREV 4/29"); görev hatta yoksa lakabı. */
+function kartKicker(v: KartVerisi, kat: 1 | 2, lakap: string): string {
+  if (v.no == null) return t(lakap);
+  return kat === 2 ? t('KAT 2 · GÖREV {1}/{2}', v.no, v.toplam) : t('GÖREV {1}/{2}', v.no, v.toplam);
 }
 
 /**
@@ -191,6 +207,8 @@ export function HUD() {
   useEffect(() => {
     k2OncekiGorev.current = kat2Gorev;
   });
+  // S5 · Kat 1 eşitliği: yeni nokta → kamera pan (G-107) · ilk çıkış tanıtım bandı (G-94) · ilk ipuçları (G-104).
+  const k2Ipucu = useKat2Rehber(k2Kutlama != null);
   const [bitisGorunur, setBitisGorunur] = useState(true);
   const questBitti = quest == null;
   // Hat yeniden uzarsa (yeni görev eklenirse) bant tekrar hak eder — render sırasında düzeltilir.
@@ -290,7 +308,6 @@ export function HUD() {
   const ogreticiMetinK = useGame((s) => (ogreticiAdim ? ogreticiMetni(ogreticiAdim, s) : null));
 
   const lvl = levelProgress(xp);
-  const questPct = quest && quest.total != null ? Math.min(100, ((quest.cur ?? 0) / quest.total) * 100) : null;
   // Karakter panelinden alınan görevler (tepsi/garson tepsi/garson hız) → Karakter sekmesi işaretlenir.
   const charQuestActive =
     quest?.target.type === 'charStat' || quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed';
@@ -313,7 +330,8 @@ export function HUD() {
     tepsiIpucuHazir: !kat2de && tepsiAni && !trayTipSeen,
     seviyeVar: levelUp != null,
     baslangicTeklifHazir: teklifHazir,
-    ogreticiHazir: !kat2de && ogreticiAdim != null,
+    // G-104: Kat 2'de öğretici kanalını Kat 2'nin ilk ipucu kullanır (aynı sıra kuralı, aynı satır).
+    ogreticiHazir: kat2de ? k2Ipucu != null : ogreticiAdim != null,
   });
   const teklif = kanal === 'teklif-baslangic';
   const showOffline = kanal === 'cevrimdisi';
@@ -552,49 +570,49 @@ export function HUD() {
       )}
 
       {/* ───────── E5 ÖĞRETİCİ: bandın üstünde tek satır (+ ilk adımda sürükleyen el) ───────── */}
-      {kanal === 'ogretici' && ogreticiAdim && ogreticiMetinK && (
+      {kanal === 'ogretici' && ogreticiAdim && ogreticiMetinK && !kat2de && (
         <Ogretici adim={ogreticiAdim} metin={ogreticiMetinK} onAtla={ogreticiAtla} />
+      )}
+      {kanal === 'ogretici' && kat2de && k2Ipucu && (
+        <div className="ogretici" data-testid="kat2-ipucu" data-ipucu={k2Ipucu}>
+          <div className="ogretici-satir k2-ipucu" key={k2Ipucu}>
+            <span className="ogretici-metin">{t(KAT2_IPUCU_METIN[k2Ipucu])}</span>
+          </div>
+        </div>
       )}
 
       {/* ───────── ALT BANT: AKTİF ADIM (Tek Odak) ───────── */}
       {kat2de && k2Kutlama ? (
         k2Kutlama.faz === 'bitti' ? (
-          <div className="band done" data-testid="kat-bandi" data-gorev={k2Kutlama.g.id} key={`${k2Kutlama.g.id}-bitti`}>
-            <span className="band-photo">
-              <CheckBadge size={26} />
-            </span>
-            <span className="band-body">
-              <span className="band-title">{t(k2Kutlama.g.title)}</span>
-              <span className="band-sub done-sub" data-testid="kat2-quest-done">
-                {t('Tamamlandı')}
-              </span>
-            </span>
-            <span className="band-reward">
-              <CoinIcon size={14} />+{fmt(k2Kutlama.g.reward)}
-            </span>
-          </div>
+          <GorevKarti
+            key={`${k2Kutlama.g.id}-bitti`}
+            veri={kartVerisi(k2Kutlama.g, K2_HAT)}
+            kicker={kartKicker(kartVerisi(k2Kutlama.g, K2_HAT), 2, k2Kutlama.g.kicker)}
+            title={t(k2Kutlama.g.title)}
+            foto={k2Kutlama.g.foto}
+            done
+            testid="kat-bandi"
+            dataGorev={k2Kutlama.g.id}
+            progTestid="kat2-quest-prog"
+            rewardTestid="kat2-quest-reward"
+            doneTestid="kat2-quest-done"
+          />
         ) : null
       ) : kat2de && kat2Gorev ? (
-        // S3: Kat 2'deyken şerit Kat 2'nin görevini aynı hap diliyle gösterir (D-175); dokununca kamera hedefe (D-197).
-        <button className="band" data-testid="kat-bandi" data-gorev={kat2Gorev.id} key={kat2Gorev.id} onClick={kat2GorevOdak}>
-          <span className="band-photo">
-            <QuestPhoto target={kat2Gorev.foto} size={38} />
-          </span>
-          <span className="band-body">
-            <span className="band-title">{t(kat2Gorev.title)}</span>
-            {kat2Gorev.total != null && (
-              <span className="band-track">
-                <span className="band-fill" style={{ width: `${Math.min(100, ((kat2Gorev.cur ?? 0) / kat2Gorev.total) * 100)}%` }} />
-                <span className="band-count" data-testid="kat2-quest-prog">
-                  {kat2Gorev.cur}/{kat2Gorev.total}
-                </span>
-              </span>
-            )}
-          </span>
-          <span className="band-reward" data-testid="kat2-quest-reward">
-            <CoinIcon size={14} />+{fmt(kat2Gorev.reward)}
-          </span>
-        </button>
+        // S3: Kat 2'deyken kart Kat 2'nin görevini gösterir (G-120 M1: Kat 1 ile aynı bileşen); dokununca kamera hedefe (D-197).
+        <GorevKarti
+          key={kat2Gorev.id}
+          veri={kartVerisi(kat2Gorev, K2_HAT)}
+          kicker={kartKicker(kartVerisi(kat2Gorev, K2_HAT), 2, kat2Gorev.kicker)}
+          title={t(kat2Gorev.title)}
+          foto={kat2Gorev.foto}
+          onClick={kat2GorevOdak}
+          testid="kat-bandi"
+          dataGorev={kat2Gorev.id}
+          progTestid="kat2-quest-prog"
+          rewardTestid="kat2-quest-reward"
+          doneTestid="kat2-quest-done"
+        />
       ) : kat2de ? (
         k2BitisGorunur ? (
           <div className="band idle" data-testid="kat-bandi" data-gorev="bitti">
@@ -606,43 +624,20 @@ export function HUD() {
           <GunlukBant onClick={() => setSheet('quests')} />
         )
       ) : quest ? (
-        <button
-          className={`band${quest.done ? ' done' : ''}`}
-          data-testid="quest"
+        // G-120 M1: tek satırlık hap karta büyüdü (ilerleme · ödül · sırada). G-04: tamamlanma kartın KENDİ hâli.
+        <GorevKarti
           key={quest.id}
+          veri={kartVerisi(quest, K1_HAT)}
+          kicker={kartKicker(kartVerisi(quest, K1_HAT), 1, quest.kicker)}
+          title={t(quest.title)}
+          foto={quest.target}
+          done={!!quest.done}
           onClick={() => (charQuestActive ? openChar() : focusQuest())}
-        >
-          <span className="band-photo">
-            {quest.done ? <CheckBadge size={26} /> : <QuestPhoto target={quest.target} size={38} />}
-          </span>
-          <span className="band-body">
-            {/* D-175 (1.0.7, kullanıcı B'yi seçti): tek satırlık HAP. Lakap ("SALON 2") kalktı —
-                başlık zaten yeri söylüyor ("Salon 2: 4. Masayı aç"), iki kez yazılıyordu. Fiyat da
-                kalktı: sağda yalnız ÖDÜL durur. Lakap Görevler ekranında (qbig) yaşamaya devam eder. */}
-            <span className="band-title">{t(quest.title)}</span>
-            {/* G-04: tamamlanma bandın KENDİ hâlidir — ayrı bir toast yok. */}
-            {quest.done ? (
-              <span className="band-sub done-sub" data-testid="quest-done">
-                {t('Tamamlandı')}
-              </span>
-            ) : questPct != null ? (
-              <span className="band-track">
-                <span className="band-fill" style={{ width: `${questPct}%` }} />
-                <span className="band-count" data-testid="quest-prog">
-                  {quest.cur}/{quest.total}
-                </span>
-              </span>
-            ) : null}
-          </span>
-          {quest.reward != null && (
-            <span className="band-reward" data-testid="quest-reward">
-              <CoinIcon size={14} />+{fmt(quest.reward)}
-            </span>
-          )}
-          <span className="band-go">
-            <ChevronIcon size={18} />
-          </span>
-        </button>
+          testid="quest"
+          progTestid="quest-prog"
+          rewardTestid="quest-reward"
+          doneTestid="quest-done"
+        />
       ) : bitisGorunur ? (
         <div className="band idle" data-testid="hat-bitti">
           <span className="band-body">
@@ -737,6 +732,7 @@ export function HUD() {
         <Suspense fallback={null}>
           <CharacterPanel
             onClose={() => setSheet(null)}
+            vurgu={!kat2de && quest?.target.type === 'charStat' ? quest.target.stat : undefined}
             ilkSekme={quest?.target.type === 'waiterTray' || quest?.target.type === 'waiterSpeed' ? 'waiter' : 'player'}
           />
         </Suspense>
@@ -944,6 +940,92 @@ export function HUD() {
       )}
     </div>
   );
+}
+
+const K2_AYAR = economyConfig.kat2 as Kat2Ayar;
+const K2_HAZIR: readonly string[] = economyConfig.kat2.hazir;
+
+/** Kat 2 kamerasını hedefe kısa kaydırır (Kat 1 `requestFocus`: hedef zaten ekrandaysa pan YOK — H1). */
+function kat2Pan(yer: readonly [number, number]): boolean {
+  if (hedefEkranda(yer[0], yer[1])) return false;
+  useGame.setState({ camFocus: { pos: [yer[0], 0, yer[1]], ttl: CAM_FOCUS_TTL, kat2: true } });
+  return true;
+}
+
+/** Kat 1 bildirim bandı (reveal) — sıraya girer, Kat 1 toast'larıyla aynı kuyruk. */
+function kat2Bildir(text: string) {
+  useGame.setState((s) => ({ noticeQueue: [...s.noticeQueue, { text: t(text), ttl: 4.5, kind: 'reveal' as const }] }));
+}
+
+/**
+ * S5 — KAT 2'DE KAT 1'İN REHBERLİĞİ (`docs/s5-ux-denetim.md`). Mantık saf ve `game/onboarding.ts`te; burada
+ * yalnız "ne zaman" (önceki ↔ şimdiki):
+ *  - G-107: yeni bir satın alma noktası belirince kamera kısa pan, sonra oyuncuya döner (Kat 1 reveal/alan panı).
+ *    Görev kutlaması sürerken ertelenir (Kat 1 G-44); kutlama bitince yeni görevin hedefine (Kat 1 görev panı),
+ *    o ekrandaysa ertelenen noktaya.
+ *  - G-94: ilk çıkışta perde açılınca "bu kat ne" bandı.
+ *  - G-104: ilk kahve / ilk bulaşık ipucu; belirdiği an kamera hedefe (Kat 1 G-63 `focusDish`).
+ * Dönüş: o an gösterilecek ipucu (kanal sırası HUD'da).
+ */
+function useKat2Rehber(kutlama: boolean): Kat2Ipucu | null {
+  const kat2 = useGame((s) => s.kat2) as Kat2Kayit;
+  const kat = useGame((s) => s.kat);
+  const gecis = useGame((s) => s.katGecis != null);
+  const ipucu = useGame((s) =>
+    kat2IpucuAdimi({
+      kat: s.kat,
+      gecis: s.katGecis != null,
+      padsDone: s.kat2.padsDone,
+      tepsi: s.kat2Dunya.tepsi,
+      tepsiKirli: s.kat2Dunya.tepsiKirli ?? 0,
+      alinan: s.stats.kat2Alinan ?? 0,
+      yikanan: s.stats.kat2Yikanan ?? 0,
+    }),
+  );
+  const noktalar = useRef<Set<string> | null>(null);
+  const bekleyen = useRef<[number, number] | null>(null);
+  const idx = kat2.gorev?.idx ?? 0;
+  const oncekiIdx = useRef(idx);
+  const oncekiKutlama = useRef(kutlama);
+  const oncekiGecis = useRef<{ kat: number; gecis: boolean } | null>(null);
+
+  useEffect(() => {
+    const n = kat2Noktalar(kat2, K2_AYAR);
+    const yeni = kat === 2 && !gecis ? kat2NoktaTepkisi(kat2YeniNoktalar(noktalar.current, n)) : null;
+    noktalar.current = new Set(n.keys());
+    const ilerledi = idx > oncekiIdx.current;
+    oncekiIdx.current = idx;
+    if (!yeni) return;
+    for (const metin of yeni.bildirimler) kat2Bildir(metin);
+    // Görev bu karede bittiyse kutlama henüz çizilmedi (HUD efektte açar) — o da ertelenir.
+    if (kutlama || ilerledi) bekleyen.current = yeni.yer;
+    else kat2Pan(yeni.yer);
+  }, [kat2, kat, gecis, idx, kutlama]);
+
+  useEffect(() => {
+    const bitti = oncekiKutlama.current && !kutlama;
+    oncekiKutlama.current = kutlama;
+    if (!bitti) return;
+    const b = bekleyen.current;
+    bekleyen.current = null;
+    if (useGame.getState().kat !== 2) return;
+    const h = kat2GorevHedefi(useGame.getState().kat2);
+    if (!(h && kat2Pan(h)) && b) kat2Pan(b);
+  }, [kutlama]);
+
+  useEffect(() => {
+    const simdi = { kat, gecis, hazirda: kat2.padsDone.every((id) => K2_HAZIR.includes(id)) };
+    if (kat2TanitimAni(oncekiGecis.current, simdi)) kat2Bildir(KAT2_TANITIM_METIN);
+    oncekiGecis.current = { kat, gecis };
+  }, [kat, gecis, kat2.padsDone]);
+
+  useEffect(() => {
+    if (!ipucu) return;
+    const h = kat2IpucuHedefi(ipucu, useGame.getState().kat2.padsDone);
+    if (h) kat2Pan(h);
+  }, [ipucu]);
+
+  return ipucu;
 }
 
 /**
@@ -1303,23 +1385,30 @@ function ReklamsizHediye() {
   );
 }
 
+/**
+ * GÖREVLER (G-120 · M2, kullanıcı kararı 2026-11-20): sekme AKTİF görevle açılır → sıradaki 3 (yükseltme
+ * durağı amber) → tamamlananlar (katlı) → günlükler EN ALTTA tek satır (dokununca açılır). Eskiden günlükler
+ * üstteydi ve hat görevi aşağıda kalıyordu ("Görevler sekmesi geri planda kalıyor, anlaşılmıyor"). Sıra
+ * `sekmeDuzeni`nden (gorevPano.ts) gelir; Kat 1 ve Kat 2 aynı düzen.
+ */
 function QuestsSheet({ onClose }: { onClose: () => void }) {
   const questIndex = useGame((s) => s.questIndex);
   const quest = useGame((s) => s.quest);
   const focusQuest = useGame((s) => s.focusQuest);
   const padFills = useGame((s) => s.padFills);
-  // Tarama-4 #2: Kat 2'deyken MEKÂN bölümü Kat 2'nin görev hattını gösterir (Kat 1 listesinin aynısı).
   const kat2de = useGame((s) => s.kat === 2);
   const kat2Kayit = useGame((s) => s.kat2);
   const kat2GorevOdak = useGame((s) => s.kat2GorevOdak);
-  const k2Hat = kat2Gorevleri(economyConfig.kat2Gorevler, economyConfig.kat2 as Kat2Ayar);
   const k2Gorev = kat2de ? kat2GorevGorunumu(kat2Kayit, economyConfig.kat2Gorevler, economyConfig.kat2) : null;
+  const hat = kat2de ? K2_HAT : K1_HAT;
   const hatIdx = kat2de ? (kat2Kayit.gorev?.idx ?? 0) : questIndex;
-  const all: readonly { id: string; title: string; reward?: number | null }[] = kat2de ? k2Hat : economyConfig.quests;
-  const done = all.slice(0, Math.min(hatIdx, all.length));
-  const upcoming = all.slice(hatIdx + 1, hatIdx + 4);
-  // GÜNLÜK GÖREVLER (D8) burada durur, beşinci bir sekme açılmadan: ikisi de "görev"dir, biri
-  // hattın adımı biri günün işi. Sayaç ve eşik `dailyQuests.ts`te — panel yalnız çiziyor.
+  const aktifId = kat2de ? (k2Gorev?.id ?? null) : (quest?.id ?? null);
+  const duzen = sekmeDuzeni(hat, aktifId, hatIdx);
+  const kv = kat2de ? (k2Gorev ? kartVerisi(k2Gorev, hat) : null) : quest ? kartVerisi(quest, hat) : null;
+  const sira = kv?.no != null ? ` · ${kv.no}/${kv.toplam}` : '';
+  const [tamamAcik, setTamamAcik] = useState(false);
+  const [gunAcik, setGunAcik] = useState(false);
+  // GÜNLÜK GÖREVLER (D8) burada durur, beşinci bir sekme açılmadan. Sayaç ve eşik `dailyQuests.ts`te.
   const stats = useGame((s) => s.stats);
   const lifetime = useGame((s) => s.lifetime);
   const tables = useGame((s) => s.tables);
@@ -1327,63 +1416,240 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
   const claimDailyQuest = useGame((s) => s.claimDailyQuest);
   const [gunOdul, setGunOdul] = useState<(DailyQuestView & { gun: number }) | null>(null);
   const gunler = dailyViews(daily, tables, dailyCountersOf({ stats, lifetime }));
-  const gunHazir = gunler.filter((g) => g.state === 'claimable').length;
+  const ozet = gunlukOzeti(gunler);
   const gunKalan = gunler.filter((g) => g.state !== 'claimed').reduce((a, g) => a + g.diamonds, 0);
+  const mekan = <div className="sheet-sec">{kat2de ? t('Kat 2 — Oyun Salonu') : t('MEKÂN')}</div>;
+
+  const aktifKart = kat2de
+    ? k2Gorev && (
+        <button
+          className="qbig"
+          data-testid="quest-active"
+          data-gorev={k2Gorev.id}
+          onClick={() => {
+            kat2GorevOdak();
+            onClose();
+          }}
+        >
+          <span className="qbig-photo">
+            <QuestPhoto target={k2Gorev.foto} size={62} />
+          </span>
+          <span className="qbig-body">
+            <span className="qbig-kicker">{t(k2Gorev.kicker)}{sira}</span>
+            <span className="qbig-title">{t(k2Gorev.title)}</span>
+            {kv?.yuzde != null && (
+              <span className="band-track big">
+                <span className="band-fill" style={{ width: `${kv.yuzde}%` }} />
+                <span className="band-count">
+                  {kv.cur}/{kv.total}
+                </span>
+              </span>
+            )}
+          </span>
+          <span className="qbig-reward">
+            <CoinIcon size={16} />+{fmt(k2Gorev.reward)}
+          </span>
+        </button>
+      )
+    : quest && (
+        <button
+          className="qbig"
+          data-testid="quest-active"
+          onClick={() => {
+            focusQuest();
+            onClose();
+          }}
+        >
+          <span className="qbig-photo">
+            <QuestPhoto target={quest.target} size={62} />
+          </span>
+          <span className="qbig-body">
+            <span className="qbig-kicker">{t(quest.kicker)}{sira}</span>
+            <span className="qbig-title">{t(quest.title)}</span>
+            {kv?.yuzde != null ? (
+              <span className="band-track big">
+                <span className="band-fill" style={{ width: `${kv.yuzde}%` }} />
+                <span className="band-count">
+                  {kv.cur}/{kv.total}
+                </span>
+              </span>
+            ) : quest.cost != null ? (
+              <span className="band-sub">
+                <CoinIcon size={16} />
+                {fmt(gorevTutari(quest, padFills) ?? 0)}
+              </span>
+            ) : null}
+          </span>
+          {quest.reward != null && (
+            <span className="qbig-reward">
+              <CoinIcon size={16} />+{fmt(quest.reward)}
+            </span>
+          )}
+        </button>
+      );
+
+  const bolum = (b: SekmeBolumu): ReactNode => {
+    switch (b.tur) {
+      case 'aktif':
+        return (
+          <div key="aktif" data-bolum="aktif">
+            {mekan}
+            {aktifKart}
+          </div>
+        );
+      case 'bitti':
+        return (
+          <div key="bitti" data-bolum="bitti">
+            {mekan}
+            <div className="sheet-empty">
+              {kat2de ? t('Kat 2 görevleri tamamlandı — salon senin.') : t('Görev hattı tamamlandı — mekân senin.')}
+            </div>
+          </div>
+        );
+      case 'sirada':
+        return (
+          <div key="sirada" data-bolum="sirada">
+            <div className="sheet-sec">{t('SIRADA')}</div>
+            <ul className="qlist">
+              {b.gorevler.map((g, i) => (
+                <li className={`qrow next${g.yukseltme ? ' yuk' : ''}`} key={g.id} data-testid="quest-next">
+                  <span className="qrow-no">{(kv?.no ?? hatIdx + 1) + i + 1}</span>
+                  <span className="qrow-title">
+                    {t(g.title)}
+                    {g.yukseltme && <small className="qrow-yuk">{t('YÜKSELTME')}</small>}
+                  </span>
+                  {g.reward != null && (
+                    <span className="qrow-reward">
+                      <CoinIcon size={13} />+{fmt(g.reward)}
+                    </span>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </div>
+        );
+      case 'tamamlanan':
+        return (
+          <div key="tamamlanan" data-bolum="tamamlanan">
+            <button
+              className="sheet-sec sec-ac"
+              data-testid="tamam-ozet"
+              aria-expanded={tamamAcik}
+              onClick={() => setTamamAcik(!tamamAcik)}
+            >
+              <span>
+                {t('TAMAMLANAN ·')} {b.gorevler.length}
+              </span>
+              <span className={`sec-ok${tamamAcik ? ' acik' : ''}`}>
+                <ChevronIcon size={14} />
+              </span>
+            </button>
+            {tamamAcik && (
+              <ul className="qlist">
+                {b.gorevler.map((q) => (
+                  <li className="qrow" key={q.id}>
+                    <span className="qrow-check">
+                      <CheckBadge size={20} />
+                    </span>
+                    <span className="qrow-title">{t(q.title)}</span>
+                    {q.reward != null && (
+                      <span className="qrow-reward">
+                        <CoinIcon size={13} />+{fmt(q.reward)}
+                      </span>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        );
+      case 'gunluk':
+        return (
+          <div key="gunluk" data-bolum="gunluk">
+            <div className="sheet-sec">{t('BUGÜN · GÜNLÜK')}</div>
+            <button
+              className={`gunluk-ozet${ozet.hazir > 0 ? ' hazir' : ''}`}
+              data-testid="gunluk-ozet"
+              aria-expanded={gunAcik}
+              onClick={() => setGunAcik(!gunAcik)}
+            >
+              <span className="gunluk-ozet-metin">
+                {ozet.bitti
+                  ? t('Bugünün görevleri bitti — yarın üç yeni görev')
+                  : ozet.hazir > 0
+                    ? t('{1} günlük görev · {2} ödül hazır', ozet.toplam, ozet.hazir)
+                    : t('{1} günlük görev', ozet.toplam)}
+              </span>
+              {gunKalan > 0 && (
+                <span className="goal-reward">
+                  <GemIcon size={13} />
+                  {gunKalan}
+                </span>
+              )}
+              <span className={`sec-ok${gunAcik ? ' acik' : ''}`}>
+                <ChevronIcon size={14} />
+              </span>
+            </button>
+            {gunAcik && (
+              <>
+                <ul className="goals" data-testid="daily-list">
+                  {gunler.map((g) => (
+                    <li
+                      className={`goal${g.state === 'claimable' ? ' ready' : ''}${g.state === 'claimed' ? ' full' : ''}`}
+                      key={g.id}
+                      data-testid={`daily-${g.id}`}
+                      data-state={g.state}
+                    >
+                      <span className="goal-top">
+                        <b>{g.label}</b>
+                        <span className="goal-num">
+                          {fmt(g.cur)}
+                          <i>/{fmt(g.target)}</i>
+                        </span>
+                      </span>
+                      <span className="goal-track">
+                        <span className="goal-fill" style={{ width: `${Math.min(100, (g.cur / g.target) * 100)}%` }} />
+                      </span>
+                      <span className="goal-foot">
+                        <span className="goal-note">{g.state === 'claimed' ? t('Bugün alındı') : t('Her gün yenilenir')}</span>
+                        {g.state === 'claimable' ? (
+                          <button
+                            className="goal-claim"
+                            data-testid={`daily-claim-${g.id}`}
+                            onClick={() => setGunOdul({ ...g, gun: daily.day })}
+                          >
+                            {t('Ödülü al')}
+                          </button>
+                        ) : (
+                          <span className="goal-reward">
+                            <GemIcon size={13} />
+                            {g.diamonds}
+                          </span>
+                        )}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+                <ReklamsizHediye />
+                <div className="sheet-foot-note" data-testid="daily-left">
+                  {gunKalan > 0 ? (
+                    <>
+                      {t('Bugün kalan ödül:')} {gunKalan} <GemIcon size={12} /> {t('· yarın üç yeni görev')}
+                    </>
+                  ) : (
+                    t('Bugünün görevleri bitti — yarın üç yeni görev')
+                  )}
+                </div>
+              </>
+            )}
+          </div>
+        );
+    }
+  };
 
   return (
     <Sheet title={t('Görevler')} testid="quests-panel" onClose={onClose} navda>
-      <div className="sheet-sec" data-testid="daily-sec">
-        {t('BUGÜN')}{gunHazir > 0 ? ` ${t('· {1} ÖDÜL HAZIR', gunHazir)}` : ''}
-      </div>
-      <ul className="goals" data-testid="daily-list">
-        {gunler.map((g) => (
-          <li
-            className={`goal${g.state === 'claimable' ? ' ready' : ''}${g.state === 'claimed' ? ' full' : ''}`}
-            key={g.id}
-            data-testid={`daily-${g.id}`}
-            data-state={g.state}
-          >
-            <span className="goal-top">
-              <b>{g.label}</b>
-              <span className="goal-num">
-                {fmt(g.cur)}
-                <i>/{fmt(g.target)}</i>
-              </span>
-            </span>
-            <span className="goal-track">
-              <span className="goal-fill" style={{ width: `${Math.min(100, (g.cur / g.target) * 100)}%` }} />
-            </span>
-            <span className="goal-foot">
-              <span className="goal-note">{g.state === 'claimed' ? t('Bugün alındı') : t('Her gün yenilenir')}</span>
-              {g.state === 'claimable' ? (
-                <button
-                  className="goal-claim"
-                  data-testid={`daily-claim-${g.id}`}
-                  onClick={() => setGunOdul({ ...g, gun: daily.day })}
-                >
-                  {t('Ödülü al')}
-                </button>
-              ) : (
-                <span className="goal-reward">
-                  <GemIcon size={13} />
-                  {g.diamonds}
-                </span>
-              )}
-            </span>
-          </li>
-        ))}
-      </ul>
-      <ReklamsizHediye />
-      <div className="sheet-foot-note" data-testid="daily-left">
-        {gunKalan > 0 ? (
-          <>
-            {t('Bugün kalan ödül:')} {gunKalan} <GemIcon size={12} /> {t('· yarın üç yeni görev')}
-          </>
-        ) : (
-          t('Bugünün görevleri bitti — yarın üç yeni görev')
-        )}
-      </div>
-
+      {duzen.map(bolum)}
       {gunOdul && (
         <RewardModal
           testid="daily-reward"
@@ -1400,123 +1666,6 @@ function QuestsSheet({ onClose }: { onClose: () => void }) {
             setGunOdul(null);
           }}
         />
-      )}
-
-      <div className="sheet-sec">{kat2de ? t('Kat 2 — Oyun Salonu') : t('MEKÂN')}</div>
-      {kat2de ? (
-        k2Gorev ? (
-          <button
-            className="qbig"
-            data-testid="quest-active"
-            data-gorev={k2Gorev.id}
-            onClick={() => {
-              kat2GorevOdak();
-              onClose();
-            }}
-          >
-            <span className="qbig-photo">
-              <QuestPhoto target={k2Gorev.foto} size={62} />
-            </span>
-            <span className="qbig-body">
-              <span className="qbig-kicker">{t(k2Gorev.kicker)}</span>
-              <span className="qbig-title">{t(k2Gorev.title)}</span>
-              {k2Gorev.total != null && (
-                <span className="band-track big">
-                  <span
-                    className="band-fill"
-                    style={{ width: `${Math.min(100, ((k2Gorev.cur ?? 0) / k2Gorev.total) * 100)}%` }}
-                  />
-                  <span className="band-count">
-                    {k2Gorev.cur}/{k2Gorev.total}
-                  </span>
-                </span>
-              )}
-            </span>
-            <span className="qbig-reward">
-              <CoinIcon size={16} />+{fmt(k2Gorev.reward)}
-            </span>
-          </button>
-        ) : (
-          <div className="sheet-empty">{t('Kat 2 görevleri tamamlandı — salon senin.')}</div>
-        )
-      ) : quest ? (
-        <button
-          className="qbig"
-          data-testid="quest-active"
-          onClick={() => {
-            focusQuest();
-            onClose();
-          }}
-        >
-          <span className="qbig-photo">
-            <QuestPhoto target={quest.target} size={62} />
-          </span>
-          <span className="qbig-body">
-            <span className="qbig-kicker">{t(quest.kicker)}</span>
-            <span className="qbig-title">{t(quest.title)}</span>
-            {quest.total != null ? (
-              <span className="band-track big">
-                <span
-                  className="band-fill"
-                  style={{ width: `${Math.min(100, ((quest.cur ?? 0) / quest.total) * 100)}%` }}
-                />
-                <span className="band-count">
-                  {quest.cur}/{quest.total}
-                </span>
-              </span>
-            ) : quest.cost != null ? (
-              <span className="band-sub">
-                <CoinIcon size={16} />
-                {fmt(gorevTutari(quest, padFills) ?? 0)}
-              </span>
-            ) : null}
-          </span>
-          {quest.reward != null && (
-            <span className="qbig-reward">
-              <CoinIcon size={16} />+{fmt(quest.reward)}
-            </span>
-          )}
-        </button>
-      ) : (
-        <div className="sheet-empty">{t('Görev hattı tamamlandı — mekân senin.')}</div>
-      )}
-
-      {upcoming.length > 0 && (
-        <>
-          <div className="sheet-sec">{t('SIRADA')}</div>
-          <ul className="qlist">
-            {upcoming.map((q) => (
-              <li className="qrow next" key={q.id}>
-                <span className="qrow-kilit"><LockIcon size={20} /></span>
-                <span className="qrow-title">{t(q.title)}</span>
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {done.length > 0 && (
-        <>
-          <div className="sheet-sec">{t('TAMAMLANAN ·')} {done.length}</div>
-          <ul className="qlist">
-            {done
-              .slice()
-              .reverse()
-              .map((q) => (
-                <li className="qrow" key={q.id}>
-                  <span className="qrow-check">
-                    <CheckBadge size={20} />
-                  </span>
-                  <span className="qrow-title">{t(q.title)}</span>
-                  {q.reward != null && (
-                    <span className="qrow-reward">
-                      <CoinIcon size={13} />+{fmt(q.reward)}
-                    </span>
-                  )}
-                </li>
-              ))}
-          </ul>
-        </>
       )}
     </Sheet>
   );

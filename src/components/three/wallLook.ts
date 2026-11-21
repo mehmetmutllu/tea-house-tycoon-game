@@ -15,6 +15,7 @@
 import { BAND, BAND_SHELL, LAYOUT, doorX, wallSpans, type AreaSide } from '../../game/layout';
 import { decorItems } from '../../config/decor';
 import { DOOR, WALL_M, WALL_H as WALL_H_REF } from './wallPanel';
+import { ON_DUVAR_H } from './wallOlcu';
 
 /** Duvar hattının alan kenarından dışarıdaki payı — sayı `wallPanel`de (döngü olmasın), burada yeniden dışa açılıyor. */
 export { WALL_M } from './wallPanel';
@@ -223,6 +224,17 @@ export function wallPieces(runs: WallRun[], holes: WallHole[]): WallPiece[] {
     if (son - imlec > 0.01) out.push(dilim(r, imlec, son));
   }
   return out;
+}
+
+/**
+ * KAT 1 SALON DUVARLARI (S5 G-114 B): pencereli parçalar + ÖN hat `ON_DUVAR_H`e iner.
+ * Ön hatta vitrin açıklığı YOK — cam bandı (0,98…2,65) yeni duvarın tamamen üstünde kalıyor; kapı
+ * boşluğu `WALL_RUNS`ın kesmesiyle zaten açık. Ön hattın zeminden başlamayan parçası (lento) üretilmez.
+ */
+export function kat1DuvarParcalari(areasOpen: number): WallPiece[] {
+  return wallPieces(WALL_RUNS(areasOpen), pencereBosluklari(areasOpen)).flatMap((p) =>
+    p.side !== 'front' ? [p] : (p.y0 ?? 0) > 0.01 ? [] : [{ ...p, y0: 0, h: Math.min(p.h ?? WALL_H_REF, ON_DUVAR_H) }],
+  );
 }
 
 // ============================================================================================

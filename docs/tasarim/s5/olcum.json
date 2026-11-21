@@ -1,0 +1,54 @@
+{
+  "G114": {
+    "kameraD": 11.05,
+    "duvarIcYuz": 17.41,
+    "enYakinOyuncuZ": 16.53,
+    "araDuvarDibi": 0.88,
+    "bas32": 1.72,
+    "ayak32": 3.2,
+    "ayak10": 1,
+    "bas10": "her zaman"
+  },
+  "G129": {
+    "A": {
+      "masa": 22,
+      "okey": 10,
+      "tavla": 12,
+      "enDarSerbest": 0.26,
+      "darSerit": 10,
+      "ortaYol": 10.55
+    },
+    "B": {
+      "masa": 24,
+      "okey": 8,
+      "tavla": 16,
+      "enDarSerbest": 0.26,
+      "darSerit": 12,
+      "ortaYol": 10.55
+    },
+    "C": {
+      "masa": 22,
+      "okey": 10,
+      "tavla": 12,
+      "enDarSerbest": 0.26,
+      "darSerit": 6,
+      "ortaYol": 10.55
+    },
+    "D": {
+      "masa": 22,
+      "okey": 10,
+      "tavla": 12,
+      "enDarSerbest": 1.66,
+      "darSerit": 0,
+      "ortaYol": 9.05
+    },
+    "E": {
+      "masa": 24,
+      "okey": 8,
+      "tavla": 16,
+      "enDarSerbest": 0.26,
+      "darSerit": 8,
+      "ortaYol": 10.55
+    }
+  }
+}

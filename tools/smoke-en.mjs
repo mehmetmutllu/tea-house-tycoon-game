@@ -98,7 +98,8 @@ try {
   const paneller = [
     ['char', 'char-panel', '[data-testid^="char-tab-"]'],
     ['goals', 'goals-panel', null],
-    ['quests', 'quests-panel', null],
+    // G-120 M2: günlükler ve tamamlananlar katlı — açılıp taranır.
+    ['quests', 'quests-panel', '[data-testid="gunluk-ozet"], [data-testid="tamam-ozet"]'],
     ['shop', 'shop-panel', '[data-testid^="shop-tab-"]'],
     ['gear', 'menu', null],
   ];

@@ -353,13 +353,15 @@ export function baslangicKati(kayitKat: unknown, kat2: Kat2Kayit, etkin = kat2Et
 /**
  * D-191 düzeni N7 (TAM AYNA): iki iç sütun x ±6,5, iki dış sütun x ±13. Merdiven salonunun arka
  * sırası z −3,5 (dört okey); okey salonu sol iki sütun × z 2,5 / 8,5 / 14,5; tavla köşesi sağ iki
- * sütun × altı sıra 2,5…14,5. Merdiven önü (x ±4,6 arası) yol olarak boş kalır. Yer geometri, sayı değil.
+ * sütun × üç ikişerli blok (S5 G-129 C: okey sıralarının hizasında, 1,3…15,7). Merdiven önü (x ±4,6 arası) yol olarak boş kalır. Yer geometri, sayı değil.
  */
 const N7_IC = 6.5;
 const N7_DIS = 13;
 const N7_ARKA_Z = -3.5;
 const N7_OKEY_Z = [2.5, 8.5, 14.5] as const;
-const N7_TAVLA_Z = [2.5, 4.9, 7.3, 9.7, 12.1, 14.5] as const;
+/** S5 G-129 C: tavla ikişerli blok, her blok bir okey sırasının (z 2,5 · 8,5 · 14,5) hizasında, ±1,2. */
+const N7_TAVLA_BLOK_DZ = 1.2;
+const N7_TAVLA_Z = N7_OKEY_Z.flatMap((z) => [z - N7_TAVLA_BLOK_DZ, z + N7_TAVLA_BLOK_DZ]);
 
 /**
  * Merdiven salonunun dört okey masası. `k2okey2` (iç sol, merdivene en yakın) kata çıkışta HAZIR
@@ -428,9 +430,13 @@ export const KAT2_ON_TEZGAH = { x0: -H - 0.3, x1: BAND.stairs.minX, z0: BAND.fro
 
 /**
  * Cezve ocağı (D-181 → D-198): ön tezgâhın ÜSTÜNDEKİ kahve seti (`kat2/Mutfak`). Oyuncu salondan,
- * setin önündeki noktadan kahve alır (`al` aynı kaldı — erişim ve garson yolu değişmedi).
+ * setin önündeki noktadan kahve alır. `al` aynı zamanda ocağın AÇMA pad'inin yeri (`kat2PadYeri`): S5 G-110
+ * ("açma noktası ön tezgâhın içinde kalıyor") — pad çerçevesi (±0,85) tezgâhın önünde, yürünür zeminde
+ * kalsın diye `OCAK_AL_DZ` (önceki 0,6'da çerçevenin arka 0,25'i tezgâhın altındaydı). Tezgâha yaslanan
+ * oyuncu (z = ön + 0,47) yine erişimde (0,58 < 0,9).
  */
-export const OCAK = { id: 'k2cezve', x: -7.4, z: (KAT2_ON_TEZGAH.z0 + KAT2_ON_TEZGAH.z1) / 2, al: [-7.4, BAND.front + 0.6] as [number, number], erisim: 0.9 } as const;
+export const OCAK_AL_DZ = 1.05;
+export const OCAK = { id: 'k2cezve', x: -7.4, z: (KAT2_ON_TEZGAH.z0 + KAT2_ON_TEZGAH.z1) / 2, al: [-7.4, BAND.front + OCAK_AL_DZ] as [number, number], erisim: 0.9 } as const;
 
 /**
  * Kat 2'nin BÜTÜN masa yerleri (N7): merdiven salonu 4 okey (yukarıdaki `OKEY_YER`, sıra korunur) ·
@@ -491,12 +497,15 @@ export const KAT2_GARSON_YER: readonly [number, number] = [-2.2, -6];
  * MERDİVEN SALONUNDA (alan 0 — kata çıkıştan erişilir; ilk garson erken gelir), kova ağzının önünde yan yana:
  * çerçeve (±0,89 × ±0,85) okey ayak izine (x ≥ |5,25|, z ≥ −4,75) ve kovanın ağzına (z ≤ −9,8) değmez.
  * (Eski yer tavla köşesinin içi [4; 1,6] idi — garson zincirin 14. adımındaydı.)
+ * S5 3. tur (G4): 4. garson aynı sırada, 3. garsonun sağında (çerçeve x 3,5-5,3: kova duvarı z ≤ −9,8'de biter, okey
+ * ayak izi z ≥ −4,75'te başlar — ikisine de değmez).
  */
-export const KAT2_GARSON_PADLER: readonly string[] = [KAT2_GARSON_PAD, 'k2garson2', 'k2garson3'];
+export const KAT2_GARSON_PADLER: readonly string[] = [KAT2_GARSON_PAD, 'k2garson2', 'k2garson3', 'k2garson4'];
 export const KAT2_GARSON_YERLERI: Readonly<Record<string, readonly [number, number]>> = {
   [KAT2_GARSON_PAD]: KAT2_GARSON_YER,
   k2garson2: [0, -6],
   k2garson3: [2.2, -6],
+  k2garson4: [4.4, -6],
 };
 
 /**

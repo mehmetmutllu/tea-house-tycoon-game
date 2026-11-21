@@ -198,8 +198,11 @@ describe('ekran kabuğu — K3 (D-106)', () => {
     // değil ÖDÜL durur. Lakap Görevler ekranında yaşar.
     expect(kod).not.toContain('className="band-kicker"');
     expect(kod).not.toContain('data-testid="quest-cost"');
-    expect(kod).toContain('className="band-title">{t(quest.title)}');
-    expect(kod).toContain('data-testid="quest-reward"');
+    // G-120 M1: bant `GorevKarti` (Kat 1 = Kat 2); başlık ve ödül oradan, HUD görevin kendisini verir.
+    const kart = yorumsuz(oku('src/components/ui/GorevKarti.tsx'));
+    expect(kart).toContain('<span className="band-title">{title}</span>');
+    expect(kod).toContain('title={t(quest.title)}');
+    expect(kod).toContain('rewardTestid="quest-reward"');
     // Görevler ekranındaki lakap da görevin kendisinden gelir (sabit "ŞU AN" değil).
     expect(kod).toContain('className="qbig-kicker">{t(quest.kicker)}');
   });

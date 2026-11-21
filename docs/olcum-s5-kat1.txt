@@ -1,0 +1,73 @@
+=== S5 G-92 · KAT 1 TEPSİ İLK FİYATI + "YETMİYORSA TAMAMLA" (varyant kapısı · D-084) ===
+Kip: tam · gerçek tick dt 0.1 · 20 dk · tohum 1,2,3,4,5,6,7,8 · görev q_charTray1 = hat #4 (ödülü 15)
+D-079 ölçütü: ilk alım < 90 sn · GARSONA KADAR en uzun boşluk ≤ 2 dk · otomasyon (garson) < 15 dk.
+
+--- §1 GERÇEK TICK (bot, tohum ortalaması · [en kötü tohum]) ---
+kol      | ilk alım sn | garsona kadar en uzun boşluk dk | garson dk | tepsi görevi açılınca cüzdan (min..maks) | görev bekleme sn (ort · en uzun) | X tetik / bağış
+TABAN    |   19.5 [25.0] |   3.92 [4.29] |   8.41 [8.75] | 11.0..11.0 (fiyat 30) | 30.6 · 39.4 | 0/8 · 0.0
+F25      |   19.5 [25.0] |   3.83 [4.52] |   8.22 [8.98] | 11.0..11.0 (fiyat 25) | 23.9 · 34.6 | 0/8 · 0.0
+F25·X80  |   19.5 [25.0] |   3.97 [4.72] |   8.27 [9.13] | 11.0..11.0 (fiyat 25) | 17.7 · 25.6 | 8/8 · 4.0
+F25·X60  |   19.5 [25.0] |   4.14 [4.73] |   8.41 [8.96] | 11.0..11.0 (fiyat 25) | 9.2 · 17.8 | 8/8 · 9.0
+F25·X40  |   19.5 [25.0] |   3.92 [4.44] |   8.03 [8.70] | 11.0..11.0 (fiyat 25) | 0.3 · 0.6 | 8/8 · 14.0
+
+Tohum başına (ilk alım sn · en uzun açılış boşluğu dk → alım · garson dk · tepsi açıldı sn @cüzdan → alındı sn):
+  TABAN    t1 | 16.3 · 3.90 → pad waiter · 8.49 · 16.3 @11.0 → 55.7 · iz e6fd9f30
+  TABAN    t2 | 16.3 · 3.74 → pad waiter · 8.12 · 16.3 @11.0 → 43.7 · iz efcb1a1e
+  TABAN    t3 | 25.0 · 3.63 → pad waiter · 7.98 · 25.0 @11.0 → 52.1 · iz 26db785f
+  TABAN    t4 | 25.0 · 3.77 → pad waiter · 8.63 · 25.0 @11.0 → 51.5 · iz ea26acaf
+  TABAN    t5 | 16.1 · 4.00 → pad waiter · 8.50 · 16.1 @11.0 → 44.9 · iz b549f651
+  TABAN    t6 | 25.0 · 4.29 → pad waiter · 8.75 · 25.0 @11.0 → 52.1 · iz 4863ec7d
+  TABAN    t7 | 16.3 · 3.94 → pad waiter · 8.44 · 16.3 @11.0 → 54.5 · iz e1c63b55
+  TABAN    t8 | 16.3 · 4.07 → pad waiter · 8.37 · 16.3 @11.0 → 46.7 · iz f3a47150
+  F25      t1 | 16.3 · 4.52 → pad waiter · 8.98 · 16.3 @11.0 → 48.5 · iz 681e4788
+  F25      t2 | 16.3 · 3.61 → pad waiter · 7.78 · 16.3 @11.0 → 38.3 · iz c7f702e6
+  F25      t3 | 25.0 · 3.93 → pad waiter · 8.32 · 25.0 @11.0 → 40.7 · iz fafc3577
+  F25      t4 | 25.0 · 3.77 → pad waiter · 7.83 · 25.0 @11.0 → 41.3 · iz 0339732b
+  F25      t5 | 16.1 · 3.42 → pad waiter · 7.91 · 16.1 @11.0 → 43.1 · iz 005fe067
+  F25      t6 | 25.0 · 3.64 → pad waiter · 8.47 · 25.0 @11.0 → 40.7 · iz fb5d110b
+  F25      t7 | 16.3 · 3.78 → pad waiter · 8.19 · 16.3 @11.0 → 50.9 · iz dff8fbfc
+  F25      t8 | 16.3 · 3.99 → pad waiter · 8.28 · 16.3 @11.0 → 44.3 · iz c5819d63
+  F25·X80  t1 | 16.3 · 4.05 → pad waiter · 8.26 · 16.3 @11.0 → 39.5 · iz b829a607
+  F25·X80  t2 | 16.3 · 3.47 → pad waiter · 7.61 · 16.3 @11.0 → 32.3 · iz 105aa6d8
+  F25·X80  t3 | 25.0 · 3.91 → pad waiter · 8.26 · 25.0 @11.0 → 39.5 · iz aa4946ce
+  F25·X80  t4 | 25.0 · 3.65 → pad waiter · 7.68 · 25.0 @11.0 → 39.5 · iz a370a405
+  F25·X80  t5 | 16.1 · 3.74 → pad waiter · 7.99 · 16.1 @11.0 → 31.7 · iz db6d0011
+  F25·X80  t6 | 25.0 · 4.20 → pad waiter · 8.97 · 25.0 @11.0 → 39.5 · iz 628cd938
+  F25·X80  t7 | 16.3 · 4.72 → pad waiter · 9.13 · 16.3 @11.0 → 41.9 · iz 965b42d0
+  F25·X80  t8 | 16.3 · 3.99 → pad waiter · 8.22 · 16.3 @11.0 → 34.1 · iz d220709f
+  F25·X60  t1 | 16.3 · 4.73 → pad waiter · 8.92 · 16.3 @11.0 → 34.1 · iz ffff3d61
+  F25·X60  t2 | 16.3 · 4.34 → pad waiter · 8.29 · 16.3 @11.0 → 26.3 · iz ed07993c
+  F25·X60  t3 | 25.0 · 3.56 → pad waiter · 7.71 · 25.0 @11.0 → 28.1 · iz 8e73ba5b
+  F25·X60  t4 | 25.0 · 4.20 → pad waiter · 8.61 · 25.0 @11.0 → 28.1 · iz 74b486af
+  F25·X60  t5 | 16.1 · 3.92 → pad waiter · 8.15 · 16.1 @11.0 → 25.7 · iz 0ded35fa
+  F25·X60  t6 | 25.0 · 3.76 → pad waiter · 8.39 · 25.0 @11.0 → 27.5 · iz 675a8936
+  F25·X60  t7 | 16.3 · 4.59 → pad waiter · 8.96 · 16.3 @11.0 → 28.7 · iz 280df153
+  F25·X60  t8 | 16.3 · 4.06 → pad waiter · 8.25 · 16.3 @11.0 → 31.7 · iz cd924f74
+  F25·X40  t1 | 16.3 · 3.42 → pad waiter · 7.65 · 16.3 @11.0 → 16.7 · iz 2915cac3
+  F25·X40  t2 | 16.3 · 4.08 → pad waiter · 8.14 · 16.3 @11.0 → 16.7 · iz bc56b7de
+  F25·X40  t3 | 25.0 · 3.76 → pad waiter · 7.77 · 25.0 @11.0 → 25.1 · iz 67d4c31b
+  F25·X40  t4 | 25.0 · 4.37 → pad waiter · 8.46 · 25.0 @11.0 → 25.1 · iz 7c215030
+  F25·X40  t5 | 16.1 · 3.78 → pad waiter · 7.84 · 16.1 @11.0 → 16.7 · iz 6b2bfc83
+  F25·X40  t6 | 25.0 · 3.90 → pad waiter · 7.95 · 25.0 @11.0 → 25.1 · iz 37ea109d
+  F25·X40  t7 | 16.3 · 3.62 → pad waiter · 7.75 · 16.3 @11.0 → 16.7 · iz e8970763
+  F25·X40  t8 | 16.3 · 4.44 → pad waiter · 8.70 · 16.3 @11.0 → 16.7 · iz b3473273
+
+Alım sırası (tohum 1):
+  TABAN    pad table2@16 · karakter 1/0/0@56 · ocak L1@104 · pad table3@161 · karakter 2/0/0@275 · pad waiter@509
+  F25      pad table2@16 · karakter 1/0/0@49 · ocak L1@104 · pad table3@161 · karakter 2/0/0@268 · pad waiter@539
+  F25·X80  pad table2@16 · karakter 1/0/0@40 · ocak L1@67 · pad table3@166 · karakter 2/0/0@253 · pad waiter@496
+  F25·X60  pad table2@16 · karakter 1/0/0@34 · ocak L1@67 · pad table3@144 · karakter 2/0/0@251 · pad waiter@535
+  F25·X40  pad table2@16 · karakter 1/0/0@17 · ocak L1@53 · pad table3@228 · karakter 2/0/0@254 · pad waiter@459
+
+--- §2 MODEL (simulate.ts olcutler(), İDEALİZE · D-079 resmî bekçisi; "%X'te tamamla" = fiyat X × 25) ---
+kol      | model fiyat | ilk alım sn | açılış alım | garsona kadar en uzun dk | garson dk | ŞERİT (Normal) sa
+TABAN    |          30 |        22.0 |           6 |                     1.55 |      5.10 | 7.48
+F25      |          25 |        22.0 |           6 |                     1.55 |      5.00 | 7.48
+F25·X80  |          20 |        22.0 |           6 |                     1.55 |      4.90 | 7.48
+F25·X60  |          15 |        22.0 |           6 |                     1.57 |      4.80 | 7.47
+F25·X40  |          10 |        22.0 |           6 |                     1.55 |      4.72 | 7.47
+(X kuralı F25·X80: 8/8 tohumda tetiklendi)
+(X kuralı F25·X60: 8/8 tohumda tetiklendi)
+(X kuralı F25·X40: 8/8 tohumda tetiklendi)
+
+(süre: 91 sn duvar saati)

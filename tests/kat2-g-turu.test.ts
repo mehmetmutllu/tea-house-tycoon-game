@@ -153,13 +153,23 @@ describe('G5 — okey masası ilk saniyeden iş verir (config = kol G2)', () => 
     expect(r.istek).toBe(K.istekAdet);
   });
 
-  it('teslim edilen kahvenin parası o anda masanın önüne düşer (kalkışı beklemez)', () => {
+  it('S5 G-96: teslim edilen kahvenin parası içilince (kahveIcme sn sonra) masanın önüne düşer (kalkışı beklemez)', () => {
     const d = sur(yeniKat2Dunya(PADS, K), K.ilkGelis! + K.yurume + 0.3, UZAK).d;
     const s = kat2Tick({ ...d, tepsi: 2 }, { ...girdi(MASA_ONU), miknatis: 0 }, 0.1, K);
     expect(s.olay.servis).toBe(2);
-    expect(s.olay.dusen).toEqual([2 * K.kahveFiyat]);
+    expect(s.olay.dusen).toEqual([]);
     expect(s.dunya.masalar[0].birikim).toBe(0);
-    expect(s.dunya.paralar[0]).toMatchObject({ x: M1.x, z: M1.z + PARA_DUSME_DZ });
+    let x = s.dunya;
+    const dusen: number[] = [];
+    for (let t = 0; t < K.kahveIcme! + 0.05; t += 0.1) {
+      const r = kat2Tick(x, { ...girdi(UZAK), miknatis: 0 }, 0.1, K);
+      x = r.dunya;
+      dusen.push(...r.olay.dusen);
+    }
+    expect(dusen).toHaveLength(1);
+    expect(dusen[0]).toBeCloseTo(2 * K.kahveFiyat, 9);
+    expect(x.masalar[0].durum).toBe('oyunda');
+    expect(x.paralar[0]).toMatchObject({ x: M1.x, z: M1.z + PARA_DUSME_DZ });
   });
 
   it('tam oturum: birçok küçük para olayı, toplam = ücret + servis × fiyat (korunum)', () => {

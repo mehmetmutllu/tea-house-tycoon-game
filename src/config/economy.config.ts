@@ -411,7 +411,10 @@ export const economyConfig = {
     // T2 150→130 (5B garson-öncesi −%15). Mıknatıs/hız orta kademeler yumuşadı.
     // T8a (D-142, G-65): T1 75 → 30 — kullanıcı: "ilk görevlerden sonra cebinde 30 kalıyor, hemen
     // alabilsin". Tempo etkisi −%0,4, otomasyon 6,1 → 5,2 dk (D-079 bandında).
-    tray: { values: [2, 3, 4, 5, 6], costs: [30, 130, 5_000, 18_000] },
+    // S5 G-92 (kullanıcı: "param hep yetsin, yetmiyorsa göstermeden tamamlasın"): T1 30 → 25 + İLK TEPSİ
+    // TAMAMLAMA — görev `gorev` aktifken cüzdan fiyatın ≥ `oran`ı ise eksik kısmı oyun öder (en çok 15).
+    // Görev açılınca cüzdan hep ~11 → bekleme 30,6 sn → 0,3 sn (docs/s5-denge-raporu.md · olcum-s5-kat1.txt).
+    tray: { values: [2, 3, 4, 5, 6], costs: [25, 130, 5_000, 18_000], ilkTamamla: { gorev: 'q_charTray1', oran: 0.4 } },
     /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı).
      *  M1 250→200 (kullanıcı 2026-06-11: "azıcık insin" — 4. masa dönemiyle hizalanır). */
     magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [200, 700, 2_200] },
@@ -1210,6 +1213,10 @@ export const economyConfig = {
    * her kahvenin parası teslimde masanın önüne düşer, ilk grup 3 sn'de gelir; oyun 90 sn, sonraki grup 10 sn.
    * Masa ücreti 4 okeyde ölçülen geliri eskisiyle (72 ₺ / 180 sn) eşit tutacak şekilde kalibre (38).
    * Bekçi: `tools/olcum-kat2-g5.ts` "config = G2" · `tests/kat2-g-turu.test.ts`.
+   * S5 (kullanıcı 2026-11-20, `docs/s5-denge-raporu.md` §KARAR — bekçi `tests/s5-denge.test.ts`):
+   *  G-96 kahve `kahveIcme` sn içilir; içilip fincan kirlenince parası düşer (teslimde değil), masa ücreti kalkışta.
+   *  G-97 istek 25 → 18 sn, fiyat teorik kahve geliri/dk sabit (okey 9 × 4/5 = 7,2 · tavla 3 × 5/6 = 2,5);
+   *       yalnız 1 masa açıkken 12 sn (`kahveAralikIlk`: ilk masada oyuncu boşta %84 → %78, kaçan artmıyor).
    */
   kat2: {
     gelisAralik: 10,
@@ -1217,11 +1224,12 @@ export const economyConfig = {
     yurume: 5,
     oturum: 90,
     ilkKahve: 0,
-    kahveAninda: true,
-    kahveAralik: 25,
+    kahveIcme: 12,
+    kahveAralik: 18,
+    kahveAralikIlk: { masa: 1, aralik: 12 },
     istekAdet: 2,
     kahveSabir: 25,
-    kahveFiyat: 9,
+    kahveFiyat: 7.2,
     masaUcreti: 38,
     demleme: 4,
     ocakKuyruk: 4,
@@ -1241,6 +1249,12 @@ export const economyConfig = {
       tavla: { fiyat: [0, 4_750, 5_250, 5_750, 6_250], ucretCarpan: [1, 1.313, 1.607, 1.895, 2.183], kahveAralikCarpan: [1, 1, 1, 1, 1], gelisAralikCarpan: [1, 0.75, 0.5, 0.3, 0.15] },
     },
     /**
+     * S5 G-119/G-122 (kullanıcı 2026-11-20, kol G119-K2T — `docs/s5-denge-raporu.md`): Sv kapısı zincirde, görev beklemez.
+     * Okey salonunda 3 masa → Sv2 · bütün masalar açılınca → Sv3 · açık masaların yarısı Sv3 → Sv4 · yarısı Sv4 → Sv5.
+     * Sv görevleri (`k2_sv2`, `k2_sv5`) bu yüzden hattan düşer. Bekçi `tests/s5-denge.test.ts`.
+     */
+    masaSvKapi: { sv2Pad: 'k2s2okey3', sv3Pad: 'k2tavla12' },
+    /**
      * Açılış zinciri, D-191 sırası: merdiven salonunun kalanı → okey salonu (2. ocak araya) → lavabo →
      * tavla köşesi + garson. D-192 (K2-6, kol SB9-L1 — `docs/kat2-akis-zincir-raporu-k2-6.md`): her pad
      * o anki teorik gelirin (Kat 1 oyuncusuz + açık Kat 2, lavabo dahil) ~9 dk'sı; zincir ~4,9 sa, en uzun
@@ -1250,6 +1264,8 @@ export const economyConfig = {
      * her pad +7.400, masa Sv +2.450. Garson Kat 1 gibi PAD ile: 1. garson 3. okeyden sonra (ardından gelen × ½), 2. garson
      * okey salonundan önce (×1), 3. garson lavabodan önce (×1) · bulaşıkçı 2. salon masasından sonra (½). Kat 2 ~8,1 sa.
      * Bekçi: `tests/kat2-isleyis.test.ts` "config = K-Bt2".
+     * S5 3. tur (kullanıcı 2026-11-21, kol GH25+G4 — `docs/s5-denge-raporu.md`): 4. garson pad'i tavla 5'ten sonra
+     * (15 masa, 17-22 diliminden önce), 15.000 (garson zinciri 4.800 · 10.100 · 13.000 deseni). Bekçi `tests/s5-denge-4.test.ts`.
      */
     padler: [
       { id: 'k2okey1', cost: 8_600, fillRate: 2_457 },
@@ -1274,6 +1290,7 @@ export const economyConfig = {
       { id: 'k2tavla3', cost: 14_100, fillRate: 4_029 },
       { id: 'k2tavla4', cost: 14_400, fillRate: 4_114 },
       { id: 'k2tavla5', cost: 14_700, fillRate: 4_200 },
+      { id: 'k2garson4', cost: 15_000, fillRate: 4_286 },
       { id: 'k2tavla6', cost: 15_000, fillRate: 4_286 },
       { id: 'k2tavla7', cost: 15_300, fillRate: 4_371 },
       { id: 'k2tavla8', cost: 15_600, fillRate: 4_457 },
@@ -1296,8 +1313,9 @@ export const economyConfig = {
      * Kat 2 garsonu (D-189, `docs/kat2-garson-raporu-k2-s2.md`): Kat 1'in son kademe garson hızının
      * 1,5 katı (2,0 × 1,5 = 3,0; oyuncunun 4,5 tabanından yavaş — D-014), tepsi 2, tek garson.
      * D-200 (kullanıcı 2026-11-17 "birinci katta bu mantığı kurmadık mı?"): garson Kat 1'deki gibi HER masaya.
+     * S5 3. tur (kol GH25+G4): hız ve hız yükseltmesi ×1,25 (3 → 3,75 · 4 → 5; oyuncu Kat 2'de 6,04 — garson yine yavaş).
      */
-    garson: { hiz: 3, tepsi: 2, herMasa: true },
+    garson: { hiz: 3.75, tepsi: 2, herMasa: true },
     /**
      * D-200 OCAK + GARSON YÜKSELTMESİ (Kat 1 mantığı; kol HOG2-½ — `docs/kat2-ocak-garson-raporu.md`): ocak 5 kademe
      * (demleme ×1,35 + kuyruk +1, Kat 1 `service.upgrade`/`brew`), mangal görseli bu seviyeden türer · garson hız 3→4,
@@ -1309,7 +1327,7 @@ export const economyConfig = {
      */
     yukseltme: {
       ocak: { acan: ['k2okey4', 'k2cezve2', 'k2lavabo', 'k2salon3', 'k2tavla6'], fiyat: [4_800, 5_500, 6_500, 6_800, 7_500], demlemeCarpan: 1.35, kuyrukArti: 1 },
-      garsonHiz: { acan: ['k2tavla2'], fiyat: [6_950], deger: [4] },
+      garsonHiz: { acan: ['k2tavla2'], fiyat: [6_950], deger: [5] },
       garsonTepsi: { acan: ['k2tavla5', 'k2tavla10'], fiyat: [7_350, 8_050] },
       lavabo: {
         acan: ['k2salon3', 'k2tavla2', 'k2tavla5', 'k2tavla8', 'k2tavla11'],
@@ -1330,7 +1348,7 @@ export const economyConfig = {
      * para masa ücretinden (gelirin %20'si kahve). Tavan kişi başına okeyle eşit (27 ₺/dk/masa).
      * Geliş/yürüme/kahve sabrı okeyle ortak. Bekçi: `tools/olcum-kat2-tavla.ts` "config = T120U".
      */
-    tavla: { oturum: 120, kahveAralik: 25, istekAdet: 1, kahveFiyat: 3, masaUcreti: 51 },
+    tavla: { oturum: 120, kahveAralik: 18, istekAdet: 1, kahveFiyat: 2.5, masaUcreti: 51 },
   },
 
   /**
@@ -1360,20 +1378,30 @@ export const economyConfig = {
     { id: 'k2_s2okey2', kicker: 'OKEY SALONU', title: 'Okey salonunda 2 masa aç', hedef: { tip: 'pad', id: 'k2s2okey2' }, reward: 1_600 },
     { id: 'k2_bulasikci', kicker: 'BULAŞIKÇI', title: 'Bulaşıkçı Tut', hedef: { tip: 'pad', id: 'k2bulasikci' }, reward: 850 },
     { id: 'k2_cezve2', kicker: 'İKİNCİ OCAK', title: '2. ocağı kur', hedef: { tip: 'pad', id: 'k2cezve2' }, reward: 1_650 },
-    { id: 'k2_kahve40', kicker: 'KAHVECİ', title: '40 kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 40 }, reward: 1_650 },
-    { id: 'k2_s2okey4', kicker: 'OKEY SALONU', title: 'Okey salonunda 4 masa aç', hedef: { tip: 'pad', id: 'k2s2okey4' }, reward: 1_750 },
-    { id: 'k2_s2okey6', kicker: 'OKEY SALONU DOLU', title: 'Okey salonunu doldur', hedef: { tip: 'pad', id: 'k2s2okey6' }, reward: 1_900 },
+    { id: 'k2_kahve40', kicker: 'KAHVECİ', title: 'Garsonlarınla 40 kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 40 }, reward: 1_650 },
+    { id: 'k2_s2okey4_a', kicker: 'OKEY SALONU', title: 'Okey salonunda 3 masa aç', hedef: { tip: 'pad', id: 'k2s2okey3' }, reward: 300 },
+    { id: 'k2_okeySv3', kicker: 'MASA SEVİYESİ', title: "3 okey masasını Seviye 2'ye çıkar", hedef: { tip: 'masaSv', tur: 'okey', sv: 2, adet: 3 }, reward: 550 },
+    { id: 'k2_okeySv6', kicker: 'MASA SEVİYESİ', title: "6 okey masasını Seviye 2'ye çıkar", hedef: { tip: 'masaSv', tur: 'okey', sv: 2, adet: 6 }, reward: 550 },
+    { id: 'k2_s2okey4', kicker: 'OKEY SALONU', title: 'Okey salonunda 4 masa aç', hedef: { tip: 'pad', id: 'k2s2okey4' }, reward: 350 },
+    { id: 'k2_s2okey6_a', kicker: 'OKEY SALONU', title: 'Okey salonunda 5 masa aç', hedef: { tip: 'pad', id: 'k2s2okey5' }, reward: 950 },
+    { id: 'k2_s2okey6', kicker: 'OKEY SALONU DOLU', title: 'Okey salonunu doldur', hedef: { tip: 'pad', id: 'k2s2okey6' }, reward: 950 },
     { id: 'k2_garson3', kicker: 'ÜÇÜNCÜ GARSON', title: '3. Garsonu tut', hedef: { tip: 'pad', id: 'k2garson3' }, reward: 1_950 },
     { id: 'k2_lavabo', kicker: 'LAVABO', title: 'Lavaboyu aç', hedef: { tip: 'pad', id: 'k2lavabo' }, reward: 1_950 },
     { id: 'k2_salon3', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesini aç', hedef: { tip: 'pad', id: 'k2salon3' }, reward: 2_050 },
     { id: 'k2_tavla1', kicker: 'TAVLA', title: 'İlk tavla masasını aç', hedef: { tip: 'pad', id: 'k2tavla1' }, reward: 2_050 },
     { id: 'k2_tavlaKahve', kicker: 'TAVLA', title: 'Tavla masalarına 10 kahve götür', hedef: { tip: 'sayac', sayac: 'tavlaKahve', adet: 10 }, reward: 2_100 },
-    { id: 'k2_tavla3', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 3 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla3' }, reward: 2_100 },
-    { id: 'k2_tavla5', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 5 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla5' }, reward: 2_200 },
+    { id: 'k2_tavla3_a', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 2 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla2' }, reward: 1_050 },
+    { id: 'k2_tavla3', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 3 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla3' }, reward: 1_050 },
+    { id: 'k2_tavla5_a', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 4 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla4' }, reward: 1_100 },
+    { id: 'k2_tavla5', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 5 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla5' }, reward: 1_100 },
+    { id: 'k2_garson4', kicker: 'DÖRDÜNCÜ GARSON', title: '4. Garsonu tut', hedef: { tip: 'pad', id: 'k2garson4' }, reward: 2_250 },
     { id: 'k2_tavla6', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 6 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla6' }, reward: 2_250 },
-    { id: 'k2_tavla8', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 8 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla8' }, reward: 2_350 },
-    { id: 'k2_tavla10', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 10 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla10' }, reward: 2_400 },
-    { id: 'k2_tavla12', kicker: 'KAT 2 TAMAM', title: 'Tavla köşesini doldur', hedef: { tip: 'pad', id: 'k2tavla12' }, reward: 2_500 },
+    { id: 'k2_tavla8_a', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 7 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla7' }, reward: 1_150 },
+    { id: 'k2_tavla8', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 8 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla8' }, reward: 1_200 },
+    { id: 'k2_tavla10_a', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 9 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla9' }, reward: 1_200 },
+    { id: 'k2_tavla10', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 10 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla10' }, reward: 1_200 },
+    { id: 'k2_tavla12_a', kicker: 'TAVLA KÖŞESİ', title: 'Tavla köşesinde 11 masaya ulaş', hedef: { tip: 'pad', id: 'k2tavla11' }, reward: 1_250 },
+    { id: 'k2_tavla12', kicker: 'KAT 2 TAMAM', title: 'Tavla köşesini doldur', hedef: { tip: 'pad', id: 'k2tavla12' }, reward: 1_250 },
     { id: 'k2_sv2', kicker: 'MASA SEVİYESİ', title: "Bir okey masasını Seviye 2'ye çıkar", hedef: { tip: 'masaSv', tur: 'okey', sv: 2, adet: 1 }, reward: 1_000 },
     { id: 'k2_sv5', kicker: 'GÖZDE MASA', title: "Bir masayı Seviye 5'e çıkar", hedef: { tip: 'masaSv', sv: 5, adet: 1 }, reward: 1_450 },
   ],
@@ -1741,6 +1769,16 @@ export function charValue(stat: CharStat, tier: number): number {
 export function charNextCost(stat: CharStat, tier: number): number | null {
   const costs = economyConfig.character[stat].costs;
   return tier >= 0 && tier < costs.length ? costs[tier] : null;
+}
+
+/**
+ * G-92 İLK TEPSİ TAMAMLAMA: parası yetmese de alım bu kural altında geçer mi? (cüzdan < fiyat ≤ cüzdan / oran,
+ * yalnız tepsi kademe 0 ve aktif görev `ilkTamamla.gorev`). Doğruysa alım cüzdanı sıfırlar, eksiği oyun öder.
+ */
+export function charTamamlanir(stat: CharStat, tier: number, cash: number, questId: string | undefined): boolean {
+  const k = economyConfig.character.tray.ilkTamamla;
+  const cost = charNextCost(stat, tier);
+  return stat === 'tray' && tier === 0 && questId === k.gorev && cost != null && cash < cost && cash >= k.oran * cost;
 }
 
 /** Karakter seviyesi = alınan toplam kademe (salt görsel rozet; HUD yıldız-seviyesinden ayrı). */

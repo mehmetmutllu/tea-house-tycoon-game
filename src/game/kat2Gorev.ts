@@ -8,8 +8,9 @@
  *
  * q_tost5 dersi (D-146/D-147): görev, zincirin henüz açmadığı bir şeyi istemez. `kat2GorevHatasi` bunu
  * yapısal olarak denetler (bekçi `tests/kat2-gorev.test.ts`): pad hedefleri zincir sırasında, sayaç
- * hedefinin istediği masa/ocak/garson ÖNCEKİ görevlerle açılmış, Sv görevleri yalnız hattın SONUNDA ve
- * yalnız `Kat2Ayar.masaSv` varken (yoksa listeden düşer — kuyrukta oldukları için `idx` kaymaz).
+ * hedefinin istediği masa/ocak/garson ÖNCEKİ görevlerle açılmış, Sv görevleri yalnız `Kat2Ayar.masaSv` varken
+ * (yoksa listeden düşer). S5 3. tur (GB-SV): Sv ARA görevleri (ardından pad görevi gelen) hatta kalır — Kat 1 D-142
+ * kalıbı; KUYRUK Sv görevleri `masaSvKapi` varken düşer (kuyrukta oldukları için `idx` kaymaz).
  */
 import type { QuestTarget } from '../config/economy.config';
 import { KAT2_GARSON_PAD, KAT2_MASALAR, KAT2_SALON_PAD, KAT2_SV_MAX, OCAKLAR, type MasaTuru } from './kat';
@@ -17,7 +18,7 @@ import type { Kat2Ayar } from './kat2Dongu';
 
 /** Sayaç hedeflerinin okuduğu akış (hepsi `kat2Tick`in `olay`ından + `kazanc`tan). */
 export type Kat2GorevSayac =
-  /** Oyuncunun ELİYLE götürdüğü kahve (garsonunki hariç — Kat 1 `serveTea` deseni). */
+  /** Götürülen kahve — oyuncu + garsonlar (S5 G-128; önceden yalnız oyuncunun eli). */
   | 'servis'
   /** Tavla masalarına giden kahve (garson dahil: garson tavla köşesinden önce gelir, elle sayılsa
    *  garson kahveyi önce kapar — q_tost5'in kilidi). */
@@ -85,7 +86,13 @@ export function kat2GorevKaydiCoz(ham: { idx: number; sayac: Record<string, numb
   let yeni: number;
   if (!sonId) yeni = 0;
   else {
-    const i = hat.findIndex((g) => g.id === sonId);
+    let i = hat.findIndex((g) => g.id === sonId);
+    // S5 G-119: son görev hattan düştüyse (Sv görevleri, `masaSvKapi`) D-205 sırasında geriye yürünür — bitmiş hat
+    // bitmiş kalır, ödenmiş görev yeniden açılmaz.
+    for (let j = KAT2_GOREV_SIRA_D205.indexOf(sonId) - 1; i < 0 && j >= 0; j--) {
+      const k = hat.findIndex((g) => g.id === KAT2_GOREV_SIRA_D205[j]);
+      if (k >= 0) i = k;
+    }
     yeni = i >= 0 ? i + 1 : Math.min(idx, hat.length);
   }
   const ayni = aktifId !== undefined && hat[yeni]?.id === aktifId;
@@ -121,15 +128,26 @@ const MASA_TURU: ReadonlyMap<string, MasaTuru> = new Map(KAT2_MASALAR.map((m) =>
 
 const svGorevi = (g: Kat2GorevDef): boolean => g.hedef.tip === 'masaSv';
 
-/** O derlemede OYNANAN hat: Sv görevleri yalnız `ayar.masaSv` varken (kuyrukta durdukları için idx kaymaz). */
-export function kat2Gorevleri(gorevler: readonly Kat2GorevDef[], ayar: Pick<Kat2Ayar, 'masaSv'>): readonly Kat2GorevDef[] {
-  return ayar.masaSv ? gorevler : gorevler.filter((g) => !svGorevi(g));
+/** Kuyruk Sv görevi: ardından hiç pad görevi gelmeyen Sv görevi (zincir bittikten sonraki). */
+function kuyrukSvMi(gorevler: readonly Kat2GorevDef[], i: number): boolean {
+  return svGorevi(gorevler[i]) && !gorevler.slice(i + 1).some((g) => g.hedef.tip === 'pad');
+}
+
+/**
+ * O derlemede OYNANAN hat: Sv görevleri yalnız `ayar.masaSv` varken. Sv zincir kapısı (S5 G-119 `masaSvKapi`) varken
+ * KUYRUK Sv görevleri düşer (Sv kendi kapısıyla açılır, sonda görev beklemez); ARA Sv görevleri (S5 3. tur GB-SV —
+ * "3 / 6 okey masasını Seviye 2'ye çıkar") hatta kalır. Kuyruktakiler düşünce idx kaymaz.
+ */
+export function kat2Gorevleri(gorevler: readonly Kat2GorevDef[], ayar: Pick<Kat2Ayar, 'masaSv' | 'masaSvKapi'>): readonly Kat2GorevDef[] {
+  if (!ayar.masaSv) return gorevler.some(svGorevi) ? gorevler.filter((g) => !svGorevi(g)) : gorevler;
+  if (!ayar.masaSvKapi) return gorevler;
+  return gorevler.some((_, i) => kuyrukSvMi(gorevler, i)) ? gorevler.filter((_, i) => !kuyrukSvMi(gorevler, i)) : gorevler;
 }
 
 /** Bir adımın sayaç artışları. */
 export function kat2GorevArtisi(o: Kat2GorevOlay): Record<Kat2GorevSayac, number> {
   return {
-    servis: Math.max(0, o.servis - o.garsonServis),
+    servis: Math.max(0, o.servis), // S5 G-128: garsonun götürdüğü de sayılır ("sen veya garsonların")
     tavlaKahve: Math.max(0, o.tavlaServis),
     garson: Math.max(0, o.garsonServis),
     kalkis: Math.max(0, o.kalkis),
@@ -167,7 +185,7 @@ export function kat2GorevIlerlet(
   olay: Kat2GorevOlay,
   durum: Kat2GorevDurum,
   gorevler: readonly Kat2GorevDef[],
-  ayar: Pick<Kat2Ayar, 'masaSv'>,
+  ayar: Pick<Kat2Ayar, 'masaSv' | 'masaSvKapi'>,
 ): Kat2GorevSonuc {
   const hat = kat2Gorevleri(gorevler, ayar);
   const k0 = kayit ?? BOS;
@@ -202,7 +220,7 @@ export function kat2GorevHizala(
   kayit: Kat2GorevKayit | undefined,
   durum: Kat2GorevDurum,
   gorevler: readonly Kat2GorevDef[],
-  ayar: Pick<Kat2Ayar, 'masaSv'>,
+  ayar: Pick<Kat2Ayar, 'masaSv' | 'masaSvKapi'>,
 ): Kat2GorevKayit {
   const hat = kat2Gorevleri(gorevler, ayar);
   const k0 = kayit ?? BOS;
@@ -218,7 +236,7 @@ export function kat2GorevHizala(
 }
 
 /** Hat bitti mi (o derlemenin hattında). */
-export function kat2GorevHattiBitti(durum: Kat2GorevDurum, gorevler: readonly Kat2GorevDef[], ayar: Pick<Kat2Ayar, 'masaSv'>): boolean {
+export function kat2GorevHattiBitti(durum: Kat2GorevDurum, gorevler: readonly Kat2GorevDef[], ayar: Pick<Kat2Ayar, 'masaSv' | 'masaSvKapi'>): boolean {
   return (durum.gorev?.idx ?? 0) >= kat2Gorevleri(gorevler, ayar).length;
 }
 
@@ -259,7 +277,7 @@ export function kat2PadAdimlari(hat: readonly Kat2GorevDef[], i: number, ayar: P
 export function kat2GorevGorunumu(
   durum: Kat2GorevDurum,
   gorevler: readonly Kat2GorevDef[],
-  ayar: Pick<Kat2Ayar, 'masaSv' | 'padler'>,
+  ayar: Pick<Kat2Ayar, 'masaSv' | 'masaSvKapi' | 'padler'>,
 ): Kat2GorevGorunum | null {
   const hat = kat2Gorevleri(gorevler, ayar);
   const idx = durum.gorev?.idx ?? 0;
@@ -340,12 +358,13 @@ export function kat2GorevOdulReferansi(
 /**
  * Hat oynanabilir mi? Hata metni (geliştirici için) ya da null. Kurallar:
  * kimlik tekil · pad hedefi zincirde ve zincir sırasında (geri dönmez) · son durum görevi zincirin son pad'i
- * (hat "Kat 2 bitti"de biter) · sayaç görevinin istediği şey önceki görevlerle açık · Sv görevleri kuyrukta,
- * seviyesi ve adedi ulaşılabilir.
+ * (hat "Kat 2 bitti"de biter) · sayaç görevinin istediği şey önceki görevlerle açık · Sv görevinin seviyesi ve
+ * adedi ulaşılabilir; kuyruk Sv görevlerinden sonra yalnız Sv görevi gelir; ARA Sv görevi (S5 3. tur) `masaSv`
+ * ister ve `masaSvKapi` varsa kapısı önceki görevlerle açılmış olmalı (Sv2 → `sv2Pad`, Sv3 → `sv3Pad`, üstü olmaz).
  */
 export function kat2GorevHatasi(
   gorevler: readonly Kat2GorevDef[],
-  ayar: Pick<Kat2Ayar, 'padler' | 'masaSv'>,
+  ayar: Pick<Kat2Ayar, 'padler' | 'masaSv'> & Partial<Pick<Kat2Ayar, 'masaSvKapi'>>,
   hazir: readonly string[],
 ): string | null {
   const zincir = ayar.padler.map((p) => p.id);
@@ -377,7 +396,13 @@ export function kat2GorevHatasi(
         : masa;
       if (!gerek) return `${g.id}: ${h.sayac} henüz açılmamış bir şeyi istiyor`;
     } else {
-      svBasladi = true;
+      if (kuyrukSvMi(gorevler, i)) svBasladi = true;
+      else {
+        if (!ayar.masaSv) continue; // Sv sayıları yoksa hattan düşer (`kat2Gorevleri`)
+        const k = ayar.masaSvKapi;
+        const kapi = !k ? KAT2_SV_MAX : acik.has(k.sv3Pad) ? 3 : acik.has(k.sv2Pad) ? 2 : 1;
+        if (h.sv > kapi) return `${g.id}: Sv${h.sv} kapısı (masaSvKapi) bu görevde henüz açık değil`;
+      }
       const turler: MasaTuru[] = h.tur ? [h.tur] : ['okey', 'tavla'];
       const kolMax = Math.max(...turler.map((t) => ayar.masaSv?.[t].fiyat.length ?? KAT2_SV_MAX));
       if (h.sv < 2 || h.sv > kolMax) return `${g.id}: Sv${h.sv} ulaşılamaz`;
@@ -400,7 +425,8 @@ export function kat2GorevHatasi(
  * S3 — D-142'nin Kat 2 karşılığı (Kat 1: `rules.upgradeSpotLive`): masa Sv noktası yalnız görev hattı bir Sv
  * görevindeyken canlıdır; hat bitince hep canlı. Pad'lerde zaten tek hedef var — Sv de görev ritmini bozmaz.
  */
-export function kat2SvCanli(durum: Kat2GorevDurum, gorevler: readonly Kat2GorevDef[], ayar: Pick<Kat2Ayar, 'masaSv'>): boolean {
+export function kat2SvCanli(durum: Kat2GorevDurum, gorevler: readonly Kat2GorevDef[], ayar: Pick<Kat2Ayar, 'masaSv' | 'masaSvKapi'>): boolean {
+  if (ayar.masaSvKapi) return true; // S5 G-119: kapı zincirde (`kat2SvTavan`), görev beklenmez
   const hat = kat2Gorevleri(gorevler, ayar);
   const g = hat[durum.gorev?.idx ?? 0];
   return !g || svGorevi(g);

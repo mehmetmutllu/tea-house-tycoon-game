@@ -1961,9 +1961,9 @@ describe('kozmetik mağaza (WP6, v19) — zone-başına tema satın alma + migra
 describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, görev akışı', () => {
   it('fiyat eğrisi: T1-T2 ucuz, T3-T4 köprülü-pahalı; max kademede null; değerler tasarımla birebir', () => {
     // turu-5 denge (ONAYLI): T3/T4 15k/60k → 5k/18k (köprülü eğri); T2 150→130 (5B).
-    // T8a (D-142, G-65): T1 75 → 30.
-    expect(economyConfig.character.tray.costs).toEqual([30, 130, 5_000, 18_000]);
-    expect(charNextCost('tray', 0)).toBe(30);
+    // T8a (D-142, G-65): T1 75 → 30. S5 G-92: 30 → 25.
+    expect(economyConfig.character.tray.costs).toEqual([25, 130, 5_000, 18_000]);
+    expect(charNextCost('tray', 0)).toBe(25);
     expect(charNextCost('tray', 3)).toBe(18_000);
     expect(charNextCost('tray', 4)).toBeNull(); // MAX
     expect(charNextCost('magnet', 2)).toBe(2_200);
@@ -1991,7 +1991,7 @@ describe('karakter yükseltmeleri (v20) — eğri, satın alma, migrasyon, göre
     expect(useGame.getState().buyCharUpgrade('tray')).toBe(true);
     const s = useGame.getState();
     expect(s.charUpgrades.tray).toBe(1);
-    expect(s.wallet.toNumber()).toBe(170); // 200 - 30 (D-142)
+    expect(s.wallet.toNumber()).toBe(175); // 200 - 25 (G-92)
     expect(s.xp).toBe(xpBefore + economyConfig.xp.perUpgrade);
     expect(charLevel(s.charUpgrades)).toBe(1);
     // Max kademede satın alma reddedilir.

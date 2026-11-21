@@ -1,15 +1,15 @@
 /**
  * kat2/Bolme.tsx — ALANLAR ARASI DUVAR (D-191: bölme yok). Hat yalnız bir yanı açıkken çizilir: kapalı
- * alanın önünde boydan boya TAM BOY sıva duvar (arkada kaba inşaat). İki yanı açılınca duvar kalkar:
+ * alanın önünde boydan boya ALÇAK duvar (D-198 G3 + S5 G-121: hepsi `ON_BOLME_H`; arkada kaba inşaat). İki yanı açılınca duvar kalkar:
  * kısa bir titreşimden sonra yere gömülür. Yeni beliren duvar (bir sonraki kapalı alanın önü) yerden yükselir.
  * Çarpışma `kat.kat2Duvarlar` ile aynı kural (`kat2DuvarVar`) — animasyon yalnız görüntü, katı gövde anında değişir.
  */
 import { useEffect, useRef, useState } from 'react';
 import { useFrame } from '@react-three/fiber';
 import type { Group } from 'three';
-import { KAT2_BOLMELER, ON_BOLME_H, kameraBakanBolme, kat2DuvarVar } from '../../../game/kat';
-import { MC, MaketWall } from '../maketParts';
-import { WALL_H } from '../wallOlcu';
+import { KAT2_BOLMELER, kat2DuvarVar } from '../../../game/kat';
+import { MC } from '../maketParts';
+import { BOLME_YARI, bolmeCizimi, type BolmeCizimi } from './yapiOlcu';
 
 /** Kalkış: titreşim + gömülme süresi (sn). */
 const TITRE = 0.35;
@@ -46,22 +46,27 @@ function Duvar({ i, hal, bitti }: { i: number; hal: Hal; bitti: (i: number) => v
   });
   return (
     <group ref={ref} scale={[1, hal === 'cik' ? 0.001 : 1, 1]}>
-      {kameraBakanBolme(b) ? <AlcakBolme x1={b.x1} x2={b.x2} z={b.z1} /> : <MaketWall x1={b.x1} z1={b.z1} x2={b.x2} z2={b.z2} h={WALL_H} />}
+      <AlcakBolme c={bolmeCizimi(b)} />
     </group>
   );
 }
 
-/** Alçak bölme: duvarın lambri kuşağı + üst çıtası, `ON_BOLME_H` boyunda (MaketWall lambriyi hep 0,9 çizer). */
-function AlcakBolme({ x1, x2, z }: { x1: number; x2: number; z: number }) {
-  const len = x2 - x1;
+/**
+ * Alçak bölme: duvarın lambri kuşağı + üst çıtası (MaketWall lambriyi hep 0,9 çizer). G-121: yan bölme de
+ * alçak (eskiden tam boy 3,2 — salon açılınca sağda yüksek duvar kalıyordu). Ölçü `yapiOlcu.bolmeCizimi`.
+ */
+export function AlcakBolme({ c }: { c: BolmeCizimi }) {
+  const len = c.b - c.a;
+  const m = (c.a + c.b) / 2;
+  const boy = (en: number, h: number) => (c.yatay ? [len, h, en] : [en, h, len]) as [number, number, number];
   return (
-    <group position={[(x1 + x2) / 2, 0, z]}>
-      <mesh position={[0, ON_BOLME_H / 2, 0]} castShadow receiveShadow>
-        <boxGeometry args={[len, ON_BOLME_H, 0.22]} />
+    <group position={c.yatay ? [m, 0, c.c] : [c.c, 0, m]}>
+      <mesh position={[0, c.h / 2, 0]} castShadow receiveShadow>
+        <boxGeometry args={boy(2 * BOLME_YARI, c.h)} />
         <meshStandardMaterial color={MC.wain} />
       </mesh>
-      <mesh position={[0, ON_BOLME_H + 0.04, 0]} receiveShadow>
-        <boxGeometry args={[len, 0.08, 0.28]} />
+      <mesh position={[0, c.h + 0.04, 0]} receiveShadow>
+        <boxGeometry args={boy(2 * BOLME_YARI + 0.06, 0.08)} />
         <meshStandardMaterial color={MC.doorWood} />
       </mesh>
     </group>

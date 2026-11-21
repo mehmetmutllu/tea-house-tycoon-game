@@ -8,8 +8,13 @@
  *    Kasa boşalması Kat 1'in olayıdır → yalnız Kat 1'de. Merdiven her iki yönde.
  *  - Dünya SÜREKLİLİĞİ: `nextId` geriye gittiyse dünya yeniden kuruldu (yükleme, sıfırlama, merdiven
  *    açılışı) → o karede dünya kaynaklı ses çalmaz (Kat 1'in "azalma sessizdir" kuralının karşılığı).
- *  - Ortam (takırtı/zar) olay değil ZAMANLAYICI: her oynayan masanın kendi rastgele saati + bütün masalar
- *    için ortak `ORTAM_ARALIK`; birden çok masa sıradaysa en YAKINI çalar, gerisi bir sonraki tura kayar.
+ *  - Ortam (takırtı/zar) zamanlayıcısı S5'te KALKTI (G-125, kullanıcı: *"arka planda sürekli zar sesi —
+ *    kalksın"*). İki ses katalogda/dinleme sayfasında durur ama oyuna bağlı değil.
+ *  - Para: Kat 1'de yerde tek tek duran paralar art arda toplanır ve `coin`in SERİ ivmesi (D-122 · I2) "tık tık"
+ *    yükselen bir zincir çalar. Kat 2'de para tek yığın → tek tık duyuluyordu (G-106). Bir yığın artık
+ *    `PARA_ZINCIR.adet` tıklık bir zincirdir; seri basamağı Kat 1'in motorundan gelir (aynı tanım).
+ *  - Kat 1'de karşılığı olan iki olay daha Kat 1'in sesini çalar (S5 denetimi): ocak/lavabo yükseltmesi →
+ *    `purchase`, Kat 2 görevi bitti → `quest`.
  *  - Sessiz kip/seviye: her güncellemede `settings`ten motora (Kat 1 ile aynı satır). Arka plan/reklam:
  *    web arka ucu `sesDuraklatildi` iken çalmaz; zamanlayıcı da o sürede ses ÜRETMEZ (dönüşte birikmiş
  *    takırtı patlamasın).
@@ -17,16 +22,16 @@
 import { economyConfig } from '../config/economy.config';
 import { sesMotoruKur, SES_KATALOG, type SesId, type SesMotoru } from './audio';
 import {
-  KAT2_SES_KATALOG, MASA_ARALIK, ORTAM_ARALIK, yakinlik, type Kat2SesId,
+  KAT2_SES_KATALOG, PARA_ZINCIR, yakinlik, type Kat2SesId,
 } from './audioKat2';
 import { sesDuraklatildi, webSesArkaUcu } from './audioWeb';
-import { KAT2_MASALAR, OCAKLAR, kat2AcikAlan, type KatNo, type MasaTuru } from './kat';
+import { OCAKLAR, kat2AcikAlan, type KatNo } from './kat';
 import { useGame } from './store';
 
 type Durum = ReturnType<typeof useGame.getState>;
 
 /** Kat 2'nin çalabildiği her ses: kendi kataloğu + Kat 1'den yeniden kullanılanlar. */
-export type Kat2CalId = Kat2SesId | Extract<SesId, 'coin' | 'serve' | 'pour' | 'padFill'>;
+export type Kat2CalId = Kat2SesId | Extract<SesId, 'coin' | 'serve' | 'pour' | 'padFill' | 'purchase' | 'quest'>;
 
 export interface Kat2SesOlay {
   id: Kat2CalId;
@@ -43,21 +48,23 @@ export interface Kat2SesKesit {
   padSayisi: number;
   acikAlan: number;
   svToplam: number;
+  /** Ocak + lavabo yükseltme sayısı (Kat 1 `yukseltmeToplam`ının karşılığı; garson yükseltmesi Kat 1'deki gibi sessiz). */
+  yukToplam: number;
+  /** Kat 2 görev hattının sırası (`kat2.gorev.idx`). */
+  gorevIdx: number;
   /** Dünya sürekliliği (`Kat2Dunya.nextId`): geri giderse dünya yeniden kuruldu. */
   nextId: number;
   tepsi: number;
   birikimToplam: number;
   istekToplam: number;
-  paraIdleri: readonly number[];
+  /** Oyuncunun ELİYLE topladığı yığın sayacı (`stats.kat2Para`). Oto-toplanan yığın saymaz → sessiz (Kat 1 `coinsCollected`). */
+  paraToplanan: number;
   ocakHazir: readonly number[];
   x: number;
   z: number;
-  /** Oyunda olan masalar (ortam zamanlayıcısı için). */
-  oynayan: readonly { id: string; tur: MasaTuru; x: number; z: number }[];
 }
 
 const HAZIR: readonly string[] = economyConfig.kat2.hazir;
-const MASA_YERI = new Map(KAT2_MASALAR.map((m) => [m.id, m]));
 
 /** Masa Sv toplamı — `kat2.masaSv` Ajan A'nın additive alanı; yoksa (eski kayıt / A öncesi) 0. */
 const svToplami = (kat2: unknown): number => {
@@ -67,15 +74,11 @@ const svToplami = (kat2: unknown): number => {
 
 export function kat2KesitAl(s: Durum): Kat2SesKesit {
   const d = s.kat2Dunya;
-  const oynayan: { id: string; tur: MasaTuru; x: number; z: number }[] = [];
   let birikimToplam = 0;
   let istekToplam = 0;
   for (const m of d.masalar) {
     birikimToplam += m.birikim;
     istekToplam += m.istek;
-    if (m.durum !== 'oyunda') continue;
-    const y = MASA_YERI.get(m.id);
-    if (y) oynayan.push({ id: m.id, tur: m.tur, x: y.x, z: y.z });
   }
   return {
     kat: s.kat,
@@ -85,15 +88,16 @@ export function kat2KesitAl(s: Durum): Kat2SesKesit {
     padSayisi: s.kat2.padsDone.length,
     acikAlan: kat2AcikAlan(s.kat2.padsDone),
     svToplam: svToplami(s.kat2),
+    yukToplam: (s.kat2.yuk?.ocak ?? 0) + (s.kat2.yuk?.lavabo ?? 0),
+    gorevIdx: s.kat2.gorev?.idx ?? 0,
     nextId: d.nextId,
     tepsi: d.tepsi,
     birikimToplam,
     istekToplam,
-    paraIdleri: d.paralar.map((p) => p.id),
+    paraToplanan: s.stats.kat2Para ?? 0,
     ocakHazir: d.ocaklar.map((o) => o.hazir),
     x: s.player[0],
     z: s.player[2],
-    oynayan,
   };
 }
 
@@ -123,7 +127,9 @@ export function kat2SesOlaylari(onceki: Kat2SesKesit | null, s: Kat2SesKesit, be
   }
 
   if (s.kat !== 2 || onceki.kat !== 2 || s.nextId < onceki.nextId) return o;
+  if (s.gorevIdx > onceki.gorevIdx) cal('quest');
   if (s.svToplam > onceki.svToplam) cal('k2sv');
+  if (s.yukToplam > onceki.yukToplam) cal('purchase');
   if (s.acikAlan > onceki.acikAlan) cal('k2duvar');
   if (s.padSayisi > onceki.padSayisi) cal('padFill');
   if (s.tepsi < onceki.tepsi && (s.birikimToplam > onceki.birikimToplam || s.istekToplam < onceki.istekToplam)) cal('serve');
@@ -135,45 +141,27 @@ export function kat2SesOlaylari(onceki: Kat2SesKesit | null, s: Kat2SesKesit, be
     if (yer && h > (onceki.ocakHazir[k] ?? 0)) cezve = Math.max(cezve, yakinlik(Math.hypot(s.x - yer.al[0], s.z - yer.al[1])));
   });
   if (cezve > 0) cal('k2cezve', cezve);
-  // Para: önceki karede olan bir yığın kayboldu (yalnız oyuncu toplar).
-  const simdi = new Set(s.paraIdleri);
-  if (onceki.paraIdleri.some((id) => !simdi.has(id))) cal('coin');
+  // Para: oyuncu yığın topladı (oto-toplama sessiz — Kat 1'de de `coin` yalnız elle toplamada).
+  if (s.paraToplanan > onceki.paraToplanan) cal('coin');
   return o;
 }
 
+/** Bu adımda oyuncunun ELİYLE topladığı yığın sayısı. Kat 2 dışında / dünya yeniden kurulduysa 0. SAF. */
+export function toplananYigin(onceki: Kat2SesKesit | null, s: Kat2SesKesit): number {
+  if (!onceki || s.kat !== 2 || onceki.kat !== 2 || s.nextId < onceki.nextId) return 0;
+  return Math.max(0, s.paraToplanan - onceki.paraToplanan);
+}
+
 /**
- * ORTAM ZAMANLAYICISI — takırtı (okey) ve zar (tavla). Durumlu; saat ve rastgele DIŞARIDAN (test).
- * `adim` her güncellemede çağrılır, en çok BİR ortam sesi döner.
+ * G-106 — PARA ZİNCİRİ: bir yığın = `PARA_ZINCIR.adet` tık, `aralik` arayla (ilki hemen). Zincir sürerken gelen yığın
+ * onun ARKASINA eklenir: iki yığın art arda = tek uzun, yükselen zincir (Kat 1'de yerdeki paraları arka arkaya
+ * toplamak gibi). Dönüş: çalınacak tıkların zamanları (sıralı). SAF.
  */
-export function ortamZamanlayici(rastgele: () => number = Math.random) {
-  const sonraki = new Map<string, number>();
-  let sonOrtam = -Infinity;
-  const aralik = () => MASA_ARALIK[0] + rastgele() * (MASA_ARALIK[1] - MASA_ARALIK[0]);
-  return {
-    adim(t: number, s: Kat2SesKesit): Kat2SesOlay | null {
-      if (s.kat !== 2 || s.gecis) {
-        // Kat 2'de değilken saatler durur; dönüşte her masa yeniden rastgele gecikmeyle başlar.
-        sonraki.clear();
-        return null;
-      }
-      const oynayan = new Set(s.oynayan.map((m) => m.id));
-      for (const id of [...sonraki.keys()]) if (!oynayan.has(id)) sonraki.delete(id);
-      for (const m of s.oynayan) if (!sonraki.has(m.id)) sonraki.set(m.id, t + aralik());
-      if (t - sonOrtam < ORTAM_ARALIK) return null;
-      let enIyi: { id: Kat2SesId; kazanc: number; masa: string } | null = null;
-      for (const m of s.oynayan) {
-        if ((sonraki.get(m.id) ?? Infinity) > t) continue;
-        const k = yakinlik(Math.hypot(s.x - m.x, s.z - m.z));
-        // Duyulmayacak kadar uzak masanın saati yine kurulur: birikip oyuncu yaklaşınca hep birden çalmasın.
-        if (k <= 0) { sonraki.set(m.id, t + aralik()); continue; }
-        if (!enIyi || k > enIyi.kazanc) enIyi = { id: m.tur === 'okey' ? 'k2takirti' : 'k2zar', kazanc: k, masa: m.id };
-      }
-      if (!enIyi) return null;
-      sonraki.set(enIyi.masa, t + aralik());
-      sonOrtam = t;
-      return { id: enIyi.id, kazanc: enIyi.kazanc };
-    },
-  };
+export function paraZinciriEkle(kuyruk: readonly number[], t: number, yigin: number): number[] {
+  const out = kuyruk.slice();
+  let son = out.length ? out[out.length - 1] : t - PARA_ZINCIR.aralik;
+  for (let i = 0; i < yigin * PARA_ZINCIR.adet; i++) out.push((son += PARA_ZINCIR.aralik));
+  return out;
 }
 
 /** Kat 2'nin birleşik kataloğu: kendi sesleri + Kat 1'den yeniden kullanılanlar (aynı tanım, aynı tampon). */
@@ -183,12 +171,13 @@ const KATALOG: Record<Kat2CalId, (typeof SES_KATALOG)[SesId]> = {
   serve: SES_KATALOG.serve,
   pour: SES_KATALOG.pour,
   padFill: SES_KATALOG.padFill,
+  purchase: SES_KATALOG.purchase,
+  quest: SES_KATALOG.quest,
 };
 
 export interface Kat2SesSecenek {
   motor?: SesMotoru<Kat2CalId>;
   saat?: () => number;
-  rastgele?: () => number;
   duraklatildi?: () => boolean;
 }
 
@@ -201,7 +190,7 @@ export function kat2SesBaslat(sec: Kat2SesSecenek = {}): () => void {
   const m = sec.motor ?? sesMotoruKur<Kat2CalId>(webSesArkaUcu<Kat2CalId>(), ayar.sound, ayar.soundVolume, KATALOG);
   const saat = sec.saat ?? (() => performance.now() / 1000);
   const duraklatildi = sec.duraklatildi ?? sesDuraklatildi;
-  const ortam = ortamZamanlayici(sec.rastgele);
+  let zincir: number[] = [];
   const bellek = yeniBellek();
   let onceki: Kat2SesKesit | null = null;
 
@@ -213,11 +202,21 @@ export function kat2SesBaslat(sec: Kat2SesSecenek = {}): () => void {
     m.ayarla(s.settings.sound, s.settings.soundVolume);
     const simdi = kat2KesitAl(s);
     const olay = kat2SesOlaylari(onceki, simdi, bellek);
+    const yigin = toplananYigin(onceki, simdi);
     onceki = simdi;
-    if (duraklatildi()) return;
-    for (const e of olay) m.cal(e.id, e.kazanc);
-    const o = ortam.adim(saat(), simdi);
-    if (o) m.cal(o.id, o.kazanc);
+    if (simdi.kat !== 2 || simdi.gecis) zincir = [];
+    if (duraklatildi()) {
+      zincir = []; // arka planda biriken zincir dönüşte patlamasın
+      return;
+    }
+    const t = saat();
+    // `coin` olayı zincirin kendisi olarak çalar (ilk tık hemen) — olay listesinde ayrıca çalınmaz.
+    for (const e of olay) if (e.id !== 'coin') m.cal(e.id, e.kazanc);
+    if (yigin > 0) zincir = paraZinciriEkle(zincir, t, yigin);
+    while (zincir.length && zincir[0] <= t) {
+      zincir.shift();
+      m.cal('coin');
+    }
   });
 
   return () => {

@@ -61,3 +61,13 @@ export const DOOR = { half: 2.2, height: 2.65 } as const;
 export const SOVE_W = 0.4;
 /** Sövenin kapı ekseninden ölçülen DIŞ kenarı — vitrin gözlerinin başlayabileceği ilk nokta. */
 export const SOVE_DIS = DOOR.half + SOVE_W / 2;
+
+/**
+ * ÖN (KAMERAYA BAKAN) DUVARIN BOYU — S5 G-114 (kullanıcı kararı: iki katta da B).
+ * 3,2'lik ön duvarda dibindeki oyuncunun başı ancak duvardan 1,72 m, ayağı 3,2 m uzaklaşınca
+ * görünüyordu (portre kamera d 11,05). 1,0'da baş hep, ayak 1,0 m'de görünür. D-198 alçak bölme dili:
+ * lambri kuşağı + çıta, üstünde 0,02 badana. Kat 1'de vitrin camı ve kapı alınlığı bu duvarla gider.
+ */
+export const ON_DUVAR_H = 1.0;
+/** Kat 1 giriş direklerinin boyu (söve kesildi, giriş iki direkle okunur): duvardan 0,3 yüksek. */
+export const KAPI_DIREK_H = ON_DUVAR_H + 0.3;

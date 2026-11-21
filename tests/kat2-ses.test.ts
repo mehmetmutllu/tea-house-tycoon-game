@@ -7,18 +7,20 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { sesMotoruKur, SES_KATALOG, type SesArkaUc } from '../src/game/audio';
 import { seslendir, sesSuresi } from '../src/game/audioSynth';
 import {
-  KAT2_SECIM, KAT2_SES_ADAYLARI, KAT2_SES_KATALOG, MASA_ARALIK, ORTAM_ARALIK, UZAK, yakinlik, type Kat2SesId,
+  KAT2_SECIM, KAT2_SES_ADAYLARI, KAT2_SES_KATALOG, PARA_ZINCIR, UZAK, yakinlik, type Kat2SesId,
 } from '../src/game/audioKat2';
 import {
-  kat2SesBaslat, kat2SesOlaylari, ortamZamanlayici, yeniBellek, type Kat2CalId, type Kat2SesKesit,
+  kat2SesBaslat, kat2SesOlaylari, paraZinciriEkle, toplananYigin, yeniBellek, type Kat2CalId, type Kat2SesKesit,
 } from '../src/game/kat2Ses';
 import { OCAKLAR } from '../src/game/kat';
+import { yeniKat2Dunya, type Kat2Ayar } from '../src/game/kat2Dongu';
+import { economyConfig } from '../src/config/economy.config';
 import { useGame } from '../src/game/store';
 
 const TABAN: Kat2SesKesit = {
-  kat: 2, gecis: false, acik: true, hazirda: false, padSayisi: 3, acikAlan: 1, svToplam: 0, nextId: 10,
-  tepsi: 2, birikimToplam: 0, istekToplam: 2, paraIdleri: [5, 6], ocakHazir: [1, 0],
-  x: 0, z: 0, oynayan: [],
+  kat: 2, gecis: false, acik: true, hazirda: false, padSayisi: 3, acikAlan: 1, svToplam: 0, yukToplam: 0, gorevIdx: 0,
+  nextId: 10, tepsi: 2, birikimToplam: 0, istekToplam: 2, paraToplanan: 4, ocakHazir: [1, 0],
+  x: 0, z: 0,
 };
 const ile = (y: Partial<Kat2SesKesit>): Kat2SesKesit => ({ ...TABAN, ...y });
 const idler = (a: Kat2SesKesit | null, b: Kat2SesKesit) => kat2SesOlaylari(a, b, yeniBellek()).map((e) => e.id);
@@ -28,7 +30,7 @@ describe('durum farkı → doğru ses kimliği', () => {
     expect(idler(null, TABAN)).toEqual([]);
   });
   const vakalar: [string, Partial<Kat2SesKesit>, Kat2CalId][] = [
-    ['para yığını toplandı → Kat 1 coin', { paraIdleri: [6] }, 'coin'],
+    ['para yığını toplandı → Kat 1 coin', { paraToplanan: 5 }, 'coin'],
     ['tepsi azaldı + masa kahve aldı → Kat 1 serve', { tepsi: 1, birikimToplam: 30, istekToplam: 1 }, 'serve'],
     ['tepsi arttı → Kat 1 pour', { tepsi: 3 }, 'pour'],
     ['pad açıldı → Kat 1 padFill', { padSayisi: 4 }, 'padFill'],
@@ -36,6 +38,8 @@ describe('durum farkı → doğru ses kimliği', () => {
     ['masa Sv toplamı arttı → sv', { svToplam: 1 }, 'k2sv'],
     ['ocak hazır arttı → cezve', { ocakHazir: [2, 0], x: OCAKLAR[0].al[0], z: OCAKLAR[0].al[1] }, 'k2cezve'],
     ['geçiş başladı → merdiven', { gecis: true }, 'k2merdiven'],
+    ['S5: ocak/lavabo yükseltmesi → Kat 1 purchase', { yukToplam: 1 }, 'purchase'],
+    ['S5: Kat 2 görevi bitti → Kat 1 quest', { gorevIdx: 1 }, 'quest'],
   ];
   for (const [ad, fark, id] of vakalar) {
     it(ad, () => {
@@ -50,7 +54,7 @@ describe('durum farkı → doğru ses kimliği', () => {
     expect(idler(TABAN, ile({ tepsi: 0 }))).not.toContain('serve');
   });
   it('dünya yeniden kuruldu (nextId geri) → para/servis sesi yok', () => {
-    expect(idler(TABAN, ile({ nextId: 1, paraIdleri: [], tepsi: 0, birikimToplam: 9 }))).toEqual([]);
+    expect(idler(TABAN, ile({ nextId: 1, paraToplanan: 5, tepsi: 0, birikimToplam: 9 }))).toEqual([]);
   });
   it('yeni kat: geçişle varışta oturumda BİR kez (merdiven açıldıysa ya da yalnız hazır pad varsa)', () => {
     const b = yeniBellek();
@@ -70,64 +74,31 @@ describe('durum farkı → doğru ses kimliği', () => {
 describe("Kat 1'deyken Kat 2 dünyasının sesi çalmaz", () => {
   it('olaylar: Kat 2 dünyası değişse de Kat 1de sessiz', () => {
     const a = ile({ kat: 1 });
-    const b = ile({ kat: 1, paraIdleri: [], tepsi: 1, birikimToplam: 9, padSayisi: 5, acikAlan: 3, svToplam: 4, ocakHazir: [3, 3] });
+    const b = ile({ kat: 1, paraToplanan: 9, tepsi: 1, birikimToplam: 9, padSayisi: 5, acikAlan: 3, svToplam: 4, ocakHazir: [3, 3], yukToplam: 2, gorevIdx: 3 });
     expect(idler(a, b)).toEqual([]);
-  });
-  it('ortam: Kat 1de ve geçiş sürerken takırtı yok', () => {
-    const z = ortamZamanlayici(() => 0);
-    const oynayan = [{ id: 'k2okey1', tur: 'okey' as const, x: 0, z: 0 }];
-    for (let t = 0; t < 60; t += 0.5) {
-      expect(z.adim(t, ile({ kat: 1, oynayan }))).toBeNull();
-      expect(z.adim(t, ile({ gecis: true, oynayan }))).toBeNull();
-    }
   });
 });
 
-describe('ortam takırtısı: sıklık sınırı + yakınlık', () => {
-  const masalar = Array.from({ length: 12 }, (_, i) => ({ id: `m${i}`, tur: (i % 2 ? 'tavla' : 'okey') as 'okey' | 'tavla', x: i * 0.2, z: 0 }));
-  it('ardışık iki ortam sesi ≥ ORTAM_ARALIK, aynı masa ≥ MASA_ARALIK[0]', () => {
-    let r = 0.37;
-    const z = ortamZamanlayici(() => (r = (r * 9301 + 0.4927) % 1));
-    const caldi: { t: number; id: string }[] = [];
-    for (let i = 0; i <= 3000; i++) {
-      const t = i / 30;
-      const o = z.adim(t, ile({ oynayan: masalar }));
-      if (o) caldi.push({ t, id: o.id });
-    }
-    expect(caldi.length).toBeGreaterThan(10);
-    for (let i = 1; i < caldi.length; i++) expect(caldi[i].t - caldi[i - 1].t).toBeGreaterThanOrEqual(ORTAM_ARALIK - 1e-9);
-    expect(caldi.length).toBeLessThanOrEqual(Math.floor(100 / ORTAM_ARALIK) + 1);
-    expect(new Set(caldi.map((c) => c.id))).toEqual(new Set(['k2takirti', 'k2zar']));
+describe('G-106 · para zinciri (Kat 1 "tık tık")', () => {
+  it('toplanan yığın sayısı: elle toplama sayacının artışı (oto-toplama sessiz); Kat 1de / dünya yeniden kurulunca 0', () => {
+    expect(toplananYigin(TABAN, ile({ paraToplanan: 6 }))).toBe(2);
+    expect(toplananYigin(TABAN, ile({ paraToplanan: 5 }))).toBe(1);
+    expect(toplananYigin(ile({ kat: 1 }), ile({ kat: 1, paraToplanan: 9 }))).toBe(0);
+    expect(toplananYigin(TABAN, ile({ nextId: 1, paraToplanan: 9 }))).toBe(0);
   });
-  it('tek masa: iki ses arası en az MASA_ARALIK[0] (sürekli değil)', () => {
-    const z = ortamZamanlayici(() => 0);
-    const zamanlar: number[] = [];
-    for (let i = 0; i <= 600; i++) {
-      const t = i / 10;
-      if (z.adim(t, ile({ oynayan: [masalar[0]] }))) zamanlar.push(t);
-    }
-    expect(zamanlar[0]).toBeGreaterThanOrEqual(MASA_ARALIK[0] - 1e-9); // ilk ses de gecikir
-    for (let i = 1; i < zamanlar.length; i++) expect(zamanlar[i] - zamanlar[i - 1]).toBeGreaterThanOrEqual(MASA_ARALIK[0] - 1e-9);
+  it('bir yığın = adet tık, ilki hemen, aralık sabit; sürerken gelen yığın arkaya eklenir', () => {
+    const z = paraZinciriEkle([], 10, 1);
+    expect(z).toHaveLength(PARA_ZINCIR.adet);
+    expect(z[0]).toBeCloseTo(10);
+    for (let i = 1; i < z.length; i++) expect(z[i] - z[i - 1]).toBeCloseTo(PARA_ZINCIR.aralik);
+    const iki = paraZinciriEkle(z, 10.05, 1);
+    expect(iki).toHaveLength(2 * PARA_ZINCIR.adet);
+    expect(iki[PARA_ZINCIR.adet] - z[z.length - 1]).toBeCloseTo(PARA_ZINCIR.aralik);
   });
-  it('uzak masa duyulmaz, yaklaşınca birikmiş ses patlamaz; yakın masa kısılmadan çalar', () => {
-    const z = ortamZamanlayici(() => 0);
-    const uzak = [{ id: 'u', tur: 'okey' as const, x: UZAK + 5, z: 0 }];
-    for (let t = 0; t < 30; t += 0.1) expect(z.adim(t, ile({ oynayan: uzak }))).toBeNull();
-    // Oyuncu yanına geldi: saat uzaktayken de kuruldu, hemen değil bir aralık sonra çalar.
-    let ilk = -1;
-    for (let t = 30; t < 60 && ilk < 0; t += 0.1) if (z.adim(t, ile({ oynayan: uzak, x: UZAK + 5 }))) ilk = t;
-    expect(ilk).toBeGreaterThan(30.05);
-    expect(yakinlik(0)).toBe(1);
-    expect(yakinlik(UZAK)).toBe(0);
-    expect(yakinlik((UZAK + 3) / 2)).toBeGreaterThan(0);
-    expect(yakinlik((UZAK + 3) / 2)).toBeLessThan(1);
-  });
-  it('sıradaki birden çok masadan en yakını çalar', () => {
-    const z = ortamZamanlayici(() => 0);
-    const iki = [{ id: 'uzakca', tur: 'okey' as const, x: 9, z: 0 }, { id: 'yakin', tur: 'tavla' as const, x: 1, z: 0 }];
-    let o = null;
-    for (let t = 0; t < 20 && !o; t += 0.1) o = z.adim(t, ile({ oynayan: iki }));
-    expect(o).toEqual({ id: 'k2zar', kazanc: 1 });
+  it('ritim Kat 1 coin serisiyle uyumlu: kelepçeden uzun, seri penceresinden kısa', () => {
+    expect(PARA_ZINCIR.aralik).toBeGreaterThan(SES_KATALOG.coin.aralik);
+    expect(PARA_ZINCIR.aralik).toBeLessThan(SES_KATALOG.coin.seri!.pencere);
+    expect(PARA_ZINCIR.adet).toBeGreaterThan(1);
   });
 });
 
@@ -167,22 +138,57 @@ describe('bağlama: store aboneliği (sessiz kip, arka plan, Kat 1)', () => {
     const katalog = { ...KAT2_SES_KATALOG, coin: SES_KATALOG.coin } as never;
     const motor = sesMotoruKur<Kat2CalId>(uc, true, 1, katalog);
     motor.kilidiAc();
-    const coz = kat2SesBaslat({ motor, saat: () => (t += 1), rastgele: () => 0, duraklatildi: opts.duraklatildi });
-    return { caldi, coz };
+    const coz = kat2SesBaslat({ motor, saat: () => t, duraklatildi: opts.duraklatildi });
+    return { caldi, coz, ileri: (dt: number) => { t += dt; } };
   }
-  /** Kat 2 dünyasına bir para yığını koyup sonra topatır (iki store güncellemesi). */
-  function paraTopla(kat: 1 | 2, ses = true) {
+  /** Kat 2 dünyasına bir para yığını koyup sonra oyuncuya topatır (iki store güncellemesi; elle toplama sayacı +1). */
+  function paraTopla(kat: 1 | 2, ses = true, elle = true) {
     const s = useGame.getState();
     const d = s.kat2Dunya;
     useGame.setState({ kat, settings: { ...s.settings, sound: ses }, kat2Dunya: { ...d, paralar: [{ id: 99, x: 0, z: 0, miktar: 5 }], nextId: 100 } });
-    useGame.setState({ kat2Dunya: { ...useGame.getState().kat2Dunya, paralar: [] } });
+    const st = useGame.getState().stats;
+    useGame.setState({
+      kat2Dunya: { ...useGame.getState().kat2Dunya, paralar: [] },
+      stats: elle ? { ...st, kat2Para: (st.kat2Para ?? 0) + 1 } : st,
+    });
   }
+  it('G-124: oto-toplanan yığın (elle sayacı artmadan kaybolan) sessiz — Kat 1 kuralı', () => {
+    const { caldi, coz } = kur();
+    paraTopla(2, true, false);
+    coz();
+    expect(caldi).not.toContain('coin');
+  });
 
   it('Kat 2de para toplanınca coin çalar', () => {
     const { caldi, coz } = kur();
     paraTopla(2);
     coz();
     expect(caldi).toContain('coin');
+  });
+  it('G-106: tek yığın, sonraki karelerde adet kadar tık (zincir) çalar', () => {
+    const { caldi, coz, ileri } = kur();
+    paraTopla(2);
+    for (let i = 0; i < 30; i++) {
+      ileri(1 / 60);
+      useGame.setState({ wallet: useGame.getState().wallet });
+      useGame.setState({ nextId: useGame.getState().nextId + 1 });
+    }
+    coz();
+    expect(caldi.filter((id) => id === 'coin')).toHaveLength(PARA_ZINCIR.adet);
+  });
+  it('G-125: oynayan masalar varken uzun süre ortam sesi (takırtı/zar) ÇALMAZ', () => {
+    const { caldi, coz, ileri } = kur();
+    const s = useGame.getState();
+    const d = yeniKat2Dunya([...economyConfig.kat2.hazir], economyConfig.kat2 as unknown as Kat2Ayar);
+    const masalar = d.masalar.map((m) => ({ ...m, durum: 'oyunda' as const }));
+    expect(masalar.length).toBeGreaterThan(0);
+    useGame.setState({ kat: 2, kat2Dunya: { ...d, masalar } });
+    for (let i = 0; i < 600; i++) {
+      ileri(0.1);
+      useGame.setState({ nextId: useGame.getState().nextId + 1 });
+    }
+    coz();
+    expect(caldi.filter((id) => id === 'k2takirti' || id === 'k2zar')).toEqual([]);
   });
   it("Kat 1'deyken çalmaz", () => {
     const { caldi, coz } = kur();

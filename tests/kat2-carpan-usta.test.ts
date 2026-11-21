@@ -22,6 +22,7 @@ import { tostShare } from '../src/game/world';
 import { D } from '../src/game/decimal';
 import { collectionMult } from '../src/game/goals';
 import type { Vec3 } from '../src/game/types';
+import { S5_EKLENEN, S5_ONCEKI_ODUL, S5_PARCA } from './s5-gorev-bolme';
 
 const AYAR = C.kat2 as unknown as Kat2Ayar;
 const G = C.kat2Gorevler as readonly Kat2GorevDef[];
@@ -217,18 +218,20 @@ describe('D-206 B-UCLU — görev hattı', () => {
     ['k2_tavla8', 'k2tavla8', 'k2_tavla10'],
     ['k2_tavla10', 'k2tavla10', 'k2_tavla12'],
   ];
-  it('hat = D-205 hattı + raporun altı ara görevi, aynı yerlerinde; geçerli', () => {
-    const ids = G.map((x) => x.id);
+  it('hat = D-205 hattı + raporun altı ara görevi (+ S5 3. tur parçaları), aynı yerlerinde; geçerli', () => {
+    const ids = G.map((x) => x.id).filter((id) => !S5_EKLENEN.includes(id));
     expect(ids.filter((id) => !ARA.some((a) => a[0] === id))).toEqual([...KAT2_GOREV_SIRA_D205]);
     for (const [id, , sonraki] of ARA) expect(ids[ids.indexOf(id) + 1], id).toBe(sonraki);
     expect(kat2GorevHatasi(G, AYAR, C.kat2.hazir)).toBeNull();
   });
-  it('ara görev ödülü = pad fiyatı × %15, 50\'ye yuvarlı; hedef pad', () => {
+  it('ara görev ödülü = pad fiyatı × %15, 50\'ye yuvarlı; hedef pad (S5 3. tur: parçalarıyla toplam)', () => {
     for (const [id, pad] of ARA) {
       const g = G.find((x) => x.id === id)!;
       expect(g.hedef).toEqual({ tip: 'pad', id: pad });
       const cost = AYAR.padler.find((p) => p.id === pad)!.cost;
-      expect(g.reward, id).toBe(Math.round((cost * 0.15) / 50) * 50);
+      const toplam = g.reward + (S5_PARCA[id] ?? []).reduce((a, p) => a + G.find((x) => x.id === p)!.reward, 0);
+      expect(toplam, id).toBe(Math.round((cost * 0.15) / 50) * 50);
+      if (S5_ONCEKI_ODUL[id] !== undefined) expect(toplam, id).toBe(S5_ONCEKI_ODUL[id]);
     }
   });
 });
@@ -240,7 +243,8 @@ describe('D-206 kayıt uyumu — görev kaydı kimlikle taşınır', () => {
   it('eski kayıt (son yok): aktif görev öncesine eklenen ara görev sıraya girer, ödenmiş görev yeniden açılmaz', () => {
     // D-205'te k2_s2okey2 aktifti → son = k2_grup5 → yeni hat k2_s2okey1'den devam eder.
     expect(kat2GorevKaydiCoz({ idx: eskiIdx('k2_s2okey2'), sayac: {} }, HAT)).toEqual({ idx: yeniIdx('k2_s2okey1'), sayac: {} });
-    expect(kat2GorevKaydiCoz({ idx: eskiIdx('k2_tavla12'), sayac: {} }, HAT)).toEqual({ idx: yeniIdx('k2_tavla8'), sayac: {} });
+    // S5 3. tur: k2_tavla6'nın ardı artık k2_tavla8_a (GB parçası).
+    expect(kat2GorevKaydiCoz({ idx: eskiIdx('k2_tavla12'), sayac: {} }, HAT)).toEqual({ idx: yeniIdx('k2_tavla8_a'), sayac: {} });
   });
   it('eski kayıt: sayaç görevi aynı kalır ve sayacı korunur; bitmiş hat bitmiş kalır; idx 0 → 0', () => {
     expect(kat2GorevKaydiCoz({ idx: eskiIdx('k2_kahve40'), sayac: { servis: 7 } }, HAT)).toEqual({ idx: yeniIdx('k2_kahve40'), sayac: { servis: 7 } });
@@ -260,7 +264,7 @@ describe('D-206 kayıt uyumu — görev kaydı kimlikle taşınır', () => {
     const eski = { ...defaultSave(), kat2: { acik: true, padsDone: [...C.kat2.hazir], masaSv: {}, yuk: {}, gorev: { idx: eskiIdx('k2_tavla6'), sayac: {} } } } as unknown as Record<string, unknown>;
     const { data, red } = kayitCoz(eski);
     expect(red).toEqual([]);
-    expect(data.kat2.gorev).toEqual({ idx: yeniIdx('k2_tavla3'), sayac: {} });
+    expect(data.kat2.gorev).toEqual({ idx: yeniIdx('k2_tavla3_a'), sayac: {} }); // S5 3. tur GB parçası
   });
 
   describe('store: eski kayıtla açılış', () => {
@@ -294,17 +298,18 @@ describe('D-206 kayıt uyumu — görev kaydı kimlikle taşınır', () => {
     }
     const zincirKadar = (id: string) => [...C.kat2.hazir, ...AYAR.padler.slice(0, AYAR.padler.findIndex((p) => p.id === id) + 1).map((p) => p.id)];
 
-    it('aktif k2_tavla6, tavla3 alınmış: açılışta k2_tavla5 aktif (tavla3 ödülsüz geçilir), cüzdan aynı, tavla5 bitince ödülü bir kez', () => {
+    it('aktif k2_tavla6, tavla3 alınmış: açılışta k2_tavla5_a aktif (tavla2/3 ödülsüz geçilir), cüzdan aynı, tavla5 bitince ödülü bir kez', () => {
       eskiKayitlaAc(zincirKadar('k2tavla3'), 'k2_tavla6', 5_000);
       const s = useGame.getState();
-      expect(s.kat2.gorev?.idx).toBe(yeniIdx('k2_tavla5'));
+      expect(s.kat2.gorev?.idx).toBe(yeniIdx('k2_tavla5_a'));
       expect(s.wallet.toNumber()).toBe(5_000);
       // tavla5 alınınca ödülü bir kez gelir.
       useGame.setState({ kat: 2, player: [...VARIS[2]] as Vec3, kat2: { ...s.kat2, padsDone: zincirKadar('k2tavla5') } });
       const w0 = useGame.getState().wallet.toNumber();
       useGame.getState().tick(0.01);
-      expect(useGame.getState().kat2.gorev?.idx).toBe(yeniIdx('k2_tavla6'));
-      expect(useGame.getState().wallet.toNumber() - w0).toBe(G.find((x) => x.id === 'k2_tavla5')!.reward);
+      // S5 3. tur: tavla4 + tavla5 aynı adımda → iki parça birden, toplam = eski k2_tavla5 ödülü; sırada 4. garson.
+      expect(useGame.getState().kat2.gorev?.idx).toBe(yeniIdx('k2_garson4'));
+      expect(useGame.getState().wallet.toNumber() - w0).toBe(S5_ONCEKI_ODUL.k2_tavla5);
     });
 
     it('yeni biçimde kaydedilen kayıt yeniden açılınca idx kaymaz', () => {

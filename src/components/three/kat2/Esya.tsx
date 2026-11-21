@@ -9,7 +9,7 @@
  */
 import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import { useFrame } from '@react-three/fiber';
-import { BoxGeometry, Color, MathUtils, MeshStandardMaterial, Object3D, type Group, type InstancedMesh } from 'three';
+import { BoxGeometry, BufferGeometry, Color, Float32BufferAttribute, MathUtils, MeshStandardMaterial, Object3D, type Group, type InstancedMesh } from 'three';
 import { Model } from '../Model';
 import { PALETTE } from '../../../config/palette';
 import { STOOL_S } from '../tableLook';
@@ -17,6 +17,7 @@ import { MaketCrates, MaketPlant, MaketWallShelf } from '../maketParts';
 import { BAND } from '../../../game/layout';
 import { Fincan, Kutu, Silindir } from './parca';
 import { oturakYerleri } from './yol';
+import { HANE_KAKMA, HANE_SADE, haneYerleri, type HaneDuzen } from './esyaOlcu';
 
 export const KAY_F = '/assets/models/kaykit-furniture-bits/';
 export const KAY_R = '/assets/models/kaykit-restaurant-bits/';
@@ -324,7 +325,7 @@ function Pullar({ y }: { y: number }) {
   );
 }
 
-/** Kakma tavla (Sv2+): açık kutu, krem alan, 24 hane (kırmızı/koyu uçlar), koyu çerçeve + menteşe. */
+/** Kakma tavla (Sv2+): açık kutu, krem alan, 24 üçgen hane (kırmızı/koyu), koyu çerçeve + menteşe (orta çubuk). */
 function KakmaTavla() {
   const W = 0.6;
   const D = 0.78;
@@ -341,36 +342,47 @@ function KakmaTavla() {
       {[-1, 1].map((s) => (
         <Kutu key={`y${s}`} w={0.03} h={0.055} d={D} renk="#4a2a18" pos={[s * (W / 2 - 0.015), 0.045, 0]} golge={false} />
       ))}
-      <Haneler w={W} />
+      <Haneler d={HANE_KAKMA} />
       <Pullar y={0.045} />
     </group>
   );
 }
 
-/** Tavlanın 24 hanesi TEK instanced çizim (masa başına 24 mesh → 1; 12 tavla masası). */
-const HANE_GEO = new BoxGeometry(0.2, 0.003, 0.028);
-function Haneler({ w }: { w: number }) {
+/**
+ * TAVLA HANELERİ (G-130, oyun testi 2026-11-20: "tavla masalarının içi boyalı değil"). 24 ÜÇGEN hane: her yarının
+ * iki uzun kenarından ortaya bakan 6'şar ok; iki yarıyı ayıran koyu çubuk (menteşe) ortada. Her seviyede boyalı:
+ *  · Sv1 sade kutu → ahşap tonlarında iki renk (boyalı ama sade)
+ *  · Sv2+ kakma → kırmızı / koyu kahve (klasik); Sv4 cilası masa üstünde (D-195), tahtaya dokunmaz.
+ * TEK instanced çizim (masa başına 24 mesh → 1).
+ */
+/** Birim üçgen: taban x=0'da (z −0,5…0,5), uç (1, 0, 0); yüzü yukarı. */
+const UCGEN_GEO = (() => {
+  const g = new BufferGeometry();
+  g.setAttribute('position', new Float32BufferAttribute([0, 0, -0.5, 0, 0, 0.5, 1, 0, 0], 3));
+  g.setAttribute('normal', new Float32BufferAttribute([0, 1, 0, 0, 1, 0, 0, 1, 0], 3));
+  return g;
+})();
+
+function Haneler({ d }: { d: HaneDuzen }) {
   const ref = useRef<InstancedMesh>(null);
   useLayoutEffect(() => {
     const m = ref.current;
     if (!m) return;
-    const d = new Object3D();
+    const o = new Object3D();
     const c = new Color();
-    let i = 0;
-    for (const yari of [-1, 1])
-      for (const kenar of [-1, 1])
-        for (let n = 0; n < 6; n++) {
-          d.position.set(kenar * (w / 2 - 0.13), 0.036, yari * (0.05 + n * 0.054 + 0.027));
-          d.updateMatrix();
-          m.setMatrixAt(i, d.matrix);
-          m.setColorAt(i, c.set((n + (kenar > 0 ? 1 : 0)) % 2 ? '#9b2c22' : '#3a2a20'));
-          i++;
-        }
+    haneYerleri(d).forEach((h, i) => {
+      o.position.set(h.x, d.y, h.z);
+      o.rotation.set(0, h.yon > 0 ? 0 : Math.PI, 0);
+      o.scale.set(d.boy, 1, h.taban);
+      o.updateMatrix();
+      m.setMatrixAt(i, o.matrix);
+      m.setColorAt(i, c.set(h.renk));
+    });
     m.instanceMatrix.needsUpdate = true;
     if (m.instanceColor) m.instanceColor.needsUpdate = true;
     m.computeBoundingSphere();
-  }, [w]);
-  return <instancedMesh ref={ref} args={[HANE_GEO, BEYAZ_MAT, 24]} />;
+  }, [d]);
+  return <instancedMesh ref={ref} args={[UCGEN_GEO, BEYAZ_MAT, 24]} />;
 }
 
 /** Tavla masası — yol A, `sv` 1..5. `oyunda`: iki zar ara ara atılır (havalanıp döner). */
@@ -408,6 +420,7 @@ export function TavlaMasa({ x, z, oyunda, faz = 0, sv = 1 }: { x: number; z: num
                 <meshStandardMaterial color="#e6cf9e" />
               </mesh>
             ))}
+            <Haneler d={HANE_SADE} />
             <Pullar y={0.06} />
           </>
         )}

@@ -5344,3 +5344,24 @@ Kullanıcı: *"genel olarak geliri etkileyen bir özellik olarak tanıtmış olu
   `mastersOwned`'da; saveVersion artmadı. Nokta Sv tetiğinin yerini devralır (Kat 1 D8 deseni). Çevrimdışı Usta'yı görmez (Kat 1 kuralı).
 - Görev bölme B-UCLU: 6 ara görev, en uzun görev 59,6 → 19,8 dk. Görev kaydına son biten kimlik (`son`) yazılır; eski kayıt eski sırayla yerleşir.
 - Final (tam): Kat 2 7,91 → 7,40 sa (U0, −%6,5) · 8,34 → 7,74 sa (U20, −%7,2). Bekçi `tests/kat2-carpan-usta.test.ts`, mutasyon 6/6.
+
+## D-209 · S5 oyun testi 2026-11-20 — denge kararları (rapor `docs/s5-denge-raporu.md`)
+Kullanıcı seçti, sayılar tam koşudan (`docs/olcum-s5-denge-final-2.txt`, `docs/olcum-s5-kat1-final.txt`).
+- **G-96:** kahve parası teslimde değil, içilip (12 sn) fincan bulaşık olunca masaya düşer; masa ücreti kalkışta. **G-97:** istek 18 sn
+  (yalnız 1 masa açıkken 12 sn). **G-119/122 (K2T):** 3 okey → Sv2, bütün masalar açık → Sv3, yarısı Sv3 → Sv4/5 (`masaSvKapi`).
+- **G-128:** garson servisi Kat 2 görev sayacına girer. **G-108:** garson/bulaşıkçı oyuncudan kaçmaz/itmez (`navStep` avoid kalktı).
+- **G-124:** 3 dk yerde kalan Kat 2 parası oto-toplanır (sessiz söner, uçmaz). **G-92:** Kat 1 ilk tepsi 25; görevde cüzdan ≥ %40 ise
+  eksiği oyun öder (≤ 15) — `charTamamlanir`. G-95/G-103/G-123: değişiklik yok.
+- **3. tur:** Kat 2 garson hızı ×1,25 + 4. garson (tavla5→tavla6 arası, 15.000) · >20 dk görevler bölündü (ödül toplamı korunur),
+  `k2_s2okey4` → 3 masa aç / 3 Sv2 / 6 Sv2 / 4 masa aç. Final: Kat 2 7,78 sa · kaçan %2,1 (17-22 masa %2,5) · 1.434 coin/dk · en uzun görev 16,9 dk.
+- Bekçiler: `s5-denge`, `s5-denge-4`, `g108-garson-itmez`, `g92-ilk-tepsi`; mutasyonlar raporda.
+
+## D-210 · S5 görsel/yerleşim kararları (oyun testi 2026-11-20)
+- **G-121:** Kat 2 bütün bölmeler 0,6 (D-198 G3 "yan bölme 3,2" maddesini değiştirir). **G-102 C:** mutfak–kova duvarı 1,0; **G-111:** ucu ön
+  tezgâhın arka yüzünde biter. **G-114 B:** ön duvar iki katta 1,0 m (Kat 1 vitrin/alınlık kalktı, giriş = iki koyu direk).
+- **Tabela:** kafe adı kapı direklerinden yükselen kemerden sarkar (levha alt kenarı 1,95 m); tente yok. **G-115 C:** Kat 2'de bina altı =
+  alt kat cephesi + sokak. **G-127:** bakır leğen su YOK, kirli fincan bakırın üstünde. **G-112:** Kat 1 ücretsiz `klasik` mutfak teması
+  zemini = Kat 2 koyu kahve-krem dama (siyah-beyaz `siyahBeyaz` tanımlı, mağazada yok). **G-129 C:** tavlalar ikişerli blok, 22 masa.
+- **G-120 M1+M2:** görev bandı karta döner (ilerleme, ödül, "sırada" 2 çip); Görevler sekmesi aktif → sonraki 3 → günlükler altta
+  (`GorevKarti.tsx`, `gorevPano.ts`). Kullanıcı "sonra belki değiştiririz" dedi.
+- Kat 2 NPC: G-99/100 çıkış yolu kuyuda söner · G-109 kahveci yürür · G-107 çoklu yeni nokta bildirimi. Bekçiler `s5-*`.

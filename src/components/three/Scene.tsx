@@ -1,4 +1,4 @@
-import { Activity, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Activity, Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import { KatKatmani } from './katKatmani';
 import { ISITMA_MESH_BUTCESI, ISITMA_OTURMA_KARE, bostaCalistir, isitmaDilimi, isitmaParcalari, kat2ActivityGorunur, kat2KatmanKurulsunMu, meshSayisi } from './kat2OnKurulum';
 import { KademeliMontaj } from './kat2/kademeliMontaj';
@@ -6,7 +6,7 @@ import { Kat2Sahne } from './Kat2';
 import { MerdivenKovasi } from './kat2/MerdivenDonusum';
 import { merdivenTamirli } from '../../game/kat';
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { Color, Fog, Vector3, BufferGeometry, BoxGeometry, Float32BufferAttribute, DoubleSide, MeshStandardMaterial, Object3D, type Group, type InstancedMesh, type PerspectiveCamera, Vector4 } from 'three';
+import { Color, Fog, Vector3, BufferGeometry, Float32BufferAttribute, DoubleSide, Object3D, type Group, type PerspectiveCamera, Vector4 } from 'three';
 import { cameraViewYaz } from '../../game/cameraView';
 import { useGame, questFocusPos, LAYOUT, LAVABO, BAND, BAND_SHELL, FLOOR_HALF, wallSpans, servicePlace, stationSoftMaxLevel, stationUpgradeCostAt, stationUpgradeUnlocked, tableSoftMaxLevel, tableUpgradeTarget, gateOf, tableNextCost, openServices, doorX as doorAt, entranceAt, BANKET, WAITER_STATION, waiterStationOpen } from '../../game/store';
 import { economyConfig, lavaboUpgradeCost } from '../../config/economy.config';
@@ -15,7 +15,6 @@ import { masterId, masterCost, masterUnlockedForTable, dishStationVisible, cardQ
 import { SceneLights } from './lights';
 import { devPerfKol } from '../../game/devPerf';
 import { KARE_TAVANI_FPS } from '../../game/kareTavani';
-import { Tabela } from './Tabela';
 import { KareTavani } from './KareTavani';
 import { cihazSinifiOku, cihazSinifiYaz, golgeAcikMi, sinifBelirle, ISINMA_KARE, ORNEK_KARE } from '../../game/cihazSinifi';
 import { dwellState, ustaKaresi } from '../../game/dwell';
@@ -29,18 +28,18 @@ import { fmt } from '../../game/decimal';
 // çizilen kutu ile tetikleyen kutuyu sessizce ayırır — S24'ün kapattığı kusur tam buydu.
 import { ETIKET_LAVABO, ETIKET_SERVIS, ETIKET_USTA, MASA_ISARET_R, masaEtiketi } from '../../game/markerFrame';
 import { FloorPattern } from './floorPattern';
-import { DOOR, SOVE_W, WALL_H, WALL_T_BODY, WallPanels, type WallSlab } from './wallPanel';
-import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS, pencereBosluklari, wallPieces } from './wallLook';
-import { VITRIN, cepheBosluklari, vitrinGozleri } from './cepheLook';
+import { DOOR, SOVE_W, WallPanels, type WallSlab } from './wallPanel';
+import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS, kat1DuvarParcalari } from './wallLook';
+import { KAPI_DIREK_H } from './wallOlcu';
 import { KayWalls } from './KayWalls';
 import { Model } from './Model';
+import { Tabela } from './Tabela';
 import {
   ASFALT,
   CITY_S,
   KALDIRIM,
   STREET_PROPS,
   STREET_Z0,
-  TENTE,
   cityBoyut,
   propX,
 } from './streetLook';
@@ -901,85 +900,6 @@ function Ground() {
 // AYDINLIK göründü + alan sınırındaki kelepçe "görünmez engel" hissi verdi → örtü KALDIRILDI, bina
 // kilitliyken 1. alanı 4 GERÇEK duvarla biter; sağ duvar alan sınırına oturur = kelepçe duvar olur).
 // 2. alan kilitliyken HİÇ ÇİZİLMEZ (yanı düz "boş arsa"); pad açılınca bina sağa uzar (kamera panı var).
-/**
- * VİTRİN — cephenin cam bandı (S6/②, D-105). Ölçüler `cepheLook.ts`te, çizim burada.
- *
- * ÜÇ ŞEY BİLEREK BÖYLE:
- *  1. **Camın ARKASINDA panel YOK.** `Decor.Pencere` yan duvarda camın arkasına opak bir
- *     "dışarısı gündüz" paneli koyar; cephede o panel camı delik olmaktan çıkarır, kapalı bir
- *     renk şeridine çevirirdi. Ölçüm camın ardında gösterilecek şeyin ZATEN VAR olduğunu
- *     söylüyor (giriş holü, z 14,88…17,39, 10 dekor öğesi).
- *  2. **İki InstancedMesh** (kasa + cam), göz başına ayrı mesh değil. Rapor §Ş 4 göz/yarı için
- *     40 ek çizim çağrısı saymıştı; instanslanınca bedel **2** oluyor.
- *  3. **Gölge yok.** `Decor.Pencere`nin dersi: ince doğrama çubukları gölge atınca cam kirleniyor.
- */
-function Vitrin({ areasOpen }: { areasOpen: number }) {
-  const gozler = useMemo(() => vitrinGozleri(areasOpen), [areasOpen]);
-  const boy = VITRIN.ust - VITRIN.kaide;
-  const t = VITRIN.kasa;
-  /** Doğramanın dört çubuğu, göz başına — [x ofseti, y, en, boy]. */
-  const kasalar = useMemo(
-    () =>
-      gozler.flatMap((g) => [
-        [g.x, VITRIN.ust - t / 2, g.z, g.en, t] as const,
-        [g.x, VITRIN.kaide + t / 2, g.z, g.en, t] as const,
-        [g.x - g.en / 2 + t / 2, VITRIN.kaide + boy / 2, g.z, t, boy] as const,
-        [g.x + g.en / 2 - t / 2, VITRIN.kaide + boy / 2, g.z, t, boy] as const,
-      ]),
-    [gozler, boy, t],
-  );
-  const kutu = useMemo(() => new BoxGeometry(1, 1, 1), []);
-  const kasaMat = useMemo(() => new MeshStandardMaterial({ color: PALETTE.glassFrame }), []);
-  const camMat = useMemo(
-    () =>
-      new MeshStandardMaterial({
-        color: PALETTE.glass,
-        emissive: PALETTE.glass,
-        emissiveIntensity: 0.18,
-        transparent: true,
-        opacity: 0.34,
-      }),
-    [],
-  );
-  const kasaRef = useRef<InstancedMesh>(null);
-  const camRef = useRef<InstancedMesh>(null);
-
-  useLayoutEffect(() => {
-    const d = new Object3D();
-    const km = kasaRef.current;
-    if (km) {
-      kasalar.forEach(([x, y, z, w, h], i) => {
-        d.position.set(x, y, z);
-        d.scale.set(w, h, WALL_T_BODY);
-        d.updateMatrix();
-        km.setMatrixAt(i, d.matrix);
-      });
-      km.count = kasalar.length;
-      km.instanceMatrix.needsUpdate = true;
-    }
-    const cm = camRef.current;
-    if (cm) {
-      gozler.forEach((g, i) => {
-        d.position.set(g.x, VITRIN.kaide + boy / 2, g.z);
-        d.scale.set(g.en - 2 * t, boy - 2 * t, 0.04);
-        d.updateMatrix();
-        cm.setMatrixAt(i, d.matrix);
-      });
-      cm.count = gozler.length;
-      cm.instanceMatrix.needsUpdate = true;
-    }
-  }, [kasalar, gozler, boy, t]);
-
-  if (gozler.length === 0) return null;
-  return (
-    <group>
-      {/* frustumCulled=false: batch'in sınır küresi origin'de kalır (WallPanels ile aynı gerekçe) */}
-      <instancedMesh key={`k${kasalar.length}`} ref={kasaRef} args={[kutu, kasaMat, kasalar.length]} receiveShadow frustumCulled={false} />
-      <instancedMesh key={`c${gozler.length}`} ref={camRef} args={[kutu, camMat, gozler.length]} frustumCulled={false} />
-    </group>
-  );
-}
-
 // TEK KAPI (1. alanın ortası; D-023 — tüm müşteriler buradan girer/çıkar). Açıkken İÇ BÖLME DUVARI YOK.
 function Walls() {
   const areasOpen = useGame((s) => s.areasOpen);
@@ -988,7 +908,6 @@ function Walls() {
   // tema bölmesi kendiliğinden doğru (her parça kendi ALANININ temasını giyer).
   const wallThemeByArea = useGame((s) => s.wallThemeByArea);
   const themeOf = (z: number) => WALL_THEMES[wallThemeByArea[z] ?? 'krem'] ?? WALL_THEMES.krem;
-  const h = WALL_H; // BM: yükseklik + katmanlar wallPanel.tsx'te (mağaza önizlemesiyle ortak)
   const doorHalf = DOOR.half;
   // TEK KAPI. B3-2: 2. Alan açılınca cephenin ortasına kayar (maket v13 adım 2) → `doorAt`.
   const dx0 = doorAt(areasOpen);
@@ -997,16 +916,11 @@ function Walls() {
   // bekçilenemedi: "hat kaç metre, KayKit modülüne bölünüyor mu" sorusu koda bakmadan
   // yanıtlanamıyordu. `kitchenLook.ts` (S3) aynı deseni mutfak için kurmuştu.
   const runs = WALL_RUNS(areasOpen);
-  // S6/E3: pencere artık duvarın YÜZEYİNE yapışan bir levha değil, duvarda GERÇEK boşluk.
-  // Hangi hattın nerede delineceği `wallLook.pencereBosluklari` ile `config/decor.ts`ten TÜRER
-  // (pencere yeri iki dosyaya ayrı ayrı yazılmaz — D-015). Bölme saf fonksiyonda, bekçisi var.
-  // NOT: `kabuk === 'kaykit'` kolu bölünmemiş listeyi kullanır; o kol D-100'de reddedildi ve
-  // yalnız geri dönüş için duruyor.
-  // S6/② (D-105): CEPHE VİTRİNİ aynı mekanizmaya biniyor — vitrin gözleri de birer duvar
-  // açıklığı. Pencereyle tek fark, açıklığın nereden TÜREDİĞİ: pencere `config/decor.ts`ten,
-  // vitrin `cepheLook`tan. İkisi de aynı `wallPieces`a giriyor, yani cam bandında hiç duvar
-  // üretilmemesi ayrı bir kod yolu değil.
-  const pieces: WallSlab[] = wallPieces(runs, [...pencereBosluklari(areasOpen), ...cepheBosluklari(areasOpen)]).map((r) => ({
+  // S6/E3: pencere duvarda GERÇEK boşluk (`wallLook.pencereBosluklari`, D-015). NOT: `kabuk === 'kaykit'`
+  // kolu bölünmemiş listeyi kullanır; o kol D-100'de reddedildi ve yalnız geri dönüş için duruyor.
+  // S5 G-114 B: ön hat `ON_DUVAR_H`e (1,0) iner — vitrin camı (D-105) ve kapı alınlığı bu duvarla gitti
+  // (cam bandı 0,98…2,65 yeni duvarın üstünde kalıyordu). Ölçü + bekçi `wallLook.kat1DuvarParcalari`.
+  const pieces: WallSlab[] = kat1DuvarParcalari(areasOpen).map((r) => ({
     x: r.x,
     z: r.z,
     w: r.w,
@@ -1022,35 +936,21 @@ function Walls() {
           eskisine dönebilir olalım"). Geri dönüş `config/kabuk.ts`in tek satırı. */}
       {kabuk === 'kaykit' ? <KayWalls runs={runs} theme={themeOf(0)} /> : <WallPanels slabs={pieces} />}
       <BackBand areasOpen={areasOpen} />
-      <Vitrin areasOpen={areasOpen} />
       <LavaboFront />
-      {/* ANA GİRİŞ — maket v13'ün giriş bloğunun transkripsiyonu (BM adım 1).
-          Sıra aşağıdan yukarı: iki söve (0…2,65) · lento (2,65) · ALINLIK (2,65…3,20) · üst kordon.
-          Alınlık olmadan kapı boşluğu duvarla birlikte 3,2'ye uzuyor ve cephe tepesinden "kesik"
-          okunuyordu. Söve/lento/kordon duvarın önünde (z + 0,22) → z-fighting yok; alınlık ise
-          duvar HATTINDA ve gövde kalınlığında, çünkü o duvarın kendi devamı. */}
-      <group>
-        <mesh position={[dx0, (DOOR.height + h) / 2, frontEdgeZ]} castShadow receiveShadow>
-          <boxGeometry args={[doorHalf * 2 + 0.4, h - DOOR.height, 0.18]} />
-          <meshStandardMaterial color={themeOf(0).cream} />
-        </mesh>
-        <mesh position={[dx0, DOOR.height + 0.08, frontEdgeZ + 0.22]}>
-          <boxGeometry args={[doorHalf * 2 + 0.6, 0.16, 0.34]} />
-          <meshStandardMaterial color={PALETTE.lintel} />
-        </mesh>
-        <mesh position={[dx0, h - 0.05, frontEdgeZ + 0.22]}>
-          <boxGeometry args={[doorHalf * 2 + 0.6, 0.1, 0.34]} />
-          <meshStandardMaterial color={PALETTE.doorWood} />
-        </mesh>
-        <mesh position={[dx0 - doorHalf, DOOR.height / 2, frontEdgeZ + 0.22]}>
-          <boxGeometry args={[SOVE_W, DOOR.height, 0.42]} />
-          <meshStandardMaterial color={PALETTE.doorWood} />
-        </mesh>
-        <mesh position={[dx0 + doorHalf, DOOR.height / 2, frontEdgeZ + 0.22]}>
-          <boxGeometry args={[SOVE_W, DOOR.height, 0.42]} />
-          <meshStandardMaterial color={PALETTE.doorWood} />
-        </mesh>
-      </group>
+      {/* GİRİŞ (S5 G-114 B): ön duvar 1,0'a inince söve/lento/alınlık/kordon kalktı (kesik söve havada
+          kalıyordu). Kapı boşluğunu iki DİREK okutur: duvarın hattında, duvardan 0,3 yüksek, koyu başlıklı. */}
+      {[-doorHalf, doorHalf].map((dx) => (
+        <group key={dx} position={[dx0 + dx, 0, frontEdgeZ]}>
+          <mesh position={[0, KAPI_DIREK_H / 2, 0]} castShadow receiveShadow>
+            <boxGeometry args={[SOVE_W, KAPI_DIREK_H, 0.42]} />
+            <meshStandardMaterial color={PALETTE.doorWood} />
+          </mesh>
+          <mesh position={[0, KAPI_DIREK_H + 0.05, 0]} castShadow>
+            <boxGeometry args={[SOVE_W + 0.1, 0.1, 0.52]} />
+            <meshStandardMaterial color={PALETTE.lintel} />
+          </mesh>
+        </group>
+      ))}
     </group>
   );
 }
@@ -1288,29 +1188,12 @@ function Street() {
           />
         );
       })}
-      {/* KAPI ÖNÜ (görsel kimlik): TENTE + alınlık tabelası + kaldırımda bahçe masaları + saksılar.
+      {/* KAPI ÖNÜ (görsel kimlik): kaldırımda bahçe masaları + saksılar.
           Salt görsel (collision yok); müşteri yolu (kapı hizası) boş bırakıldı. */}
       {(
         <group key={e[0]}>
-          {/* TENTE — maket v13, birebir (S6/F1 kullanıcı kararı). Bedeli ölçüldü ve kabul edildi:
-              kapı eşiği kameradan %77 konumda görünmez. Alternatif arandı, yükseklik × derinlik
-              düzleminde %0 veren hücre YOK (rapor §F). */}
-          <mesh castShadow position={[e[0], TENTE.y, TENTE.z]} rotation={[TENTE.rotX, 0, 0]}>
-            <boxGeometry args={[TENTE.w, TENTE.h, TENTE.d]} />
-            <meshStandardMaterial color={PALETTE.awning} flatShading />
-          </mesh>
-          {/* fırfır: tentenin ön kenarından sarkan açık şerit (dikey → kadraja eklediği bir şey yok) */}
-          <mesh
-            position={[
-              e[0],
-              TENTE.y - (TENTE.d / 2) * Math.sin(TENTE.rotX) - 0.14,
-              TENTE.z + (TENTE.d / 2) * Math.cos(TENTE.rotX),
-            ]}
-          >
-            <boxGeometry args={[TENTE.w, 0.26, 0.05]} />
-            <meshStandardMaterial color={PALETTE.awningStripe} />
-          </mesh>
-          {/* ALINLIK TABELASI (F4c-3 · D-156): alınlığı dolduran levha, lento/kordonun ÖNÜNDE; kafe adı yazar. */}
+          {/* S5 G-114 B: TENTE (S6/F1) ön duvar 1,0'a inince dayanaksız kaldı → çizilmiyor (ölçü `streetLook.TENTE`).
+              Kafe adı (D-156) kapının iki direğinin arasındaki kemerden sarkar (`streetLook.KEMER/TABELA`). */}
           <Tabela x={e[0]} />
           {/* bahçe masaları (kapının iki yanı, kaldırımda) + tabureler */}
           {[-2.3, 2.3].map((dx) => (

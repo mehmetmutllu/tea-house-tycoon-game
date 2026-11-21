@@ -150,11 +150,12 @@ describe('S24 · çerçeve TEK yerde hesaplanır', () => {
     expect((kod.match(/inFrame\(/g) ?? []).length, 'dört dolum noktası da inFrame ile').toBe(4);
   });
 
-  it('6 · "üstündesin" kabarması da AYNI çerçeveye bakar (daire değil)', () => {
+  it('6 · işaret kendi dairesini kurmaz; G-105 (S5) sonrası "üstündesin" kabarması hiç yok', () => {
     const kod = yorumsuz(oku(MARKER));
-    expect(kod, 'kabarma inFrame ile ölçülmeli').toMatch(/uzerinde = inFrame\(/);
     // Eski hâl bir daire karşılaştırmasıydı: (pl[0]-pos[0])**2 + ... <= (hw * PAY)**2
-    expect(kod, 'kabarma artık daire testi olmamalı').not.toMatch(/UZERINDE_PAYI\) \*\* 2/);
+    expect(kod, 'daire testi olmamalı').not.toMatch(/\*\* 2/);
+    // Kabarma kalktı (oyun testi 2026-11-20): boyu değiştiren ölçek yazımı yok — bekçisi tests/esya-s5.test.ts.
+    expect(kod).not.toMatch(/UZERINDE_BUYUME/);
   });
 
   it('7 · çizilen etiketler ile tetiğin okuduğu etiketler aynı üreticiden gelir', () => {

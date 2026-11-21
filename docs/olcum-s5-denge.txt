@@ -1,0 +1,109 @@
+=== S5 KAT 2 DENGE (G-95/96/97 · G-103 · G-119/122 · G-123 · G-128) — varyant kapısı · D-084 ===
+Kod: d2ef01d (src temiz)
+Kip: tam · dt 0.1 · ufuk 16 sa · 15 koşu · başlangıç D-205/D-206 kur() (U0)
+Bugün: ilkKahve 0 sn · kahveAninda true · kahveAralik 25 · sabır 25 · okey 9/fincan ×2 · tavla 3 ×1 · masa ücreti okey 38 tavla 51
+G-97 dozları (anında servisle istek/oturum okey 4→5→7, tavla 5→6→9): S18 okey 7.20 tavla 2.50 · S12 okey 5.14 tavla 1.67
+
+--- §1 İLERLEME (Kat 2 biter = zincir + bütün masalar Sv5 + yükseltmeler) ---
+kol              | zincir sa | KAT 2 BİTER sa | Δ% TABAN | görev hattı sa | Kat 2 coin/dk | servis/dk oyuncu · garson | yığın topla/dk | görev ödülü
+TABAN            |      4.47 |           7.45 |     0.0% |           4.65 |         1.500 | 5.87 · 26.81 |  33.38 | 49.200
+KORUNUM          |      4.47 |           7.45 |     0.0% |           4.65 |         1.500 | 5.87 · 26.81 |  33.38 | 49.200
+G95-ESKI         |      4.63 |           7.63 |     2.4% |           4.81 |         1.433 | 6.24 · 20.65 |  29.34 | 49.200
+G96-KALKIS       |      4.42 |           7.34 |    -1.5% |           4.60 |         1.522 | 12.77 · 23.47 |  11.86 | 49.200
+G97-S18          |      4.55 |           7.57 |     1.5% |           4.73 |         1.474 | 6.76 · 29.85 |  36.24 | 49.200
+G97-S12          |      4.72 |           7.80 |     4.7% |           4.91 |         1.404 | 6.84 · 32.18 |  37.96 | 49.200
+G103-BULASIKSIZ  |      4.45 |           7.42 |    -0.5% |           4.63 |         1.510 | 7.12 · 26.93 |  33.88 | 49.200
+SV-EMU0          |      4.47 |           7.48 |     0.4% |           4.47 |         1.498 | 5.92 · 26.78 |  33.61 | 46.750
+G119-K2          |      8.38 |           8.47 |    13.6% |           8.38 |         1.230 | 11.87 · 18.88 |  27.18 | 46.750
+G119-K2T         |      5.39 |           7.69 |     3.2% |           5.39 |         1.424 | 7.72 · 24.65 |  31.58 | 46.750
+G128-SAY         |      4.48 |           7.46 |     0.1% |           4.66 |         1.498 | 6.14 · 26.33 |  33.52 | 49.200
+G103-GARSON      |      4.53 |           7.53 |     1.0% |           4.71 |         1.481 | 0.74 · 30.46 |  31.76 | 49.200
+G124-ACIK        |      4.50 |           7.51 |     0.7% |           4.66 |         1.480 | 4.13 · 28.20 |  22.19 | 49.200
+G124-KAPALI      |      4.51 |           7.51 |     0.8% |           4.67 |         1.472 | 4.18 · 28.05 |  22.32 | 49.200
+G124-KAT2-KAPALI |      4.47 |           7.45 |     0.0% |           4.65 |         1.500 | 5.87 · 26.81 |  33.38 | 49.200
+
+--- §2 TEMPO — istek → servis (G-95/96/97) ---
+kol              | oturma→ilk istek sn (ort · en uzun) | oturma→ilk servis sn (ort · en uzun) | bekleme/fincan sn (servis edilen) | kaçan fincan % | servis anında yığın · kalkış yığını | oyuncu servis/dk (zincir boyunca)
+TABAN            |    0.1 ·   0.1 |   15.0 · 119.4 |   10.9 |   %7.4 | 7.601 · 3.148 | 8.60
+KORUNUM          |    0.1 ·   0.1 |   15.0 · 119.4 |   10.9 |   %7.4 | 7.601 · 3.148 | 8.60
+G95-ESKI         |   25.0 ·  25.1 |   35.3 ·  97.7 |    8.9 |   %4.8 | 6.138 · 3.097 | 8.96
+G96-KALKIS       |    0.1 ·   0.1 |   10.8 · 113.7 |    9.0 |   %3.0 | 0 · 3.167 | 14.39
+G97-S18          |    0.1 ·   0.1 |   16.9 · 110.8 |   11.5 |  %12.4 | 8.373 · 3.216 | 9.84
+G97-S12          |    0.1 ·   0.1 |   20.4 ·  99.2 |   12.9 |  %18.2 | 9.211 · 3.262 | 9.85
+G103-BULASIKSIZ  |    0.1 ·   0.1 |   13.7 · 119.9 |   10.2 |   %5.8 | 7.576 · 3.157 | 10.31
+SV-EMU0          |    0.1 ·   0.1 |   14.8 · 117.0 |   11.0 |   %7.4 | 7.622 · 3.163 | 8.60
+G119-K2          |    0.1 ·   0.1 |   10.4 · 119.8 |    8.4 |   %3.8 | 5.560 · 2.772 | 11.98
+G119-K2T         |    0.1 ·   0.1 |   13.1 · 119.2 |    9.6 |   %6.0 | 7.015 · 3.040 | 10.35
+G128-SAY         |    0.1 ·   0.1 |   14.8 · 116.0 |   10.8 |   %7.9 | 7.505 · 3.198 | 8.92
+G103-GARSON      |    0.1 ·   0.1 |   16.3 · 119.7 |   11.8 |  %10.1 | 8.370 · 3.175 | 0.98
+G124-ACIK        |    0.1 ·   0.1 |   14.7 · 118.2 |   11.0 |   %8.3 | 8.275 · 3.332 | 5.99
+G124-KAPALI      |    0.1 ·   0.1 |   15.4 · 119.7 |   11.0 |   %8.8 | 8.190 · 3.387 | 6.14
+G124-KAT2-KAPALI |    0.1 ·   0.1 |   15.0 · 119.4 |   10.9 |   %7.4 | 7.601 · 3.148 | 8.60
+
+--- §3 DARBOĞAZ (G-103) — bekleyen kahvenin fincan-saniyesi nerede? (arz sırayla: tepside → ocakta hazır → temiz fincan yok / pişiyor) ---
+kol              | taşımada (tepside) = oyuncu + garson | ocakta hazır, alınmadı | temiz fincan yok (bulaşık) | pişiyor (demleme/kuyruk) | temiz=0 süre % | boş masanın kirli-bloklu süresi % | bekleme/fincan sn | kaçan % | oyuncu servis/dk garson sonrası
+TABAN            |  %57.4 =  %12.2 +  %45.1 |                  %42.5 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |  10.9 |  %7.4 | 5.81
+KORUNUM          |  %57.4 =  %12.2 +  %45.1 |                  %42.5 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |  10.9 |  %7.4 | 5.81
+G95-ESKI         |  %71.6 =  %21.8 +  %49.8 |                  %28.4 |                       %0.0 |                     %0.0 |           %0.1 |   %0.0 |   8.9 |  %4.8 | 6.26
+G96-KALKIS       |  %74.2 =  %30.7 +  %43.5 |                  %25.7 |                       %0.0 |                     %0.0 |           %0.1 |   %0.0 |   9.0 |  %3.0 | 12.99
+G97-S18          |  %49.1 =  %10.3 +  %38.9 |                  %49.8 |                       %0.0 |                     %1.1 |           %0.1 |   %0.0 |  11.5 | %12.4 | 6.64
+G97-S12          |  %38.4 =   %7.3 +  %31.0 |                  %58.7 |                       %0.0 |                     %2.9 |           %0.1 |   %0.1 |  12.9 | %18.2 | 6.63
+G103-BULASIKSIZ  |  %63.9 =  %18.0 +  %45.9 |                  %36.1 |                       %0.0 |                     %0.0 |           %0.0 |   %0.0 |  10.2 |  %5.8 | 7.10
+SV-EMU0          |  %57.9 =  %12.4 +  %45.5 |                  %42.0 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |  11.0 |  %7.4 | 5.86
+G119-K2          |  %63.1 =  %29.2 +  %34.0 |                  %36.7 |                       %0.0 |                     %0.2 |           %0.1 |   %0.0 |   8.4 |  %3.8 | 12.03
+G119-K2T         |  %59.5 =  %15.6 +  %44.0 |                  %40.3 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |   9.6 |  %6.0 | 7.73
+G128-SAY         |  %58.4 =  %12.8 +  %45.6 |                  %41.5 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |  10.8 |  %7.9 | 6.08
+G103-GARSON      |  %49.5 =   %1.4 +  %48.1 |                  %50.4 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |  11.8 | %10.1 | 0.46
+G124-ACIK        |  %59.9 =  %15.7 +  %44.2 |                  %40.1 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |  11.0 |  %8.3 | 4.00
+G124-KAPALI      |  %56.0 =  %10.1 +  %45.9 |                  %43.9 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |  11.0 |  %8.8 | 4.05
+G124-KAT2-KAPALI |  %57.4 =  %12.2 +  %45.1 |                  %42.5 |                       %0.0 |                     %0.1 |           %0.1 |   %0.0 |  10.9 |  %7.4 | 5.81
+
+--- §4 MASA Sv KAPISI (G-119/G-122) ---
+kol              | Sv ilk görülme sa | ilk Sv alımı sa | ilk Sv2 · ilk Sv3 sa | k2s2okey3 · k2s2okey6 sa | zincirden önce Sv alımı / toplam | zincir sa | KAT 2 BİTER sa | Δ% SV-EMU0
+TABAN            |              4.47 |            4.50 | 4.50 · 4.54 | 1.47 · 1.92 | 0 / 88 | 4.47 | 7.45 | -0.4%
+SV-EMU0          |              4.47 |            4.50 | 4.50 · 4.55 | 1.47 · 1.92 | 0 / 88 | 4.47 | 7.48 | 0.0%
+G119-K2          |              1.47 |            1.56 | 1.56 · 2.71 | 1.47 · 2.65 | 84 / 88 | 8.38 | 8.47 | 13.2%
+G119-K2T         |              1.47 |            1.56 | 1.56 · 5.42 | 1.47 · 2.65 | 21 / 88 | 5.39 | 7.69 | 2.8%
+  G119-K2 zincir boyunca alım sırası: k2okey1 · k2okey3 · k2garson · k2okey4 · ocak/lavabo yük. · k2garson2 · k2salon2 · k2s2okey1 · k2s2okey2 · k2bulasikci · k2cezve2 · ocak/lavabo yük. · k2s2okey3 · Sv2 k2okey2 · Sv2 k2okey1 · Sv2 k2okey3 · Sv2 k2okey4 · Sv2 k2s2okey1 · Sv2 k2s2okey2 · Sv2 k2s2okey3 · k2s2okey4 · Sv2 k2s2okey4 · k2s2okey5 · Sv2 k2s2okey5 · k2s2okey6 · Sv3 k2okey2 · Sv3 k2okey1 · Sv3 k2okey3 · Sv3 k2okey4 · Sv3 k2s2okey1 · Sv4 k2okey2 · Sv4 k2okey1 · Sv4 k2okey3 · Sv4 k2okey4 · Sv4 k2s2okey1 · Sv5 k2okey2 · Sv5 k2okey1 · Sv5 k2okey3 · Sv5 k2okey4 · Sv5 k2s2okey1 · Sv3 k2s2okey2 · Sv4 k2s2okey2 · Sv5 k2s2okey2 · Sv3 k2s2okey3 · Sv4 k2s2okey3 · Sv5 k2s2okey3 · Sv3 k2s2okey4 · Sv4 k2s2okey4 · Sv5 k2s2okey4 · Sv3 k2s2okey5 · Sv4 k2s2okey5 · Sv5 k2s2okey5 · Sv2 k2s2okey6 · Sv3 k2s2okey6 · Sv4 k2s2okey6 · Sv5 k2s2okey6 · k2garson3 · k2lavabo · ocak/lavabo yük. · k2salon3 · ocak/lavabo yük. · ocak/lavabo yük. · k2tavla1 · Sv2 k2tavla1 · Sv3 k2tavla1 · Sv4 k2tavla1 · Sv5 k2tavla1 · k2tavla2 · Sv2 k2tavla2 · Sv3 k2tavla2 · Sv4 k2tavla2 · Sv5 k2tavla2 · garson garsonHiz · ocak/lavabo yük. · k2tavla3 · Sv2 k2tavla3 · Sv3 k2tavla3 · Sv4 k2tavla3 · Sv5 k2tavla3 · k2tavla4 · Sv2 k2tavla4 · Sv3 k2tavla4 · Sv4 k2tavla4 · Sv5 k2tavla4 · k2tavla5 · Sv2 k2tavla5 · Sv3 k2tavla5 · Sv4 k2tavla5 · Sv5 k2tavla5 · garson garsonTepsi · ocak/lavabo yük. · k2tavla6 · Sv2 k2tavla6 · Sv3 k2tavla6 · Sv4 k2tavla6 · Sv5 k2tavla6 · ocak/lavabo yük. · k2tavla7 · Sv2 k2tavla7 · Sv3 k2tavla7 · Sv4 k2tavla7 · Sv5 k2tavla7 · k2tavla8 · Sv2 k2tavla8 · Sv3 k2tavla8 · Sv4 k2tavla8 · Sv5 k2tavla8 · ocak/lavabo yük. · k2tavla9 · Sv2 k2tavla9 · Sv3 k2tavla9 · Sv4 k2tavla9 · Sv5 k2tavla9 · k2tavla10 · Sv2 k2tavla10 · Sv3 k2tavla10 · Sv4 k2tavla10 · Sv5 k2tavla10 · garson garsonTepsi · k2tavla11 · Sv2 k2tavla11 · Sv3 k2tavla11 · Sv4 k2tavla11 · Sv5 k2tavla11 · ocak/lavabo yük. · k2tavla12
+  G119-K2T zincir boyunca alım sırası: k2okey1 · k2okey3 · k2garson · k2okey4 · ocak/lavabo yük. · k2garson2 · k2salon2 · k2s2okey1 · k2s2okey2 · k2bulasikci · k2cezve2 · ocak/lavabo yük. · k2s2okey3 · Sv2 k2okey2 · Sv2 k2okey1 · Sv2 k2okey3 · Sv2 k2okey4 · Sv2 k2s2okey1 · Sv2 k2s2okey2 · Sv2 k2s2okey3 · k2s2okey4 · Sv2 k2s2okey4 · k2s2okey5 · Sv2 k2s2okey5 · k2s2okey6 · Sv2 k2s2okey6 · k2garson3 · k2lavabo · ocak/lavabo yük. · k2salon3 · ocak/lavabo yük. · ocak/lavabo yük. · k2tavla1 · Sv2 k2tavla1 · k2tavla2 · Sv2 k2tavla2 · garson garsonHiz · ocak/lavabo yük. · k2tavla3 · Sv2 k2tavla3 · k2tavla4 · Sv2 k2tavla4 · k2tavla5 · Sv2 k2tavla5 · garson garsonTepsi · ocak/lavabo yük. · k2tavla6 · Sv2 k2tavla6 · ocak/lavabo yük. · k2tavla7 · Sv2 k2tavla7 · k2tavla8 · Sv2 k2tavla8 · ocak/lavabo yük. · k2tavla9 · Sv2 k2tavla9 · k2tavla10 · Sv2 k2tavla10 · garson garsonTepsi · k2tavla11 · Sv2 k2tavla11 · ocak/lavabo yük. · k2tavla12
+
+--- §5 BİRİKTİRME PENCERELERİ (G-123) — alımlar arası bekleme; TABAN ---
+TABAN: 130 alım · >10 dk biriktirme 1 kez (toplam 10.1 dk) · en uzun 10.1 dk
+   >10 dk: pad k2garson2 (10.100) 10.1 dk @ 1.142 coin/dk
+   tavla pad'leri: la1 13.600: 8.9 dk @ 1.732/dk · la2 13.900: 6.1 dk @ 1.931/dk · la3 14.100: 7.9 dk @ 2.039/dk · la4 14.400: 7.1 dk @ 1.732/dk · la5 14.700: 8.5 dk @ 2.002/dk · la6 15.000: 8.0 dk @ 2.145/dk · la7 15.300: 8.2 dk @ 1.873/dk · la8 15.600: 8.1 dk @ 2.219/dk · la9 15.900: 7.1 dk @ 2.251/dk · la10 16.100: 7.2 dk @ 2.585/dk · la11 16.400: 7.8 dk @ 2.137/dk · la12 16.700: 6.7 dk @ 2.867/dk
+G119-K2: 130 alım · >10 dk biriktirme 1 kez (toplam 10.1 dk) · en uzun 10.1 dk
+   >10 dk: pad k2garson2 (10.100) 10.1 dk @ 1.142 coin/dk
+   tavla pad'leri: la1 13.600: 5.9 dk @ 2.672/dk · la2 13.900: 5.9 dk @ 2.350/dk · la3 14.100: 5.4 dk @ 3.000/dk · la4 14.400: 5.4 dk @ 2.674/dk · la5 14.700: 5.6 dk @ 3.050/dk · la6 15.000: 5.4 dk @ 3.145/dk · la7 15.300: 5.2 dk @ 2.977/dk · la8 15.600: 5.5 dk @ 3.253/dk · la9 15.900: 5.3 dk @ 3.026/dk · la10 16.100: 5.0 dk @ 3.709/dk · la11 16.400: 4.9 dk @ 3.403/dk · la12 16.700: 4.4 dk @ 4.326/dk
+
+--- §6 GÖREVLER (G-128) — görev süresi dk; sayaç görevleri ve en uzun ---
+TABAN     | k2_kahve1 0.1 · k2_topla 0.1 · k2_kahve10 1.0 · k2_grup5 2.1 · k2_kahve40 3.2 · k2_tavlaKahve 5.2 | en uzun k2_tavla12 20.8 · >15 dk: 8 · hat 4.65 sa · sayaca eklenen garson servisi 0
+KORUNUM   | k2_kahve1 0.1 · k2_topla 0.1 · k2_kahve10 1.0 · k2_grup5 2.1 · k2_kahve40 3.2 · k2_tavlaKahve 5.2 | en uzun k2_tavla12 20.8 · >15 dk: 8 · hat 4.65 sa · sayaca eklenen garson servisi 0
+G128-SAY  | k2_kahve1 0.1 · k2_topla 0.1 · k2_kahve10 1.0 · k2_grup5 2.1 · k2_kahve40 1.9 · k2_tavlaKahve 5.8 | en uzun k2_tavla12 20.0 · >15 dk: 9 · hat 4.66 sa · sayaca eklenen garson servisi 16
+G119-K2   | k2_kahve1 0.1 · k2_topla 0.1 · k2_kahve10 1.0 · k2_grup5 2.1 · k2_kahve40 3.2 · k2_tavlaKahve 5.3 | en uzun k2_garson3 157.0 · >15 dk: 9 · hat 8.38 sa · sayaca eklenen garson servisi 0
+
+--- §6b G-124 — Kat 2 yığınlarının oto-toplaması (180 sn, Kat 1 kuralı); ziyaret = 20 dk Kat 2 / 10 dk Kat 1 ---
+kol              | KAT 2 BİTER sa | Δ% TABAN | Kat 1'deyken coin/dk: toplam = Kat 2 oto + Kat 1 | Kat 2'ye dönüşte yerde bekleyen coin (ort) | Kat 2'deyken oto-toplanan coin/dk
+TABAN            |           7.45 |     0.0% | — | — | 0
+G124-ACIK        |           7.51 |     0.7% | 1.829 = 1.241 + 588 | 1.798 | 24
+G124-KAPALI      |           7.51 |     0.8% | 582 = 0 + 582 | 14.134 | 0
+G124-KAT2-KAPALI |           7.45 |     0.0% | — | — | 0
+TABAN bütün görevler: k2_kahve1 0.1 · k2_okey1 7.6 · k2_topla 0.1 · k2_kahve10 1.0 · k2_garson 8.6 · k2_okey4 9.9 · k2_garson2 13.4 · k2_salon2 8.5 · k2_grup5 2.1 · k2_s2okey1 4.5 · k2_s2okey2 9.1 · k2_bulasikci 3.2 · k2_cezve2 9.6 · k2_kahve40 3.2 · k2_s2okey4 16.7! · k2_s2okey6 17.6! · k2_garson3 8.4 · k2_lavabo 7.1 · k2_salon3 11.7 · k2_tavla1 16.6! · k2_tavlaKahve 5.2 · k2_tavla3 17.2! · k2_tavla5 15.5! · k2_tavla6 14.7 · k2_tavla8 19.1! · k2_tavla10 17.0! · k2_tavla12 20.8! · k2_sv2 1.4 · k2_sv5 9.4
+
+--- §7 PARMAK İZLERİ ---
+SV-EMU0: iz 59f31ba8 · Kat 2 biter 26937.6 sn · hat 16104.0 sn
+G96-KALKIS: iz 9836251b · Kat 2 biter 26425.5 sn · hat 16562.8 sn
+KORUNUM: iz 2863ea95 · Kat 2 biter 26832.3 sn · hat 16749.7 sn
+G119-K2T: iz 65179ddd · Kat 2 biter 27684.2 sn · hat 19410.9 sn
+G97-S12: iz 3e05d3be · Kat 2 biter 28094.0 sn · hat 17668.4 sn
+G103-BULASIKSIZ: iz 75fe4bd9 · Kat 2 biter 26708.0 sn · hat 16660.0 sn
+G128-SAY: iz c3b2640c · Kat 2 biter 26852.3 sn · hat 16772.9 sn
+TABAN: iz 2863ea95 · Kat 2 biter 26832.3 sn · hat 16749.7 sn
+G97-S18: iz 44319b6e · Kat 2 biter 27234.2 sn · hat 17025.5 sn
+G95-ESKI: iz 44a2fadf · Kat 2 biter 27464.7 sn · hat 17303.3 sn
+G119-K2: iz 674dc7b6 · Kat 2 biter 30481.6 sn · hat 30160.9 sn
+G124-KAT2-KAPALI: iz 2863ea95 · Kat 2 biter 26832.3 sn · hat 16749.7 sn
+G124-ACIK: iz 67728d7e · Kat 2 biter 27026.3 sn · hat 16768.1 sn
+G103-GARSON: iz ff1cddcd · Kat 2 biter 27110.0 sn · hat 16965.8 sn
+G124-KAPALI: iz 8e2f14db · Kat 2 biter 27052.7 sn · hat 16823.8 sn
+
+(süre: 844 sn duvar saati)

@@ -1,0 +1,122 @@
+<!--
+  s5-tasarim-gorev.html — G-120 MAKET parçaları (kod değil). `tools/s5-tasarim-cek.mjs` her parçayı ÇALIŞAN OYUNUN
+  sayfasına enjekte eder: arka plan gerçek oyun, renkler/fontlar oyunun kendi token'ları (src/index.css :root).
+  Parçalar `<!--AD-->…<!--/AD-->` arasında. Emoji yok: simgeler CSS şekli.
+-->
+<!--STIL-->
+<style>
+  #s5-maket { position: fixed; inset: 0; z-index: 9999; pointer-events: none; font-family: var(--font-game); color: var(--tx); }
+  #s5-maket .gizle-bant { display: none; }
+  .s5-kart { background: linear-gradient(180deg, var(--kart), var(--kart2)); border: 3px solid var(--ot); border-radius: var(--r3); box-shadow: var(--k3duz); }
+  .s5-kicker { font: 800 var(--p1)/1 var(--font-game); letter-spacing: .08em; color: var(--ac); text-transform: uppercase; }
+  .s5-baslik { font: 800 var(--p4)/1.15 var(--font-game); color: var(--tx); }
+  .s5-yol { position: relative; height: 18px; border-radius: var(--rr); background: var(--oyuk); border: 2px solid var(--ot); overflow: hidden; }
+  .s5-yol i { position: absolute; inset: 0 auto 0 0; background: linear-gradient(180deg, var(--ok), var(--ok2)); border-radius: var(--rr); }
+  .s5-yol b { position: absolute; inset: 0; display: grid; place-items: center; font: 400 12px/1 var(--font-num); color: #fff; text-shadow: 0 1px 0 var(--ot); }
+  .s5-odul { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: var(--rr); background: var(--oyuk); border: 2px solid var(--ot); font: 400 14px/1 var(--font-num); color: var(--para); }
+  .s5-sikke { width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ffe9a0, #f2b31b 60%, #b97a06); border: 1.5px solid var(--ot); }
+  .s5-sv { display: inline-grid; place-items: center; min-width: 34px; height: 22px; padding: 0 6px; border-radius: 7px; border: 2px solid var(--ot); background: linear-gradient(180deg, #c9b6ff, #8f78ea); font: 400 13px/1 var(--font-num); color: #fff; text-shadow: 0 1px 0 var(--ot); }
+  .s5-sv.y { background: linear-gradient(180deg, var(--ac), var(--ac2)); color: var(--txa); text-shadow: none; }
+  .s5-ok { width: 0; height: 0; border-left: 7px solid transparent; border-right: 7px solid transparent; border-bottom: 10px solid currentColor; display: inline-block; }
+  .s5-dugme { display: inline-grid; place-items: center; padding: 8px 18px; border-radius: var(--rr); border: 3px solid var(--ot); background: linear-gradient(180deg, var(--ac), var(--ac2)); color: var(--txa); font: 800 var(--p3)/1 var(--font-game); box-shadow: var(--k2); }
+  .s5-not { position: absolute; left: 10px; right: 10px; top: 118px; padding: 7px 10px; border-radius: 12px; background: rgba(16, 11, 46, .82); color: #fff; font: 600 12px/1.35 system-ui; border: 1px dashed #ffc24b; }
+  /* açık lila tam ekran (Görevler ekranının bugünkü dili) */
+  .s5-ekran { position: absolute; inset: 0 0 64px 0; background: linear-gradient(180deg, var(--lila-g1), var(--lila-g2)); padding: 64px 14px 14px; display: flex; flex-direction: column; gap: 10px; color: var(--lila-tx); }
+  .s5-ekran h3 { margin: 0; font: 400 26px/1 var(--font-num); color: #fff; text-shadow: 0 2px 0 var(--lila-ot); text-align: center; }
+  .s5-ekran .sec { font: 800 12px/1 var(--font-game); letter-spacing: .08em; color: #fff; margin-top: 4px; }
+  .s5-lkart { background: linear-gradient(180deg, var(--lila-kart), var(--lila-kart2)); border: 2px solid var(--lila-ot); border-radius: var(--r2); box-shadow: var(--lila-golge); padding: 10px 12px; }
+  .s5-satir { display: grid; grid-template-columns: 34px 1fr auto; align-items: center; gap: 10px; }
+  .s5-yuvar { width: 34px; height: 34px; border-radius: 50%; border: 2px solid var(--lila-ot); background: var(--lila-oyuk); display: grid; place-items: center; font: 400 14px/1 var(--font-num); color: var(--lila-ot); }
+  .s5-ekran .ad { font: 800 14px/1.2 var(--font-game); color: var(--lila-tx); }
+  .s5-ekran .alt { font: 600 11px/1.2 var(--font-game); color: var(--lila-tx2); }
+  .s5-ekran .para { font: 400 14px/1 var(--font-num); color: var(--lila-para-koyu); display: inline-flex; gap: 4px; align-items: center; }
+  .s5-yuk { border-color: #6b4fd6; background: linear-gradient(180deg, #fff6dc, #ffe7a6); }
+</style>
+<!--/STIL-->
+
+<!--M1-->
+<style>[data-testid="quest"], [data-testid="kat-bandi"], .band { visibility: hidden !important; }</style>
+<div class="s5-kart" style="position:absolute;left:10px;right:10px;bottom:76px;padding:10px 12px 12px">
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <span class="s5-kicker">KAT 2 · GÖREV 4 / 29</span>
+    <span class="s5-odul"><span class="s5-sikke"></span>+1.350</span>
+  </div>
+  <div class="s5-baslik" style="margin:6px 0 8px">10 kahve götür</div>
+  <div class="s5-yol"><i style="width:60%"></i><b>6 / 10</b></div>
+  <div style="display:flex;gap:8px;margin-top:9px;align-items:center;font:700 12px/1.2 var(--font-game);color:var(--tx2)">
+    <span>SIRADA</span>
+    <span style="padding:3px 9px;border-radius:var(--rr);background:var(--oyuk);border:2px solid var(--ot);color:var(--tx)">Garson Tut</span>
+    <span style="padding:3px 9px;border-radius:var(--rr);background:#4b3b9a;border:2px solid var(--ot);color:var(--ac);display:inline-flex;gap:5px;align-items:center"><span class="s5-ok"></span>Okey masaları Sv2</span>
+  </div>
+</div>
+<div class="s5-not">M1 — bant tek satırdan karta büyür: sayaç + ödül + "sırada" (yükseltme görevi amber). Dokununca bugünkü gibi hedefe kamera.</div>
+<!--/M1-->
+
+<!--M2-->
+<div class="s5-ekran">
+  <h3>Görevler</h3>
+  <div class="sec">ŞİMDİ</div>
+  <div class="s5-lkart" style="border-width:3px">
+    <div style="display:flex;justify-content:space-between"><span class="s5-kicker" style="color:var(--lila-ac-koyu)">KAHVECİ · 4 / 29</span><span class="para"><span class="s5-sikke"></span>+1.350</span></div>
+    <div class="ad" style="font-size:18px;margin:5px 0 8px">10 kahve götür</div>
+    <div class="s5-yol"><i style="width:60%"></i><b>6 / 10</b></div>
+    <div style="text-align:right;margin-top:8px"><span class="s5-dugme" style="padding:6px 16px;font-size:13px">Göster</span></div>
+  </div>
+  <div class="sec">SIRADAKİ</div>
+  <div class="s5-lkart s5-satir"><span class="s5-yuvar">5</span><span><div class="ad">Garson Tut</div><div class="alt">Merdiven salonu</div></span><span class="para"><span class="s5-sikke"></span>+700</span></div>
+  <div class="s5-lkart s5-satir s5-yuk"><span class="s5-yuvar" style="background:var(--ac);color:var(--txa)"><span class="s5-ok"></span></span><span><div class="ad">Okey masalarını Sv2'ye çıkar</div><div class="alt">YÜKSELTME · 0 / 2 masa</div></span><span class="para"><span class="s5-sikke"></span>+900</span></div>
+  <div class="s5-lkart s5-satir"><span class="s5-yuvar">7</span><span><div class="ad">Merdiven salonunu doldur</div><div class="alt">0 / 4 masa</div></span><span class="para"><span class="s5-sikke"></span>+1.450</span></div>
+  <div class="sec">BUGÜN · GÜNLÜK</div>
+  <div class="s5-lkart" style="display:flex;justify-content:space-between;align-items:center"><span class="ad">3 günlük görev · 1 ödül hazır</span><span class="alt">aç</span></div>
+</div>
+<div class="s5-not" style="top:auto;bottom:76px">M2 — aynı sekme, sıra ters: hat görevi en üstte + sıradaki 3 (yükseltme görevi araya girer, sarı kart); günlükler tek satıra katlanır.</div>
+<!--/M2-->
+
+<!--M3-->
+<div class="s5-ekran">
+  <h3>Kat 2 Yolu</h3>
+  <div class="s5-lkart" style="padding:12px 12px 6px;flex:1;position:relative;overflow:hidden">
+    <div style="position:absolute;left:33px;top:16px;bottom:10px;width:6px;border-radius:3px;background:var(--lila-oyuk)"></div>
+    <div style="position:absolute;left:33px;top:16px;height:178px;width:6px;border-radius:3px;background:var(--lila-ok-koyu)"></div>
+    <div style="display:flex;flex-direction:column;gap:14px;position:relative">
+      <div class="s5-satir"><span class="s5-yuvar" style="background:var(--ok);color:#fff">1</span><span><div class="ad">Okey masasına kahve götür</div><div class="alt">tamam</div></span><span class="para">+1.300</span></div>
+      <div class="s5-satir"><span class="s5-yuvar" style="background:var(--ok);color:#fff">2</span><span><div class="ad">Yeni okey masası aç</div><div class="alt">tamam</div></span><span class="para">+1.300</span></div>
+      <div class="s5-satir"><span class="s5-yuvar" style="background:var(--ok);color:#fff">3</span><span><div class="ad">Masanın parasını topla</div><div class="alt">tamam</div></span><span class="para">+1.350</span></div>
+      <div class="s5-satir" style="background:#fff3cf;border:2px solid var(--lila-ot);border-radius:14px;padding:6px;margin:-6px"><span class="s5-yuvar" style="background:var(--ac);color:var(--txa);width:40px;height:40px">4</span><span><div class="ad" style="font-size:16px">10 kahve götür</div><div class="s5-yol" style="height:14px;margin-top:4px"><i style="width:60%"></i></div></span><span class="para">+1.350</span></div>
+      <div class="s5-satir"><span class="s5-yuvar">5</span><span><div class="ad">Garson Tut</div></span><span class="para">+700</span></div>
+      <div class="s5-satir"><span class="s5-yuvar" style="background:#6b4fd6;color:#fff;border-radius:9px"><span class="s5-ok"></span></span><span><div class="ad">Okey masaları Sv2</div><div class="alt" style="color:#6b4fd6">YÜKSELTME DURAĞI</div></span><span class="s5-sv">Sv2</span></div>
+      <div class="s5-satir"><span class="s5-yuvar">7</span><span><div class="ad">Merdiven salonunu doldur</div></span><span class="para">+1.450</span></div>
+      <div class="s5-satir" style="opacity:.55"><span class="s5-yuvar">8</span><span><div class="ad">2. Garsonu tut</div></span><span class="para">+1.500</span></div>
+    </div>
+  </div>
+</div>
+<div class="s5-not" style="top:auto;bottom:76px">M3 — Görevler sekmesi bir YOL: geçilen yeşil, şimdiki büyük, yükseltme durakları mor kare düğüm. "Neredeyim, sırada ne" tek bakışta.</div>
+<!--/M3-->
+
+<!--M4a-->
+<style>[data-testid="quest"], [data-testid="kat-bandi"], .band { visibility: hidden !important; }</style>
+<div class="s5-kart" style="position:absolute;left:10px;right:10px;bottom:76px;padding:10px 12px 12px">
+  <div class="s5-kicker">OKEY SALONU · ÖDÜLLÜ GÖREV</div>
+  <div class="s5-baslik" style="margin:6px 0 8px">Okey salonunda 5 masa aç</div>
+  <div class="s5-yol"><i style="width:60%"></i><b>3 / 5</b></div>
+  <div style="display:flex;align-items:center;gap:8px;margin-top:9px;font:700 13px/1.2 var(--font-game)">
+    <span style="color:var(--tx2)">ÖDÜL</span>
+    <span style="display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--rr);background:#4b3b9a;border:2px solid var(--ot)">Açık masalar <span class="s5-sv">Sv1</span><span style="color:var(--ac)">&#8594;</span><span class="s5-sv y">Sv2</span></span>
+  </div>
+</div>
+<div class="s5-not">M4 — ödül para değil YÜKSELTME: görev biter bitmez açık masalar Sv2'ye çıkar (ayrıca Sv alımı gerekmez). Ödül tipi yeni → denge (varyant kapısı).</div>
+<!--/M4a-->
+
+<!--M4b-->
+<div style="position:absolute;inset:0;background:var(--perde)"></div>
+<div style="position:absolute;left:28px;right:28px;top:250px;padding:18px 16px 16px;text-align:center;background:linear-gradient(180deg,var(--lila-kart),var(--lila-kart2));border:3px solid var(--lila-ot);border-radius:var(--r3);color:var(--lila-tx);box-shadow:var(--k3)">
+  <div class="s5-kicker" style="color:var(--lila-ac-koyu)">GÖREV TAMAM</div>
+  <div style="font:400 24px/1.1 var(--font-num);color:var(--lila-tx);margin:6px 0 12px">5 masa açıldı!</div>
+  <div style="display:flex;justify-content:center;gap:6px;margin-bottom:12px">
+    <span class="s5-sv y">Sv2</span><span class="s5-sv y">Sv2</span><span class="s5-sv y">Sv2</span><span class="s5-sv y">Sv2</span><span class="s5-sv y">Sv2</span>
+  </div>
+  <div style="font:700 14px/1.3 var(--font-game);color:var(--lila-tx2);margin-bottom:14px">Okey salonundaki 5 masa Seviye 2 oldu:<br>masa ücreti ve oyun süresi Sv2.</div>
+  <span class="s5-dugme">Masalara bak</span>
+</div>
+<div class="s5-not" style="top:auto;bottom:76px">M4 (2/2) — "Masalara bak": kamera salona gider, masalar sırayla yerinde seker (Kat 1 Sv sekmesi animasyonu).</div>
+<!--/M4b-->
