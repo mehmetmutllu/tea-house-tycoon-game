@@ -1,6 +1,6 @@
 # S5 denge raporu — oyun testi 2026-11-20 (G-92 · 95 · 96 · 97 · 103 · 119 · 122 · 123 · 124 · 128)
 
-Varyant kapısı (D-084) commit #1: araç + ham çıktı + rapor, **KARAR BOŞ**. `src/**` ve `economy.config.ts` bu turda değişmedi.
+Varyant kapısı (D-084) commit #1: araç + ham çıktı + rapor; **KARAR ve final sayılar en altta** (ikinci tur, 2026-11-21). `src/**` ve `economy.config.ts` bu turda değişmedi.
 Kaynaklar (hepsi `OLCUM=tam`, damgalar temiz — istisna §G-124 FINAL notu):
 - Kat 2: `tools/olcum-s5-denge.ts` → `docs/olcum-s5-denge.txt` (15 kol, 16 sa ufuk, dt 0,1, başlangıç D-205/D-206 `kur()` U0, 844 sn).
   Ölçülen kod = d2ef01d mantığı (koşu 4145a56 + yalnız görsel src farkıyla başladı; arada gelen commit yalnız görsel/HUD — oyun mantığı aynı).
@@ -80,5 +80,58 @@ anında yığın yok" (140 yığın) + varyant etkili · `oto` (kısa) → "G124
 - **G-128 garsonun servisi göreve sayılsın mı:** "40 kahve götür" görevi 3,2 dk'dan 1,9 dk'ya iner, oyunun geri kalanı değişmez.
   En kaliteli: **sayılsın** ("sen veya garsonların 40 kahve").
 
-## KARAR
-(boş — kullanıcı seçecek)
+## İkinci tur §Bulgular (kullanıcı kararlarından sonra yeni kollar — `docs/olcum-s5-denge-2.txt`, tam, damgalar temiz)
+Ölçülen kod: HEAD 0da05f3 + yalnız `kat2Dongu.ts` kancaları (config'de yoksa oyun birebir: TABAN izi 5eb3f5c2 kısa / 7,45 sa tam = birinci tur).
+G96-BULASIK = kahve 12 sn içilir, içilip fincan kirlenince parası düşer (teslimde değil), masa ücreti kalkışta. ILK12 = yalnız 1 masa açıkken aralık 12 sn.
+
+| kol | Kat 2 biter sa | Δ% | coin/dk | kaçan % | bekleme sn | ilk masada oyuncu boşta % |
+|---|---|---|---|---|---|---|
+| TABAN | 7,45 | — | 1.500 | 7,4 | 10,9 | 85,9 |
+| G96-BULASIK | 7,45 | −0,0 | 1.502 | 6,7 | 10,7 | 86,0 |
+| G97-S18 | 7,57 | +1,5 | 1.474 | 12,4 | 11,5 | 84,2 |
+| G97-S18-ILK12 | 7,50 | +0,6 | 1.476 | 11,7 | 11,3 | **77,9** |
+| G96 + S18 | 7,59 | +1,8 | 1.466 | 11,9 | 11,6 | 83,5 |
+| G96 + S18 + ILK12 | 7,59 | +1,8 | 1.467 | 11,3 | 11,7 | 77,9 |
+
+Masa dilimi (açık masa sayısı) — kaçan % · garson "yetişemez" payı (bekleyen fincan > yoldaki ve boş garson yok):
+
+| dilim | TABAN | G97-S18 | G96+S18+ILK12 |
+|---|---|---|---|
+| 1 masa | 0,0 · 0,0 | 0,0 · 0,0 | 0,0 · 0,0 |
+| 2-4 | 0,0 · 0,3 | 0,1 · 4,4 | 0,3 · 5,5 |
+| 5-10 | 0,9 · 24,5 | 2,2 · 50,1 | 2,0 · 54,8 |
+| 11-16 | 2,0 · 59,7 | 5,1 · 74,6 | 4,3 · 74,9 |
+| 17-22 | **11,0 · 86,4** | **17,9 · 95,2** | **16,4 · 94,9** |
+
+Okuma: kullanıcının endişesi doğru yerde — 18 sn'de kaçan kahve masa sayısıyla büyüyor; 17-22 masada garsonlar zamanın %95'inde yetişemiyor,
+kaçan %11 → %16-18. Durma eşiğinin (%20 / Kat 2 +%10) altında; ayrı tur önerisi: garson tepsi/hız ya da geç-oyun istek aralığı ölçümü.
+ILK12: ilk masada boşta %84 → %78, kaçan artmıyor (11,7 ≤ 12,4) → **uygulandı**.
+
+## KARAR (kullanıcı, 2026-11-20)
+- **G-96:** kahve parası içilip fincan kirlenince düşer (her kahve ayrı, `kahveIcme` 12 sn), masa ücreti kalkışta. Yorum: oyunda fincan önceden
+  "sonraki teslimde" kirleniyordu; "içip bitirince" için içme süresi eklendi (teslimde para yok, ~12 sn sonra düşer).
+- **G-97:** 18 sn (okey 7,2 · tavla 2,5) + ILK12 (yalnız 1 masa açıkken 12 sn). · **G-119/122:** K2T (`masaSvKapi`; Sv görevleri hattan düştü).
+- **G-123** fiyatlar kalsın · **G-95 / G-103** değişiklik yok · **G-124** oto-toplama açık (zaten kodda) · **G-128** garson servisi sayılır.
+- **G-108:** `docs/s5-npc/g108.patch` uygulandı, bekçi `tests/g108-garson-itmez.test.ts`. · **G-129 C:** tavla ikişerli blok (z 1,3/3,7 · 7,3/9,7 · 13,3/15,7).
+- **G-92:** kararsız — dokunulmadı.
+
+## Final (birleşik kod — `FINAL=1 OLCUM=tam KOLLAR=TABAN,KORUNUM` → `docs/olcum-s5-denge-final.txt`, damgalar temiz, KORUNUM = TABAN izi)
+Kat 2 biter **7,82 sa (+%5,0)** · zincir 5,51 sa · **1.392 coin/dk** · kaçan **%11,3** · bekleme 10,9 sn · ilk Sv 1,57 sa (Sv2 okey3'ten sonra,
+Sv3 5,54 sa = bütün masalar açılınca) · zincirden önce 21/88 Sv · k2_kahve40 1,5 dk · içilince düşen yığın 9.067 / kalkış 3.021 · 17-22 masada kaçan %17,5.
+Dikkat: K2T'de Sv alımı zinciri uzatıyor — k2_s2okey4 görevi 54 dk, k2_s2okey6 26 dk (>15 dk görev 9 adet). Kayıt: masa yerleri/Sv kimlikle → saveVersion
+gerekmedi; Sv görevinde/sonunda kalmış kayıt bitmiş hatta oturur (`kat2GorevKaydiCoz` D-205 sırasında geriye yürür).
+
+Mutasyonlar (12/12 yakalandı): G-128 eski sayım · G-119 yarı kuralı yok / Sv görevleri hatta / kayıt geriye yürümez · G-129 blok 1,0 · G-96 para serviste /
+içilince düşmez / kalkışta kaybolur / config kancası yok · G-97 ILK kancası yok / tavla aralığı 25 · G-108 yama geri.
+
+### Önerilen D kayıtları (decisions.md'ye orkestratör yazar)
+- **D-G96** Kat 2 kahve parası içilince: teslimde para yok; kahve `kahveIcme` 12 sn içilir, bitince fincan kirli + parası masanın önüne (her
+  teslim ayrı; yenisi gelirse önceki o an biter). Kalkışta içilmekte olan + masa ücreti. Ölçüm G96-BULASIK: biter ±0, kaçan 7,4 → 6,7.
+- **D-G97** İstek 25 → 18 sn, fiyat teorik kahve geliri sabit (okey 9→7,2, tavla 3→2,5); yalnız 1 masa açıkken 12 sn (ilk masada boşta 84→78 %).
+  Bedel: 17-22 masada kaçan 11 → 17 %, garsonlar %95 yetişemiyor → geç-oyun taşıma kapasitesi ayrı tur.
+- **D-G119** Kat 2 masa Sv kapısı zincirde (`masaSvKapi`): 3 okey → Sv2, bütün masalar → Sv3, yarısı Sv3 → Sv4, yarısı Sv4 → Sv5. D-142'nin Kat 2
+  karşılığı (görev kapısı) ve Sv görevleri kalktı. Kat 1'e uygulanması ölçülmedi.
+- **D-G128** Kat 2 'servis' görev sayacı oyuncu + garson servisini sayar.
+- **D-G129** Kat 2 tavla düzeni C: ikişerli blok, okey sıralarının ±1,2 hizasında; 22 masa, sıra/fiyat/zincir aynı.
+- **D-G108** Kat 1 garsonu oyuncuyu itmez (navStep'ten oyuncu/engel ayrışması çıktı).
+- Final birleşik: Kat 2 7,45 → 7,82 sa (+%5,0), kaçan 7,4 → 11,3 %, 1.500 → 1.392 coin/dk.

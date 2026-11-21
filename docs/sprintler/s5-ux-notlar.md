@@ -38,3 +38,12 @@ Commit yok (brif). tsc temiz; ilgili 8 test dosyası yeşil (144). Tam `vitest` 
 | Kahveleri buradan al | Pick up coffee here | G-104 ipucu |
 | Bulaşıkları buraya koy | Drop dirty cups here | G-104 ipucu |
 | Yeni: Cezve ocağını yükseltebilirsin ☕ | New: You can upgrade the Coffee Station ☕ | G-107 bildirim |
+
+## S5 uygulama turu (2026-11-21) — G-120 M1+M2 · G-128 metni
+- **Mantık** `src/components/ui/gorevPano.ts` (saf: `kat1Hat`/`kat2Hat` · `kartVerisi` · `sekmeDuzeni` · `gunlukOzeti`). **Kart** `GorevKarti.tsx` (Kat 1 + Kat 2 + Kat 2 kutlaması aynı bileşen; testid'ler aynen). Geri almak = bu iki dosya + HUD'daki 3 `<GorevKarti>` + `QuestsSheet`.
+- **M1:** "GÖREV n/N" (Kat 2: "KAT 2 · GÖREV n/N") · başlık · ödül / çubuk / SIRADA 2 çip; yükseltme durağı (Kat 1 seviye hedefleri, Kat 2 `masaSv`) amber çip. Kart boyu `--bant-ek` ile ölçülür → sağ yığın, bildirim, tepsi/karakter ipucu kartla yükselir (4 kural). Telefon kart 111 px (hap 48), tablet 153 px (zoom 1,4, en 602).
+- **M2:** aktif → SIRADA 3 (numaralı; yükseltme amber + "YÜKSELTME") → TAMAMLANAN (katlı) → BUGÜN · GÜNLÜK tek satır (dokun → liste + reklamsız hediye + not). Düzen `data-bolum` ile DOM'da.
+- **G-128:** yalnız garson tutulduktan sonraki çoklu kahve görevi: "Garsonlarınla 40 kahve götür" / "Serve 40 coffees with your servers" (`economy.config.ts` yalnız `title` — DENGE'nin dosyası, tek satır). `k2_kahve10` garsondan ÖNCE → metni değişmedi. `k2_tavlaKahve` zaten garsonu sayıyordu, metne dokunulmadı.
+- **Bekçi** `tests/s5-ux2.test.ts` (15); mutasyon 6/6 (günlük üstte · sırada aktifi alır · no 0 tabanlı · yüzde kelepçesiz · tamamlanan sırası · sekme 2). Güncellenen eski testler: `ekran-kabugu` #6, `tarama-w4-rehber` (yapı GorevKarti'ye taşındı).
+- **Duman:** `smoke.mjs` sekme sırasını denetler + günlüğü açıp sayar; `smoke-en.mjs` katlı satırları açıp tarar. Kareler `docs/kareler/s5-ux2-{telefon,tablet}-{kat1,kat2}-*.png` (araç `tools/s5-ux2-kare.mjs`, port 4171, konsol hatası yok).
+- ChatGPT turuna yeni metinler: GÖREV {1}/{2} · KAT 2 · GÖREV {1}/{2} · YÜKSELTME · BUGÜN · GÜNLÜK · {1} günlük görev (· {2} ödül hazır) · Garsonlarınla 40 kahve götür.

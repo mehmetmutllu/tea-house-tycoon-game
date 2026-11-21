@@ -70,7 +70,7 @@ export const en: Record<string, string> = {
   "Servis hızı": "Service Speed",
   "Sen yokken mekân çalıştı": "The place kept running while you were away",
   "İzle, +{1}": "Watch, +{1}",
-  "BUGÜN": "TODAY",
+  "BUGÜN · GÜNLÜK": "TODAY · DAILY",
   "Bugünkü görevleri tamamladın — yenileri yarın": "You've completed today's tasks — new ones tomorrow",
   "Ödülünü al": "Claim Reward",
   "Hedefe bak": "View Goal",
@@ -471,7 +471,7 @@ export const en: Record<string, string> = {
   "Tavla köşesinde 10 masaya ulaş": "Reach 10 tables in the backgammon corner",
   "İKİNCİ OCAK": "SECOND STATION",
   "2. ocağı kur": "Set up the 2nd coffee station",
-  "40 kahve götür": "Serve 40 coffees",
+  "Garsonlarınla 40 kahve götür": "Serve 40 coffees with your servers",
   "Okey salonunu doldur": "Fill the Okey room",
   "TAVLA KÖŞESİ": "BACKGAMMON CORNER",
   "Tavla köşesini aç": "Unlock the backgammon corner",
@@ -505,4 +505,10 @@ export const en: Record<string, string> = {
   "Kahveleri buradan al": "Pick up coffee here",
   "Bulaşıkları buraya koy": "Drop dirty cups here",
   "Yeni: Cezve ocağını yükseltebilirsin ☕": "New: You can upgrade the Coffee Station ☕",
+  // S5 · G-120 görev kartı (M1) + Görevler sekmesi (M2)
+  "GÖREV {1}/{2}": "TASK {1}/{2}",
+  "KAT 2 · GÖREV {1}/{2}": "FLOOR 2 · TASK {1}/{2}",
+  "YÜKSELTME": "UPGRADE",
+  "{1} günlük görev": "{1} daily tasks",
+  "{1} günlük görev · {2} ödül hazır": "{1} daily tasks · {2} ready to claim",
 };

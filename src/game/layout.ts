@@ -1064,16 +1064,13 @@ export function getPlayerNavGrid(tables: number, areasOpen: number): NavGrid {
 }
 
 /** Personeli hedefe BFS rotasıyla bir adım ilerlet; merkeze `reach` mesafesine girince true. pos yerinde değişir.
- *  `avoid` verilirse (oyuncu konumu) personel onun ÜSTÜNE BİNMEZ → kenarından ayrılır (oyuncuya göre hareket eder);
- *  `avoidSolids` (masa gövdeleri) verilirse oyuncudan kaçarken masaya itilmez. */
+ *  G-108: oyuncudan ayrışma (eski `avoid`/`avoidSolids`) kalktı — personel oyuncunun içinden geçer, itmez. */
 export function navStep(
   pos: Vec3,
   target: RVec3,
   step: number,
   grid: NavGrid,
   reach: number,
-  avoid?: RVec3,
-  avoidSolids?: Solid[],
 ): boolean {
   if (dist2D(pos, target) <= reach) return true;
   const path = findNavPath(grid, pos, target[0], target[2], reach);
@@ -1081,24 +1078,6 @@ export function navStep(
     moveToward(pos, [path[0][0], pos[1], path[0][1]], step); // bir sonraki waypoint'e
   } else {
     moveToward(pos, target, step); // yol yoksa (nadir) en iyi çaba: doğrudan
-  }
-  // Oyuncudan ayrış (boids separation): personel oyuncunun ÜSTÜNE binmesin → onu da hesaba katarak kenara geçsin.
-  // Oyuncu otoriter (input'la hareket); personel ona yer açar. Masaya itecekse itme (hafif örtüşmeye izin ver).
-  if (avoid) {
-    const minD = LAYOUT.actorRadius + LAYOUT.playerRadius;
-    const dx = pos[0] - avoid[0];
-    const dz = pos[2] - avoid[2];
-    const d = Math.hypot(dx, dz);
-    if (d < minD) {
-      const ux = d < 1e-4 ? 1 : dx / d;
-      const uz = d < 1e-4 ? 0 : dz / d;
-      const nx = avoid[0] + ux * minD;
-      const nz = avoid[2] + uz * minD;
-      if (!avoidSolids || !hitsSolid(nx, nz, avoidSolids, LAYOUT.actorRadius)) {
-        pos[0] = nx;
-        pos[2] = nz;
-      }
-    }
   }
   return dist2D(pos, target) <= reach;
 }

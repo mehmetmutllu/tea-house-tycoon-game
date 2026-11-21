@@ -32,7 +32,7 @@ const svKol = (): Kat2SvKol => ({
   kahveAralikCarpan: [1, 1, 1, 1, 1],
   gelisAralikCarpan: [1, 1, 1, 1, 1],
 });
-const AYAR_SV: Kat2Ayar = { ...C.kat2, masaSv: { okey: svKol(), tavla: svKol() } };
+const AYAR_SV: Kat2Ayar = { ...C.kat2, masaSv: { okey: svKol(), tavla: svKol() }, masaSvKapi: undefined };
 const AYAR: Kat2Ayar = { ...C.kat2 };
 delete (AYAR as { masaSv?: unknown }).masaSv;
 
@@ -53,8 +53,8 @@ describe('Kat 2 görev hattı — config bekçisi', () => {
     expect(svsiz.length).toBeLessThanOrEqual(28);
     expect(svsiz.some((g) => g.hedef.tip === 'masaSv')).toBe(false);
     expect(kat2Gorevleri(G, AYAR_SV).length).toBe(G.length);
-    // Config bugün masaSv taşımıyorsa oynanan hat Sv'siz (sözleşme: kapı ölçümden sonra).
-    expect(kat2Gorevleri(G, C.kat2).length).toBe(C.kat2.masaSv ? G.length : svsiz.length);
+    // Config masaSv taşımıyorsa ya da Sv kapısı zincirdeyse (S5 G-119 `masaSvKapi`) oynanan hat Sv'siz.
+    expect(kat2Gorevleri(G, C.kat2).length).toBe(C.kat2.masaSv && !C.kat2.masaSvKapi ? G.length : svsiz.length);
   });
   it('ilk görevler zincirin açılış sırasını izler, hat zincirin son pad\'inde biter, her salonun görevi var', () => {
     const padHedef = G.flatMap((g) => (g.hedef.tip === 'pad' ? [g.hedef.id] : []));
@@ -124,15 +124,15 @@ describe('Kat 2 görev hattı — bekçinin kendisi (mutasyonlar yakalanır)', (
 });
 
 describe('kat2GorevIlerlet', () => {
-  it('servis görevi yalnız ELLE götürülen kahveyi sayar, delta görev başından', () => {
+  it('S5 G-128: servis görevi garsonun götürdüğünü de sayar ("sen veya garsonların"), delta görev başından', () => {
     const d = { padsDone: [...HAZIR] };
-    let r = kat2GorevIlerlet(undefined, olay({ servis: 2, garsonServis: 2 }), d, G, AYAR);
-    expect(r.biten).toEqual([]);
-    expect(r.kayit.idx).toBe(0);
-    r = kat2GorevIlerlet(r.kayit, olay({ servis: 1 }), d, G, AYAR);
+    const r = kat2GorevIlerlet(undefined, olay({ servis: 2, garsonServis: 2 }), d, G, AYAR);
     expect(r.biten.map((g) => g.id)).toEqual(['k2_kahve1']);
     expect(r.odul).toBe(G[0].reward);
     expect(r.kayit).toEqual({ idx: 1, sayac: {} });
+    const i = G.findIndex((g) => g.id === 'k2_kahve10');
+    const r2 = kat2GorevIlerlet({ idx: i, sayac: { servis: 5 } }, olay({ servis: 3, garsonServis: 3 }), { padsDone: [...HAZIR] }, G, AYAR);
+    expect(r2.kayit.sayac.servis).toBe(8);
   });
   it('olay yoksa AYNI kayıt döner (store kimliği korur)', () => {
     const k: Kat2GorevKayit = { idx: 3, sayac: { servis: 4 } };
@@ -291,8 +291,8 @@ describe('Kat 2 analitik olayları', () => {
 import { kat2SvCanli as svCanli, kat2Gorevleri as hatOf } from '../src/game/kat2Gorev';
 import { economyConfig as CFG } from '../src/config/economy.config';
 import type { Kat2Ayar as K2A } from '../src/game/kat2Dongu';
-describe('kat2SvCanli (D-142 karşılığı)', () => {
-  const ayar = CFG.kat2 as K2A;
+describe('kat2SvCanli (D-142 karşılığı; S5 G-119 zincir kapısı yokken)', () => {
+  const ayar = { ...(CFG.kat2 as K2A), masaSvKapi: undefined };
   const hat = hatOf(CFG.kat2Gorevler, ayar);
   const svIdx = hat.findIndex((g) => g.hedef.tip === 'masaSv');
   it('hat başında kapalı, Sv görevinde açık, hat bitince açık', () => {

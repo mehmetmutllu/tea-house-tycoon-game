@@ -25,13 +25,12 @@ import { Suspense, memo, useLayoutEffect, useRef, useState } from 'react';
 import { CylinderGeometry, MeshStandardMaterial, Object3D, type InstancedMesh } from 'three';
 import { FloorPattern } from './floorPattern';
 import { WallPanels, type WallSlab } from './wallPanel';
-import { WALL_H } from './wallOlcu';
 import { MaketCrates, MaketIskele, MaketLavaboBlock, MaketMoloz, MaketPlant, MaketTadilatPerde, MaketWall } from './maketParts';
 import { FLOOR_THEMES, PALETTE, WALL_THEMES, type FloorTheme } from '../../config/palette';
 import { BAND, FLOOR_HALF } from '../../game/layout';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
 import { AGIZ, KAT2_ALANLAR, KAT2_LAVABO_PAD, KAT2_MASALAR, KOVA, OCAKLAR, kat2AcikAlan, type Dik } from '../../game/kat';
-import { DIS_PAY, KUYU_BASAMAK, KUYU_DERIN, KUYU_PERDE, KUYU_YANAK, disKenarlar, kuyuBasamakYariEn, type Kenar } from './kat2/yapiOlcu';
+import { DIS_PAY, KUYU_BASAMAK, KUYU_DERIN, KUYU_PERDE, KUYU_YANAK, MUTFAK_SAG_DUVAR, disKenarlar, kenarBoyu, kuyuBasamakYariEn, type Kenar } from './kat2/yapiOlcu';
 import { TozDonusumu } from './kat2/TozDonusumu';
 import { useGame } from '../../game/store';
 import { Dogus, OkeyMasa, SvSekme, TavlaMasa } from './kat2/Esya';
@@ -43,13 +42,13 @@ import { useMasaSvleri } from './kat2/masaSv';
 import { KademeliOge } from './kat2/kademeliMontaj';
 import { masaSvOku } from '../../game/kat2Dongu';
 import { MasaGrubu, useKalkisIzle } from './kat2/Grup';
-import { Bolmeler } from './kat2/Bolme';
+import { AlcakBolme, Bolmeler } from './kat2/Bolme';
 import { Kat2Garson } from './kat2/Garson';
 import { KahveBalonu } from './kat2/Balon';
 import { ParaYiginlari } from './kat2/Para';
 import { masaSirasi, oyundaMaskesi } from './kat2/masaIndeks';
 import { Kat2PadIsareti } from './kat2/PadIsaret';
-import { ArkaDuvarUstu } from './kat2/Dis';
+import { AltKat, ArkaDuvarUstu } from './kat2/Dis';
 import { silindirGolgeVerir } from './golgeKurali';
 
 const H = FLOOR_HALF;
@@ -79,7 +78,7 @@ function pencereler(k: Kenar): { a: number; b: number }[] {
 
 function hat(k: Kenar): WallSlab[] {
   const c = k.dis ? k.c + Math.sign(k.c) * M : k.c;
-  const sl = (a: number, b: number, y0 = 0, h = WALL_H): WallSlab =>
+  const sl = (a: number, b: number, y0 = 0, h = kenarBoyu(k)): WallSlab =>
     k.yon === 'x'
       ? { x: (a + b) / 2, z: c, w: b - a, d: 0.18, theme: TEMA, y0, h }
       : { x: c, z: (a + b) / 2, w: 0.18, d: b - a, theme: TEMA, y0, h };
@@ -117,8 +116,9 @@ function Duvarlar() {
           <meshStandardMaterial color={PALETTE.glass} emissive={PALETTE.glass} emissiveIntensity={0.18} transparent opacity={0.34} />
         </mesh>
       ))}
-      {/* kovanın ara duvarları (Kat 1 ile aynı hat, 2,2) — G-116: arka uç dış duvarın eksenine kadar (arada çentik yok) */}
-      <MaketWall x1={KOVA.x0} z1={BANT_ARKA - M} x2={KOVA.x0} z2={BAND.front} h={2.2} />
+      {/* mutfak | kova: ALÇAK duvar (G-102 C), ucu ön tezgâhın arkasında biter (G-111) — `yapiOlcu.MUTFAK_SAG_DUVAR` */}
+      <AlcakBolme c={{ yatay: false, a: MUTFAK_SAG_DUVAR.z0, b: MUTFAK_SAG_DUVAR.z1, c: MUTFAK_SAG_DUVAR.x, h: MUTFAK_SAG_DUVAR.h }} />
+      {/* kova | WC: ara duvar (Kat 1 ile aynı hat, 2,2) — G-116: arka uç dış duvarın eksenine kadar (arada çentik yok) */}
       <MaketWall x1={KOVA.x1} z1={BANT_ARKA - M} x2={KOVA.x1} z2={BAND.front} h={2.2} />
     </group>
   );
@@ -486,6 +486,7 @@ export function Kat2Sahne() {
       <KademeliOge sira={2}>
         <MerdivenAgzi />
         <ArkaDuvarUstu />
+        <AltKat />
       </KademeliOge>
       <KademeliOge sira={3}>
         {OCAKLAR.map((o, i) => (padsDone.includes(o.id) ? <Ocak key={o.id} i={i} ilk={ilk.current} /> : null))}

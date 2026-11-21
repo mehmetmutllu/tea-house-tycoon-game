@@ -25,7 +25,7 @@ import { FloorPattern } from '../src/components/three/floorPattern';
 import { WallPanels } from '../src/components/three/wallPanel';
 import { SceneLights } from '../src/components/three/lights';
 import { atlasReady } from '../src/components/three/recolor';
-import { FLOOR_S, floorKaroModel, floorKaroW, zeminEsleme } from '../src/components/three/kitchenLook';
+import { FLOOR_S, floorKaroModel, floorKaroW, temaNative, zeminEsleme } from '../src/components/three/kitchenLook';
 import { DOLAP_UST, KANARYA, MASA_UST } from '../src/components/three/vitrinDekorLook';
 import { KUCUK_PX, type KucukTur } from './kucuk-resim-liste';
 
@@ -106,7 +106,7 @@ function ZeminParcasi({ floorId }: { floorId: string }) {
 function MutfakParcasi({ temaId }: { temaId: string }) {
   const w = floorKaroW('kucuk');
   const src = `${KAY_MUTFAK}${floorKaroModel('kucuk')}.gltf`;
-  const esleme = temaId === 'klasik' ? undefined : zeminEsleme(temaId);
+  const esleme = temaNative(temaId) ? undefined : zeminEsleme(temaId);
   return (
     <group>
       {[[-0.5, -0.5], [0.5, -0.5], [-0.5, 0.5], [0.5, 0.5]].map(([x, z], i) => (

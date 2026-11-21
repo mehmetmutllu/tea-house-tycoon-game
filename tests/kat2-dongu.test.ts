@@ -63,11 +63,11 @@ function sur(d: Kat2Dunya, sn: number, g: Kat2Girdi, dt = 0.1) {
 }
 
 describe('config — D-184 V4 → D-198 G2 (mekanizma testleri D184_AYAR ile)', () => {
-  it('seçilen kolun sayıları (D-198 G5 kol G2: 90 sn oyun · 10 sn geliş · ücret 38 · hemen kahve + anında para)', () => {
+  it('seçilen kolun sayıları (D-198 G5 kol G2 + S5 G-96/G-97: 90 sn oyun · 10 sn geliş · ücret 38 · hemen kahve · 18 sn aralık · para içilince)', () => {
     const K: Kat2Ayar = C.kat2;
-    expect([K.oturum, K.kahveAralik, K.istekAdet, K.kahveFiyat, K.masaUcreti]).toEqual([90, 25, 2, 9, 38]);
+    expect([K.oturum, K.kahveAralik, K.istekAdet, K.kahveFiyat, K.masaUcreti]).toEqual([90, 18, 2, 7.2, 38]);
     expect([K.gelisAralik, K.yurume, K.kahveSabir, K.demleme, K.ocakKuyruk]).toEqual([10, 5, 25, 4, 4]);
-    expect([K.ilkGelis, K.ilkKahve, K.kahveAninda]).toEqual([3, 0, true]);
+    expect([K.ilkGelis, K.ilkKahve, K.kahveIcme, K.kahveAralikIlk]).toEqual([3, 0, 12, { masa: 1, aralik: 12 }]);
   });
 
   it('zincir (D-191 + D-201): hazır masa + ocak → 2 masa → garson → masa → 2. garson → okey salonu → 2 masa → bulaşıkçı → 2. ocak → 4 masa → 3. garson → lavabo → tavla köşesi → 12 tavla', () => {

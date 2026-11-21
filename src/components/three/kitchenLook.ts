@@ -678,6 +678,7 @@ export const floorKaroW = (k: FayansKaro) => FLOOR_NATIVE[k] * FLOOR_S;
  * denemede yanlış çıkmıştı — istenen "yakın iki kahve" yerine yüksek kontrastlı dama gelmişti):
  *   [0,1] #343434 koyu  · [0,4] #d5dcdf beyaz    ← zeminin doğal çifti
  *   [0,6] #995842 kahve · [1,5] #daae7d açık tan ← satılan temanın çifti
+ *   [0,7] #6b5d53 koyu kahve · [1,4] #e8ceb4 krem ← ücretsiz zemin (Kat 1 + Kat 2, G-112)
  */
 export interface ZeminTemasi {
   koyu: Goz;
@@ -689,14 +690,22 @@ export interface ZeminTemasi {
 /** Zeminin DOĞAL gözleri — temanın kaynak tarafı. */
 export const ZEMIN_NATIVE = { koyu: [0, 1] as Goz, acik: [0, 4] as Goz };
 
+/**
+ * G-112 (kullanıcı 2026-11-21): Kat 1 mutfağının ücretsiz zemini = Kat 2 mutfağının koyu kahve-krem daması.
+ * Kimlik `klasik` KALDI, yalnız gözleri değişti: kayıtta 'klasik' olan herkes (yeni ve eski kayıt) bunu görür,
+ * kayıt şeması ve `ownedCosmetics` değişmez (migrasyon gerekmez); satın alınmış 'kahve' olduğu gibi kalır.
+ * Eski siyah-beyaz `siyahBeyaz` olarak tanımlı (paketin doğal hâli); mağazada satılması ayrı karar (config + i18n).
+ */
+const KOYU_KAHVE_KREM: ZeminTemasi = { koyu: [0, 7], acik: [1, 4], swatch: ['#6b5d53', '#e8ceb4'] };
+
 export const ZEMIN_TEMALARI: Record<string, ZeminTemasi> = {
-  // Paketin kendi hâli — hiçbir göz taşınmaz. Kullanıcı dört kolu ekranda karşılaştırıp seçti
-  // (`docs/gorsel/ss/s4-zemin-*.png`): *"kesinlikle ufak ve siyah beyaz olan olsun"*.
-  klasik: { ...ZEMIN_NATIVE, swatch: ['#343434', '#d5dcdf'] },
-  // Satılan TEK tema — `docs/gorsel/ss/s4-zemin-kucuk-kahve.png` karesindeki zeminin ta kendisi.
+  klasik: KOYU_KAHVE_KREM,
+  // Satılan tema — `docs/gorsel/ss/s4-zemin-kucuk-kahve.png` karesindeki zeminin ta kendisi.
   kahve: { koyu: [0, 6], acik: [1, 5], swatch: ['#995842', '#daae7d'] },
-  // Kat 2 mutfağının zemini (kullanıcı 2026-11-17, `kat2/Mutfak.KAT2_ZEMIN`); mağazada satılmaz.
-  koyuKahve: { koyu: [0, 7], acik: [1, 4], swatch: ['#6b5d53', '#e8ceb4'] },
+  // Kat 2 mutfağının zemini (`kat2/Mutfak.KAT2_ZEMIN`) — Kat 1'in ücretsiz zeminiyle AYNI nesne (tek kaynak).
+  koyuKahve: KOYU_KAHVE_KREM,
+  // Paketin kendi hâli (S4'te seçilen siyah-beyaz, 2026-11-21'e kadar ücretsiz zemin); hiçbir göz taşınmaz.
+  siyahBeyaz: { ...ZEMIN_NATIVE, swatch: ['#343434', '#d5dcdf'] },
 };
 
 /** Temanın UV eşlemesi (kaynak göz → hedef göz). */
@@ -709,7 +718,10 @@ export function zeminEsleme(id: string): (readonly [Goz, Goz])[] {
 }
 
 /** Tema hiçbir gözü taşımıyorsa geometri klonlamaya gerek yok. */
-export const temaNative = (id: string): boolean => (id || 'klasik') === 'klasik';
+export const temaNative = (id: string): boolean => {
+  const t = ZEMIN_TEMALARI[id] ?? ZEMIN_TEMALARI.klasik;
+  return t.koyu.join() === ZEMIN_NATIVE.koyu.join() && t.acik.join() === ZEMIN_NATIVE.acik.join();
+};
 
 /**
  * Karonun dünya KALINLIĞI. Model bir levha: üst yüzü native y = 0,5'te, tabanı 0'da.

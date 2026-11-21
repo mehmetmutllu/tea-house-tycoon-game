@@ -44,13 +44,12 @@ export function fincanYerleri(hazir: number): [number, number][] {
 
 /**
  * G-127 (oyun testi 2026-11-20: "ortadaki tepsiye konan bardaklar tepsinin içine göçüyor"): leğen gövdesi kapalı
- * silindir — üstü y+0,16'da DOLU bir kapak; su (0,14) onun altında görünmüyor, fincanlar (0,10-0,13) kapağın içine
- * gömülüyordu. Su artık kenar halkasının içinde görünür, fincanlar su yüzüne (tabağı altta) oturur.
+ * silindir — üstü y+0,16'da DOLU bir bakır kapak. Fincanlar (eskiden 0,10-0,13) kapağın içine gömülüyordu.
+ * Kullanıcı 2026-11-21: su OLMASIN (mavi yüzey kalktı), fincanlar bakırın ÜSTÜNE otursun — "tepsiye koyuyoruz,
+ * oradan alıp kullanıyor". Fincanın tabağı (yerel dip 0) tam kapak yüzüne değer; kenar halkası tepsi dudağı gibi durur.
  */
 export const LEGEN_AGIZ = 0.16;
-export const LEGEN_SU = LEGEN_AGIZ + 0.004;
-/** Suyun yarı kalınlığı (0,01 disk) — tabağın altı su yüzüne değer. */
-export const LEGEN_FINCAN = LEGEN_SU + 0.005;
+export const LEGEN_FINCAN = LEGEN_AGIZ;
 
 // ---- G-130: tavla haneleri (tahta yereli) ----
 

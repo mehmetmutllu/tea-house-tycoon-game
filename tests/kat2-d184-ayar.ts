@@ -16,4 +16,11 @@ export const D184_AYAR: Kat2Ayar = {
   ilkKahve: undefined,
   kahveAninda: false,
   bulasik: undefined,
+  // S5 (G-96/G-97/G-119) öncesi mekanik: kahve parası içmeye bağlı değil, 25 sn aralık, eski fiyatlar, Sv kapısı görevde.
+  kahveIcme: undefined,
+  kahveAralikIlk: undefined,
+  kahveAralik: 25,
+  kahveFiyat: 9,
+  tavla: C.kat2.tavla && { ...C.kat2.tavla, kahveAralik: 25, kahveFiyat: 3 },
+  masaSvKapi: undefined,
 };

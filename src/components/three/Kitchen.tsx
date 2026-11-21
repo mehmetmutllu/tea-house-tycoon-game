@@ -243,7 +243,7 @@ function ilkMesh(o: { traverse: (f: (c: object) => void) => void }): Mesh | null
 }
 
 /**
- * Modeli temanın gözlerine taşınmış bir KOPYAYLA döndürür. Tema `klasik` ise orijinal döner
+ * Modeli temanın gözlerine taşınmış bir KOPYAYLA döndürür. Tema paketin doğal gözlerindeyse (`temaNative`) orijinal döner
  * (klonlama yok). Orijinal geometriye asla dokunulmaz — aynı model başka yerde doğal rengiyle
  * kullanılabilsin.
  */

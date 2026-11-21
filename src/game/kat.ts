@@ -353,13 +353,15 @@ export function baslangicKati(kayitKat: unknown, kat2: Kat2Kayit, etkin = kat2Et
 /**
  * D-191 düzeni N7 (TAM AYNA): iki iç sütun x ±6,5, iki dış sütun x ±13. Merdiven salonunun arka
  * sırası z −3,5 (dört okey); okey salonu sol iki sütun × z 2,5 / 8,5 / 14,5; tavla köşesi sağ iki
- * sütun × altı sıra 2,5…14,5. Merdiven önü (x ±4,6 arası) yol olarak boş kalır. Yer geometri, sayı değil.
+ * sütun × üç ikişerli blok (S5 G-129 C: okey sıralarının hizasında, 1,3…15,7). Merdiven önü (x ±4,6 arası) yol olarak boş kalır. Yer geometri, sayı değil.
  */
 const N7_IC = 6.5;
 const N7_DIS = 13;
 const N7_ARKA_Z = -3.5;
 const N7_OKEY_Z = [2.5, 8.5, 14.5] as const;
-const N7_TAVLA_Z = [2.5, 4.9, 7.3, 9.7, 12.1, 14.5] as const;
+/** S5 G-129 C: tavla ikişerli blok, her blok bir okey sırasının (z 2,5 · 8,5 · 14,5) hizasında, ±1,2. */
+const N7_TAVLA_BLOK_DZ = 1.2;
+const N7_TAVLA_Z = N7_OKEY_Z.flatMap((z) => [z - N7_TAVLA_BLOK_DZ, z + N7_TAVLA_BLOK_DZ]);
 
 /**
  * Merdiven salonunun dört okey masası. `k2okey2` (iç sol, merdivene en yakın) kata çıkışta HAZIR

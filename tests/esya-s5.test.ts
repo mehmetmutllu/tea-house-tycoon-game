@@ -11,7 +11,7 @@ import { dolumKesiti, servisCercevesi, masaCercevesi, type Nokta } from '../src/
 import { CERCEVE, KOSE_R, icCevre } from '../src/components/three/GroundMarker';
 import { SIKKE_R, YIGIN_OLCEK, kademe, sikkeYerleri } from '../src/components/three/kat2/Para';
 import {
-  FINCAN, HANE_KAKMA, HANE_SADE, LEGEN_AGIZ, LEGEN_FINCAN, LEGEN_SU, SET_OLCEK, TEPSI_SUTUN, fincanYerleri, haneYerleri, tepsiAraligi,
+  FINCAN, HANE_KAKMA, HANE_SADE, LEGEN_AGIZ, LEGEN_FINCAN, SET_OLCEK, TEPSI_SUTUN, fincanYerleri, haneYerleri, tepsiAraligi,
 } from '../src/components/three/kat2/esyaOlcu';
 import { KAT2_ON_TEZGAH, KAT2_YIKAMA_YER, OCAKLAR } from '../src/game/kat';
 
@@ -130,13 +130,22 @@ describe('G-126 · hazır kahve mangalın iki yanında ikişerli', () => {
   });
 });
 
-describe('G-127 · leğendeki kirli fincan su yüzünde, gövdeye gömülmez', () => {
-  it('su leğenin dolu kapağının üstünde, fincan tabağı su yüzünde', () => {
-    expect(LEGEN_SU).toBeGreaterThan(LEGEN_AGIZ);
-    expect(LEGEN_FINCAN).toBeGreaterThanOrEqual(LEGEN_SU + 0.005 - 1e-9);
+describe('G-127 · leğendeki kirli fincan bakırın ÜSTÜNDE, su yok', () => {
+  it('fincan tabağı bakır kapağın yüzüne oturur (gömülmez, havada durmaz); gövde boyu aynı sabitten', () => {
+    expect(LEGEN_FINCAN).toBeCloseTo(LEGEN_AGIZ, 9);
     const kod = yorumsuz(oku('src/components/three/kat2/Bulasik.tsx'));
     expect(kod).toMatch(/y \+ LEGEN_FINCAN/);
-    expect(kod).toMatch(/pos=\{\[0, y \+ LEGEN_SU, 0\]\}/);
+    expect(kod).toMatch(/h=\{LEGEN_AGIZ\}/);
+    expect(kod).toMatch(/pos=\{\[0, y \+ LEGEN_AGIZ \/ 2, 0\]\}/);
+  });
+  it('kullanıcı 2026-11-21: leğende su yüzeyi (mavi disk) yok, gövde bakır', () => {
+    const kod = yorumsuz(oku('src/components/three/kat2/Bulasik.tsx'));
+    const yikamaYeri = kod.slice(kod.indexOf('export function YikamaYeri'), kod.indexOf('export function Kat2Bulasikci'));
+    expect(yikamaYeri).not.toMatch(/#8fc9d9|LEGEN_SU/i);
+    expect(yikamaYeri).toMatch(/renk="#b87333"/);
+    // Leğen + ibrik + süzgeç yalnız bakır/pirinç/ahşap; mavi bir yüzey (yeni su diski) eklenirse burada düşer.
+    const renkler = new Set((yikamaYeri.match(/#[0-9a-f]{6}/gi) ?? []).map((r) => r.toLowerCase()));
+    expect([...renkler].filter((r) => !['#b87333', '#c98a4b', '#c9a227', '#8a6a4f'].includes(r))).toEqual([]);
   });
 });
 

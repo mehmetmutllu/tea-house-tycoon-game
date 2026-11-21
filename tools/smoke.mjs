@@ -289,7 +289,13 @@ try {
   {
     await tikla('[data-testid="quests"]');
     await page.waitForSelector('[data-testid="quests-panel"]', { timeout: 5000 });
-    const kart = await page.$$('[data-testid^="daily-"][data-state]');
+    // G-120 M2: sekme aktif görevle açılır, günlükler EN ALTTA tek satır — sıra ve açılış denetlenir.
+    const bolumler = await page.$$eval('[data-testid="quests-panel"] [data-bolum]', (l) => l.map((e) => e.getAttribute('data-bolum')));
+    if (bolumler[0] === 'aktif' && bolumler[bolumler.length - 1] === 'gunluk') pass(`Görevler sekmesi: aktif önce, günlük en altta (${bolumler.join(' › ')})`);
+    else fail(`Görevler sekmesi sırası bozuk: ${bolumler.join(' › ')}`);
+    await tikla('[data-testid="gunluk-ozet"]');
+    await page.waitForSelector('[data-testid="daily-list"]', { timeout: 5000 });
+    const kart = await page.$$('[data-testid="daily-list"] [data-testid^="daily-"][data-state]');
     if (kart.length === 3) pass('Günlük görev: üç kart çizildi');
     else fail(`Günlük görev kartı 3 değil: ${kart.length}`);
 

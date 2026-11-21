@@ -56,7 +56,8 @@ const kol = (o: Partial<Kat2SvKol> = {}): Kat2SvKol => ({
 });
 // Sv'siz taban: config'te D-195'ten beri `masaSv` var; "ayar yokken birebir" sözleşmesi onsuz ölçülür.
 const { masaSv: _cfgSv, ...TEMEL0 } = C.kat2 as Kat2Ayar;
-const TEMEL: Kat2Ayar = TEMEL0;
+// S5: G-119 zincir kapısı (`masaSvKapi`) ve G-97 ilk-masa aralığı bu dosyanın D-124/D-142 kuralının dışında (`s5-denge.test.ts`).
+const TEMEL: Kat2Ayar = { ...TEMEL0, masaSvKapi: undefined, kahveAralikIlk: undefined };
 const SV: Kat2Ayar = { ...TEMEL, masaSv: { okey: kol(), tavla: kol({ fiyat: [0, 500, 1_000, 1_500, 2_000] }) } };
 const HEPSI: string[] = [...C.kat2.hazir, ...TEMEL.padler.map((p) => p.id)];
 const MASALAR = KAT2_MASALAR.map((m) => m.id);

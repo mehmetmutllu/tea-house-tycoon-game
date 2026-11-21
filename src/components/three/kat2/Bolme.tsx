@@ -55,7 +55,7 @@ function Duvar({ i, hal, bitti }: { i: number; hal: Hal; bitti: (i: number) => v
  * Alçak bölme: duvarın lambri kuşağı + üst çıtası (MaketWall lambriyi hep 0,9 çizer). G-121: yan bölme de
  * alçak (eskiden tam boy 3,2 — salon açılınca sağda yüksek duvar kalıyordu). Ölçü `yapiOlcu.bolmeCizimi`.
  */
-function AlcakBolme({ c }: { c: BolmeCizimi }) {
+export function AlcakBolme({ c }: { c: BolmeCizimi }) {
   const len = c.b - c.a;
   const m = (c.a + c.b) / 2;
   const boy = (en: number, h: number) => (c.yatay ? [len, h, en] : [en, h, len]) as [number, number, number];

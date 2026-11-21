@@ -107,7 +107,8 @@ describe('HUD bağlantıları (oynanış #2/#5/#6/#8/#9)', () => {
     expect(hud).toMatch(/\{!kat2de && trayFood > 0 && \(/);
   });
   it('Görevler paneli Kat 2\'de Kat 2 hattını listeler; Hedefler\'de Usta şeridi Kat 2\'de Kat 2\'nin Usta masalarını sayar (D-206)', () => {
-    expect(hud).toMatch(/const all: [^=]+= kat2de \? k2Hat : economyConfig\.quests;/);
+    // G-120 M2: liste hattı `K1_HAT`/`K2_HAT` (gorevPano) — Kat 2'de Kat 2'nin hattı.
+    expect(hud).toMatch(/const hat = kat2de \? K2_HAT : K1_HAT;/);
     // #8'in sözü korunur (Kat 2'de şerit Kat 1'in noktasına yollamaz) — D-206'dan beri Kat 2'nin kendi Usta noktası var.
     expect(hud).toMatch(/const ustaSahip = kat2de \? k2Usta\.length :/);
     expect(hud).toMatch(/const ustaBekleyen = kat2de\s*\? k2Masalar\.filter/);

@@ -79,8 +79,9 @@ function sur(d: Kat2Dunya, sn: number, g: Kat2Girdi, ayar: Kat2Ayar, her?: (d: K
 }
 
 describe('config — D-186 tavla T120U + zincir', () => {
-  it('tavla sayıları T120U: 2 dk oyun · 25 sn\'de 1 fincan · fincan 3 ₺ · masa ücreti 51 ₺', () => {
-    expect(A.tavla).toEqual({ oturum: 120, kahveAralik: 25, istekAdet: 1, kahveFiyat: 3, masaUcreti: 51 });
+  it('tavla sayıları T120U + S5 G-97: 2 dk oyun · 18 sn\'de 1 fincan · fincan 2,5 ₺ · masa ücreti 51 ₺', () => {
+    expect(C.kat2.tavla).toEqual({ oturum: 120, kahveAralik: 18, istekAdet: 1, kahveFiyat: 2.5, masaUcreti: 51 });
+    expect(A.tavla).toEqual({ oturum: 120, kahveAralik: 25, istekAdet: 1, kahveFiyat: 3, masaUcreti: 51 }); // mekanizma fikstürü
   });
 
   it('zincir bekçisi: YAPI tutarlı, eksik sayı yok; garson D-189 (hız 3 · tepsi 2; D-201: garson sayısı = pad sayısı)', () => {

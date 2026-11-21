@@ -12,9 +12,9 @@
  *  · G-121 salon açılınca yandaki bölme tam boy (3,2) kalıyordu → bütün bölmeler alçak (`ON_BOLME_H`, D-198 G3 dili).
  *  Yalnız görüntü: çarpışma `kat.kat2Duvarlar` (değişmedi).
  */
-import { KAT2_BOLMELER, ON_BOLME_H, type Dik } from '../../../game/kat';
+import { KAT2_BOLMELER, KAT2_ON_TEZGAH, KOVA, ON_BOLME_H, type Dik } from '../../../game/kat';
 import { BAND, FLOOR_HALF } from '../../../game/layout';
-import { WALL_M } from '../wallOlcu';
+import { ON_DUVAR_H, WALL_H, WALL_M } from '../wallOlcu';
 
 const H = FLOOR_HALF;
 /** Dış duvarın ekseni kat kenarının bu kadar dışında (Scene.Walls ile aynı). */
@@ -79,6 +79,52 @@ export function birlestir(kenarlar: readonly Kenar[]): Kenar[] {
 export function disKenarlar(alanlar: readonly Dik[]): Kenar[] {
   const bant: Dik = { x0: -H, x1: H, z0: BAND.back, z1: BAND.front };
   return birlestir(cevre([bant, ...alanlar]).filter((k) => k.dis));
+}
+
+/** Ön (kameraya bakan) kenar mı: kat kenarı z = +H'de yatay dış kenar. */
+export const onKenarMi = (k: Kenar): boolean => k.yon === 'x' && k.dis && k.c === H;
+
+/** S5 G-114 B: dış duvarın boyu — ön kenar `ON_DUVAR_H` (1,0, Kat 1 ile aynı kural), gerisi tam boy. */
+export const kenarBoyu = (k: Kenar): number => (onKenarMi(k) ? ON_DUVAR_H : WALL_H);
+
+// ---- Mutfağın sağ duvarı (G-102 C + G-111) ----
+/** Duvarın ucu ile ön tezgâhın arka yüzü arasındaki aralık (0 = değer). */
+export const MUTFAK_SAG_ARALIK = 0;
+/**
+ * Mutfak ile merdiven kovası arasındaki duvar: ALÇAK (G-102 C, D-198 dili: lambri + çıta, 1,0) ve ön ucu
+ * ön tezgâhın ARKASINDA biter (G-111): tezgâhın ucu açıkta tek parça okunur, çıta tezgâhı kesmez.
+ * Eskiden 2,2 m ve `BAND.front`a kadar uzanıyordu — tezgâhın ucu duvarın yarı kalınlığına gömülüydü.
+ * Arka ucu dış duvarın eksenine (G-116). Yalnız görüntü: çarpışma `kat.kat2Duvarlar` (değişmedi).
+ */
+export const MUTFAK_SAG_DUVAR = {
+  x: KOVA.x0,
+  z0: BAND.back - DIS_PAY,
+  z1: KAT2_ON_TEZGAH.z0 - MUTFAK_SAG_ARALIK,
+  h: ON_DUVAR_H,
+} as const;
+
+// ---- Binanın altı (G-115 C) ----
+/** Alt kat gövdesi: Kat 2'nin dış duvar hatlarında 3,2 aşağı iner (zemin üstü 0 = Kat 2 zemini). */
+export const ALT_KAT = {
+  x0: -H - DIS_PAY,
+  x1: H + DIS_PAY,
+  z0: BAND.back - DIS_PAY,
+  z1: H + DIS_PAY,
+  derin: WALL_H,
+  silme: 0.24,
+  silmeRenk: '#cdbb9b',
+  camRenk: '#3d5566',
+  /** Kat 1 kaldırımı (`Scene.Street`) ile aynı gri. */
+  sokakRenk: '#9e9e9e',
+  asfaltRenk: '#37424a',
+} as const;
+
+/** Alt kat cephesinin koyu camları (ön yüz): 6 göz, eşit adım, kat ortasında. */
+export function altKatCamlari(): { x: number; y: number; w: number; h: number }[] {
+  const n = 6;
+  const w = 1.8;
+  const adim = (ALT_KAT.x1 - ALT_KAT.x0) / n;
+  return Array.from({ length: n }, (_, i) => ({ x: ALT_KAT.x0 + adim * (i + 0.5), y: -ALT_KAT.derin * 0.53, w, h: 1.5 }));
 }
 
 // ---- Bölme (alanlar arası hat) ----

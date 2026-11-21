@@ -1210,6 +1210,10 @@ export const economyConfig = {
    * her kahvenin parası teslimde masanın önüne düşer, ilk grup 3 sn'de gelir; oyun 90 sn, sonraki grup 10 sn.
    * Masa ücreti 4 okeyde ölçülen geliri eskisiyle (72 ₺ / 180 sn) eşit tutacak şekilde kalibre (38).
    * Bekçi: `tools/olcum-kat2-g5.ts` "config = G2" · `tests/kat2-g-turu.test.ts`.
+   * S5 (kullanıcı 2026-11-20, `docs/s5-denge-raporu.md` §KARAR — bekçi `tests/s5-denge.test.ts`):
+   *  G-96 kahve `kahveIcme` sn içilir; içilip fincan kirlenince parası düşer (teslimde değil), masa ücreti kalkışta.
+   *  G-97 istek 25 → 18 sn, fiyat teorik kahve geliri/dk sabit (okey 9 × 4/5 = 7,2 · tavla 3 × 5/6 = 2,5);
+   *       yalnız 1 masa açıkken 12 sn (`kahveAralikIlk`: ilk masada oyuncu boşta %84 → %78, kaçan artmıyor).
    */
   kat2: {
     gelisAralik: 10,
@@ -1217,11 +1221,12 @@ export const economyConfig = {
     yurume: 5,
     oturum: 90,
     ilkKahve: 0,
-    kahveAninda: true,
-    kahveAralik: 25,
+    kahveIcme: 12,
+    kahveAralik: 18,
+    kahveAralikIlk: { masa: 1, aralik: 12 },
     istekAdet: 2,
     kahveSabir: 25,
-    kahveFiyat: 9,
+    kahveFiyat: 7.2,
     masaUcreti: 38,
     demleme: 4,
     ocakKuyruk: 4,
@@ -1240,6 +1245,12 @@ export const economyConfig = {
       okey: { fiyat: [0, 6_750, 7_750, 8_750, 9_750], ucretCarpan: [1, 1.634, 2.243, 2.843, 3.443], kahveAralikCarpan: [1, 1, 1, 1, 1], gelisAralikCarpan: [1, 0.75, 0.5, 0.3, 0.15] },
       tavla: { fiyat: [0, 4_750, 5_250, 5_750, 6_250], ucretCarpan: [1, 1.313, 1.607, 1.895, 2.183], kahveAralikCarpan: [1, 1, 1, 1, 1], gelisAralikCarpan: [1, 0.75, 0.5, 0.3, 0.15] },
     },
+    /**
+     * S5 G-119/G-122 (kullanıcı 2026-11-20, kol G119-K2T — `docs/s5-denge-raporu.md`): Sv kapısı zincirde, görev beklemez.
+     * Okey salonunda 3 masa → Sv2 · bütün masalar açılınca → Sv3 · açık masaların yarısı Sv3 → Sv4 · yarısı Sv4 → Sv5.
+     * Sv görevleri (`k2_sv2`, `k2_sv5`) bu yüzden hattan düşer. Bekçi `tests/s5-denge.test.ts`.
+     */
+    masaSvKapi: { sv2Pad: 'k2s2okey3', sv3Pad: 'k2tavla12' },
     /**
      * Açılış zinciri, D-191 sırası: merdiven salonunun kalanı → okey salonu (2. ocak araya) → lavabo →
      * tavla köşesi + garson. D-192 (K2-6, kol SB9-L1 — `docs/kat2-akis-zincir-raporu-k2-6.md`): her pad
@@ -1330,7 +1341,7 @@ export const economyConfig = {
      * para masa ücretinden (gelirin %20'si kahve). Tavan kişi başına okeyle eşit (27 ₺/dk/masa).
      * Geliş/yürüme/kahve sabrı okeyle ortak. Bekçi: `tools/olcum-kat2-tavla.ts` "config = T120U".
      */
-    tavla: { oturum: 120, kahveAralik: 25, istekAdet: 1, kahveFiyat: 3, masaUcreti: 51 },
+    tavla: { oturum: 120, kahveAralik: 18, istekAdet: 1, kahveFiyat: 2.5, masaUcreti: 51 },
   },
 
   /**
@@ -1360,7 +1371,7 @@ export const economyConfig = {
     { id: 'k2_s2okey2', kicker: 'OKEY SALONU', title: 'Okey salonunda 2 masa aç', hedef: { tip: 'pad', id: 'k2s2okey2' }, reward: 1_600 },
     { id: 'k2_bulasikci', kicker: 'BULAŞIKÇI', title: 'Bulaşıkçı Tut', hedef: { tip: 'pad', id: 'k2bulasikci' }, reward: 850 },
     { id: 'k2_cezve2', kicker: 'İKİNCİ OCAK', title: '2. ocağı kur', hedef: { tip: 'pad', id: 'k2cezve2' }, reward: 1_650 },
-    { id: 'k2_kahve40', kicker: 'KAHVECİ', title: '40 kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 40 }, reward: 1_650 },
+    { id: 'k2_kahve40', kicker: 'KAHVECİ', title: 'Garsonlarınla 40 kahve götür', hedef: { tip: 'sayac', sayac: 'servis', adet: 40 }, reward: 1_650 },
     { id: 'k2_s2okey4', kicker: 'OKEY SALONU', title: 'Okey salonunda 4 masa aç', hedef: { tip: 'pad', id: 'k2s2okey4' }, reward: 1_750 },
     { id: 'k2_s2okey6', kicker: 'OKEY SALONU DOLU', title: 'Okey salonunu doldur', hedef: { tip: 'pad', id: 'k2s2okey6' }, reward: 1_900 },
     { id: 'k2_garson3', kicker: 'ÜÇÜNCÜ GARSON', title: '3. Garsonu tut', hedef: { tip: 'pad', id: 'k2garson3' }, reward: 1_950 },
