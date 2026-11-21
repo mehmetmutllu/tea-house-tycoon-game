@@ -658,6 +658,7 @@ export function kat2PadEtiket(id: string): string {
   if (id === KAT2_GARSON_PADLER[0]) return t('Garson Tut');
   if (id === KAT2_GARSON_PADLER[1]) return t('2. Garson');
   if (id === KAT2_GARSON_PADLER[2]) return t('3. Garson');
+  if (id === KAT2_GARSON_PADLER[3]) return t('4. Garson');
   if (id === KAT2_BULASIKCI_PAD) return t('Bulaşıkçı Tut');
   if (id === KAT2_LAVABO_PAD) return t('Lavabo');
   if (id === KAT2_SALON_PAD[0]) return t('Okey Salonu');

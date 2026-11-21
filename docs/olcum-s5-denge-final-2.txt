@@ -1,0 +1,65 @@
+=== S5 KAT 2 DENGE (G-95/96/97 · G-103 · G-119/122 · G-123 · G-128) — varyant kapısı · D-084 ===
+Kod: 6f26414 + src farkı 94569879 (config/economy.config.ts, game/kat.ts, game/kat2Dongu.ts, game/kat2Gorev.ts, i18n/en.ts)
+Kip: tam · dt 0.1 · ufuk 16 sa · 2 koşu · başlangıç D-205/D-206 kur() (U0)
+Bugün: ilkKahve 0 sn · kahveAninda undefined · kahveAralik 18 · sabır 25 · okey 7.2/fincan ×2 · tavla 2.5 ×1 · masa ücreti okey 38 tavla 51
+G-97 dozları (anında servisle istek/oturum okey 4→5→7, tavla 5→6→9): S18 okey 7.20 tavla 2.50 · S12 okey 5.14 tavla 1.67
+
+--- §1 İLERLEME (Kat 2 biter = zincir + bütün masalar Sv5 + yükseltmeler) ---
+kol              | zincir sa | KAT 2 BİTER sa | Δ% TABAN | görev hattı sa | Kat 2 coin/dk | servis/dk oyuncu · garson | yığın topla/dk | görev ödülü
+TABAN            |      5.51 |           7.78 |     0.0% |           5.51 |         1.434 | 4.97 · 37.95 |  37.52 | 49.000
+KORUNUM          |      5.51 |           7.78 |     0.0% |           5.51 |         1.434 | 4.97 · 37.95 |  37.52 | 49.000
+
+--- §2 TEMPO — istek → servis (G-95/96/97) ---
+kol              | oturma→ilk istek sn (ort · en uzun) | oturma→ilk servis sn (ort · en uzun) | bekleme/fincan sn (servis edilen) | kaçan fincan % | servis anında yığın · kalkış yığını | oyuncu servis/dk (zincir boyunca)
+TABAN            |    0.1 ·   0.1 |    9.6 ·  67.9 |    8.8 |   %2.1 | 11.495 · 3.002 | 6.82
+KORUNUM          |    0.1 ·   0.1 |    9.6 ·  67.9 |    8.8 |   %2.1 | 11.495 · 3.002 | 6.82
+
+--- §3 DARBOĞAZ (G-103) — bekleyen kahvenin fincan-saniyesi nerede? (arz sırayla: tepside → ocakta hazır → temiz fincan yok / pişiyor) ---
+kol              | taşımada (tepside) = oyuncu + garson | ocakta hazır, alınmadı | temiz fincan yok (bulaşık) | pişiyor (demleme/kuyruk) | temiz=0 süre % | boş masanın kirli-bloklu süresi % | bekleme/fincan sn | kaçan % | oyuncu servis/dk garson sonrası
+TABAN            |  %63.6 =  %11.3 +  %52.3 |                  %35.2 |                       %0.0 |                     %1.2 |           %0.1 |   %0.4 |   8.8 |  %2.1 | 4.74
+KORUNUM          |  %63.6 =  %11.3 +  %52.3 |                  %35.2 |                       %0.0 |                     %1.2 |           %0.1 |   %0.4 |   8.8 |  %2.1 | 4.74
+
+--- §4 MASA Sv KAPISI (G-119/G-122) ---
+kol              | Sv ilk görülme sa | ilk Sv alımı sa | ilk Sv2 · ilk Sv3 sa | k2s2okey3 · k2s2okey6 sa | zincirden önce Sv alımı / toplam | zincir sa | KAT 2 BİTER sa | Δ% SV-EMU0
+TABAN            |              1.48 |            1.56 | 1.56 · 5.55 | 1.48 · 2.65 | 21 / 88 | 5.51 | 7.78 | —
+
+--- §5 BİRİKTİRME PENCERELERİ (G-123) — alımlar arası bekleme; TABAN ---
+TABAN: 131 alım · >10 dk biriktirme 1 kez (toplam 10.1 dk) · en uzun 10.1 dk
+   >10 dk: pad k2cezve2 (11.000) 10.1 dk @ 1.173 coin/dk
+   tavla pad'leri: la1 13.600: 7.5 dk @ 2.083/dk · la2 13.900: 7.1 dk @ 2.094/dk · la3 14.100: 7.2 dk @ 2.066/dk · la4 14.400: 7.8 dk @ 1.982/dk · la5 14.700: 7.6 dk @ 2.063/dk · la6 15.000: 5.5 dk @ 2.701/dk · la7 15.300: 7.0 dk @ 2.349/dk · la8 15.600: 6.8 dk @ 2.432/dk · la9 15.900: 6.6 dk @ 2.566/dk · la10 16.100: 6.4 dk @ 2.744/dk · la11 16.400: 6.5 dk @ 2.733/dk · la12 16.700: 5.5 dk @ 3.175/dk
+
+--- §6 GÖREVLER (G-128) — görev süresi dk; sayaç görevleri ve en uzun ---
+TABAN     | k2_kahve1 0.1 · k2_topla 0.1 · k2_kahve10 0.6 · k2_grup5 2.1 · k2_kahve40 1.6 · k2_tavlaKahve 5.2 | en uzun k2_tavla3 16.9 · >15 dk: 4 · hat 5.51 sa · sayaca eklenen garson servisi 0
+KORUNUM   | k2_kahve1 0.1 · k2_topla 0.1 · k2_kahve10 0.6 · k2_grup5 2.1 · k2_kahve40 1.6 · k2_tavlaKahve 5.2 | en uzun k2_tavla3 16.9 · >15 dk: 4 · hat 5.51 sa · sayaca eklenen garson servisi 0
+
+--- §6b G-124 — Kat 2 yığınlarının oto-toplaması (180 sn, Kat 1 kuralı); ziyaret = 20 dk Kat 2 / 10 dk Kat 1 ---
+kol              | KAT 2 BİTER sa | Δ% TABAN | Kat 1'deyken coin/dk: toplam = Kat 2 oto + Kat 1 | Kat 2'ye dönüşte yerde bekleyen coin (ort) | Kat 2'deyken oto-toplanan coin/dk
+TABAN            |           7.78 |     0.0% | — | — | 0
+TABAN bütün görevler: k2_kahve1 0.1 · k2_okey1 7.6 · k2_topla 0.1 · k2_kahve10 0.6 · k2_garson 9.0 · k2_okey4 9.9 · k2_garson2 13.2 · k2_salon2 8.8 · k2_grup5 2.1 · k2_s2okey1 4.0 · k2_s2okey2 9.2 · k2_bulasikci 3.3 · k2_cezve2 10.1 · k2_kahve40 1.6 · k2_s2okey4_a 9.0 · k2_okeySv3 16.1! · k2_okeySv6 15.6! · k2_s2okey4 11.9 · k2_s2okey6_a 13.1 · k2_s2okey6 13.5 · k2_garson3 13.2 · k2_lavabo 7.7 · k2_salon3 11.8 · k2_tavla1 14.4 · k2_tavlaKahve 5.2 · k2_tavla3_a 3.7 · k2_tavla3 16.9! · k2_tavla5_a 9.7 · k2_tavla5 9.5 · k2_garson4 16.0! · k2_tavla6 5.5 · k2_tavla8_a 11.5 · k2_tavla8 8.5 · k2_tavla10_a 9.8 · k2_tavla10 7.7 · k2_tavla12_a 10.9 · k2_tavla12 10.0
+
+--- §8 MASA DİLİMİ (G-97 · G-96) — açık masa sayısına göre; G96 içme 12 sn ---
+kol              | dilim  | süre dk | coin/dk | servis | kaçan % | bekleme/fincan sn | garson boşta % | yetişemez % (bekleyen > yoldaki, boş garson yok) | oyuncu boşta %
+TABAN            | 1      |     7.7 |     418 |     62 |    %0.0 |    0.5 |      — |   %0.0 | %77.9
+TABAN            | 2-4    |    47.7 |     436 |    781 |    %0.1 |    2.9 |  %12.8 |   %7.2 | %13.3
+TABAN            | 5-10   |   150.4 |     660 |  4.737 |    %1.8 |    7.3 |   %0.9 |  %47.4 | %0.2
+TABAN            | 11-16  |    78.0 |   1.292 |  3.628 |    %2.1 |    8.0 |   %0.0 |  %65.5 | %0.0
+TABAN            | 17-22  |   183.2 |   2.432 | 10.827 |    %2.5 |   10.2 |   %0.0 |  %84.8 | %0.0
+ilk masa (yalnız 1 masa açık): kol | süre dk | oyuncu boşta % | boşuna bekleme % (istek yok, yerde para yok, alınacak yok)
+  TABAN            | 7.7 | %77.9 | %95.2
+
+--- §9 ÖZET (yeni kollar) ---
+kol              | KAT 2 BİTER sa | Δ% TABAN | coin/dk | kaçan % | bekleme sn | servis adımı yığını · kalkış yığını · toplama/dk
+TABAN            |           7.78 |     0.0% |   1.434 |   %2.1 |   8.8 | 11.495 · 3.002 · 37.52
+
+--- §11 FINAL-2 (S5 3. tur kararı GH25 + G4 + GB + GB-SV koddayken) ---
+TABAN: Kat 2 biter 7.78 sa · zincir 5.51 · 1.434 coin/dk · kaçan %2.1 · bekleme 8.8 sn · 11-16: kaçan %2.1 · yetişemez %65.5 · 17-22: kaçan %2.5 · yetişemez %84.8
+  en uzun görev k2_tavla3 16.9 dk · >15 dk 4 · >20 dk 0 · görev sayısı 37 · görev ödülü 49.000 · 4. garson pad'i 4.45 sa · garson 4 · ilk Sv 1.56 sa · zincirden önce Sv 21
+  bütün görevler: k2_kahve1 0.1 · k2_okey1 7.6 · k2_topla 0.1 · k2_kahve10 0.6 · k2_garson 9.0 · k2_okey4 9.9 · k2_garson2 13.2 · k2_salon2 8.8 · k2_grup5 2.1 · k2_s2okey1 4.0 · k2_s2okey2 9.2 · k2_bulasikci 3.3 · k2_cezve2 10.1 · k2_kahve40 1.6 · k2_s2okey4_a 9.0 · k2_okeySv3 16.1! · k2_okeySv6 15.6! · k2_s2okey4 11.9 · k2_s2okey6_a 13.1 · k2_s2okey6 13.5 · k2_garson3 13.2 · k2_lavabo 7.7 · k2_salon3 11.8 · k2_tavla1 14.4 · k2_tavlaKahve 5.2 · k2_tavla3_a 3.7 · k2_tavla3 16.9! · k2_tavla5_a 9.7 · k2_tavla5 9.5 · k2_garson4 16.0! · k2_tavla6 5.5 · k2_tavla8_a 11.5 · k2_tavla8 8.5 · k2_tavla10_a 9.8 · k2_tavla10 7.7 · k2_tavla12_a 10.9 · k2_tavla12 10.0
+
+--- §7 PARMAK İZLERİ ---
+KORUNUM: iz 15d72f9a · Kat 2 biter 28019.5 sn · hat 19839.1 sn
+TABAN: iz 15d72f9a · Kat 2 biter 28019.5 sn · hat 19839.1 sn
+
+(süre: 326 sn duvar saati)
+
+✓ Damgalar temiz (tam koşu).

@@ -193,5 +193,33 @@ toplamı korunur" kırıldı (49.550 ≠ 49.200) · `MUT=g4yok` tam → "G4: 4. 
   12 sn'de kahveyi bıraktıktan kısa bir süre sonra masada para belirir. En kaliteli: **12 sn kalsın** (ya da sen "para daha çabuk düşsün"
   dersen 8 sn — sayılar aynı).
 
-### KARAR (üçüncü tur)
-(boş — kullanıcı seçecek)
+### KARAR (üçüncü tur — kullanıcı 2026-11-21, "hepsi öneri")
+- **Garson GH25 + G4:** Kat 2 garson hızı 3 → 3,75, hız yükseltmesi 4 → 5 · 4. garson zincirde pad `k2garson4` (tavla 5 → **4. garson** → tavla 6,
+  15.000, dolum 4.286/sn), 3. garsonun sağında [4,4; −6] (kare `docs/kareler/s5-g4-1-pad.png` · `-2-dort-garson.png`: dört garson sırada, kovaya/okeye değmez).
+  Görev `k2_garson4` "4. Garsonu tut" (DÖRDÜNCÜ GARSON, 2.250 = pad × %15 — yeni ödül) `k2_tavla5`'ten sonra.
+- **Görev GB + GB-SV:** aracın GB kolu birebir (7 görev, parça ödülü pad fiyatıyla orantılı, toplam korunur) + `k2_s2okey4` dörde: "Okey salonunda 3 masa
+  aç" 300 · "3 okey masasını Seviye 2'ye çıkar" 550 · "6 okey masasını Seviye 2'ye çıkar" 550 · "Okey salonunda 4 masa aç" 350 (= 1.750). Ara Sv
+  görevleri `masaSvKapi` varken hatta kalır (`kat2Gorevleri`: yalnız KUYRUK Sv görevleri — ardından pad görevi gelmeyenler — düşer); Sv noktası kapıyla
+  canlı kalır (görev beklemez — ölçülen davranış). `kat2GorevHatasi` ara Sv'nin kapısını denetler. Metinler TR+EN (`src/i18n/en.ts`).
+- **İçme 12 sn** — değişiklik yok.
+- **Kayıt:** görev kimlikle (`son`) oturur → saveVersion artmadı. Ortada kalan kayıt araya giren ilk parçaya düşer, alınmış pad/Sv parçaları yüklemede
+  ödülsüz geçilir; bitmiş hat bitmiş kalır. Hat bitmiş eski kayıtta `k2garson4` sıradaki pad olarak belirir (ücretli, görevsiz) — bilinçli.
+- Bekçi `tests/s5-denge-4.test.ts` (17) + paylaşılan grup tablosu `tests/s5-gorev-bolme.ts`; eski bekçilerin sabitleri yeni karara çekildi (zincir 30,
+  garson 3,75/5, garson sayısı 4, D-206 ödül kuralı = grup toplamı). Mutasyon 5/5 yakalandı: hız 3 · garson pad listesi 3 · `k2_tavla8_a` +50 ·
+  kapıda bütün Sv düşer · kuyruk Sv hatta kalır. `tsc` temiz · vitest 2445/2445.
+
+### Final-2 (`OLCUM=tam FINAL=1 KOLLAR=TABAN,KORUNUM` → `docs/olcum-s5-denge-final-2.txt`, 326 sn, damgalar temiz, KORUNUM = TABAN izi 15d72f9a)
+Kat 2 biter **7,78 sa** (final 7,82; GH25+G4 kolu 7,80) · zincir 5,51 sa · **1.434 coin/dk** · kaçan **%2,1** (11,3) · bekleme 8,8 sn ·
+11-16 masa kaçan %2,1 · **17-22 masa kaçan %2,5** (17,5), yetişemez %84,8 · 4. garson 4,45 sa · ilk Sv 1,56 sa · zincirden önce 21 Sv ·
+**en uzun görev k2_tavla3 16,9 dk** (54,4) · >15 dk 4 (okeySv3 16,1 · okeySv6 15,6 · tavla3 16,9 · garson4 16,0) · **>20 dk 0** · 37 görev · ödül 49.000.
+Beklentiyle uyumlu (7,8 sa · %2 · %2-3 · ≤ 20 dk); durma eşiği tetiklenmedi.
+
+### Önerilen D kayıtları (üçüncü tur)
+- **D-GH25** Kat 2 garson hızı ×1,25 (3 → 3,75; hız yükseltmesi 4 → 5; fiyat aynı). Oyuncu 6,04 — garson yine yavaş.
+  Final-2: kaçan 11,3 → 2,1 % (G4 ile birlikte), 17-22 masada 17,5 → 2,5 %.
+- **D-G4** 4. garson zincirde pad (`k2garson4`, tavla 5 ile 6 arası, 15.000), garson sırasının sağında [4,4; −6]; görev `k2_garson4` (2.250).
+  Kat 2 7,82 → 7,78 sa, 1.392 → 1.434 coin/dk. Hat bitmiş eski kayıtta sıradaki pad olarak belirir.
+- **D-GB** > 20 dk görevler tek pad'lik parçalara bölündü (7 görev), parça ödülü pad fiyatıyla orantılı, grup toplamı korunur.
+  En uzun görev 54,4 → 16,9 dk, >20 dk 5 → 0. Kayıt kimlikle (D-206) — saveVersion yok.
+- **D-GBSV** `k2_s2okey4` → 3 masa aç · 3 okey Sv2 · 6 okey Sv2 · 4. masa (300/550/550/350). Ara Sv görevleri `masaSvKapi` varken hatta,
+  yalnız kuyruk Sv görevleri düşer (D-142 kalıbı; Sv noktası kapıyla canlı). İçme 12 sn kaldı.

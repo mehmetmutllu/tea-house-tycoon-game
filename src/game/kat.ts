@@ -497,12 +497,15 @@ export const KAT2_GARSON_YER: readonly [number, number] = [-2.2, -6];
  * MERDİVEN SALONUNDA (alan 0 — kata çıkıştan erişilir; ilk garson erken gelir), kova ağzının önünde yan yana:
  * çerçeve (±0,89 × ±0,85) okey ayak izine (x ≥ |5,25|, z ≥ −4,75) ve kovanın ağzına (z ≤ −9,8) değmez.
  * (Eski yer tavla köşesinin içi [4; 1,6] idi — garson zincirin 14. adımındaydı.)
+ * S5 3. tur (G4): 4. garson aynı sırada, 3. garsonun sağında (çerçeve x 3,5-5,3: kova duvarı z ≤ −9,8'de biter, okey
+ * ayak izi z ≥ −4,75'te başlar — ikisine de değmez).
  */
-export const KAT2_GARSON_PADLER: readonly string[] = [KAT2_GARSON_PAD, 'k2garson2', 'k2garson3'];
+export const KAT2_GARSON_PADLER: readonly string[] = [KAT2_GARSON_PAD, 'k2garson2', 'k2garson3', 'k2garson4'];
 export const KAT2_GARSON_YERLERI: Readonly<Record<string, readonly [number, number]>> = {
   [KAT2_GARSON_PAD]: KAT2_GARSON_YER,
   k2garson2: [0, -6],
   k2garson3: [2.2, -6],
+  k2garson4: [4.4, -6],
 };
 
 /**

@@ -61,6 +61,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-18 (4.): ✅ D-204 Kat 2 = Kat 1 (XP · günlük/Hedefler · çevrimdışı Sv/lavabo · İzle eki) · Kat 2 8,22 sa · günlük 7/7 · seviye 12→14 · rapor `docs/kat2-kat1-esit-raporu.md`
   · 2026-11-18 (5.): ✅ D-205 Hedefler Mekân + Usta + KÜNYE Kat 2'yi sayar · Usta Kat 2'de 0-5 kademe (çarpan tavanı +%10 aynı) · Kat 2 süresi aynı · rapor `docs/kat2-hedefler-raporu.md`
   · 2026-11-19: ✅ Kat 2 sprint S4 — D-206 çarpan + Usta Kat 2'de + görevler üçe (Kat 2 7,40 sa) · D-207 varış kuyu önü · D-208 gölge/ön kurulum · metin turu · Firestore kuralı · vitest 2314
+  · 2026-11-20/21: ✅ Kat 2 sprint S5 — oyun testi G-92…G-130, 4 dalga paralel ajan + 3 ölçüm turu · D-209 denge (bulaşıkta para, 18 sn, K2T, hız+%25 + 4. garson, görev bölme, G-92 tepsi 25+%40) · D-210 görsel (alçak duvarlar, tabela kemeri, alt kat cephesi, bakır leğen, görev kartı M1+M2) · Kat 2 7,78 sa · kaçan %2,1 · vitest 2445 · duman 79/79
   · 2026-11-16: ✅ Play için 1.0.7 (10007) AAB'si zip'ten masaüstüne çıkarıldı (App Store sürümü, Kat 2 yok) · kod değişikliği yok
   · 2026-11-15: ✅ G5 kol G2 config'te (hemen kahve + anında para, 90 sn oyun, ücret 38) · kahve seti: sap ustaya, servis tepsisi, kahveci usta · ön set seçimi bekliyor
   · 2026-11-14: ✅ Oyun testi G1-G4 (D-198) — kasa kalktı/Kat 1 parası akar · Kat 2 mutfağı Kat 1 kopyası + katı ön tezgâh · ön bölme 0,6 · grup tek sıra · G5 okey ölçüldü (karar bekliyor) · bekçi mutasyon 4/4

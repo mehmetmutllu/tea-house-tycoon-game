@@ -41,6 +41,8 @@
  *   AD<k> (istek aralığı 18 × (1 + k·max(0, masa−10)), fiyat sabit) · birleşimler; görev — GB (iki pad'lik 7 görev tek pad'e
  *   bölünür, ödül toplamı birebir) · GB+garson; içme — ICME8 / ICME16. §10 özet + GB uzun görev pencerelerinin alım dökümü.
  *   MUT=gt2 (GT3 tepsi 2 kalır → varyant etkili kırılır) · gbodul (ödül toplamı +50) · g4yok (garson gelmez) · adsabit (aralık 18).
+ *   FINAL-2 (3. tur kararı GH25 + G4 + GB + GB-SV koddayken; `FINAL=1 KOLLAR=TABAN,KORUNUM`): §11 özet + FINAL-2 damgaları.
+ *   TUR=3 kolları artık eski tabana göre tanımlı (G4/GB yeni kodda ikinci kez uygulanır) — yalnız tarih için.
  *
  * Çalıştırma (kol başına alt süreç, PARALEL varsayılan 10):
  *   OLCUM=kisa npx tsx tools/olcum-s5-denge.ts
@@ -908,6 +910,17 @@ async function orkestra(): Promise<void> {
     console.log(`${ad.padEnd(16)} | ${sa(r.bitis).padStart(14)} | ${(ta ? dY(r.bitis, ta.bitis) : '—').padStart(8)} | ${f0(r.kat2Gelir / (r.sure / 60)).padStart(7)} | ${yz(b.kacanAdet, b.kacanAdet + b.servisAdet).padStart(6)} | ${f1(b.servisToplam / b.servisAdet).padStart(5)} | ${f0(r.servisYigini)} · ${f0(r.kalkisYigini)} · ${f2(r.toplanan / (r.sure / 60))}`);
   }
 
+  if (FINAL && process.env.TUR !== '3' && ta) {
+    console.log('');
+    console.log('--- §11 FINAL-2 (S5 3. tur kararı GH25 + G4 + GB + GB-SV koddayken) ---');
+    const b = ta.bekleme, x = ta.dilim[3], y = ta.dilim[4];
+    const en = ta.gorevler.reduce((a, q) => (q.dk > a.dk ? q : a), { id: '—', dk: -1 });
+    const g4 = ta.alimlar.find((a) => a.ne === 'pad k2garson4');
+    console.log(`TABAN: Kat 2 biter ${sa(ta.bitis)} sa · zincir ${sa(ta.zincir)} · ${f0(ta.kat2Gelir / (ta.sure / 60))} coin/dk · kaçan ${yz(b.kacanAdet, b.kacanAdet + b.servisAdet)} · bekleme ${f1(b.servisToplam / b.servisAdet)} sn · 11-16: kaçan ${yz(x.kacan, x.kacan + x.servis)} · yetişemez ${yz(x.yetisemezSn, x.sn)} · 17-22: kaçan ${yz(y.kacan, y.kacan + y.servis)} · yetişemez ${yz(y.yetisemezSn, y.sn)}`);
+    console.log(`  en uzun görev ${en.id} ${f1(en.dk)} dk · >15 dk ${ta.gorevler.filter((q) => q.dk > 15).length} · >20 dk ${ta.gorevler.filter((q) => q.dk > 20).length} · görev sayısı ${ta.gorevler.length} · görev ödülü ${f0(ta.gorevOdul)} · 4. garson pad'i ${sa(g4?.t ?? NaN)} sa · garson ${ta.garsonSay} · ilk Sv ${sa(ta.svIlkAlim)} sa · zincirden önce Sv ${ta.svZincirOncesi}`);
+    console.log('  bütün görevler: ' + ta.gorevler.map((q) => `${q.id} ${f1(q.dk)}${q.dk > 15 ? '!' : ''}`).join(' · '));
+  }
+
   if (process.env.TUR === '3') {
     console.log('');
     console.log('--- §10 ÜÇÜNCÜ TUR (taban = birleşik kod) — garson kapasitesi · görev bölme · içme süresi ---');
@@ -981,6 +994,17 @@ async function orkestra(): Promise<void> {
     if (!KISA) damga("FINAL G-119: Sv2 ilk alımı k2s2okey3'ten sonra, zincirden önce", Number.isFinite(ta.sv2Ilk) && ta.sv2Ilk >= ta.k2s2okey3At && ta.sv2Ilk < ta.zincir, `Sv2 ${sa(ta.sv2Ilk)} · okey3 ${sa(ta.k2s2okey3At)} · zincir ${sa(ta.zincir)}`);
     if (!KISA) damga('FINAL G-119: Sv3 ilk alımı bütün masalar açıldıktan sonra', !Number.isFinite(ta.sv3Ilk) || ta.sv3Ilk >= ta.zincir - 1, `Sv3 ${sa(ta.sv3Ilk)} · zincir ${sa(ta.zincir)}`);
     damga('FINAL G-97: 18 sn aralık + ilk masa 12 sn (config)', CFG.kahveAralik === 18 && CFG.kahveAralikIlk?.aralik === 12, `${CFG.kahveAralik} · ${CFG.kahveAralikIlk?.aralik}`);
+    // S5 3. tur kararı (GH25 + G4 + GB + GB-SV) koddayken — `docs/s5-denge-raporu.md` §KARAR (üçüncü tur).
+    const g4Pad = ta.alimlar.find((a) => a.ne === 'pad k2garson4');
+    const t5 = ta.alimlar.find((a) => a.ne === 'pad k2tavla5'), t6 = ta.alimlar.find((a) => a.ne === 'pad k2tavla6');
+    damga('FINAL-2 GH25: garson hızı 3,75 · hız yükseltmesi 5 (config)', CFG.garson?.hiz === 3.75 && CFG.yukseltme?.garsonHiz.deger.join() === '5', `${CFG.garson?.hiz} · ${CFG.yukseltme?.garsonHiz.deger}`);
+    if (!KISA) {
+      damga('FINAL-2 G4: 4. garson pad\'i tavla 5 ile tavla 6 arasında alındı, sonunda 4 garson', !!g4Pad && !!t5 && !!t6 && t5.t <= g4Pad.t && g4Pad.t <= t6.t && ta.garsonSay === 4, `pad ${sa(g4Pad?.t ?? NaN)} · garson ${ta.garsonSay}`);
+      const ids = ta.gorevler.map((q) => q.id);
+      damga('FINAL-2 GB-SV: Sv ara görevleri hatta ve sırada (okey4_a → Sv3 → Sv6 → okey4)', ['k2_s2okey4_a', 'k2_okeySv3', 'k2_okeySv6', 'k2_s2okey4'].every((id, i, a) => i === 0 || ids.indexOf(id) === ids.indexOf(a[i - 1]) + 1), ids.join(','));
+      const en = ta.gorevler.reduce((a, q) => (q.dk > a.dk ? q : a), { id: '—', dk: -1 });
+      damga('FINAL-2 GB: en uzun görev ≤ 25 dk (durma eşiği)', en.dk <= 25, `${en.id} ${en.dk.toFixed(1)} dk`);
+    }
   }
   const il = al('G97-S18-ILK12'), s18 = al('G97-S18');
   if (il && s18) damga("G97-S18-ILK12: ilk masa evresi S18'den farklı (kanca etkili)", il.iz !== s18.iz, 'iz aynı');

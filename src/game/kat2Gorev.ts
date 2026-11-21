@@ -8,8 +8,9 @@
  *
  * q_tost5 dersi (D-146/D-147): görev, zincirin henüz açmadığı bir şeyi istemez. `kat2GorevHatasi` bunu
  * yapısal olarak denetler (bekçi `tests/kat2-gorev.test.ts`): pad hedefleri zincir sırasında, sayaç
- * hedefinin istediği masa/ocak/garson ÖNCEKİ görevlerle açılmış, Sv görevleri yalnız hattın SONUNDA ve
- * yalnız `Kat2Ayar.masaSv` varken (yoksa listeden düşer — kuyrukta oldukları için `idx` kaymaz).
+ * hedefinin istediği masa/ocak/garson ÖNCEKİ görevlerle açılmış, Sv görevleri yalnız `Kat2Ayar.masaSv` varken
+ * (yoksa listeden düşer). S5 3. tur (GB-SV): Sv ARA görevleri (ardından pad görevi gelen) hatta kalır — Kat 1 D-142
+ * kalıbı; KUYRUK Sv görevleri `masaSvKapi` varken düşer (kuyrukta oldukları için `idx` kaymaz).
  */
 import type { QuestTarget } from '../config/economy.config';
 import { KAT2_GARSON_PAD, KAT2_MASALAR, KAT2_SALON_PAD, KAT2_SV_MAX, OCAKLAR, type MasaTuru } from './kat';
@@ -127,12 +128,20 @@ const MASA_TURU: ReadonlyMap<string, MasaTuru> = new Map(KAT2_MASALAR.map((m) =>
 
 const svGorevi = (g: Kat2GorevDef): boolean => g.hedef.tip === 'masaSv';
 
+/** Kuyruk Sv görevi: ardından hiç pad görevi gelmeyen Sv görevi (zincir bittikten sonraki). */
+function kuyrukSvMi(gorevler: readonly Kat2GorevDef[], i: number): boolean {
+  return svGorevi(gorevler[i]) && !gorevler.slice(i + 1).some((g) => g.hedef.tip === 'pad');
+}
+
 /**
- * O derlemede OYNANAN hat: Sv görevleri yalnız `ayar.masaSv` varken ve Sv zincir kapısına bağlı DEĞİLKEN (S5 G-119
- * `masaSvKapi`: Sv kendi kapısıyla açılır, görev beklemez). Kuyrukta durdukları için düşünce idx kaymaz.
+ * O derlemede OYNANAN hat: Sv görevleri yalnız `ayar.masaSv` varken. Sv zincir kapısı (S5 G-119 `masaSvKapi`) varken
+ * KUYRUK Sv görevleri düşer (Sv kendi kapısıyla açılır, sonda görev beklemez); ARA Sv görevleri (S5 3. tur GB-SV —
+ * "3 / 6 okey masasını Seviye 2'ye çıkar") hatta kalır. Kuyruktakiler düşünce idx kaymaz.
  */
 export function kat2Gorevleri(gorevler: readonly Kat2GorevDef[], ayar: Pick<Kat2Ayar, 'masaSv' | 'masaSvKapi'>): readonly Kat2GorevDef[] {
-  return ayar.masaSv && !ayar.masaSvKapi ? gorevler : gorevler.filter((g) => !svGorevi(g));
+  if (!ayar.masaSv) return gorevler.some(svGorevi) ? gorevler.filter((g) => !svGorevi(g)) : gorevler;
+  if (!ayar.masaSvKapi) return gorevler;
+  return gorevler.some((_, i) => kuyrukSvMi(gorevler, i)) ? gorevler.filter((_, i) => !kuyrukSvMi(gorevler, i)) : gorevler;
 }
 
 /** Bir adımın sayaç artışları. */
@@ -349,12 +358,13 @@ export function kat2GorevOdulReferansi(
 /**
  * Hat oynanabilir mi? Hata metni (geliştirici için) ya da null. Kurallar:
  * kimlik tekil · pad hedefi zincirde ve zincir sırasında (geri dönmez) · son durum görevi zincirin son pad'i
- * (hat "Kat 2 bitti"de biter) · sayaç görevinin istediği şey önceki görevlerle açık · Sv görevleri kuyrukta,
- * seviyesi ve adedi ulaşılabilir.
+ * (hat "Kat 2 bitti"de biter) · sayaç görevinin istediği şey önceki görevlerle açık · Sv görevinin seviyesi ve
+ * adedi ulaşılabilir; kuyruk Sv görevlerinden sonra yalnız Sv görevi gelir; ARA Sv görevi (S5 3. tur) `masaSv`
+ * ister ve `masaSvKapi` varsa kapısı önceki görevlerle açılmış olmalı (Sv2 → `sv2Pad`, Sv3 → `sv3Pad`, üstü olmaz).
  */
 export function kat2GorevHatasi(
   gorevler: readonly Kat2GorevDef[],
-  ayar: Pick<Kat2Ayar, 'padler' | 'masaSv'>,
+  ayar: Pick<Kat2Ayar, 'padler' | 'masaSv'> & Partial<Pick<Kat2Ayar, 'masaSvKapi'>>,
   hazir: readonly string[],
 ): string | null {
   const zincir = ayar.padler.map((p) => p.id);
@@ -386,7 +396,13 @@ export function kat2GorevHatasi(
         : masa;
       if (!gerek) return `${g.id}: ${h.sayac} henüz açılmamış bir şeyi istiyor`;
     } else {
-      svBasladi = true;
+      if (kuyrukSvMi(gorevler, i)) svBasladi = true;
+      else {
+        if (!ayar.masaSv) continue; // Sv sayıları yoksa hattan düşer (`kat2Gorevleri`)
+        const k = ayar.masaSvKapi;
+        const kapi = !k ? KAT2_SV_MAX : acik.has(k.sv3Pad) ? 3 : acik.has(k.sv2Pad) ? 2 : 1;
+        if (h.sv > kapi) return `${g.id}: Sv${h.sv} kapısı (masaSvKapi) bu görevde henüz açık değil`;
+      }
       const turler: MasaTuru[] = h.tur ? [h.tur] : ['okey', 'tavla'];
       const kolMax = Math.max(...turler.map((t) => ayar.masaSv?.[t].fiyat.length ?? KAT2_SV_MAX));
       if (h.sv < 2 || h.sv > kolMax) return `${g.id}: Sv${h.sv} ulaşılamaz`;

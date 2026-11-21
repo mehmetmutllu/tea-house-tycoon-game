@@ -28,7 +28,8 @@ const girdi = (yer: readonly [number, number], o: Partial<Kat2Girdi> = {}): Kat2
 
 /** `docs/olcum-kat2-isleyis-t2.txt` — "K-Bt2 zincir" satırı (aracın tam koşu çıktısı). */
 const K_BT2_ZINCIR =
-  'k2okey1 8600 · k2okey3 9100 · k2garson 4800 · k2okey4 9600 · k2garson2 10100 · k2salon2 10100 · k2s2okey1 10100 · k2s2okey2 10600 · k2bulasikci 5500 · k2cezve2 11000 · k2s2okey3 11000 · k2s2okey4 11500 · k2s2okey5 12000 · k2s2okey6 12500 · k2garson3 13000 · k2lavabo 13000 · k2salon3 13600 · k2tavla1 13600 · k2tavla2 13900 · k2tavla3 14100 · k2tavla4 14400 · k2tavla5 14700 · k2tavla6 15000 · k2tavla7 15300 · k2tavla8 15600 · k2tavla9 15900 · k2tavla10 16100 · k2tavla11 16400 · k2tavla12 16700';
+  'k2okey1 8600 · k2okey3 9100 · k2garson 4800 · k2okey4 9600 · k2garson2 10100 · k2salon2 10100 · k2s2okey1 10100 · k2s2okey2 10600 · k2bulasikci 5500 · k2cezve2 11000 · k2s2okey3 11000 · k2s2okey4 11500 · k2s2okey5 12000 · k2s2okey6 12500 · k2garson3 13000 · k2lavabo 13000 · k2salon3 13600 · k2tavla1 13600 · k2tavla2 13900 · k2tavla3 14100 · k2tavla4 14400 · k2tavla5 14700 · k2garson4 15000 · k2tavla6 15000 · k2tavla7 15300 · k2tavla8 15600 · k2tavla9 15900 · k2tavla10 16100 · k2tavla11 16400 · k2tavla12 16700';
+// S5 3. tur (G4, `docs/s5-denge-raporu.md`): K-Bt2 satırına 4. garson (tavla 5'ten sonra, 15.000) eklendi.
 
 describe('config = karar D-201 (K-Bt2)', () => {
   it('zincir: sıra + fiyat aracın K-Bt2 satırı, dolum ~3,5 sn', () => {

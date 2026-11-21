@@ -74,7 +74,8 @@ describe('config — D-184 V4 → D-198 G2 (mekanizma testleri D184_AYAR ile)', 
     expect(A.padler.map((p) => p.id)).toEqual([
       'k2okey1', 'k2okey3', 'k2garson', 'k2okey4', 'k2garson2',
       'k2salon2', 'k2s2okey1', 'k2s2okey2', 'k2bulasikci', 'k2cezve2', 'k2s2okey3', 'k2s2okey4', 'k2s2okey5', 'k2s2okey6',
-      'k2garson3', 'k2lavabo', 'k2salon3', ...Array.from({ length: 12 }, (_, i) => `k2tavla${i + 1}`),
+      'k2garson3', 'k2lavabo', 'k2salon3', ...Array.from({ length: 5 }, (_, i) => `k2tavla${i + 1}`),
+      'k2garson4', ...Array.from({ length: 7 }, (_, i) => `k2tavla${i + 6}`), // S5 3. tur G4: 4. garson tavla 5'ten sonra
     ]);
     // D-188 (SB9): fiyat o anki gelire bakar; salon/ocak masadan pahalı değil → ardışık eşit olabilir, düşmez.
     // D-201: garson/bulaşıkçı pad'i Kat 1 gibi ardından gelen pad × ½ olabilir → onlar bu kuralın dışında.

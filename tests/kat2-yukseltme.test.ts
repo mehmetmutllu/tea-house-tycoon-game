@@ -39,9 +39,9 @@ const fiyatOf = (id: string) => A.padler.find((p) => p.id === id)!.cost;
 
 describe('config = karar D-200 (HOG2-½) + D-201 (K-Bt2: ek garson pad ile, lavabo L2-L6)', () => {
   it('garson her masaya; hatların uzunluğu Kat 1 karşılığı (ocak 5 · hız 1 · tepsi 2 · lavabo 5)', () => {
-    expect(A.garson).toEqual({ hiz: 3, tepsi: 2, herMasa: true });
+    expect(A.garson).toEqual({ hiz: 3.75, tepsi: 2, herMasa: true }); // S5 3. tur GH25: ×1,25
     expect(U.ocak.fiyat).toHaveLength(5);
-    expect(U.garsonHiz.deger).toEqual([4]);
+    expect(U.garsonHiz.deger).toEqual([5]);
     expect(U.garsonTepsi.fiyat).toHaveLength(2);
     expect(U.lavabo.fiyat).toHaveLength(C.rooms.lavabo.upgradeCosts.length);
     expect('garsonSayi' in U).toBe(false); // D-201: panelden ek garson yok
@@ -64,11 +64,11 @@ describe('kat2EtkinAyar — Kat 1 ocak/garson eğrisi', () => {
     expect(kat2EtkinAyar(A, {})).toBe(A);
     expect(kat2EtkinAyar(A, undefined)).toBe(A);
   });
-  it('ocak 5 alım: demleme ÷1,35⁵ · kuyruk +5; garson tam: hız 4 · tepsi 4; lavabo L6', () => {
+  it('ocak 5 alım: demleme ÷1,35⁵ · kuyruk +5; garson tam: hız 5 (S5 GH25) · tepsi 4; lavabo L6', () => {
     const e = kat2EtkinAyar(A, { ocak: 5, garsonHiz: 1, garsonTepsi: 2, lavabo: 5 });
     expect(e.demleme).toBeCloseTo(A.demleme / 1.35 ** 5);
     expect(e.ocakKuyruk).toBe(A.ocakKuyruk + 5);
-    expect(e.garson).toEqual({ hiz: 4, tepsi: 4, herMasa: true });
+    expect(e.garson).toEqual({ hiz: 5, tepsi: 4, herMasa: true });
     expect(e.lavabo).toEqual({ ugrama: 0.55, ucret: 52 });
   });
   it('bozuk/taşan kayıt tavanda kalır', () => {
@@ -161,13 +161,14 @@ describe('garson her masaya (Kat 1 mantığı)', () => {
     expect(r.okey).toBe(0);
     expect(r.tavla).toBeGreaterThan(5);
   });
-  it("D-201: garson sayısı = açık garson pad'lerinin sayısı (Kat 1 waiter/2/3)", () => {
+  it("D-201: garson sayısı = açık garson pad'lerinin sayısı (Kat 1 waiter/2/3 + S5 G4)", () => {
     const say = (pd: string[]) => {
       const d = kat2Tick(yeniKat2Dunya(pd, A), girdi(UZAK, { padsDone: pd }), 0.1, A).dunya;
       return [d.garson, ...(d.garsonEk ?? [])].filter(Boolean).length;
     };
-    expect(say(HEPSI)).toBe(3);
-    expect(say(HEPSI.filter((id) => id !== 'k2garson3'))).toBe(2);
+    expect(say(HEPSI)).toBe(4);
+    expect(say(HEPSI.filter((id) => id !== 'k2garson4'))).toBe(3);
+    expect(say(HEPSI.filter((id) => id !== 'k2garson3' && id !== 'k2garson4'))).toBe(2);
     expect(say(HEPSI.filter((id) => !id.startsWith('k2garson')))).toBe(0);
   });
   it('okey masası da var (bekçinin anlamı)', () => {

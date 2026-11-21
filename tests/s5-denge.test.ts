@@ -129,9 +129,10 @@ describe('G-119 K2T — masa Sv kapısı zincirde', () => {
     expect(kat2SvHedef(K, p, Object.fromEntries(masalar(p).map((id) => [id, 2])))).toBeNull();
   });
 
-  it('görev kapısı yok: Sv görevleri hattan düşer, Sv noktası her an canlı', () => {
+  it('görev kapısı yok: KUYRUK Sv görevleri hattan düşer (ara Sv görevleri kalır — S5 3. tur), Sv noktası her an canlı', () => {
     const hat = kat2Gorevleri(C.kat2Gorevler, K);
-    expect(hat.some((g) => g.hedef.tip === 'masaSv')).toBe(false);
+    expect(hat.filter((g) => g.hedef.tip === 'masaSv').map((g) => g.id)).toEqual(['k2_okeySv3', 'k2_okeySv6']);
+    expect(hat.at(-1)!.id).toBe('k2_tavla12');
     expect(hat.length).toBeGreaterThan(0);
     expect(kat2SvCanli({ padsDone: [], gorev: { idx: 0, sayac: {} } } as never, C.kat2Gorevler, K)).toBe(true);
   });
