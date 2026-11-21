@@ -78,7 +78,6 @@ import {
   entranceAt,
   streetAt,
   type RVec3,
-  type Solid,
   type ServicePlace,
   atServiceBody,
   atTableBody,

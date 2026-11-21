@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-20 gece — oyun testi G-92…G-130 → sprint S5 YARIM, dal `s5-wip` · sıradaki: S5'i bitir)
+## ŞU AN (2026-11-21 — Kat 2 sprint S5 BİTTİ, main'de · deneme APK masaüstünde · sıradaki: kullanıcının testi)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -39,20 +39,19 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - Metin turu (ChatGPT) uygulandı `docs/metin-turu-2026-11-19.md` · Firestore kuralı Firebase konsolunda yayınlandı (2026-11-19).
 - Play Console ELLE (kullanıcı/arkadaş): `docs/play/basarim-duzeltme-2026-11-19.txt` (₺ → para + EN adlar).
 
-## ⏭️ SIRADAKİ ADIM — S5'i BİTİR (ilk iş)
-Kullanıcı tarayıcıda oynadı (dev paneli Kat 2 bölümüyle, `npm run dev`), 39 madde: `docs/geribildirim-oyun-testi-2026-11-20.md`.
-Plan + ajan sahipliği `docs/sprintler/kat2-S5-plan.md`. Bütün iş **`s5-wip` dalında** (4145a56; main'e girmedi). Devir notları
-`docs/sprintler/s5-{yapi,esya,npc,ux,olcum,tasarim}-notlar.md`. Dalda vitest 2356/2356 yeşil, **duman koşulmadı**, tsc temiz.
-1. `git switch s5-wip` → duman (bir ajan "at App" hatası gördü) → eksik "sonra" kareleri (yapi: `tools/s5-yapi-kare.mjs`) → kontrol.
-2. Bitmeyenler: G-107 kamera pan canlıda çalışmıyor (ux notu) · G-108 garson çarpışması (`tick.ts` navStep `player` argümanı; önce
-   ölçüm hazır `docs/s5-npc/*-once.txt`) · G-109 kahveci yürüsün · G-99/100 bekçi testi yok · ölçüm determinizm sorunu (olcum notu).
-3. Tasarım panoları: G-102/G-111 hazır (`docs/kareler/s5-tasarim-g10*.png`), kalan `SORU=G112,G114,G115,G129,G120 node tools/s5-tasarim-cek.mjs`.
-4. KARAR PAKETİNE (kullanıcıya sor): G-124 otomatik toplama Kat 2 ARKA PLAN parasını cüzdana sokuyor (D-185'e aykırı denge değişikliği —
-   kalsın mı) · G-121 bölme 0,6 mı 1,2 mi · G-127 "ortadaki tepsi" = bakır leğen mi · G-92 tepsi 25 + tamamlama eşiği (ölçüldü,
-   `docs/olcum-s5-kat1.txt`) · G-95/96/97/103/119/122/123/128 ölçüm kolları · tasarım adayları · ChatGPT'ye 4 yeni metin (ux notu).
-5. Bitince main'e birleştir, yeni deneme APK.
-**Not:** 2026-11-20 `node_modules` yarım kalmıştı (ajanların paralel sunucuları) → `npm ci` ile düzeldi; çalışan vite süreçleri kilit tutar.
-`tests/tetik-s24.test.ts` CRLF uyarısı verdi (bekçi CRLF'e duyarlı olabilir) — dalda kontrol et.
+## ✅ KAT 2 SPRINT S5 (2026-11-20/21) — oyun testi G-92…G-130 · D-209 denge · D-210 görsel · main 75bdccc+
+- Denge: bulaşıkta para + kalkışta ücret · istek 18 sn (tek masa 12) · K2T Sv kapısı · garson hız ×1,25 + 4. garson · >20 dk görevler
+  bölündü · G-92 tepsi 25 + %40 tamamlama · Kat 2 7,78 sa, kaçan %2,1, en uzun görev 16,9 dk. Rapor `docs/s5-denge-raporu.md`.
+- Görsel: alçak duvarlar (bölme 0,6, ön duvar 1,0 iki kat, mutfak-kova 1,0) · tabela kapı kemerinde · Kat 2 bina altı cephe+sokak ·
+  bakır leğen · Kat 1 mutfak koyu kahve dama · görev kartı M1+M2 · karar sayfası https://claude.ai/artifact/VA8jVDpqSMGMFaf2cdUYNm
+- vitest 2445 · duman 79/79 · EN 4/4. Deneme APK: masaüstü `TeaHouse-deneme-tam-2026-11-21.apk` (VITE_KAT2+DENEME).
+
+## ⏭️ SIRADAKİ ADIM — kullanıcı deneme APK'sını oynar → geri bildirim
+- Açık (sonraki tur, kullanıcıya sorulmadı): siyah-beyaz mutfak teması mağazaya geri konsun mu · Kat 1 oto-toplanan sikkede
+  "+X" çıkıyor (Kat 2'de sessiz) · `tools/simulate.ts` G-92 %40 kuralını bilmiyor · Kat 2 Sv5'te 124 gövde/26 ms (gölge kısma önerisi) ·
+  uzak masaya ilk grup hızlı yürür · `kameraBakanBolme`/`cepheLook` artık kullanılmıyor (temizlik) · G-120 "sonra değişebilir".
+- Ajan dersi: worktree silmek `node_modules` bağlantısını siler → ajanlara worktree yasak; derleme kontrolü `npx tsc -b` (noEmit -p . kaçırıyor).
+- Bu makinede Android SDK `F:/Android/Sdk` (local.properties düzeltildi, git dışı).
 - **Yayına kullanıcı "nihai" deyince** (2026-11-18). 1.1 listesi: `VITE_KAT2=1` · Game Center 6 başarım · "Yenilikler" TR+EN · iOS Codemagic + Play zip · tam test + eski kayıt açılışı.
 
 ## KULLANICIYA HATIRLAT
