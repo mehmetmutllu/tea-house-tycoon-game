@@ -36,6 +36,12 @@
  *   B-96-S18 / B-96-S18-ILK12  birleşimler. §8 MASA DİLİMİ: açık masa sayısına göre kaçan %, bekleme, garson boş / yetişemez payı.
  *   MUT=icme0 (G96 kancası kapalı) · MUT=ilk18 (ILK aralığı 18).
  *
+ *   S5 ÜÇÜNCÜ TUR (`TUR=3`; taban = birleşik kod, FINAL damgaları): garson kapasitesi — GT3 (tepsi 2→3) · GH+25 (hız ×1,25,
+ *   yükseltme dahil) · G4 (4. garson: k2tavla5'ten sonra zinciri bekletir, 15.000, garson 3 noktasında dolar → `garson.sayi` 2) ·
+ *   AD<k> (istek aralığı 18 × (1 + k·max(0, masa−10)), fiyat sabit) · birleşimler; görev — GB (iki pad'lik 7 görev tek pad'e
+ *   bölünür, ödül toplamı birebir) · GB+garson; içme — ICME8 / ICME16. §10 özet + GB uzun görev pencerelerinin alım dökümü.
+ *   MUT=gt2 (GT3 tepsi 2 kalır → varyant etkili kırılır) · gbodul (ödül toplamı +50) · g4yok (garson gelmez) · adsabit (aralık 18).
+ *
  * Çalıştırma (kol başına alt süreç, PARALEL varsayılan 10):
  *   OLCUM=kisa npx tsx tools/olcum-s5-denge.ts
  *   OLCUM=tam  npx tsx tools/olcum-s5-denge.ts > docs/olcum-s5-denge.txt
@@ -85,7 +91,7 @@ import { D } from '../src/game/decimal';
 import type { Vec3 } from '../src/game/types';
 
 const MUT = process.env.MUT ?? '';
-const FINAL = process.env.FINAL === '1'; // S5 final: TABAN = birleşik kod (kararlar uygulandı); yalnız TABAN/KORUNUM anlamlı
+const FINAL = process.env.FINAL === '1' || process.env.TUR === '3'; // S5 final: TABAN = birleşik kod (kararlar uygulandı); yalnız TABAN/KORUNUM anlamlı
 const ISCI = process.env.ISCI ?? '';
 const DT = 0.1;
 const UFUK = kisaDeger(16 * 3600, 1.5 * 3600);
@@ -123,7 +129,14 @@ interface Kol {
   garsoncu?: boolean;         // G-103: ilk garson (k2garson) gelince oyuncu kahve/kirli TAŞIMAZ (yalnız para + alım)
   ziyaret?: readonly [number, number]; // G-124: döngü — [Kat 2'de sn, Kat 1'de sn] (Kat 1'de oyuncu varışta durur)
   otoKapali?: boolean;        // G-124: Kat 2 yığınlarının oto-toplaması kapalı (her adım yığın yaşı 0 — S5 öncesi)
+  // S5 ÜÇÜNCÜ TUR (taban = birleşik kod, FINAL):
+  g4?: { acan: string; fiyat: number }; // 4. garson: `acan` pad'inden sonra zinciri bekletir, garson 3 noktasında dolar → `garson.sayi` 2
+  adK?: number;               // AD: istek aralığı 18 × (1 + k·max(0, açık masa − 10)) — okey ve tavla
+  gb?: boolean;               // GB: görev hattı bölünmüş (`gbHat`)
 }
+/** 4. garson: tavla 5'ten sonra (15 masa — 17-22 diliminden önce), fiyat komşu pad kadar (garson zinciri deseni: 4.800 · 10.100 · 13.000 → 15.000). */
+const G4 = { acan: 'k2tavla5', fiyat: 15_000 } as const;
+const AD_K = (process.env.AD_K ?? '0.02,0.04,0.06,0.08').split(',').map(Number);
 const KOLLAR: Kol[] = [
   { ad: 'TABAN' },
   { ad: 'KORUNUM', say: 0 },
@@ -148,6 +161,20 @@ const KOLLAR: Kol[] = [
   { ad: 'G97-S18-ILK12', ayar: () => { dozUygula(18); ilk12(); } },
   { ad: 'B-96-S18', ayar: () => { g96(); dozUygula(18); } },
   { ad: 'B-96-S18-ILK12', ayar: () => { g96(); dozUygula(18); ilk12(); } },
+  // S5 ÜÇÜNCÜ TUR (2026-11-21) — taban birleşik kod: garson kapasitesi · uzun görevler · içme süresi.
+  { ad: 'GT3', ayar: () => gt3() },
+  { ad: 'GH+25', ayar: () => gh25() },
+  { ad: 'G4', g4: G4 },
+  ...AD_K.map((k): Kol => ({ ad: `AD${k}`, adK: k })),
+  { ad: 'GT3+G4', ayar: () => gt3(), g4: G4 },
+  { ad: 'GT3+GH25', ayar: () => { gt3(); gh25(); } },
+  { ad: 'GH25+G4', ayar: () => gh25(), g4: G4 },
+  { ad: 'GB', gb: true },
+  { ad: 'GB+GT3', gb: true, ayar: () => gt3() },
+  { ad: 'GB+G4', gb: true, g4: G4 },
+  { ad: 'GB+GT3+G4', gb: true, ayar: () => gt3(), g4: G4 },
+  { ad: 'ICME8', ayar: () => { CFG.kahveIcme = 8; } },
+  { ad: 'ICME16', ayar: () => { CFG.kahveIcme = 16; } },
 ];
 const ICME = Number(process.env.ICME ?? 12);
 function g96(): void { if (MUT !== 'icme0') CFG.kahveIcme = ICME; }
@@ -158,7 +185,43 @@ function dozUygula(aralik: number): void {
   CFG.kahveFiyat = f.okey;
   CFG.tavla = { ...TAVLA, kahveAralik: aralik, kahveFiyat: f.tavla };
 }
-const SUZ_KOL = (process.env.KOLLAR ?? '').split(',').filter(Boolean);
+// ---- ÜÇÜNCÜ TUR yardımcıları
+function gt3(): void { CFG.garson = { ...CFG.garson!, tepsi: MUT === 'gt2' ? 2 : 3 }; }
+function gh25(): void {
+  const u = CFG.yukseltme!;
+  CFG.garson = { ...CFG.garson!, hiz: CFG.garson!.hiz * 1.25 };
+  CFG.yukseltme = { ...u, garsonHiz: { ...u.garsonHiz, deger: u.garsonHiz.deger.map((v) => v * 1.25) } };
+}
+/** AD aralığı (açık masa sayısıyla); ilk masa kancası (`kahveAralikIlk`) ayrı kalır. */
+const adAralik = (k: number, masa: number) => (MUT === 'adsabit' ? 18 : 18 * (1 + k * Math.max(0, masa - 10)));
+/**
+ * GB — D-206 kalıbı: iki pad'i kapsayan pad görevleri tek pad'lik iki göreve bölünür (ara hedef = aradaki pad).
+ * Ödül: referans pad fiyatıyla orantılı, 50'ye yuvarlı, kalan son parçaya → toplam BİREBİR korunur.
+ */
+const GB_BOL: Readonly<Record<string, { ara: string; title: string }>> = {
+  k2_s2okey4: { ara: 'k2s2okey3', title: 'Okey salonunda 3 masa aç' },
+  k2_s2okey6: { ara: 'k2s2okey5', title: 'Okey salonunda 5 masa aç' },
+  k2_tavla3: { ara: 'k2tavla2', title: 'Tavla köşesinde 2 masaya ulaş' },
+  k2_tavla5: { ara: 'k2tavla4', title: 'Tavla köşesinde 4 masaya ulaş' },
+  k2_tavla8: { ara: 'k2tavla7', title: 'Tavla köşesinde 7 masaya ulaş' },
+  k2_tavla10: { ara: 'k2tavla9', title: 'Tavla köşesinde 9 masaya ulaş' },
+  k2_tavla12: { ara: 'k2tavla11', title: 'Tavla köşesinde 11 masaya ulaş' },
+};
+function gbHat(): Kat2GorevDef[] {
+  const cost = (id: string) => C.kat2.padler.find((p) => p.id === id)!.cost;
+  const out: Kat2GorevDef[] = [];
+  for (const x of ORIJINAL_GOREVLER) {
+    const b = GB_BOL[x.id];
+    if (!b || x.hedef.tip !== 'pad') { out.push(x); continue; }
+    const a = cost(b.ara), z = cost(x.hedef.id);
+    const r1 = Math.round((x.reward * a) / (a + z) / 50) * 50;
+    out.push({ ...x, id: `${x.id}_a`, title: b.title, hedef: { tip: 'pad', id: b.ara }, reward: r1 } as Kat2GorevDef);
+    out.push({ ...x, reward: x.reward - r1 + (MUT === 'gbodul' ? 50 : 0) });
+  }
+  return out;
+}
+const TUR3 = ['TABAN', 'KORUNUM', 'GT3', 'GH+25', 'G4', ...AD_K.map((k) => `AD${k}`), 'GT3+G4', 'GT3+GH25', 'GH25+G4', 'GB', 'GB+GT3', 'GB+G4', 'GB+GT3+G4', 'ICME8', 'ICME16'];
+const SUZ_KOL = (process.env.KOLLAR ?? (process.env.TUR === '3' ? TUR3.join(',') : '')).split(',').filter(Boolean);
 const isler = KOLLAR.filter((k) => !SUZ_KOL.length || SUZ_KOL.includes(k.ad)).map((k) => k.ad);
 
 // ---------------------------------------------------------------------------------------------
@@ -268,6 +331,7 @@ interface Sonuc {
   dilim: Dilim[];
   ilkMasa: { bosSn: number; sn: number; istekBosSn: number };
   yol: number; itme: number; iz: string;
+  g4At: number; g4Ihlal: number; garsonSay: number; adSon: number;
 }
 
 // §8 masa dilimleri (açık masa sayısı).
@@ -279,7 +343,7 @@ const dilimNo = (n: number) => DILIMLER.findIndex(([a, b]) => n >= a && n <= b);
 function kos(kol: Kol): Sonuc {
   kol.ayar?.();
   const emu = kol.sv;
-  const liste = emu ? [...ORIJINAL_GOREVLER.filter((x) => !SV_GOREV(x)), BEKLE] : [...ORIJINAL_GOREVLER];
+  const liste = emu ? [...ORIJINAL_GOREVLER.filter((x) => !SV_GOREV(x)), BEKLE] : kol.gb ? gbHat() : [...ORIJINAL_GOREVLER];
   (C as unknown as { kat2Gorevler: readonly Kat2GorevDef[] }).kat2Gorevler = liste;
   kur();
   const hat = kat2Gorevleri(C.kat2Gorevler as readonly Kat2GorevDef[], CFG);
@@ -315,6 +379,9 @@ function kos(kol: Kol): Sonuc {
   const svFill = new Map<string, number>();
   const dilim = DILIMLER.map(yeniDilim);
   const ilkMasa = { bosSn: 0, sn: 0, istekBosSn: 0 };
+  // Üçüncü tur: 4. garson (zinciri bekletir) · AD aralığı.
+  const G4_YER = kat2PadYeri('k2garson3');
+  let g4Fill = 0, g4At = NaN, g4Ihlal = 0, adSon = NaN;
 
   let t = 0;
   for (; t < UFUK; t += DT) {
@@ -377,8 +444,10 @@ function kos(kol: Kol): Sonuc {
     if (svT && Number.isNaN(svIlkGorulme)) svIlkGorulme = t;
 
     const adaylar: { kalan: number; yer: readonly [number, number] }[] = [];
-    const sp = kat2SiradakiPad(ayar, padsDone);
+    const g4Bekliyor = !!kol.g4 && Number.isNaN(g4At) && padsDone.includes(kol.g4.acan);
+    const sp = g4Bekliyor ? null : kat2SiradakiPad(ayar, padsDone);
     if (sp) adaylar.push({ kalan: sp.cost - (d.padFill[sp.id] ?? 0), yer: kat2PadYeri(sp.id) });
+    if (g4Bekliyor) adaylar.push({ kalan: kol.g4!.fiyat - g4Fill, yer: G4_YER });
     if (svT) adaylar.push({ kalan: svT.fiyat - (emu ? svFill.get(svT.id) ?? 0 : d.padFill[svT.id] ?? 0), yer: [svT.x, svT.z] });
     for (const tt of [kat2OcakTetik(ayar, padsDone, k2.yuk), kat2LavaboTetik(ayar, padsDone, k2.yuk)]) {
       if (tt) adaylar.push({ kalan: tt.fiyat - (d.padFill[tt.id] ?? 0), yer: [tt.x, tt.z] });
@@ -440,6 +509,11 @@ function kos(kol: Kol): Sonuc {
         if (!bekleyen.length && !d.paralar.length && !(ucuz && cuzdan >= ucuz.kalan - 1e-9)) ilkMasa.istekBosSn += DT;
       }
     }
+    if (kol.adK !== undefined) {
+      const a = adAralik(kol.adK, acikMasa.length);
+      if (a !== CFG.kahveAralik) { CFG.kahveAralik = a; CFG.tavla = { ...(CFG.tavla as object), kahveAralik: a } as typeof CFG.tavla; }
+      adSon = a;
+    }
     const s0 = g();
     const l0 = s0.lifetime.toNumber();
     const a0 = s0.kat1Akis;
@@ -490,6 +564,22 @@ function kos(kol: Kol): Sonuc {
         useGame.setState({ kat2: { ...k, masaSv: { ...(k.masaSv ?? {}), [svT.masaId]: masaSvOku(k.masaSv ?? {}, svT.masaId) + 1 } } });
       } else svFill.set(svT.id, fill);
       s1 = g();
+    }
+
+    // ---- 4. GARSON (üçüncü tur): garson 3 noktasında durunca dolar (pad deseni, fiyat / 3,5 sn); dolunca `garson.sayi` 2.
+    if (g4Bekliyor && !kat1de) {
+      if (s1.kat2.padsDone.length > pads0) g4Ihlal += 1; // zincir G4'ü beklemeden ilerledi
+      if (Math.hypot(ix, iz) <= 0.1 && uz([s1.player[0], s1.player[2]], G4_YER) < 0.6) {
+        const amt = Math.min((kol.g4!.fiyat / SV_DOLUM_SN) * DT, s1.wallet.toNumber(), kol.g4!.fiyat - g4Fill);
+        if (amt > 0) { g4Fill += amt; useGame.setState({ wallet: s1.wallet.sub(amt) }); }
+        if (g4Fill >= kol.g4!.fiyat - 1e-9) {
+          g4At = t + DT;
+          if (MUT !== 'g4yok') CFG.garson = { ...CFG.garson!, sayi: 2 };
+          alimlar.push({ t: g4At, ne: '4. garson', fiyat: kol.g4!.fiyat, bekleme: g4At - sonAlimT, gelirDk: 0 });
+          sonAlimT = g4At;
+        }
+        s1 = g();
+      }
     }
 
     // ---- G-128 kancası: aktif görev servis sayacıyken garsonun servisi de sayılır.
@@ -643,6 +733,7 @@ function kos(kol: Kol): Sonuc {
     bekleme: bek, ilkIstek, ilkServis, pay, k1, elleGarsonSonra, garsonSonraSn, temizSifirSn, kirliBlokMasaSn, bosMasaSn, servisYigini, kalkisYigini, icmeYigini, servisAniYigini,
     svIlkGorulme, svIlkAlim, svZincirOncesi, svAlim, sv3Ilk, k2s2okey6At, sv2Ilk, k2s2okey3At,
     alimlar, gorevler, sayEklenen, dilim, ilkMasa, yol, itme: enUzun, iz: izT.deger,
+    g4At, g4Ihlal, garsonSay: [s.kat2Dunya.garson, ...(s.kat2Dunya.garsonEk ?? [])].filter(Boolean).length, adSon,
   };
 }
 
@@ -793,7 +884,7 @@ async function orkestra(): Promise<void> {
   console.log('');
   console.log(`--- §8 MASA DİLİMİ (G-97 · G-96) — açık masa sayısına göre; G96 içme ${ICME} sn ---`);
   console.log('kol              | dilim  | süre dk | coin/dk | servis | kaçan % | bekleme/fincan sn | garson boşta % | yetişemez % (bekleyen > yoldaki, boş garson yok) | oyuncu boşta %');
-  const yeniKollar = ['TABAN', 'G96-BULASIK', 'G97-S18', 'G97-S18-ILK12', 'B-96-S18', 'B-96-S18-ILK12'];
+  const yeniKollar = process.env.TUR === '3' ? TUR3.filter((k) => k !== 'KORUNUM') : ['TABAN', 'G96-BULASIK', 'G97-S18', 'G97-S18-ILK12', 'B-96-S18', 'B-96-S18-ILK12'];
   for (const ad of yeniKollar) {
     const r = al(ad);
     if (!r) continue;
@@ -817,6 +908,36 @@ async function orkestra(): Promise<void> {
     console.log(`${ad.padEnd(16)} | ${sa(r.bitis).padStart(14)} | ${(ta ? dY(r.bitis, ta.bitis) : '—').padStart(8)} | ${f0(r.kat2Gelir / (r.sure / 60)).padStart(7)} | ${yz(b.kacanAdet, b.kacanAdet + b.servisAdet).padStart(6)} | ${f1(b.servisToplam / b.servisAdet).padStart(5)} | ${f0(r.servisYigini)} · ${f0(r.kalkisYigini)} · ${f2(r.toplanan / (r.sure / 60))}`);
   }
 
+  if (process.env.TUR === '3') {
+    console.log('');
+    console.log('--- §10 ÜÇÜNCÜ TUR (taban = birleşik kod) — garson kapasitesi · görev bölme · içme süresi ---');
+    console.log('kol              | KAT 2 BİTER sa | Δ% TABAN | coin/dk | kaçan % | bekleme sn | 11-16: kaçan · yetişemez | 17-22: kaçan · yetişemez · garson boşta | en uzun görev dk | >15 · >20 dk | 4. garson sa · garson | AD aralık (22 masa)');
+    for (const ad of TUR3) {
+      const r = al(ad);
+      if (!r) continue;
+      const b = r.bekleme;
+      const x = r.dilim[3], y = r.dilim[4];
+      const en = r.gorevler.reduce((a, q) => (q.dk > a.dk ? q : a), { id: '—', dk: -1 });
+      console.log(`${ad.padEnd(16)} | ${sa(r.bitis).padStart(14)} | ${(ta ? dY(r.bitis, ta.bitis) : '—').padStart(8)} | ${f0(r.kat2Gelir / (r.sure / 60)).padStart(7)} | ${yz(b.kacanAdet, b.kacanAdet + b.servisAdet).padStart(6)} | ${f1(b.servisToplam / b.servisAdet).padStart(5)} | ${yz(x.kacan, x.kacan + x.servis)} · ${yz(x.yetisemezSn, x.sn)} | ${yz(y.kacan, y.kacan + y.servis)} · ${yz(y.yetisemezSn, y.sn)} · ${y.garsonSn ? yz(y.garsonBosSn, y.garsonSn) : '—'} | ${en.id} ${f1(en.dk)} | ${r.gorevler.filter((q) => q.dk > 15).length} · ${r.gorevler.filter((q) => q.dk > 20).length} | ${sa(r.g4At)} · ${r.garsonSay} | ${f1(r.adSon)}`);
+    }
+    for (const ad of ['TABAN', 'GB', 'GB+GT3', 'GB+G4', 'GB+GT3+G4']) {
+      const r = al(ad);
+      if (r) console.log(`${ad} bütün görevler: ` + r.gorevler.map((q) => `${q.id} ${f1(q.dk)}${q.dk > 15 ? '!' : ''}`).join(' · '));
+    }
+    const gbAlim = al('GB');
+    if (gbAlim) {
+      // Uzun görevin içinde ne alındı? (Sv mi pad mi) — GB'de en uzun görevin penceresi.
+      const hatGb = gbHat();
+      let bas = 0;
+      const pencere = gbAlim.gorevler.map((q, i) => { const p0 = bas; bas += q.dk * 60; return { id: q.id, a: p0, b: bas, i }; });
+      for (const w of pencere.filter((w) => w.b - w.a > 15 * 60)) {
+        const icinde = gbAlim.alimlar.filter((a) => a.t > w.a && a.t <= w.b);
+        const sv = icinde.filter((a) => a.ne.startsWith('Sv'));
+        console.log(`  GB uzun pencere ${w.id} (${dk(w.b - w.a)} dk, ödül ${f0(hatGb[w.i]?.reward ?? 0)}): ${icinde.length} alım = Sv ${sv.length} (${f0(sv.reduce((a, x) => a + x.fiyat, 0))} coin) + pad/diğer ${icinde.length - sv.length} · ${icinde.map((a) => `${a.ne.replace('pad ', '')} @${dk(a.t - w.a)}`).join(' · ')}`);
+      }
+    }
+  }
+
   // ---- DAMGALAR
   for (const r of sonuc.values()) {
     botDamgasi(r.kol, r.yol, r.sure / 60, 30);
@@ -825,12 +946,27 @@ async function orkestra(): Promise<void> {
     damga(`${r.kol}: bekleme korunumu (Σ fincan beklemesi = ∫ bekleyen dt, ±%2)`, Math.abs(b.servisToplam + b.kacanToplam - b.integral) <= 0.02 * Math.max(1, b.integral) + 30, `${f0(b.servisToplam + b.kacanToplam)} ≠ ${f0(b.integral)}`);
     if (!KISA) damga(`${r.kol}: ufukta bitti`, Number.isFinite(r.bitis) && Number.isFinite(r.hatBitis), `${r.bitis} · ${r.hatBitis}`);
   }
+  if (process.env.TUR === '3') {
+    const top = (h: readonly Kat2GorevDef[]) => h.reduce((a, x) => a + x.reward, 0);
+    damga('GB: ödül toplamı korunur', top(gbHat()) === top(ORIJINAL_GOREVLER), `${top(gbHat())} ≠ ${top(ORIJINAL_GOREVLER)}`);
+    damga('GB: hat = eski hat + 7 ara görev', gbHat().length === ORIJINAL_GOREVLER.length + 7, `${gbHat().length}`);
+    for (const ad of TUR3) {
+      const k = KOLLAR.find((x) => x.ad === ad), r = al(ad);
+      if (!k || !r) continue;
+      if (k.g4 && !KISA) {
+        damga(`${ad}: 4. garson alındı ve geldi (garson 4)`, Number.isFinite(r.g4At) && r.garsonSay === 4, `alım ${sa(r.g4At)} · garson ${r.garsonSay}`);
+        damga(`${ad}: zincir 4. garsonu bekledi`, r.g4Ihlal === 0, `${r.g4Ihlal} pad`);
+      }
+      if (k.adK !== undefined && !KISA) damga(`${ad}: 22 masada aralık 18 × (1 + 12k)`, Math.abs(r.adSon - 18 * (1 + 12 * k.adK)) < 1e-9, `${r.adSon}`);
+    }
+  }
   const ko = al('KORUNUM');
   if (ko && ta) damga('KORUNUM: G-128 kancası ×0 → parmak izi = TABAN', ko.iz === ta.iz && ko.bitis === ta.bitis, `${ko.iz} ≠ ${ta.iz}`);
   if (ta) for (const k of KOLLAR) {
     if (k.ad === 'TABAN' || k.ad === 'KORUNUM' || k.ad === 'G124-KAT2-KAPALI') continue;
     const r = al(k.ad);
-    if (r && (!KISA || !['G119-K2', 'G119-K2T', 'SV-EMU0'].includes(k.ad))) varyantDamgasi(k.ad, ta.iz, r.iz);
+    const kisaEtkisiz = ['G119-K2', 'G119-K2T', 'SV-EMU0', 'G4', 'GB', 'GB+G4', ...AD_K.map((x) => `AD${x}`)]; // kısa ufuk (1,5 sa) tavlaya / okey3'e varmaz
+    if (r && (!KISA || !kisaEtkisiz.includes(k.ad))) varyantDamgasi(k.ad, ta.iz, r.iz);
   }
   const kal = al('G96-KALKIS');
   if (kal) damga('G96-KALKIS: servis anında yığın yok (kahve parası kalkışta)', kal.servisYigini === 0, `${kal.servisYigini} servis yığını`);

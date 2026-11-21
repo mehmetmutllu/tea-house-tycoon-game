@@ -135,3 +135,63 @@ içilince düşmez / kalkışta kaybolur / config kancası yok · G-97 ILK kanca
 - **D-G129** Kat 2 tavla düzeni C: ikişerli blok, okey sıralarının ±1,2 hizasında; 22 masa, sıra/fiyat/zincir aynı.
 - **D-G108** Kat 1 garsonu oyuncuyu itmez (navStep'ten oyuncu/engel ayrışması çıktı).
 - Final birleşik: Kat 2 7,45 → 7,82 sa (+%5,0), kaçan 7,4 → 11,3 %, 1.500 → 1.392 coin/dk.
+
+## Üçüncü tur §Bulgular (taban = birleşik kod; `TUR=3 OLCUM=tam` → `docs/olcum-s5-denge-3.txt`, damgalar temiz, 1.587 sn)
+Kod: 7edca73 (src temiz); koşu sırasında 912809b (G-92) geldi — mutasyon koşusunda 912809b'de TABAN izi a02827ea ve GB izi 2e2c1ba6
+tam koşuyla BİREBİR → G-92 Kat 2 ölçümünü değiştirmiyor, 18 kol geçerli. TABAN = S5 final (7,82 sa · iz a02827ea), KORUNUM = TABAN izi.
+G4 = 4. garson, k2tavla5'ten (15 masa) sonra zinciri bekletir, 15.000 coin (garson zinciri 4.800 · 10.100 · 13.000 deseni), alım 4,47-4,50 sa.
+AD = istek aralığı 18 × (1 + k·max(0, masa − 10)) sn, kahve fiyatı SABİT (daha az istek = daha az kahve parası). GH+25 = garson 3 → 3,75,
+hız yükseltmesi 4 → 5 (oyuncu Kat 2'de 6,04 — garson yine yavaş). "Yetişemez" = bekleyen fincan > yoldaki ve boş garson yok (meşguliyet).
+
+| kol | Kat 2 sa | Δ% | coin/dk | kaçan % | 11-16: kaçan · yetişemez | 17-22: kaçan · yetişemez | en uzun görev dk | >15 · >20 dk |
+|---|---|---|---|---|---|---|---|---|
+| TABAN | 7,82 | — | 1.392 | 11,3 | 6,7 · 76,7 | **17,5 · 95,2** | k2_s2okey4 54,4 | 9 · 5 |
+| GT3 (tepsi 3) | 7,83 | +0,1 | 1.398 | 9,3 | 4,5 · 65,5 | 14,1 · 91,0 | 54,2 | 9 · 5 |
+| GH+25 (hız) | 7,78 | −0,6 | 1.412 | 5,2 | 2,7 · 70,7 | **7,9** · 95,7 | 53,9 | 9 · 5 |
+| G4 (4. garson) | 7,90 | +1,0 | 1.409 | 6,4 | 5,9 · 72,7 | **8,4** · 88,9 | 54,4 | 9 · 5 |
+| AD k 0,02 | 7,84 | +0,2 | 1.389 | 8,5 | 6,9 · 73,3 | 12,5 · 89,5 | 54,4 | 9 · 5 |
+| AD k 0,04 (≤ %10 için en küçük k; 22 masada 26,6 sn) | 7,85 | +0,3 | 1.385 | 6,4 | 4,4 · 66,1 | **9,5** · 84,9 | 54,4 | 9 · 5 |
+| AD k 0,06 | 7,89 | +0,9 | 1.380 | 5,1 | 4,3 · 58,5 | 7,0 · 75,3 | 54,4 | 9 · 5 |
+| AD k 0,08 | 7,89 | +0,9 | 1.380 | 4,3 | 3,1 · 58,4 | 5,8 · 72,4 | 54,4 | 9 · 5 |
+| GT3 + G4 | 7,89 | +0,9 | 1.407 | 5,6 | 3,7 · 61,8 | 7,5 · 81,7 | 54,2 | 9 · 6 |
+| GT3 + GH25 | 7,69 | −1,7 | 1.421 | 3,3 | 1,4 · 65,6 | 4,8 · 92,3 | 54,2 | 8 · 5 |
+| **GH25 + G4** (en iyi iki tek kol) | 7,80 | −0,3 | **1.419** | **2,2** | 2,2 · 64,7 | **2,4** · 84,9 | 53,9 | 9 · 6 |
+| GB (görev bölme) | 7,83 | +0,1 | 1.390 | 11,4 | 7,0 · 75,9 | 17,5 · 94,2 | k2_s2okey4 **44,1** | 4 · 1 |
+| GB + GT3 | 7,84 | +0,3 | 1.395 | 8,7 | 4,2 · 63,9 | 13,4 · 91,3 | 45,1 | 4 · 1 |
+| GB + G4 | 7,92 | +1,3 | 1.405 | 6,7 | 5,9 · 73,6 | 9,0 · 88,4 | 44,1 (k2_tavla6 24,0) | 4 · 2 |
+| GB + GT3 + G4 | 7,91 | +1,2 | 1.401 | 5,8 | 3,6 · 61,1 | 8,1 · 81,3 | 45,1 (k2_tavla6 23,8) | 4 · 2 |
+| ICME8 | 7,85 | +0,4 | 1.392 | 11,1 | 7,2 · 74,7 | 16,8 · 93,9 | 54,3 | 9 · 5 |
+| ICME12 = TABAN | 7,82 | — | 1.392 | 11,3 | 6,7 · 76,7 | 17,5 · 95,2 | 54,4 | 9 · 5 |
+| ICME16 | 7,84 | +0,3 | 1.389 | 11,8 | 7,3 · 77,7 | 18,3 · 95,7 | 54,8 | 9 · 5 |
+
+**GB neden k2_s2okey4'ü kısaltamadı** (GB'de pencerenin alım dökümü): 44,1 dk'nın içinde 7 masa Seviye 2 alımı var (47.250 coin; 4,7 · 10,3 ·
+15,9 · 21,1 · 26,4 · 32,0 · 36,9. dk) ve ancak sonra 4. okey masası (44,1). Uzunluk pad'den değil, okey3'le açılan Seviye 2 yükseltmelerinden.
+Diğer bölmeler çalıştı: k2_s2okey6 26,4 → 13,0 + 13,8; tavla görevleri hepsi ≤ 17,2 (tavla1 15,2 · tavla3 17,2 · tavla6 17,0; GB+G4'te
+tavla6 24,0 çünkü 4. garson alımı o pencereye düşüyor — gerçekte 4. garson kendi görevi olur).
+**GB-SV (aynı tam koşudan zaman çizelgesiyle — ödül zamanlaması hariç tahmin):** okey4 görevi üçe — "3 okey masasını Seviye 2'ye çıkar"
+15,9 dk · "6 okey masasını Seviye 2'ye çıkar" 16,1 · "Okey salonunda 4 masa aç" 12,1 → en uzun görev **17,2 dk (k2_tavla3)**, >20 dk 0,
+>15 dk 5. İkiye bölmek (4 masa Sv2 + aç) 21,1 + 23,0 → hedefi tutmuyor. Bu kol KOD ister: bugün `masaSvKapi` varken Sv görevleri hattan
+düşüyor (`kat2Gorevleri`); Seviye görevi kapıyla birlikte hatta kalmalı (Kat 1 D-142 karşılığı).
+**İçme süresi:** 8 / 12 / 16 sn arasında fark gürültü düzeyinde (Kat 2 ±%0,4, kaçan 11,1 / 11,3 / 11,8) — denge seçimi değil, his seçimi.
+
+Mutasyonlar (3/3 yakalandı): `MUT=gt2` kısa → "varyant etkili (GT3)" kırıldı (iz = TABAN 781ef0aa) · `MUT=gbodul` kısa → "GB: ödül
+toplamı korunur" kırıldı (49.550 ≠ 49.200) · `MUT=g4yok` tam → "G4: 4. garson alındı ve geldi" kırıldı (alım 4,48 sa · garson 3).
+
+### Karar paketi taslağı (üçüncü tur — sade dil)
+- **Garsonlar kalabalıkta yetişsin mi:** Bugün 17 masadan sonra her 100 kahveden ~18'i soğuyup gidiyor; garsonlar hiç boş kalmıyor.
+  - *Garsonlar %25 hızlı yürüsün:* soğuyan kahve 100'de ~8'e iner, Kat 2 ~3 dk erken biter, dakikada ~20 coin fazla. Garson yine senden yavaş.
+  - *4. garson (tavla köşesinde 5 masadan sonra, 15.000 coin):* 100'de ~8; Kat 2 ~5 dk uzar (garsonun parası), kazanç biraz artar.
+  - *İkisi birden:* 100'de ~2 — neredeyse hiç kaçmaz, Kat 2 aynı sürede biter, kazanç en yüksek (dakikada +27 coin).
+  - *Tepsi 3 fincan:* 100'de ~14 — tek başına yetmiyor. *Kalabalıkta müşteri daha seyrek istesin:* 100'de ~10, ama kahve parası azalır.
+  - En kaliteli: **hız +%25 + 4. garson** — senin "bırakıp yenisini alıp yetişsin" isteğini tam karşılar, yeni bir garson alma anı da
+    ekler. "%10 civarı kaçsın, biraz telaş kalsın" dersen tek başına **hız +%25** yeterli.
+- **Uzun görevler:** Bugün "Okey salonunda 4 masa aç" görevi ~54 dk sürüyor; çünkü arada 7 masayı Seviye 2'ye çıkarıyorsun ve görev bunu
+  hiç saymıyor. Sadece masa sayısıyla bölünce yine 44 dk kalıyor. Kat 1'deki gibi araya "3 okey masasını Seviye 2'ye çıkar" ve "6 okey
+  masasını Seviye 2'ye çıkar" görevleri girerse her görev ~16 dk olur; tavla görevleri de tek masalık adımlara inince en uzun görev ~17 dk.
+  Ödül toplamı aynı. En kaliteli: **Seviye ara görevleri + tek masalık tavla adımları**.
+- **Kahve kaç saniyede içilsin (para ne zaman düşsün):** 8, 12 ya da 16 sn — oyunun hızına ve kazancına etkisi yok denecek kadar az.
+  12 sn'de kahveyi bıraktıktan kısa bir süre sonra masada para belirir. En kaliteli: **12 sn kalsın** (ya da sen "para daha çabuk düşsün"
+  dersen 8 sn — sayılar aynı).
+
+### KARAR (üçüncü tur)
+(boş — kullanıcı seçecek)
