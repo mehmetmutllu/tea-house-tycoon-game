@@ -33,6 +33,7 @@ import { BAND_SHELL_RUNS, WALL_M, WALL_RUNS, kat1DuvarParcalari } from './wallLo
 import { KAPI_DIREK_H } from './wallOlcu';
 import { KayWalls } from './KayWalls';
 import { Model } from './Model';
+import { Tabela } from './Tabela';
 import {
   ASFALT,
   CITY_S,
@@ -1191,8 +1192,9 @@ function Street() {
           Salt görsel (collision yok); müşteri yolu (kapı hizası) boş bırakıldı. */}
       {(
         <group key={e[0]}>
-          {/* S5 G-114 B: TENTE (S6/F1) ve ALINLIK TABELASI (D-156) ön duvar 1,0'a inince dayanaksız kaldı (2,6-3,2'de
-              havada) → çizilmiyor. Ölçüleri `streetLook.TENTE/TABELA`da duruyor; kafe adının yeni yeri açık soru. */}
+          {/* S5 G-114 B: TENTE (S6/F1) ön duvar 1,0'a inince dayanaksız kaldı → çizilmiyor (ölçü `streetLook.TENTE`).
+              Kafe adı (D-156) kapının iki direğinin arasındaki kemerden sarkar (`streetLook.KEMER/TABELA`). */}
+          <Tabela x={e[0]} />
           {/* bahçe masaları (kapının iki yanı, kaldırımda) + tabureler */}
           {[-2.3, 2.3].map((dx) => (
             <group key={dx} position={[e[0] + dx, 0, z1 + 1.15]}>

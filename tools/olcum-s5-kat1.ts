@@ -20,6 +20,7 @@
  *
  * Koşu:  npx tsx tools/olcum-s5-kat1.ts                                   (kısa — yön, rapora girmez)
  *        OLCUM=tam npx tsx tools/olcum-s5-kat1.ts > docs/olcum-s5-kat1.txt
+ *        Final (G-92 sonrası): OLCUM=tam KOLLAR=TABAN npx tsx tools/olcum-s5-kat1.ts > docs/olcum-s5-kat1-final.txt
  * Mutasyon (MUT=): x0 — X kuralı hiç uygulanmaz → "varyant etkili (F25·X80/X60)" ya da "X kuralı tetiklendi" kırılır.
  */
 import { KISA, botDamgasi, damga, damgaOzeti, izOlustur, kipBandi, kisaDeger, seedRandom, varyantDamgasi } from './olcum-lib';
@@ -40,7 +41,7 @@ const FIYAT0 = TRAY.costs[0];
 const Q_TEPSI = C.quests.findIndex((q) => q.id === 'q_charTray1');
 
 interface Kol { ad: string; fiyat: number; x: number | null }
-const KOLLAR: Kol[] = [
+const KOLLAR_TUM: Kol[] = [
   { ad: 'TABAN', fiyat: FIYAT0, x: null },
   { ad: 'F25', fiyat: 25, x: null },
   { ad: 'F25·X80', fiyat: 25, x: 0.8 },
@@ -48,6 +49,8 @@ const KOLLAR: Kol[] = [
   /** Başvuru: "her zaman yetsin" — görev açıldığı an cüzdan (11) fiyatın %44'ü; %40 eşik = görev açılır açılmaz tamamlanır. */
   { ad: 'F25·X40', fiyat: 25, x: 0.4 },
 ];
+/** KOLLAR=TABAN,... ile süzülür. G-92 uygulandıktan sonra TABAN = üretim (25 + %40 kuralı `buyCharUpgrade`ta) = eski F25·X40. */
+const KOLLAR = process.env.KOLLAR ? KOLLAR_TUM.filter((k) => process.env.KOLLAR!.split(',').includes(k.ad)) : KOLLAR_TUM;
 
 // ---------------------------------------------------------------------------------------------
 //  BOT — `tools/olcum-tabela-f4c3.ts` decide/steer birebir (T9b oyun botu); tek fark panel alım satırındaki X kuralı.

@@ -29,6 +29,7 @@
  */
 import { PLAYER_RADIUS } from '../../config/actor';
 import { DOOR } from './wallPanel';
+import { KAPI_DIREK_H } from './wallOlcu';
 
 /** city-builder-bits paketi → dünya çarpanı (rapor §A, A1 kolu).
  *
@@ -140,24 +141,44 @@ export const tenteYuzY = (): number => TENTE.y + (TENTE.z - STREET_Z0) * Math.si
 export const tenteOnY = (): number => TENTE.y - (TENTE.d / 2) * Math.sin(TENTE.rotX);
 
 // ---------------------------------------------------------------------------------------------
-//  ALINLIK TABELASI (F4c-3 · D-156 — kullanıcı kararı: "alınlığı dolduran büyük tabela", K2)
+//  KAPI KEMERİ TABELASI (S5 · G-114 sonrası — kullanıcı kararı: "iki koyu direğin ARASINA asılı")
 // ---------------------------------------------------------------------------------------------
 /**
- * Alınlığı (lento 2,65 … üst kordon 3,20) dolduran levha; üstünde oyuncunun verdiği kafe adı yazar.
- * Eskisi 3,4 × 0,34'tü, lento ile kordonun ARASINDAYDI ve ikisi de yüzünün 6 cm önüne uzandığı için
- * oyun kamerasından yarısı örtülüyordu (rapor B4); yazı konsa büyük harf 7,7 px olurdu (B5).
- * Yeni levha örtücülerin ÖNÜNDE (arka yüzü `z − d/2` > 17,89), eni lentonunki kadar: harf 12,2 px (B8).
- * Ölçüm: `tools/olcum-tabela-f4c3.ts` bu sabiti okur (K0 = bugünkü tabela).
+ * Ön duvar 1,0'a inince (G-114 B) alınlık gitti; kafe adı (D-156) kapının iki DİREĞİNİN arasına asıldı.
+ * Direk başlıklarından (üst yüzü `KAPI_DIREK_H + 0,1` = 1,40) iki ince demir dikme çıkar, tepede yatay kiriş
+ * (`KEMER`) onları bağlar, levha kirişten iki kısa askıyla sarkar. Levhanın ALT kenarı insan boyunun
+ * (1,75) üstünde: müşteri ve oyuncu altından geçer, kirişe/levhaya gömülmez. Levha kameraya doğru hafif
+ * eğik (`egim`, üst kenar geriye) — 45° yukarıdan bakan kamerada yazı daha az basılır.
+ * Kemer duvar hattında (z = `STREET_Z0`, direklerle aynı); x kapı ekseni (`Scene.Street` `e[0]`).
  */
-export const TABELA = {
-  w: 5.0,
-  h: 0.55,
-  d: 0.06,
-  y: 2.925,
-  z: STREET_Z0 + 0.45,
+export const KEMER = {
+  /** Dikmelerin başladığı yükseklik = direk başlığının üst yüzü (`Scene.Walls`: başlık KAPI_DIREK_H + 0,05, 0,1 kalın). */
+  y0: KAPI_DIREK_H + 0.1,
+  /** Kirişin merkez yüksekliği ve kesiti. */
+  y: 2.55,
+  kalin: 0.1,
+  /** Dikme kesiti (kare). Dikmeler direklerin ekseninde: x = ±DOOR.half. */
+  dikme: 0.08,
+  /** Kirişin direk eksenlerinden taşan payı (her uçta). */
+  tasma: 0.15,
+  z: STREET_Z0,
 } as const;
-/** Lento ve üst kordonun sokağa uzandığı en ön z (`Scene` giriş bloğu: duvar + 0,22 + 0,34/2). */
-export const ALINLIK_ORTUCU_ON_Z = 17.89;
+
+/** Kemerden sarkan ad levhası. y = merkez; askı boyu = kiriş altı − levha üstü. */
+export const TABELA = {
+  w: 3.4,
+  h: 0.46,
+  d: 0.06,
+  y: 2.18,
+  z: STREET_Z0,
+  /** Eğim (rad): üst kenar geriye (−z), yüz kameraya döner. */
+  egim: 0.22,
+} as const;
+
+/** Eğimli levhanın en alt noktası — altından geçen insanın başı buna değmemeli. */
+export const tabelaAltY = (): number => TABELA.y - (TABELA.h / 2) * Math.cos(TABELA.egim);
+/** Eğimli levhanın en üst noktası — kirişin altında kalmalı (askı boyu > 0). */
+export const tabelaUstY = (): number => TABELA.y + (TABELA.h / 2) * Math.cos(TABELA.egim);
 /** Aday dokusunun yazı oranları (tarayıcıda `measureText` ile ölçüldü, rapor B6):
  *  büyük harf = 0,427 × levha boyu · yazı levha eninin en fazla %78,7'sini doldurur. */
 export const TABELA_YAZI = { harfBoy: 0.427, doluluk: 0.787, font: '700 {px}px Georgia, "Noto Serif", serif' } as const;

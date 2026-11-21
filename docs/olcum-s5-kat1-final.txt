@@ -1,0 +1,28 @@
+=== S5 G-92 · KAT 1 TEPSİ İLK FİYATI + "YETMİYORSA TAMAMLA" (varyant kapısı · D-084) ===
+Kip: tam · gerçek tick dt 0.1 · 20 dk · tohum 1,2,3,4,5,6,7,8 · görev q_charTray1 = hat #4 (ödülü 15)
+D-079 ölçütü: ilk alım < 90 sn · GARSONA KADAR en uzun boşluk ≤ 2 dk · otomasyon (garson) < 15 dk.
+
+--- §1 GERÇEK TICK (bot, tohum ortalaması · [en kötü tohum]) ---
+kol      | ilk alım sn | garsona kadar en uzun boşluk dk | garson dk | tepsi görevi açılınca cüzdan (min..maks) | görev bekleme sn (ort · en uzun) | X tetik / bağış
+TABAN    |   19.5 [25.0] |   3.92 [4.44] |   8.03 [8.70] | 11.0..11.0 (fiyat 25) | 0.3 · 0.6 | 0/8 · 0.0
+
+Tohum başına (ilk alım sn · en uzun açılış boşluğu dk → alım · garson dk · tepsi açıldı sn @cüzdan → alındı sn):
+  TABAN    t1 | 16.3 · 3.42 → pad waiter · 7.65 · 16.3 @11.0 → 16.7 · iz 63d07bdb
+  TABAN    t2 | 16.3 · 4.08 → pad waiter · 8.14 · 16.3 @11.0 → 16.7 · iz ab35fbf7
+  TABAN    t3 | 25.0 · 3.76 → pad waiter · 7.77 · 25.0 @11.0 → 25.1 · iz 402f1b58
+  TABAN    t4 | 25.0 · 4.37 → pad waiter · 8.46 · 25.0 @11.0 → 25.1 · iz afb8f7b3
+  TABAN    t5 | 16.1 · 3.78 → pad waiter · 7.84 · 16.1 @11.0 → 16.7 · iz 5876af7d
+  TABAN    t6 | 25.0 · 3.90 → pad waiter · 7.95 · 25.0 @11.0 → 25.1 · iz 8fd14a49
+  TABAN    t7 | 16.3 · 3.62 → pad waiter · 7.75 · 16.3 @11.0 → 16.7 · iz 279d405d
+  TABAN    t8 | 16.3 · 4.44 → pad waiter · 8.70 · 16.3 @11.0 → 16.7 · iz ea0ef765
+
+Alım sırası (tohum 1):
+  TABAN    pad table2@16 · karakter 1/0/0@17 · ocak L1@53 · pad table3@228 · karakter 2/0/0@254 · pad waiter@459
+
+--- §2 MODEL (simulate.ts olcutler(), İDEALİZE · D-079 resmî bekçisi; "%X'te tamamla" = fiyat X × 25) ---
+kol      | model fiyat | ilk alım sn | açılış alım | garsona kadar en uzun dk | garson dk | ŞERİT (Normal) sa
+TABAN    |          25 |        22.0 |           6 |                     1.55 |      5.00 | 7.48
+
+(süre: 19 sn duvar saati)
+
+✓ Damgalar temiz (tam koşu).

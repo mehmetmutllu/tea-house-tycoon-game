@@ -8,6 +8,7 @@ import {
   charLevel,
   charValue,
   charNextCost,
+  charTamamlanir,
   charMaxTier,
   trayCapacityFor,
   waiterTrayCapacityFor,
@@ -371,6 +372,7 @@ export function CharacterPanel({
   const charUpgrades = useGame((s) => s.charUpgrades);
   const waiterUpgrades = useGame((s) => s.waiterUpgrades);
   const buyCharUpgrade = useGame((s) => s.buyCharUpgrade);
+  const questId = useGame((s) => economyConfig.quests[s.questIndex]?.id);
   const padsDone = useGame((s) => s.padsDone);
   // Vitrin OYUNCUNUN KENDİ salonunu gösterir: satın aldığı zemin ve duvar teması burada da
   // geçerli (mağaza önizlemeleriyle aynı kaynak). Karakter, kendi kıraathanesinde duruyor.
@@ -488,7 +490,9 @@ export function CharacterPanel({
               const cost = charNextCost(stat, tier);
               const cur = charValue(stat, tier);
               const next = tier < max ? charValue(stat, tier + 1) : null;
-              const afford = cost != null && cash >= cost;
+              // G-92: ilk tepsi tamamlaması — eksik oyunca ödenir, düğme açık ve "eksik" satırı yok.
+              const tamamla = charTamamlanir(stat, tier, cash, questId);
+              const afford = cost != null && (cash >= cost || tamamla);
               return (
                 <div className="char-stat" key={stat}>
                   <span className="char-stat-icon">{icon}</span>
@@ -505,7 +509,7 @@ export function CharacterPanel({
                         </>
                       )}
                     </span>
-                    <Eksik cost={cost} cash={cash} />
+                    <Eksik cost={tamamla ? null : cost} cash={cash} />
                   </span>
                   {cost != null ? (
                     <button

@@ -11,6 +11,7 @@ import {
   dishSpeedMaxTier,
   charMaxTier,
   charNextCost,
+  charTamamlanir,
   waiterTrayMaxTier,
   waiterTrayNextCost,
   dishCarryNextCost,
@@ -1787,9 +1788,11 @@ export const useGame = create<GameState>((set, get) => ({
     const s = get();
     const tier = s.charUpgrades[stat];
     const cost = charNextCost(stat, tier);
-    if (cost == null || s.wallet.lt(cost)) return false;
+    // G-92: ilk tepsi görevinde cüzdan fiyatın ≥ %40'ıysa eksiği oyun öder (cüzdan sıfırlanır).
+    const tamamla = charTamamlanir(stat, tier, s.wallet.toNumber(), C.quests[s.questIndex]?.id);
+    if (cost == null || (s.wallet.lt(cost) && !tamamla)) return false;
     set({
-      wallet: s.wallet.sub(cost),
+      wallet: tamamla ? D(0) : s.wallet.sub(cost),
       charUpgrades: { ...s.charUpgrades, [stat]: tier + 1 },
       ...xpEkle(s, C.xp.perUpgrade),
     });

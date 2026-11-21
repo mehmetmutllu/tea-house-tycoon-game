@@ -24,8 +24,8 @@ const qi = (id: string) => C.quests.findIndex((q) => q.id === id);
 const pad = (id: string) => C.pads.find((p) => p.id === id)!;
 
 describe('1 · seçilen sayılar (PK2)', () => {
-  it('tepsi T1 ₺30 · 4. masa ₺250 · 2. garson ₺800 · seviye tabanı 90', () => {
-    expect(charNextCost('tray', 0)).toBe(30);
+  it('tepsi T1 ₺25 (S5 G-92) · 4. masa ₺250 · 2. garson ₺800 · seviye tabanı 90', () => {
+    expect(charNextCost('tray', 0)).toBe(25);
     expect(pad('table4').cost).toBe(250);
     expect(pad('waiter2').cost).toBe(800);
     expect(C.xp.levelBase).toBe(90);

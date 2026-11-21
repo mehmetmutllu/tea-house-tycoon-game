@@ -3,9 +3,10 @@
  * tabela "alınlığı dolduran büyük tabela" (K2); üstünde oyuncunun girişte verdiği ad yazar; ad Ayarlar'dan
  * ücretsiz değişir, eski kayıtlara bir kez sorulur, en fazla 20 harf; yükleniyor ekranında oyunun adı.
  *
+ * S5 (G-114 sonrası, kullanıcı kararı): alınlık gitti → tabela kapının iki direği arasındaki kemerden sarkar.
+ *
  * Neyi korur:
- *  - ÖRTÜ: tabelanın arka yüzü lento/üst kordonun ÖNÜNDE (eski tabelanın yarısı onların arkasındaydı, B4),
- *    alınlığı (2,65 … 3,20) doldurur, eni lentoyu geçmez.
+ *  - YER: kemer direklerin hattında ve başlıklarına oturur; levha direklerin arasında, altından insan geçer.
  *  - YAZI: uzun adda harf küçülür, levhadan taşmaz; boy da en de sınırlar (B6).
  *  - AD: temizlenir (boşluk, denetim karakteri, 20 harf), boş → varsayılan, Türkçe büyük harf (i → İ).
  *  - KAYIT: yeni ve ESKİ kayıt "hiç sorulmadı" (null) açılır; verilen ad kayda girer ve geri okunur;
@@ -19,8 +20,9 @@ import { useGame, kayitVerisi } from '../src/game/store';
 import { defaultSave, kayitCoz } from '../src/game/save';
 import { KAFE_ADI_MAX, KAFE_ADI_VARSAYILAN, OYUN_ADI, kafeAdiOku, kafeAdiTemizle, tabelaYazisi } from '../src/game/kafeAdi';
 import { ekranKanali, geriTusu, type EkranGirdisi } from '../src/game/ekranKanali';
-import { ALINLIK_ORTUCU_ON_Z, STREET_Z0, TABELA, TABELA_YAZI, tabelaFontPx } from '../src/components/three/streetLook';
-import { DOOR } from '../src/components/three/wallPanel';
+import { KEMER, STREET_Z0, TABELA, TABELA_YAZI, tabelaAltY, tabelaFontPx, tabelaUstY } from '../src/components/three/streetLook';
+import { DOOR, KAPI_DIREK_H, SOVE_W, WALL_H } from '../src/components/three/wallOlcu';
+import { ACTOR_HEIGHT } from '../src/config/actor';
 import { WALL_M } from '../src/components/three/wallLook';
 import { LAYOUT } from '../src/game/layout';
 
@@ -31,22 +33,26 @@ const mem: Record<string, string> = {};
   removeItem: (k: string) => { delete mem[k]; },
 };
 
-describe('tabela geometrisi (D-156 · rapor B4/B8)', () => {
-  it('örtücü (lento + üst kordon) ön yüzü Scene giriş bloğundan türüyor', () => {
-    // Scene: frontEdgeZ = areaBounds[0].maxZ + WALL_M; lento/kordon z + 0,22'de, 0,34 derin.
+describe('tabela geometrisi — kapı direkleri arasındaki kemer (S5, G-114 sonrası)', () => {
+  it('kemer kapı direklerinin hattında: z = ön duvar kenarı (Scene: areaBounds[0].maxZ + WALL_M)', () => {
     const frontEdgeZ = LAYOUT.areaBounds[0].maxZ + WALL_M;
-    expect(frontEdgeZ + 0.22 + 0.34 / 2).toBeCloseTo(ALINLIK_ORTUCU_ON_Z, 2);
+    expect(KEMER.z).toBeCloseTo(frontEdgeZ, 6);
+    expect(TABELA.z).toBeCloseTo(STREET_Z0, 6);
   });
-  it('arka yüzü örtücülerin önünde — lento ve kordon yazıyı kesmez', () => {
-    expect(TABELA.z - TABELA.d / 2).toBeGreaterThan(ALINLIK_ORTUCU_ON_Z);
-    expect(TABELA.z).toBeLessThan(STREET_Z0 + 0.6); // duvardan kopmuş bir levha değil
+  it('dikmeler direk başlığının üst yüzünden başlar (KAPI_DIREK_H + 0,05 + 0,1/2)', () => {
+    expect(KEMER.y0).toBeCloseTo(KAPI_DIREK_H + 0.05 + 0.1 / 2, 6);
   });
-  it('alınlığı doldurur: lento üstü (2,65) … kordon üstü (3,20)', () => {
-    expect(TABELA.y - TABELA.h / 2).toBeCloseTo(DOOR.height, 2);
-    expect(TABELA.y + TABELA.h / 2).toBeCloseTo(3.2, 2);
+  it('levha iki direğin ARASINDA (direklerin iç yüzünü geçmez)', () => {
+    expect(TABELA.w / 2).toBeLessThan(DOOR.half - SOVE_W / 2);
   });
-  it('eni lento kadar (kapı + söveler), taşmaz', () => {
-    expect(TABELA.w).toBeCloseTo(DOOR.half * 2 + 0.6, 2);
+  it('altından insan geçer: levhanın alt ucu 1,75 boyun en az 0,1 üstünde; levha kirişin altında asılı', () => {
+    expect(tabelaAltY() - ACTOR_HEIGHT).toBeGreaterThanOrEqual(0.1);
+    expect(tabelaUstY()).toBeLessThan(KEMER.y - KEMER.kalin / 2);
+    expect(KEMER.y + KEMER.kalin / 2).toBeLessThan(WALL_H); // eski alınlık tavanını aşmaz
+  });
+  it('yüz kameraya döner: eğim 0 … 0,4 rad (üst kenar geriye)', () => {
+    expect(TABELA.egim).toBeGreaterThan(0);
+    expect(TABELA.egim).toBeLessThan(0.4);
   });
 });
 

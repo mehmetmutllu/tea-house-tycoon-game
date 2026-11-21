@@ -113,7 +113,7 @@ ILK12: ilk masada boşta %84 → %78, kaçan artmıyor (11,7 ≤ 12,4) → **uyg
 - **G-97:** 18 sn (okey 7,2 · tavla 2,5) + ILK12 (yalnız 1 masa açıkken 12 sn). · **G-119/122:** K2T (`masaSvKapi`; Sv görevleri hattan düştü).
 - **G-123** fiyatlar kalsın · **G-95 / G-103** değişiklik yok · **G-124** oto-toplama açık (zaten kodda) · **G-128** garson servisi sayılır.
 - **G-108:** `docs/s5-npc/g108.patch` uygulandı, bekçi `tests/g108-garson-itmez.test.ts`. · **G-129 C:** tavla ikişerli blok (z 1,3/3,7 · 7,3/9,7 · 13,3/15,7).
-- **G-92:** kararsız — dokunulmadı.
+- **G-92:** F25·X40 uygulandı (kullanıcı onayı 2026-11-21) — `character.tray.costs[0]` 25 + `tray.ilkTamamla` (q_charTray1, %40). Final `OLCUM=tam KOLLAR=TABAN` → `docs/olcum-s5-kat1-final.txt`: görev bekleme 0,3 sn (en uzun 0,6) · ilk alım 19,5 · garson 8,03 dk · tohum başına ilk alım/garson/tepsi zamanları F25·X40 satırıyla birebir. Model (simulate) kuralı bilmiyor, 25'i tam biriktirir (garson 5,00 dk) — kural eklenince `meta-pencere` §5 bekçisi 1 sn'lik eşleşmelerden kırılıyor; ayrı karar.
 
 ## Final (birleşik kod — `FINAL=1 OLCUM=tam KOLLAR=TABAN,KORUNUM` → `docs/olcum-s5-denge-final.txt`, damgalar temiz, KORUNUM = TABAN izi)
 Kat 2 biter **7,82 sa (+%5,0)** · zincir 5,51 sa · **1.392 coin/dk** · kaçan **%11,3** · bekleme 10,9 sn · ilk Sv 1,57 sa (Sv2 okey3'ten sonra,

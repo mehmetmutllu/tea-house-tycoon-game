@@ -411,7 +411,10 @@ export const economyConfig = {
     // T2 150→130 (5B garson-öncesi −%15). Mıknatıs/hız orta kademeler yumuşadı.
     // T8a (D-142, G-65): T1 75 → 30 — kullanıcı: "ilk görevlerden sonra cebinde 30 kalıyor, hemen
     // alabilsin". Tempo etkisi −%0,4, otomasyon 6,1 → 5,2 dk (D-079 bandında).
-    tray: { values: [2, 3, 4, 5, 6], costs: [30, 130, 5_000, 18_000] },
+    // S5 G-92 (kullanıcı: "param hep yetsin, yetmiyorsa göstermeden tamamlasın"): T1 30 → 25 + İLK TEPSİ
+    // TAMAMLAMA — görev `gorev` aktifken cüzdan fiyatın ≥ `oran`ı ise eksik kısmı oyun öder (en çok 15).
+    // Görev açılınca cüzdan hep ~11 → bekleme 30,6 sn → 0,3 sn (docs/s5-denge-raporu.md · olcum-s5-kat1.txt).
+    tray: { values: [2, 3, 4, 5, 6], costs: [25, 130, 5_000, 18_000], ilkTamamla: { gorev: 'q_charTray1', oran: 0.4 } },
     /** Para mıknatısı yarıçapı (dünya birimi; money.attractRadius'un yerini aldı).
      *  M1 250→200 (kullanıcı 2026-06-11: "azıcık insin" — 4. masa dönemiyle hizalanır). */
     magnet: { values: [2.6, 3.4, 4.2, 5.0], costs: [200, 700, 2_200] },
@@ -1752,6 +1755,16 @@ export function charValue(stat: CharStat, tier: number): number {
 export function charNextCost(stat: CharStat, tier: number): number | null {
   const costs = economyConfig.character[stat].costs;
   return tier >= 0 && tier < costs.length ? costs[tier] : null;
+}
+
+/**
+ * G-92 İLK TEPSİ TAMAMLAMA: parası yetmese de alım bu kural altında geçer mi? (cüzdan < fiyat ≤ cüzdan / oran,
+ * yalnız tepsi kademe 0 ve aktif görev `ilkTamamla.gorev`). Doğruysa alım cüzdanı sıfırlar, eksiği oyun öder.
+ */
+export function charTamamlanir(stat: CharStat, tier: number, cash: number, questId: string | undefined): boolean {
+  const k = economyConfig.character.tray.ilkTamamla;
+  const cost = charNextCost(stat, tier);
+  return stat === 'tray' && tier === 0 && questId === k.gorev && cost != null && cash < cost && cash >= k.oran * cost;
 }
 
 /** Karakter seviyesi = alınan toplam kademe (salt görsel rozet; HUD yıldız-seviyesinden ayrı). */
