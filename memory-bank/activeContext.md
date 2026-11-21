@@ -47,6 +47,10 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
 - vitest 2445 · duman 79/79 · EN 4/4. Deneme APK: masaüstü `TeaHouse-deneme-tam-2026-11-21.apk` (VITE_KAT2+DENEME).
 
 ## ⏭️ SIRADAKİ ADIM — kullanıcı deneme APK'sını oynar → geri bildirim
+- **Oturum açılışında (kullanıcı istedi 2026-11-21):** (1) APK'yı ver: masaüstü `TeaHouse-deneme-tam-2026-11-21.apk` (main değiştiyse
+  yeniden derle: google-services.json'a geçici `.deneme` istemcisi + `VITE_KAT2=1 VITE_DENEME=1 npm run apk`, sonra geri al) ·
+  (2) tarayıcı testi için `npm run dev` başlat + adresi ver (dev paneli Kat 2 bölümüyle, 2026-11-20'deki gibi). Geri bildirim →
+  `docs/geribildirim-oyun-testi-<tarih>.md` (G-131…) → S6 sprinti. Yayın yolu: test → "nihai" → 1.1 paketi → iOS + Play zip.
 - Açık (sonraki tur, kullanıcıya sorulmadı): siyah-beyaz mutfak teması mağazaya geri konsun mu · Kat 1 oto-toplanan sikkede
   "+X" çıkıyor (Kat 2'de sessiz) · `tools/simulate.ts` G-92 %40 kuralını bilmiyor · Kat 2 Sv5'te 124 gövde/26 ms (gölge kısma önerisi) ·
   uzak masaya ilk grup hızlı yürür · `kameraBakanBolme`/`cepheLook` artık kullanılmıyor (temizlik) · G-120 "sonra değişebilir".
@@ -71,9 +75,6 @@ TR+EN metin (ChatGPT mikrometin). TestFlight'ta pencere çıkmaz; doğrulama yay
 ## AÇIK KALEMLER
 - Kat 2: balkon (D-179 D adayı) hâlâ "düşünürüz" · bölme yürüme yolunu uzatır → K2-5'te ölç · okeyde 4 / tavlada 2 kişi sabit.
 - Küçükler: Usta kartındaki açık mavi "0/7" · küçük resimde zayıf üç · lint: `tools/kat2-*.tsx` 46 (dev araçları, react-refresh kuralı).
-- Tam vitest bir kez 1 kararsız düşüş verdi (hangisi yakalanmadı; sonraki koşular yeşil).
-- Duman 2026-11-13'te bir kez 75/76 (`waitForSelector` 5 sn zaman aşımı istisnası, hangi denetim yakalanmadı); sonraki iki koşu 77/77.
-- Wordmaster oturumu Kaktus'a Unity'yi S17 sonrası kendi kuracak.
 - Play: servis hesabı JSON'u → RevenueCat; RC'de Android baslangic/reklamsiz = Non-consumable.
 - iOS'ta iCloud kayıt gerçek cihazda denenmedi · AdMob "ABD eyalet yönetmelikleri" bakılmadı.
 - Ana görev ödülüne "video izle 2×" sorusu açık (varyant kapısı) · `i18n/baslat` Preferences'tan önce okuyor (küçük).
