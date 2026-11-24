@@ -40,12 +40,10 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   bölündü · G-92 tepsi 25 + %40 tamamlama · Kat 2 7,78 sa, kaçan %2,1, en uzun görev 16,9 dk. Rapor `docs/s5-denge-raporu.md`.
 - Görsel: alçak duvarlar (bölme 0,6, ön duvar 1,0 iki kat, mutfak-kova 1,0) · tabela kapı kemerinde · Kat 2 bina altı cephe+sokak ·
   bakır leğen · Kat 1 mutfak koyu kahve dama · görev kartı M1+M2 · karar sayfası https://claude.ai/artifact/VA8jVDpqSMGMFaf2cdUYNm
-- vitest 2445 · duman 79/79 · EN 4/4. Deneme APK: masaüstü `TeaHouse-deneme-tam-2026-11-21.apk` (VITE_KAT2+DENEME).
 
 ## ✅ TAM TEST + DÜZELTME (2026-11-24) · D-211 · `docs/tam-test-2026-11-24.md`
 - Kilit yok · Kat 2 kadraj kapısı (`kat2/gorusKapisi`, yavaş cihazda 21-24 → 46 fps girişte; kalabalıkta 66 → 37 ms dev) · iPad hedef oku ·
   Usta ✕ · ipucu · bardak · sokak boşluğu. Görev kartı satır kırması REDDEDİLDİ (kart büyümez). vitest 2451 · duman 79/79 · EN 4/4.
-- Yalnız yayındaki 1.0.7'yi de ilgilendirenler: iPad oku, Usta/video ✕, bardak, çip, merdiven, sokak (acil değil; 1.1'e binmesi önerildi).
 
 ## ⏭️ SIRADAKİ ADIM — yeni deneme APK + kullanıcının Kat 2 testi
 - **Oturum açılışında:** (1) YENİ APK derle (21 Kasım APK'sında düzeltmeler YOK): google-services.json'a geçici `.deneme` istemcisi +
