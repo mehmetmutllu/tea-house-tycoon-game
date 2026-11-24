@@ -42,6 +42,7 @@ import { useMasaSvleri } from './kat2/masaSv';
 import { KademeliOge } from './kat2/kademeliMontaj';
 import { masaSvOku } from '../../game/kat2Dongu';
 import { MasaGrubu, useKalkisIzle } from './kat2/Grup';
+import { GorusKapisi } from './kat2/gorusKapisi';
 import { AlcakBolme, Bolmeler } from './kat2/Bolme';
 import { Kat2Garson } from './kat2/Garson';
 import { KahveBalonu } from './kat2/Balon';
@@ -373,11 +374,14 @@ export function MerdivenTamir({ pos }: { pos: [number, number, number] }) {
 const MasaSatiri = memo(function MasaSatiri({ yer, i, oyn, sv, dogus }: { yer: (typeof KAT2_MASALAR)[number]; i: number; oyn: boolean; sv: number; dogus: boolean }) {
   return (
     <group>
-      <Dogus dogus={dogus} pos={[yer.x, 0, yer.z]}>
-        <SvSekme sv={sv} pos={[yer.x, 0, yer.z]}>
-          {yer.tur === 'okey' ? <OkeyMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} /> : <TavlaMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} />}
-        </SvSekme>
-      </Dogus>
+      {/* T1: kadraj dışındaki masa (42 mesh) ağaç dolaşmasından düşer. Ölçü masa + açık oturaklar + toz. */}
+      <GorusKapisi x={yer.x} z={yer.z} boy={1.4} yari={1.9}>
+        <Dogus dogus={dogus} pos={[yer.x, 0, yer.z]}>
+          <SvSekme sv={sv} pos={[yer.x, 0, yer.z]}>
+            {yer.tur === 'okey' ? <OkeyMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} /> : <TavlaMasa x={yer.x} z={yer.z} oyunda={oyn} faz={i} sv={sv} />}
+          </SvSekme>
+        </Dogus>
+      </GorusKapisi>
       <MasaGrubu yer={yer} sira={i} />
       <KahveBalonu yer={yer} />
     </group>

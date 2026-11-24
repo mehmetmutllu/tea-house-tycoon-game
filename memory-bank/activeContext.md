@@ -2,7 +2,7 @@
 
 > **Bu dosya ÜZERİNE YAZILIR.** ≤ 80 satır, yalnız "şu an". Kural: `docs/oturum-akisi-mantik.md` (D-084).
 
-## ŞU AN (2026-11-21 — Kat 2 sprint S5 BİTTİ, main'de · deneme APK masaüstünde · sıradaki: kullanıcının testi)
+## ŞU AN (2026-11-24 — tam oyun testi + düzeltmeler T1-T9 bitti, main'de · sıradaki: YENİ deneme APK → kullanıcının Kat 2 testi)
 
 **Kural:** Play Console'u Claude KULLANMAZ. iOS: ASC API (wordmaster anahtarı `563U28X6GK`, istemci kalıbı
 `dev-ortam/gizli/wordmaster/araclar/asc.js`); Codemagic API (kiraathane app `6aba443b9e5dcc12b726ba2b`, iş akışı `ios-yayin`,
@@ -13,10 +13,6 @@ masaüstünde `TeaHouseTycoon-1.0.7-vc10007-GooglePlay.zip` (+ ayrık `…-vc100
 Play üretim erişimi formu (`TeaHouse-Uretim-Erisimi-Formu.txt`) gönderildi, cevap bekleniyor · onay → rehber 9B (Production →
 Add from library) · ret → e-postayı iste, cevaplar güçlendirilir. Mediation (D-173): Liftoff + Unity bidding'de.
 Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `geribildirim/deneme-…` elle silinecek.
-
-## ✅ Kat 2 sprint S2 kapandı (2026-11-13) · D-188 · D-189 · D-190 — üretimde kapı kapalı
-- Kodda: kasa + çevrimdışı (D-185) · tavla/2. ocak/garson mantığı (D-186) · **pad fiyatları SB9** (D-188, config, bekçi
-  "config = SB9") · **garson hız 3 · tepsi 2 · tek** (D-189) · **alçak bölme 1,2** (D-190; B/C/D silindi, perde `h` parametreli).
 
 ## ✅ KAT 2 AKIŞ TURU (D-191) + K2-6 MANTIK (D-192) + GÖRSEL (D-193) — kodda, üretimde kapı kapalı
 - Mantık: `kat.ts` N7 · geçitsiz duvar · 2. ocak x −13,2 · `KAT2_LAVABO_YER` · `MERDIVEN_PAD_YER` · config `kat2.hazir`,
@@ -46,11 +42,17 @@ Firebase (D-178): geri bildirim kutusu + yerel analitik yayında; Firestore'da `
   bakır leğen · Kat 1 mutfak koyu kahve dama · görev kartı M1+M2 · karar sayfası https://claude.ai/artifact/VA8jVDpqSMGMFaf2cdUYNm
 - vitest 2445 · duman 79/79 · EN 4/4. Deneme APK: masaüstü `TeaHouse-deneme-tam-2026-11-21.apk` (VITE_KAT2+DENEME).
 
-## ⏭️ SIRADAKİ ADIM — kullanıcı deneme APK'sını oynar → geri bildirim
-- **Oturum açılışında (kullanıcı istedi 2026-11-21):** (1) APK'yı ver: masaüstü `TeaHouse-deneme-tam-2026-11-21.apk` (main değiştiyse
-  yeniden derle: google-services.json'a geçici `.deneme` istemcisi + `VITE_KAT2=1 VITE_DENEME=1 npm run apk`, sonra geri al) ·
-  (2) tarayıcı testi için `npm run dev` başlat + adresi ver (dev paneli Kat 2 bölümüyle, 2026-11-20'deki gibi). Geri bildirim →
-  `docs/geribildirim-oyun-testi-<tarih>.md` (G-131…) → S6 sprinti. Yayın yolu: test → "nihai" → 1.1 paketi → iOS + Play zip.
+## ✅ TAM TEST + DÜZELTME (2026-11-24) · D-211 · `docs/tam-test-2026-11-24.md`
+- Kilit yok · Kat 2 kadraj kapısı (`kat2/gorusKapisi`, yavaş cihazda 21-24 → 46 fps girişte; kalabalıkta 66 → 37 ms dev) · iPad hedef oku ·
+  Usta ✕ · ipucu · bardak · sokak boşluğu. Görev kartı satır kırması REDDEDİLDİ (kart büyümez). vitest 2451 · duman 79/79 · EN 4/4.
+- Yalnız yayındaki 1.0.7'yi de ilgilendirenler: iPad oku, Usta/video ✕, bardak, çip, merdiven, sokak (acil değil; 1.1'e binmesi önerildi).
+
+## ⏭️ SIRADAKİ ADIM — yeni deneme APK + kullanıcının Kat 2 testi
+- **Oturum açılışında:** (1) YENİ APK derle (21 Kasım APK'sında düzeltmeler YOK): google-services.json'a geçici `.deneme` istemcisi +
+  `VITE_KAT2=1 VITE_DENEME=1 npm run apk`, sonra geri al · (2) `npm run dev` + adresi ver. Geri bildirim →
+  `docs/geribildirim-oyun-testi-<tarih>.md` (G-131…) → S6. Yayın yolu: test → "nihai" → 1.1 paketi → iOS + Play zip.
+- **Öneri (kullanıcıya söylendi, kararı bekliyor):** ayrı canlı yama yok, düzeltmeler 1.1 ile çıkar; Kat 2 testi ~2 haftayı aşarsa 1.0.8.
+- Açık: `q_stationMax` temposu (bot 15 dk'da bitiremedi; denge kararı, ölçülmeden dokunma) · kalabalık Kat 2 gerçek telefonda ölçülmedi.
 - Açık (sonraki tur, kullanıcıya sorulmadı): siyah-beyaz mutfak teması mağazaya geri konsun mu · Kat 1 oto-toplanan sikkede
   "+X" çıkıyor (Kat 2'de sessiz) · `tools/simulate.ts` G-92 %40 kuralını bilmiyor · Kat 2 Sv5'te 124 gövde/26 ms (gölge kısma önerisi) ·
   uzak masaya ilk grup hızlı yürür · `kameraBakanBolme`/`cepheLook` artık kullanılmıyor (temizlik) · G-120 "sonra değişebilir".

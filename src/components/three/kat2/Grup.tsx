@@ -30,7 +30,7 @@ import { clone as skinKlon } from 'three/examples/jsm/utils/SkeletonUtils.js';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { useGame } from '../../../game/store';
 import { economyConfig } from '../../../config/economy.config';
-import { KAY_KOK, KAY_MUSTERI_GOVDE, KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, KAY_SCALE } from '../../../config/actor';
+import { ACTOR_HEIGHT, KAY_KOK, KAY_MUSTERI_GOVDE, KAY_OTURMA_ILERI, KAY_OTURMA_KALDIRMA, KAY_SCALE } from '../../../config/actor';
 import { PALETTE } from '../../../config/palette';
 import { KLIP, LOKOMOSYON_YURUYUS, basMi, ekipmanMi, kafaKucult, lokomosyonSec, useKayKlipler } from '../KayActor';
 import type { Kat2MasaYeri } from '../../../game/kat';
@@ -39,6 +39,7 @@ import { svCarpan } from '../../../game/kat2Dongu';
 import { useMasaSv } from './masaSv';
 import { masaBul } from './masaIndeks';
 import { iskeletleriBirak, useSokulurkenBirak } from '../katKatmani';
+import { KAPI_ONCELIK, gizliykenBedava, gorusteMi } from './gorusKapisi';
 
 const AYAR = economyConfig.kat2;
 /**
@@ -46,6 +47,8 @@ const AYAR = economyConfig.kat2;
  * çıkış ≤ ~30 sn: erken gelen, önceki grubun çıkışı bittikten sonra yola çıkar (iki takım yeter).
  */
 const ONCE_EN_COK = 24;
+/** Gövdenin yatay yarıçapı (kollar açık) — görünürlük kapısının payı. */
+const GOVDE_YARI = 0.6;
 const GOMLEK = ['#c0504d', '#4f81bd', '#9bbb59', '#8064a2', '#f79646', '#4bacc6', '#d6b656', '#7f6084', '#e8e1d0', '#5b8a72'];
 
 type TurGeo = { bas: BufferGeometry | null; govde: BufferGeometry | null };
@@ -59,13 +62,15 @@ type Govde = {
   bas: Bone | null;
   /** Başa eklenen eğim (bir sonraki karede geri alınır — klip başı yazmıyorsa birikmesin). */
   basEk: number;
+  /** Kadraj dışında biriken animasyon süresi (T1); görününce tek adımda ilerler. */
+  bekleyenDt: number;
   klip: string;
   /** Gömlek renginin yazıldığı ziyaret (renk yalnız yeni grupta yazılır, her kare değil). */
   renkZiyaret: number;
 };
 
 function govdeKur(kaynak: Group, klipler: AnimationClip[], faz: number): Govde {
-  const kok = skinKlon(kaynak) as Group;
+  const kok = gizliykenBedava(skinKlon(kaynak) as Group);
   const parcalar: SkinnedMesh[] = [];
   kok.traverse((n) => {
     const m = n as SkinnedMesh;
@@ -119,7 +124,7 @@ function govdeKur(kaynak: Group, klipler: AnimationClip[], faz: number): Govde {
   }
   eylem[KLIP.dur]?.play();
   mixer.setTime(faz * 0.37);
-  return { kok, mixer, eylem, mat, bas, basEk: 0, klip: KLIP.dur, renkZiyaret: -1 };
+  return { kok, mixer, eylem, mat, bas, basEk: 0, bekleyenDt: 0, klip: KLIP.dur, renkZiyaret: -1 };
 }
 
 function klipSec(g: Govde, ad: string, oran = 1) {
@@ -196,6 +201,7 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
     },
     [birak],
   );
+  const kare = useRef(0);
   const hal = useRef({ onceki: 'kapali', cikisT: -1, gelis: false, ziyaret: sira * 3, kalkis: kalkisAni.get(yer.id) ?? 0, once });
 
   useFrame((st, dt) => {
@@ -235,6 +241,7 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
     if (gelen && !h.gelis) h.ziyaret++;
     h.gelis = !!gelen;
 
+    kare.current++;
     const zaman = st.clock.elapsedTime;
     const gelHiz = gelisHizi(boylar, AYAR.yurume + h.once);
     // Bekleyen geliş (kirli masa: grup oturmaz) yerinde yürümez, durur.
@@ -260,9 +267,16 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
         klipSec(g, sec.klip, sec.timeScale);
       }
       g.kok.scale.setScalar(KAY_SCALE * olcek);
-      g.kok.visible = true;
+      // T1: ne gövdesi ne gölgesi kadrajda olabilecek gövde animasyon/kemik/çizim işi yapmaz; süresi birikir.
+      g.bekleyenDt += dt;
+      const p = g.kok.position;
+      g.kok.visible = gorusteMi(st.camera, zaman, p.x, p.y, p.z, ACTOR_HEIGHT, GOVDE_YARI);
+      if (!g.kok.visible) return;
+      // Oturan gövde iki karede bir ilerler (yarısı tek, yarısı çift karede): yavaş klip, farkı görünmez.
+      if (oyna && ((sira + k + kare.current) & 1) === 1) return;
       if (g.bas) g.bas.rotation.x -= g.basEk;
-      g.mixer.update(dt);
+      g.mixer.update(g.bekleyenDt);
+      g.bekleyenDt = 0;
       // oturan baş: düşünür gibi hafif öne eğilip kalkar (klibin üstüne eklenir)
       g.basEk = oyna ? 0.16 * Math.max(0, Math.sin(zaman * 0.9 + k * 2.1 + sira * 0.7)) : 0;
       if (g.bas) g.bas.rotation.x += g.basEk;
@@ -306,7 +320,7 @@ export function MasaGrubu({ yer, sira }: { yer: Kat2MasaYeri; sira: number }) {
         poz(g, k, 1 - p.u, p.u > 0 ? GRUP_HIZ : 0, cikislar[k], p.olcek, true, false);
       });
     }
-  });
+  }, KAPI_ONCELIK);
 
   return <primitive object={kap} />;
 }

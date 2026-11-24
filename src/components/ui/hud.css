@@ -767,6 +767,18 @@
   font-weight: 800;
   color: var(--tx);
 }
+/* T6: dar telefonda adlar daha az kesilsin diye yalnız boşluk kısılır. Satır KIRILMAZ, kart büyümez (kullanıcı 2026-11-24). */
+@media (max-width: 400px) {
+  .kart-sirada {
+    gap: 3px;
+  }
+  .kart-sirada-et {
+    letter-spacing: 0;
+  }
+  .kart-cip {
+    padding: 2px 4px;
+  }
+}
 /* Yükseltme durağı (seviye görevi) amber: M2'deki sarı kartın bandaki karşılığı. */
 .kart-cip.yuk {
   border-color: var(--ac);
@@ -1739,6 +1751,16 @@
   position: absolute;
   top: 8px;
   right: 10px;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 2.5px solid var(--ot);
+  border-radius: 50%;
+  background: var(--oyuk);
+  color: var(--tx);
+  cursor: pointer;
 }
 .usta-badge {
   display: grid;
@@ -2478,7 +2500,8 @@
    telefon yatayı (412 yükseklik) ve büyük telefon portresi (~430 genişlik) girmez. */
 @media (min-width: 700px) and (min-height: 700px) {
   .hud {
-    zoom: 1.4;
+    --hud-olcek: 1.4;
+    zoom: var(--hud-olcek);
   }
 }
 
@@ -2608,7 +2631,9 @@
   animation: navPulse 1s ease-in-out infinite;
 }
 /* G-104: Kat 2 ipucu satırı — öğretici satırının aynısı, "Atla" düğmesi yok (ipucu tek eylemle biter). */
+/* T4: "Kat 1: +X" satırının (alt kenarı 128 px) altında durur. */
 .ogretici-satir.k2-ipucu {
+  top: calc(var(--sat) + 138px);
   padding: 8px 14px;
   min-height: 44px;
 }

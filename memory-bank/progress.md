@@ -63,6 +63,7 @@ Bütçe düzeltmelerinin tarihçesi (73 → 121) ve bitmiş fazların tam anlat�
   · 2026-11-20: 🔧 tarayıcı oyun testi (dev paneli Kat 2) → 39 geri bildirim G-92…G-130 → sprint S5 6 ajan, yarıda durduruldu; dal `s5-wip`, devir notları
   · 2026-11-19: ✅ Kat 2 sprint S4 — D-206 çarpan + Usta Kat 2'de + görevler üçe (Kat 2 7,40 sa) · D-207 varış kuyu önü · D-208 gölge/ön kurulum · metin turu · Firestore kuralı · vitest 2314
   · 2026-11-20/21: ✅ Kat 2 sprint S5 — oyun testi G-92…G-130, 4 dalga paralel ajan + 3 ölçüm turu · D-209 denge (bulaşıkta para, 18 sn, K2T, hız+%25 + 4. garson, görev bölme, G-92 tepsi 25+%40) · D-210 görsel (alçak duvarlar, tabela kemeri, alt kat cephesi, bakır leğen, görev kartı M1+M2) · Kat 2 7,78 sa · kaçan %2,1 · vitest 2445 · duman 79/79
+  · 2026-11-24: ✅ tam oyun testi (kilit yok) + T1-T9 düzeltme · Kat 2 kadraj kapısı · iPad hedef oku · Usta ✕ · sokak boşluğu · D-211 · `docs/tam-test-2026-11-24.md` · vitest 2451 · duman 79/79 · sıradaki: yeni deneme APK + Kat 2 testi
   · 2026-11-16: ✅ Play için 1.0.7 (10007) AAB'si zip'ten masaüstüne çıkarıldı (App Store sürümü, Kat 2 yok) · kod değişikliği yok
   · 2026-11-15: ✅ G5 kol G2 config'te (hemen kahve + anında para, 90 sn oyun, ücret 38) · kahve seti: sap ustaya, servis tepsisi, kahveci usta · ön set seçimi bekliyor
   · 2026-11-14: ✅ Oyun testi G1-G4 (D-198) — kasa kalktı/Kat 1 parası akar · Kat 2 mutfağı Kat 1 kopyası + katı ön tezgâh · ön bölme 0,6 · grup tek sıra · G5 okey ölçüldü (karar bekliyor) · bekçi mutasyon 4/4

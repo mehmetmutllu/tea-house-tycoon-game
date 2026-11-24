@@ -7,7 +7,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { sesMotoruKur, SES_KATALOG, type SesArkaUc } from '../src/game/audio';
 import { seslendir, sesSuresi } from '../src/game/audioSynth';
 import {
-  KAT2_SECIM, KAT2_SES_ADAYLARI, KAT2_SES_KATALOG, PARA_ZINCIR, UZAK, yakinlik, type Kat2SesId,
+  KAT2_SECIM, KAT2_SES_ADAYLARI, KAT2_SES_KATALOG, PARA_ZINCIR, type Kat2SesId,
 } from '../src/game/audioKat2';
 import {
   kat2SesBaslat, kat2SesOlaylari, paraZinciriEkle, toplananYigin, yeniBellek, type Kat2CalId, type Kat2SesKesit,
@@ -178,7 +178,6 @@ describe('bağlama: store aboneliği (sessiz kip, arka plan, Kat 1)', () => {
   });
   it('G-125: oynayan masalar varken uzun süre ortam sesi (takırtı/zar) ÇALMAZ', () => {
     const { caldi, coz, ileri } = kur();
-    const s = useGame.getState();
     const d = yeniKat2Dunya([...economyConfig.kat2.hazir], economyConfig.kat2 as unknown as Kat2Ayar);
     const masalar = d.masalar.map((m) => ({ ...m, durum: 'oyunda' as const }));
     expect(masalar.length).toBeGreaterThan(0);

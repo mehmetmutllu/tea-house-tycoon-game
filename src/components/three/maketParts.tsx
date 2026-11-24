@@ -22,7 +22,7 @@ import { Model } from './Model';
 import {
   AYNA_GOZ, AYNA_S, AYNA_Y, AYNA_Z,
   KABIN_ADIM, KABIN_ARALIK_ACI, KABIN_BANT, KABIN_BOLME, KABIN_KAPI, KABIN_MENTESE_ORTA, KABIN_RAY_Y, KABIN_RENK, KABIN_X_OFSET,
-  LAVABO_DUVAR_PAYI, LAVABO_DZ, LAVABO_GOZ, LAVABO_SCALE, kabinSayisi, lavaboSayisi, lavaboSlotOfset, wcSeviye,
+  LAVABO_DUVAR_PAYI, LAVABO_DZ, LAVABO_KUTU, LAVABO_GOZ, LAVABO_SCALE, kabinSayisi, lavaboSayisi, lavaboSlotOfset, wcSeviye,
 } from './wcLook';
 import { STEP_D, STEP_H, STEP_N } from './wallLook';
 
@@ -379,7 +379,8 @@ export function MaketLavaboBlock({ seviye }: { seviye?: number } = {}) {
         <group key={`s${k}`}>
           <MaketSink pos={[x2 - LAVABO_DUVAR_PAYI, 0, zBack + lavaboSlotOfset(k)]} rot={-Math.PI / 2} />
           {k === 1 && (
-            <mesh position={[x2 - 1.0, 0.9, zBack + lavaboSlotOfset(k)]}>
+            // Bardak tablanın üstünde, iki tekne arasında (T5: eski x2 − 1,0 tezgâhın önünde havadaydı).
+            <mesh position={[x2 - LAVABO_KUTU.d * 0.6, LAVABO_KUTU.tablaY + 0.07, zBack + (lavaboSlotOfset(0) + lavaboSlotOfset(1)) / 2]}>
               <cylinderGeometry args={[0.05, 0.05, 0.14, 8]} />
               <meshStandardMaterial color="#f1ece0" />
             </mesh>
@@ -438,8 +439,9 @@ export function MaketMerdivenHarap({ pos }: { pos: [number, number, number] }) {
               <meshStandardMaterial color="#6d6155" flatShading />
             </mesh>
             {!eksik.includes(i) && (
-              <mesh position={[kirik ? 0.7 : 0, (i + 1) * STEP_H - 0.0175, -STEP_D / 2 - i * STEP_D]} castShadow>
-                <boxGeometry args={[w - (kirik ? 1.4 : 0), 0.035, STEP_D]} />
+              // T7: tahta gövdeden 6 mm dışarıda — üst/ön/yan yüzler aynı düzlemde iki renk titremesin.
+              <mesh position={[kirik ? 0.7 : 0, (i + 1) * STEP_H - 0.0115, -STEP_D / 2 - i * STEP_D + 0.006]} castShadow>
+                <boxGeometry args={[w + 0.012 - (kirik ? 1.4 : 0), 0.035, STEP_D]} />
                 <meshStandardMaterial color="#8a7b68" flatShading />
               </mesh>
             )}
@@ -451,8 +453,8 @@ export function MaketMerdivenHarap({ pos }: { pos: [number, number, number] }) {
         <boxGeometry args={[w, 2.9, 0.6]} />
         <meshStandardMaterial color="#6d6155" flatShading />
       </mesh>
-      <mesh position={[0, 2.9 - 0.0175, -L - 0.3]} castShadow>
-        <boxGeometry args={[w, 0.035, 0.6]} />
+      <mesh position={[0, 2.9 - 0.0115, -L - 0.3 + 0.006]} castShadow>
+        <boxGeometry args={[w + 0.012, 0.035, 0.6]} />
         <meshStandardMaterial color="#8a7b68" flatShading />
       </mesh>
       {/* kırık korkuluk: iki yanda üçer dikme kalmış */}

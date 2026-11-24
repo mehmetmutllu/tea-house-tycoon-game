@@ -82,8 +82,10 @@ export const cityBoyut = (m: StreetModel): { w: number; h: number; d: number } =
 /** Ön duvar hattı — sokağın her şeyi buna göre konumlanır. `LAYOUT.area.maxZ + 0.5`. */
 export const STREET_Z0 = 17.5;
 
+/** Kaldırım + asfalt boyu: bahçe arsasının iki ucuna kadar (2026-11-24: x −14'te bitiyordu, sol ön köşede boşluk görünüyordu). */
+const CADDE_BOY = 96;
 /** Kaldırım şeridi: TÜM cephe boyu, ön duvardan dışa. */
-export const KALDIRIM = { x: 6, z: STREET_Z0 + 1.2, w: 40, d: 2.4 } as const;
+export const KALDIRIM = { x: 0, z: STREET_Z0 + 1.2, w: CADDE_BOY, d: 2.4 } as const;
 
 /**
  * Kaldırımın YOLA bakan kenarı. Asfalt buradan başlar — sayı ikinci kez yazılmaz.
@@ -98,7 +100,7 @@ export const KALDIRIM = { x: 6, z: STREET_Z0 + 1.2, w: 40, d: 2.4 } as const;
 export const KALDIRIM_ARKA = KALDIRIM.z + KALDIRIM.d / 2;
 
 /** Asfalt cadde. Ortası (z 23,00) hiçbir kadrajda yok; ÖN KENARI kaldırımın arkasına YAPIŞIR. */
-export const ASFALT = { x: 6, z: STREET_Z0 + 5.5, w: 56, d: (STREET_Z0 + 5.5 - KALDIRIM_ARKA) * 2 } as const;
+export const ASFALT = { x: 0, z: STREET_Z0 + 5.5, w: CADDE_BOY, d: (STREET_Z0 + 5.5 - KALDIRIM_ARKA) * 2 } as const;
 
 /**
  * GÖRÜNÜR ŞERİDİN ARKA SINIRI — rapor §V. Kameranın z tavanı `FLOOR_HALF + CAMERA_DIST` = 25,50;

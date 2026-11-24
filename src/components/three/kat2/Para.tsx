@@ -227,6 +227,7 @@ export function ParaYiginlari() {
       ucuslar.current.push({ x: p.x, z: p.z, t: 0, n: 4 + kademe(p.miktar) * 2, tohum: id * 1.3 });
     }
     onceki.current = canli();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- store olayına (toplama) tepki; türetilebilir durum değil
     if (sonen.length) setSonenler((s) => [...s, ...sonen]);
     if (toplam > 0) {
       const id = ++sira.current;

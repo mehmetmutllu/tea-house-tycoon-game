@@ -69,7 +69,7 @@ import {
   waiterSpeedMaxTier,
   xpForLevel,
 } from '../src/config/economy.config';
-import { useGame, tableSoftMaxLevel, goalMetricsOf } from '../src/game/store';
+import { useGame, goalMetricsOf } from '../src/game/store';
 import { KAT2_MASALAR, KAT2_SV_MAX, KAT2_YIKAMA_YER, OCAKLAR, VARIS, kat2YolAgi, masaErisimde, paraDusmeYeri, type Kat2MasaYeri } from '../src/game/kat';
 import {
   kat2EtkinAyar,

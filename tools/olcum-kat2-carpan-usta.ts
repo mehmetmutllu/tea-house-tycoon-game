@@ -324,7 +324,6 @@ function kos(kol: Kol, k1Tavan: number): Sonuc {
   const carpan0 = collectionMult(g().goalsClaimed);
   const elmasBas = g().diamonds.toNumber();
   let elmasHedef = 0, elmasGunluk = 0, gunlukKesir = 0;
-  const xp0 = g().xp;
   const izT = izOlustur();
   let zincir = NaN, sv = NaN, yuk = NaN, hatBitis = NaN;
   let kat1Akis = 0, kat2Gelir = 0, gorevOdul = 0, yol = 0, itme = 0, enUzun = 0, kalkis = 0, ustaUcretBeklenen = 0;

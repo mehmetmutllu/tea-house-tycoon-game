@@ -1146,7 +1146,8 @@ function EdgeArrow({ onClick }: { onClick: () => void }) {
       setShown(on);
       const el = ref.current;
       if (on && p && el) {
-        el.style.transform = `translate(-50%,-50%) translate(${p.x.toFixed(0)}px, ${p.y.toFixed(0)}px)`;
+        // T2: tablette `.hud` `zoom` ile büyür; ekran pikseli katman birimine bölünür (yoksa ok ekran dışına taşar).
+        el.style.transform = `translate(-50%,-50%) translate(clamp(34px, calc(${p.x.toFixed(0)}px / var(--hud-olcek, 1)), calc(${window.innerWidth}px / var(--hud-olcek, 1) - 34px)), clamp(90px, calc(${p.y.toFixed(0)}px / var(--hud-olcek, 1)), calc(${window.innerHeight}px / var(--hud-olcek, 1) - 170px)))`;
         const arrow = el.firstElementChild as HTMLElement | null;
         if (arrow) arrow.style.transform = `rotate(${p.angle.toFixed(0)}deg)`;
       }

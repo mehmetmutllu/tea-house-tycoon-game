@@ -5365,3 +5365,9 @@ Kullanıcı seçti, sayılar tam koşudan (`docs/olcum-s5-denge-final-2.txt`, `d
 - **G-120 M1+M2:** görev bandı karta döner (ilerleme, ödül, "sırada" 2 çip); Görevler sekmesi aktif → sonraki 3 → günlükler altta
   (`GorevKarti.tsx`, `gorevPano.ts`). Kullanıcı "sonra belki değiştiririz" dedi.
 - Kat 2 NPC: G-99/100 çıkış yolu kuyuda söner · G-109 kahveci yürür · G-107 çoklu yeni nokta bildirimi. Bekçiler `s5-*`.
+
+## D-211 · Kat 2 kadraj kapısı + tam test düzeltmeleri (2026-11-24)
+Kadraj dışı Kat 2 masası/müşterisi kare başına iş yapmaz (`kat2/gorusKapisi`, öncelik 0,5: kameradan sonra, çizimden önce); oturan
+gövdenin animasyonu iki karede bir. Üretim, CPU 4×, kat girişi: Sv1 37,2 → 18,6 ms · Sv5 43,9 → 18,2 ms. Görüntü aynı.
+Tablet `zoom` ölçeği tek kaynaktan (`--hud-olcek`); JS'in yazdığı ekran pikseli ona bölünür.
+Görev kartı SIRADA satırı kırılmaz: kart büyümez (kullanıcı satır kırmayı görüp reddetti). Rapor `docs/tam-test-2026-11-24.md`.
